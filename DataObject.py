@@ -3,75 +3,6 @@ __author__ = 'Naveen Venayak'
 import numpy as np
 import scipy.optimize as opt
 
-class timeCourseObject(object):
-    #Object contains one time vector and one data vector
-
-    def __init__(self, strainID, t, data):
-        self.t = t;
-        self.data = data;
-        self.productionRate = self.calcProductionRate(t, data);
-        self.strainID = strainID;
-
-    def calcExponentialRate(self, t, data):
-
-        def growthEquation(t, X0, K, mu):
-            return X0*K/(X0+ (K-X0)*np.exp(-mu*t))
-
-        popt, pcov = opt.curve_fit(growthEquation,t,data)
-
-        return popt
-
-class singleExperimentData(object)
-    #Object contains a series of timeCourseObjects related to a single experiment
-
-
-    def __init__(self, t, OD, glucose, succinate, formate, acetate, ethanol, lactate):
-        self.productNames = ['succinate','formate','acetate','ethanol','lactate']
-
-        self.t = t
-        self.OD = OD
-
-        self.substrate = glucose
-        self.substrateConsumed = self.calcSubstrateConsumed()
-
-        products = np.zeros(5,len(t))
-
-        self.products[1,:] = succinate
-        self.products[2,:] = formate
-        self.products[3,:] = acetate
-        self.products[4,:] = ethanol
-        self.products[5,:] = lactate
-
-
-
-        #yields = np.zeros(5,len(t))
-        self.yields = self.calcYield()
-
-    def calcSubstrateConsumed(self):
-        for timePoint in len(self.substrate):
-            substrateConsumed = self.substrate[0]-self.substrate[timePoint]
-        return substrateConsumed
-
-    def calcYield(self):
-        yields=np.zeros(5,len(self.substrateConsumed)-1);
-        for productIndex in len(self.products):
-            yields[productIndex,:] = np.divide(self.products[productIndex,1:len(self.products)],self.substrateConsumed[1:len(self.substrateConsumed)])
-
-        return yields
-
-class replicateExperimentObject(object)
-    #Calculates statistics based on replicates
-    def __init__(self, replicates, replicatesToUse):
-        self.yieldAverages, self.titerAverages, self.ODaverages, self.growthRateAverage = calcAverages();
-    #Calculate the yield average
-    def calcAverages(self):
-        yieldAverage = np.mean(replicates.yields)
-    #Calculate the production rate average
-
-    #Calculate the growth rate average
-
-    $
-
 class runIdentifier(object):
     strainID = ''
     identifier1 = ''
@@ -79,20 +10,105 @@ class runIdentifier(object):
     replicate = 0
     time = 0
 
+    def returnUniqueID(self):
+        return self.strainID+self.identifier1+self.identifier2
+
+class timePoint(object):
+    def __init__(self, runID, titerName, t, titer):
+        self.runIdentifier = runID
+        self.titerName = titerName
+        self. t = t
+        self.titer = titer
+
+    def getUniqueTimePointID(self):
+        return self.runIdentifier.strainID+self.runIdentifier.identifier1+self.runIdentifier.identifier2+self.runIdentifier.replicate
+
+class titerData():
+    def __init__(self, runID, prodID, t, data):
+        self.t = t
+        self.prodID = prodID
+        self.data = data
+        self.runID = runID
+
+class timeCourseObject(titerData):
+    #Object contains one time vector and one data vector
+    def __init__(self, runID, prodID, t, data):
+        titerData.__init__(self, runID, prodID, t, data)
+        self.exponentialRate = self.calcExponentialRate(t, data)
+
+    def calcExponentialRate(self, t, data):
+
+        #Define the growth equation to fit parameters
+        def growthEquation(t, X0, K, mu):
+            return X0*K/(X0+ (K-X0)*np.exp(-mu*t))
+
+        #Fit and return the parameters
+        popt, pcov = opt.curve_fit(growthEquation,t,data)
+        return popt
+
+class endPointObject(titerData):
+    def __init__(self, runID, t, data):
+        titerData.__init__(self, runID, t, data)
+        self.data = data
+        self.runID = runID
+
+class productsObject(object):
+    def __init__(self, names, timeCourses):
+        self.names = names;
+        self.timeCourses = timeCourses;
 
 
+class singleExperimentData(object):
+    #Object contains a series of timeCourseObjects related to a single experiment
+    def __init__(self, OD, substrate, products):
+        # self.productNames = ['succinate','formate','acetate','ethanol','lactate']
+        self.OD = OD
+
+        self.substrate = glucose
+        self.substrateConsumed = self.calcSubstrateConsumed()
+
+        self.products = products
+
+        #yields = np.zeros(5,len(t))
+        self.yields = self.calcYield()
+
+    def calcSubstrateConsumed(self):
+        for timePoint in range(1,len(self.substrate.data)):
+            substrateConsumed = self.substrate.data[0]-self.substrate.data[timePoint]
+        return substrateConsumed
+
+    def calcYield(self):
+        yields=np.zeros(5,len(self.substrateConsumed)-1)
+
+        for productIndex in len(self.products):
+            yields[productIndex,:] = np.divide(self.products.data[productIndex,1:len(self.products)],self.substrateConsumed.data[1:len(self.substrateConsumed)])
+        return yields
+
+class replicateExperimentObject(object):
+    #Calculates statistics based on replicates
+    def __init__(self):
+        self.timeCourseObjectList = []
+        #self.uniqueID = replicates.returnUniqueID()
+        self.yieldAverages, self.titerAverages, self.ODaverages, self.growthRateAverage = calcAverages()
+        self.checkReplicateUniqueIDMatch()
+
+    def checkReplicateUniqueIDMatch(self):
+        for i in len(replicates)-1:
+            if replicates[i].returnUniqueID() != replicates[i].returnUniqueID():
+                raise(Exception,"the replicates do not have the same uniqueID, either the uniqueID includes too much information or the strains don't match")
+
+    def addReplicateExperiment(self, newReplicateExperiment):
+        timeCourseObjectList[len(self.timeCourseObjectList)]
 
 
+    #Calculate averages
+    def calcAveragesAndDev(self, data):
+        avg = np.mean(replicates.yields[replicatesToUse,])
+        std = np.std(replicates.yields[replicatesToUse,])
+        return avg, std
 
-class experimentObject(object)
-    def __init__(self, ODtimeCourse,
+    #Calculate the production rate average
 
-
-# class DataObject(object):
-#     def __init__(self, t, titers):
-#         pass
-#
-#     def populateDataObject(self, timeCourseObjectList):
-#         numTimeCourses = len(timeCourseObjectList)
+    #Calculate the growth rate average
 
 
