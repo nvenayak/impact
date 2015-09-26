@@ -4,6 +4,7 @@ import numpy as np
 import scipy.optimize as opt
 
 class runIdentifier(object):
+
     strainID = ''
     identifier1 = ''
     identifier2 = ''
