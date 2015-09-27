@@ -24,66 +24,110 @@ for i in range(1,len(data[titerDataSheetName][2])):
 #Build time point objects from titer HPLC data
 #timePointCollection = [ [] for i in range(0,len(titerName))]
 
-timePointCollection = dict()
+tempTimePointCollection = dict()
 for names in titerNameColumn:
     print(type(names))
-    timePointCollection[names] = []
+    tempTimePointCollection[names] = []
 
+timePointCollection = []
 
 skippedLines = 0
 for i in range(6, len(data['titers'])):
-    #print(i)
     #Parse the identifier
     if type("asdf") == type(data['titers'][i][0]):
         tempParsedIdentifier = data['titers'][i][0].split(',')
         if len(tempParsedIdentifier) >= 3:
-            if len(tempParsedIdentifier) == 3:
-                tempRunIdentifierObject = runIdentifier()
-                tempRunIdentifierObject.strainID = tempParsedIdentifier[0]
-                #tempRunIdentifierObject.identifier1 = tempParsedIdentifier[1]
-                # tempRunIdentifierObject.identifier2 = tempParsedIdentifier[2]
-                tempRunIdentifierObject.replicate = tempParsedIdentifier[1]
-                tempRunIdentifierObject.t = tempParsedIdentifier[2]
-                print(tempRunIdentifierObject.returnUniqueID())
+            tempRunIdentifierObject = runIdentifier()
+            tempRunIdentifierObject.strainID = tempParsedIdentifier[0]
+            #tempRunIdentifierObject.identifier1 = tempParsedIdentifier[1]
+            # tempRunIdentifierObject.identifier2 = tempParsedIdentifier[2]
+            tempRunIdentifierObject.replicate = tempParsedIdentifier[1]
+            tempRunIdentifierObject.t = tempParsedIdentifier[2]
+            #print(tempRunIdentifierObject.returnUniqueID())
+
+
+
+            for key in tempTimePointCollection:
+                #print("the key is",key)
+                tempTimePointCollection[key] = timePoint(tempRunIdentifierObject, key, tempRunIdentifierObject.time, data['titers'][i][titerNameColumn[key]])
+
+            timePointCollection.append(tempTimePointCollection.copy())
+            #print(timePointCollection[len(timePointCollection)-1]["Glucose"].getUniqueTimePointID())
+            #print(timePointCollection[len(timePointCollection)-1]["Glucose"].titer)
+
+            print("tempCollection: ",tempTimePointCollection["Glucose"].getUniqueTimePointID())
+
+            for  r in range(0,len(timePointCollection)):
+                print(timePointCollection[r]["Glucose"].getUniqueTimePointID())
+                print(timePointCollection[r]["Glucose"].titer)
+
+            #input("Press Enter to continue...")
         else:
             skippedLines = skippedLines + 1
             #print(tempRunIdentifierObject.t)
-
-        for key in timePointCollection:
-            print("the key is",key)
-            timePointCollection[key].append(timePoint(tempRunIdentifierObject, key, tempRunIdentifierObject.time, data['titers'][i][titerNameColumn[key]]))
     else:
         skippedLines = skippedLines+1
-#Combine the time point objects into timeCourseObject and add to experimentObjects
-   # for i in range(0,len(timePointCollection)):
-   #      uniqueExperiments.append = timePointCollection[i].runIdentifier.returnUniqueID()
+
 print("Number of lines skipped ",skippedLines )
 
+# for  i in range(0,len(timePointCollection)):
+#     print(timePointCollection[i]["Glucose"].getUniqueTimePointID())
+#     print(timePointCollection[i]["Glucose"].titer)
 
-#uniqueTimePointCollection = [ [] for i in range(len(titerName))]
-uniqueTimePointCollection = []
-uniqueTimePointCollection.append( dict())
 
-for key in titerNameColumn:
-    uniqueTimePointCollection[0][key] = []
 
-for i in range(0,len(timePointCollection['Glucose'])): #### Should be generalized
-    #Loop through all the experimentObjects to check if one with the same conditions exists
-    flag = 0
-    for j in range(0,len(uniqueTimePointCollection['Glucose'])):
-        if uniqueTimePointCollection['Glucose'][j].getUniqueTimePointID() == timePointCollection['Glucose'][i].getUniqueTimePointID():
-            for key in timePointCollection:
-                uniqueTimePointCollection[key][j].append(timePointCollection[key][i])
-            flag = 1
-            print("flag is 1")
-            break
-    if flag == 0:
-        for key in timePointCollection:
-            #print(i," "," ",key)
-            print("flag is 0")
-            uniqueTimePointCollection[key].append(timePointCollection[key][i])
-        #print(uniqueTimePointCollection[0][i].runIdentifier.strainID)
 
+
+uniqueTimePointCollection = dict()
+#Find unique timePointIdentifiers
+for i in timePointCollection:
+    if i["Glucose"].getUniqueTimePointID() in uniqueTimePointCollection:
+        uniqueTimePointCollection[i["Glucose"].getUniqueTimePointID()].append(i)  #TODO make this general
+        #for key in uniqueTimePointCollection[i["Glucose"].getUniqueTimePointID()].keys():
+
+    else:
+        print(i["Glucose"].getUniqueTimePointID())
+        uniqueTimePointCollection[i["Glucose"].getUniqueTimePointID()] = []
+        # for key in uniqueTimePointCollection[i["Glucose"].getUniqueTimePointID()].keys():
+        #     uniqueTimePointCollection[i["Glucose"].getUniqueTimePointID()][key]  #TODO make this general
+
+
+
+    # flag = 0
+    # #if not uniqueTimePointCollection.has_key(i.getUniqueTimePointID()):
+    # #else:
+    #
+    #
+    # for key in uniqueTimePointCollection.keys():
+    #     if key == i.getUniqueTimePointID():
+    #         uniqueTimePointCollection[i.getUniqueTimePointID] = i
+    #         flag = 1
+    #     if flag == 0
+
+
+
+# for key in titerNameColumn:
+#     uniqueTimePointCollection[0][key] = []
+#
+# for i in range(0,len(timePointCollection['Glucose'])): #### Should be generalized
+#     #Loop through all the experimentObjects to check if one with the same conditions exists
+#     flag = 0
+#     for j in range(0,len(uniqueTimePointCollection['Glucose'])):
+#         if uniqueTimePointCollection['Glucose'][j].getUniqueTimePointID() == timePointCollection['Glucose'][i].getUniqueTimePointID():
+#             for key in timePointCollection:
+#                 uniqueTimePointCollection[key][j].append(timePointCollection[key][i])
+#             flag = 1
+#             print("flag is 1")
+#             break
+#     if flag == 0:
+#         for key in timePointCollection:
+#             #print(i," "," ",key)
+#             print("flag is 0")
+#             uniqueTimePointCollection[key].append(timePointCollection[key][i])
+#         #print(uniqueTimePointCollection[0][i].runIdentifier.strainID)
+#
+#
+#
 
 
 
