@@ -38,11 +38,9 @@ class timeCourseObject(titerData):
         self.exponentialRate = self.calcExponentialRate(t, data)
 
     def calcExponentialRate(self, t, data):
-
         #Define the growth equation to fit parameters
         def growthEquation(t, X0, K, mu):
             return X0*K/(X0+ (K-X0)*np.exp(-mu*t))
-
         #Fit and return the parameters
         popt, pcov = opt.curve_fit(growthEquation,t,data)
         return popt
@@ -50,32 +48,32 @@ class timeCourseObject(titerData):
 class endPointObject(titerData):
     def __init__(self, runID, t, data):
         titerData.__init__(self, runID, t, data)
-        self.data = data
-        self.runID = runID
+        #self.data = data
+        #self.runID = runID
 
 class productsObject(object):
     def __init__(self, names, timeCourses):
-        self.names = names;
-        self.timeCourses = timeCourses;
+        self.names = names
+        self.timeCourses = timeCourses
 
 
 class singleExperimentData(object):
     #Object contains a series of timeCourseObjects related to a single experiment
-    def __init__(self, OD, substrate, products):
+    def __init__(self):
         # self.productNames = ['succinate','formate','acetate','ethanol','lactate']
-        self.OD = OD
+        self.OD = []
+        self.substrate = []
+        #self.substrateConsumed = self.calcSubstrateConsumed()
+        self.products = dict()
+        #self.yields = self.calcYield()
 
-        self.substrate = glucose
-        self.substrateConsumed = self.calcSubstrateConsumed()
-
-        self.products = products
-
-        #yields = np.zeros(5,len(t))
-        self.yields = self.calcYield()
+    def getUniqueTimePointID(self):
+        return self.substrate.runIdentifier.strainID+self.substrate.runIdentifier.identifier1+self.substrate.runIdentifier.identifier2+self.substrate.runIdentifier.replicate
 
     def calcSubstrateConsumed(self):
-        for timePoint in range(1,len(self.substrate.data)):
-            substrateConsumed = self.substrate.data[0]-self.substrate.data[timePoint]
+        substrateConsumed = []
+        for timePoint in range(1,len(self.substrate.titer)):
+            substrateConsumed[timePoint] = self.substrate.titer[0]-self.substrate.titer[timePoint]
         return substrateConsumed
 
     def calcYield(self):
@@ -88,22 +86,27 @@ class singleExperimentData(object):
 class replicateExperimentObject(object):
     #Calculates statistics based on replicates
     def __init__(self):
-        self.timeCourseObjectList = []
+        #self.replicates = replicates
+        #self.replicatesToUse = replicatesToUse
         #self.uniqueID = replicates.returnUniqueID()
-        self.yieldAverages, self.titerAverages, self.ODaverages, self.growthRateAverage = calcAverages()
+        self._timeCourseObjectList = []
+        #self.yieldAverages, self.titerAverages, self.ODaverages, self.growthRateAverage = calcAverages()
         self.checkReplicateUniqueIDMatch()
 
     def checkReplicateUniqueIDMatch(self):
-        for i in len(replicates)-1:
-            if replicates[i].returnUniqueID() != replicates[i].returnUniqueID():
+        for i in range(len(self.timeCourseObjectList)):
+            if self.replicates[i].returnUniqueID() != self.replicates[i].returnUniqueID():
                 raise(Exception,"the replicates do not have the same uniqueID, either the uniqueID includes too much information or the strains don't match")
 
-    def addReplicateExperiment(self, newReplicateExperiment):
-        timeCourseObjectList[len(self.timeCourseObjectList)]
 
+    def addReplicateExperiment(self, newReplicateExperiment):
+        self.timeCourseObjectList.append(newReplicateExperiment)
+        checkReplicateUniqueIDMatch(self)
+        calcAverageandDev(self)
 
     #Calculate averages
     def calcAveragesAndDev(self, data):
+        # TODO timePoint,
         avg = np.mean(replicates.yields[replicatesToUse,])
         std = np.std(replicates.yields[replicatesToUse,])
         return avg, std
