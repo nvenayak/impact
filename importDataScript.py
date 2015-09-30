@@ -3,6 +3,7 @@ __author__ = 'Naveen'
 ####### Import packages
 from DataObject import *
 from pyexcel_xlsx import get_data
+from dataParsingFunctions import *
 import matplotlib.pyplot as plt
 
 ####### Define some constants
@@ -59,44 +60,14 @@ for i in range(4, len(data['titers'])):
 print("Number of lines skipped ",skippedLines)
 
 ######## Combine time points into timeCourseObjects
-titerObjectList = dict()
-for timePoint in timePointCollection:
-    flag = 0
-    for titerObjectKey in titerObjectList:
-        if timePoint["Glucose"].getUniqueTimePointID() == titerObjectList[titerObjectKey]["Glucose"].getTimeCourseID(): ##We can check only one key since they should all be the same, this will be checked later
-            for key in titerObjectList[titerObjectKey]:
-                titerObjectList[titerObjectKey][key].addTimePoint(timePoint[key])
-            flag = 1
-            break
-    if flag == 0:
-        titerObjectList[timePoint[timePoint.keys()[0]].getUniqueTimePointID()] = dict()
-        for key in timePoint:
-            titerObjectList[timePoint[key].getUniqueTimePointID()][key] = timeCourseObject()
-            titerObjectList[timePoint[key].getUniqueTimePointID()][key].addTimePoint(timePoint[key])
+titerObjectList = getTiterObjectListFromTimePointCollection(timePointCollection)
 
 ######## Combine timeCourseObjects into singleExperimentObjects
-singleExperimentObjectList = dict()
-for key in titerObjectList:
-    singleExperimentObjectList[key] = singleExperimentData()
-    for key2 in titerObjectList[key]:
-        if key2 == substrateName:
-            singleExperimentObjectList[key].substrate = titerObjectList[key][key2]
-        else:
-            singleExperimentObjectList[key].setProduct(key2, titerObjectList[key][key2])
+singleExperimentObjectList = getSingleExperimentObjectListFromTiterObjectList(titerObjectList, substrateName)
 
 ######## Combine singleExperimentObjects into replicateExperimentObjects
-replicateExperimentObjectList = dict()
-for key in singleExperimentObjectList:
-    flag = 0
-    for key2 in replicateExperimentObjectList:
-        if key2 == singleExperimentObjectList[key].getUniqueReplicateID():
-            replicateExperimentObjectList[key2].addReplicateExperiment(singleExperimentObjectList[key])
-            flag = 1
-            break
-    if flag == 0:
-        replicateExperimentObjectList[singleExperimentObjectList[key].getUniqueReplicateID()] = replicateExperimentObject()
-        tempID = singleExperimentObjectList[key].getUniqueReplicateID()
-        replicateExperimentObjectList[singleExperimentObjectList[key].getUniqueReplicateID()].addReplicateExperiment(singleExperimentObjectList[key])
+replicateExperimentObjectList = getReplicateExperimentObjectListFromSingleExperimentObjectList(singleExperimentObjectList)
+
 
 
 #def plotYields():

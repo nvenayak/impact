@@ -1,12 +1,6 @@
 __author__ = 'Naveen'
-######## Combine time points into timeCourseObjects
-titerObjectList = getTiterObjectListFromTimePointCollection(timePointCollection)
-
-######## Combine timeCourseObjects into singleExperimentObjects
-singleExperimentObjectList = getSingleExperimentObjectListFromTiterObjectList(titerObjectList)
-
-######## Combine singleExperimentObjects into replicateExperimentObjects
-replicateExperimentObjectList = getReplicateExperimentObjectListFromSingleExperimentObjectList(singleExperimentObjectList)
+from DataObject import *
+from pyexcel_xlsx import get_data
 
 def getTiterObjectListFromTimePointCollection(timePointCollection):
     titerObjectList = dict()
@@ -19,13 +13,13 @@ def getTiterObjectListFromTimePointCollection(timePointCollection):
                 flag = 1
                 break
         if flag == 0:
-            titerObjectList[timePoint[[list(timePoint.keys())[0]].getUniqueTimePointID()] = dict()
+            titerObjectList[timePoint[list(timePoint.keys())[0]].getUniqueTimePointID()] = dict()
             for key in timePoint:
                 titerObjectList[timePoint[key].getUniqueTimePointID()][key] = timeCourseObject()
                 titerObjectList[timePoint[key].getUniqueTimePointID()][key].addTimePoint(timePoint[key])
     return titerObjectList
 
-def getSingleExperimentObjectListFromTiterObjectList(titerObjectList):
+def getSingleExperimentObjectListFromTiterObjectList(titerObjectList, substrateName):
     singleExperimentObjectList = dict()
     for key in titerObjectList:
         singleExperimentObjectList[key] = singleExperimentData()
