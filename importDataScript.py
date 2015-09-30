@@ -69,15 +69,10 @@ for timePoint in timePointCollection:
             flag = 1
             break
     if flag == 0:
-        titerObjectList[timePoint[key].getUniqueTimePointID()] = dict()
+        titerObjectList[timePoint[timePoint.keys()[0]].getUniqueTimePointID()] = dict()
         for key in timePoint:
             titerObjectList[timePoint[key].getUniqueTimePointID()][key] = timeCourseObject()
             titerObjectList[timePoint[key].getUniqueTimePointID()][key].addTimePoint(timePoint[key])
-    # for x in titerObjectList[timePoint[key].getUniqueTimePointID()][key].timePointList:
-    #     print(x.t)
-
-# for key in titerObjectList:
-#     print(titerObjectList[key]["Glucose"].timeVec)
 
 ######## Combine timeCourseObjects into singleExperimentObjects
 singleExperimentObjectList = dict()
@@ -87,9 +82,7 @@ for key in titerObjectList:
         if key2 == substrateName:
             singleExperimentObjectList[key].substrate = titerObjectList[key][key2]
         else:
-            singleExperimentObjectList[key].products[key2] = titerObjectList[key][key2]
-            #print(type(singleExperimentObjectList[key].products[key2]))
-
+            singleExperimentObjectList[key].setProduct(key2, titerObjectList[key][key2])
 
 ######## Combine singleExperimentObjects into replicateExperimentObjects
 replicateExperimentObjectList = dict()
@@ -105,9 +98,53 @@ for key in singleExperimentObjectList:
         tempID = singleExperimentObjectList[key].getUniqueReplicateID()
         replicateExperimentObjectList[singleExperimentObjectList[key].getUniqueReplicateID()].addReplicateExperiment(singleExperimentObjectList[key])
 
-for key in replicateExperimentObjectList:#
-    print(replicateExperimentObjectList[key].avg.products["Ethanol"])
-    print(replicateExperimentObjectList[key].t)
-    print(len(replicateExperimentObjectList[key].t),len(replicateExperimentObjectList[key].avg.products["Ethanol"]))
-    plt.plot(replicateExperimentObjectList[key].t,replicateExperimentObjectList[key].avg.products["Ethanol"])
+
+#def plotYields():
+handle = dict()
+barWidth = 0.1
+location = 0
+# print(replicateExperimentObjectList[key].t)
+# print(replicateExperimentObjectList[key].avg.yields["Ethanol"])
+# print(replicateExperimentObjectList[key].std.yields["Ethanol"])
+
+inputVal = "Y"
+for key in replicateExperimentObjectList:
+    print("Experiment name: ",key)
+    #rects = plt.bar(replicateExperimentObjectList[key].t+location,replicateExperimentObjectList[key].avg.yields["Ethanol"],barWidth,yerr=replicateExperimentObjectList[key].std.yields["Ethanol"])#,lw=2.5,elinewidth=1,capsize=2)#,fmt='o-')
+
+    inputVal = input("Include sample?")
+    #rects = plt.bar(replicateExperimentObjectList[key].t+location,replicateExperimentObjectList[key].avg.yields["Ethanol"],barWidth,yerr=replicateExperimentObjectList[key].std.yields["Ethanol"])#,lw=2.5,elinewidth=1,capsize=2)#,fmt='o-')
+
+    if inputVal == "Y":
+    # print("t: ",replicateExperimentObjectList[key].t)
+    # print("avg: ",replicateExperimentObjectList[key].avg.yields)
+    # print("std: ",replicateExperimentObjectList[key].std.yields["Ethanol"])
+        rects = plt.bar(replicateExperimentObjectList[key].t+location,replicateExperimentObjectList[key].avg.yields["Ethanol"],barWidth,yerr=replicateExperimentObjectList[key].std.yields["Ethanol"])#,lw=2.5,elinewidth=1,capsize=2)#,fmt='o-')
+        location += barWidth
+
+    # rects = plt.bar(replicateExperimentObjectList[key].t+location,replicateExperimentObjectList[key].avg.yields["Ethanol"],barWidth,yerr=replicateExperimentObjectList[key].std.yields["Ethanol"])#,lw=2.5,elinewidth=1,capsize=2)#,fmt='o-')
+    # location += barWidth
+plt.legend([handle[key] for key in handle],[key for key in handle])
+plt.ylim([0,0.3])
+
+
+# You typically want your plot to be ~1.33x wider than tall. This plot is a rare
+# exception because of the number of lines being plotted on it.
+# Common sizes: (10, 7.5) and (12, 9)
+plt.figure(figsize=(12, 14))
+
+# Remove the plot frame lines. They are unnecessary chartjunk.
+ax = plt.subplot(111)
+
+
+ax.spines["top"].set_visible(False)
+ax.spines["bottom"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["left"].set_visible(False)
+
+
+handle = dict()
+for key in replicateExperimentObjectList:
+    handle[key] = plt.errorbar(replicateExperimentObjectList[key].t,replicateExperimentObjectList[key].avg.products["Ethanol"],replicateExperimentObjectList[key].std.products["Ethanol"],lw=2.5,elinewidth=1,capsize=2,fmt='o-')
+plt.legend([handle[key] for key in handle],[key for key in handle])
 

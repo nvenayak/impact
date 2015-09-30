@@ -54,7 +54,6 @@ class timeCourseObject(titerObject):
         self.timePointList.sort(key=lambda timePoint: timePoint.t)
         self.timeVec = np.array([timePoint.t for timePoint in self.timePointList])
         self.dataVec = np.array([timePoint.titer for timePoint in self.timePointList])
-        #print(self.timeVec)
 
     def calcExponentialRate(self, t, data):
         #Define the growth equation to fit parameters
@@ -83,17 +82,18 @@ class productsObject(object):
         self.names = names
         self.timeCourses = timeCourses
 
-
 class singleExperimentData(object):
     #Object contains a series of timeCourseObjects related to a single experiment
     def __init__(self):
         self.__t = np.array([])
         self.__OD = []
         self.__substrate = []
-        self.products = dict()
+        self.__products = dict()
+        self.yields = dict()
         #self.yields = self.calcYield()
         #self.substrateConsumed = self.calcSubstrateConsumed()
 
+    #Setters and Getters
     @property
     def OD(self):
         return self.__OD
@@ -111,6 +111,10 @@ class singleExperimentData(object):
     def substrate(self, substrate):
         self.__substrate = substrate
         self.checkTimeVectors()
+        self.calcSubstrateConsumed()
+        #print("products: ",self.__products)
+        if self.__products:
+            self.calcYield()
 
     @property
     def t(self):
@@ -120,13 +124,22 @@ class singleExperimentData(object):
     def t(self, t):
         self.__t = t
 
-    # @property
-    # def products(self):
-    #     return self.__products
-    #
-    # @products.setter
-    # def products(self, products):
-    #     self.__products = products
+    @property
+    def products(self):
+        return self.__products
+
+    @products.setter
+    def products(self, products):
+        print("setting products")
+        self.__products = products
+        #print("substrate: ",self.__substrate)
+        if self.__substrate:
+            self.calcYield()
+
+    def setProduct(self, key, product):
+        self.products[key] = product
+        if self.__substrate:
+            self.calcYield()
 
     def checkTimeVectors(self):
         t = []
@@ -134,20 +147,15 @@ class singleExperimentData(object):
         if self.OD:
             t.append(self.OD.timeVec)
         if self.substrate != None:
-            try:
-                t.append(self.substrate.timeVec)
-            except:
-                a = 0
+            t.append(self.substrate.timeVec)
 
         if self.products:
             for key in self.products:
                 t.append(self.products[key].timeVec)
 
         for i in range(len(t)-1):
-            #print(t[i])
             if (t[i] != t[i+1]).all():
                 flag = 1
-
 
         if flag==1:
             raise(Exception("Time vectors within an experiment don't match, must implement new methods to deal with this type of data (if even possible)"))
@@ -160,19 +168,21 @@ class singleExperimentData(object):
     def getUniqueReplicateID(self):
         return self.substrate.getReplicateID()
 
-    def calcSubstrateConsumed(self):
-        substrateConsumed = []
-        for timePoint in range(1,len(self.substrate.titer)):
-            substrateConsumed[timePoint] = self.substrate.titer[0]-self.substrate.titer[timePoint]
-        return substrateConsumed
+    def calcSubstrateConsumed(self): #TODO implement function
+        self.substrateConsumed = np.empty([len(self.substrate.dataVec)])
+        for timePointIndex in range(len(self.substrate.timeVec)):
+            #print(timePointIndex)
+            self.substrateConsumed[timePointIndex] = self.substrate.dataVec[0]-self.substrate.dataVec[timePointIndex]
+        #return substrateConsumed
 
-    def calcYield(self):
-        yields=np.zeros(5,len(self.substrateConsumed)-1)
+    def calcYield(self): #TODO implement function
+        print("calc yield called")
 
-        for productIndex in len(self.products):
-            yields[productIndex,:] = np.divide(self.products.data[productIndex,1:len(self.products)],self.substrateConsumed.data[1:len(self.substrateConsumed)])
-        return yields
-
+        self.yields = dict()
+        for productKey in self.products:
+            #print("product key: ",productKey)
+            self.yields[productKey] = np.divide(self.products[productKey].dataVec,self.substrateConsumed)
+            #print("yields: ",self.yields[productKey])
 
 class singleExperimentDataShell(singleExperimentData):
     # def __init__(self):
@@ -186,12 +196,9 @@ class singleExperimentDataShell(singleExperimentData):
     def OD(self, OD):
         self.__OD = OD
 
-    # @singleExperimentData.products.setter
-    # def products(self, products):
-    #     self.__products = products
-
-
-
+    @singleExperimentData.products.setter
+    def products(self, products):
+        self.__products = products
 
 class replicateExperimentObject(object):
     #Calculates statistics based on replicates
@@ -230,17 +237,21 @@ class replicateExperimentObject(object):
     #Calculate averages
     def calcAverageAndDev(self):
         #First check what data exists
+
         ODflag = 0
         productFlag = 0
         substrateFlag = 0
+        yieldFlag = 0
         for singleExperiment in self.singleExperimentList:
             # TODO timePoint,
             if singleExperiment.OD:
-                temp=0
+                ODflag = 1
             if singleExperiment.products:
                 productFlag = 1 #TODO need to make generic for different products in different expts
             if singleExperiment.substrate:
                 substrateFlag=1
+            if singleExperiment.yields:
+                yieldFlag = 1
 
         if ODflag == 1:
             self.avg.OD = np.mean([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
@@ -248,30 +259,15 @@ class replicateExperimentObject(object):
 
         if productFlag == 1:
             for key in self.singleExperimentList[0].products:
-                # for singleExperimentObject in self.singleExperimentList:
-                #     for timePoint in singleExperimentObject.products[key].timePointList:
-                #             print(timePoint.getUniqueTimePointID())
-                #
-
-                # print("Next: ",[singleExperimentObject.products[key].timeVec for singleExperimentObject in self.singleExperimentList])
-
                 self.avg.products[key] = np.mean([singleExperimentObject.products[key].dataVec for singleExperimentObject in self.singleExperimentList],axis=0)
                 self.std.products[key] = np.std([singleExperimentObject.products[key].dataVec for singleExperimentObject in self.singleExperimentList],axis=0)
 
         if substrateFlag == 1:
-            # for singleExperimentObject in self.singleExperimentList:
-            #         for timePoint in singleExperimentObject.substrate.timePointList:
-            #                 print(timePoint.getUniqueTimePointID())
-            #
-            # print("substrateNext: ",[singleExperimentObject.substrate.dataVec for singleExperimentObject in self.singleExperimentList])
-
             self.avg.substrate = np.mean([singleExperimentObject.substrate.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
             self.std.substrate = np.std([singleExperimentObject.substrate.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
 
-
-
-    #Calculate the production rate average
-
-    #Calculate the growth rate average
-
-
+        if yieldFlag == 1:
+            for key in self.singleExperimentList[0].yields:
+                self.avg.yields[key] = np.mean([singleExperimentObject.yields[key] for singleExperimentObject in self.singleExperimentList],axis=0)
+                self.std.yields[key] = np.std([singleExperimentObject.yields[key] for singleExperimentObject in self.singleExperimentList],axis=0)
+                #print(self.avg.yields[key])
