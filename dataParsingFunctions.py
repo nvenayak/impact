@@ -7,7 +7,7 @@ def getTiterObjectListFromTimePointCollection(timePointCollection):
     for timePoint in timePointCollection:
         flag = 0
         for titerObjectKey in titerObjectList:
-            if timePoint["Glucose"].getUniqueTimePointID() == titerObjectList[titerObjectKey]["Glucose"].getTimeCourseID(): ##We can check only one key since they should all be the same, this will be checked later
+            if timePoint["Glucose"].getUniqueTimePointID() == titerObjectList[titerObjectKey]["Glucose"].getTimeCourseID(): ##TODO We can check only one key since they should all be the same, this will be checked later
                 for key in titerObjectList[titerObjectKey]:
                     titerObjectList[titerObjectKey][key].addTimePoint(timePoint[key])
                 flag = 1
