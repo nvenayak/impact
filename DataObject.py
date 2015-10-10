@@ -119,7 +119,7 @@ class singleExperimentData(object):
     def __init__(self):
         self.__t = np.array([])
         self.__OD = []
-        self.__substrate = []
+        self.__substrate = None
         self.__products = dict()
         self.yields = dict()
 
@@ -175,12 +175,16 @@ class singleExperimentData(object):
         t = []
         flag = 0
         if self.OD:
+            self.__t = self.OD.timeVec
             t.append(self.OD.timeVec)
+
         if self.substrate != None:
+            self.__t = self.substrate.timeVec
             t.append(self.substrate.timeVec)
 
         if self.products:
             for key in self.products:
+                self.__t = self.products[key].timeVec
                 t.append(self.products[key].timeVec)
 
         for i in range(len(t)-1):
@@ -189,8 +193,8 @@ class singleExperimentData(object):
 
         if flag==1:
             raise(Exception("Time vectors within an experiment don't match, must implement new methods to deal with this type of data (if even possible)"))
-        else:
-            self.__t = self.substrate.timeVec
+        # else:
+        #     self.__t = self.substrate.timeVec
 
     def getUniqueTimePointID(self):
         return self.substrate.runIdentifier.strainID+self.substrate.runIdentifier.identifier1+self.substrate.runIdentifier.identifier2+str(self.substrate.runIdentifier.replicate)

@@ -66,7 +66,7 @@ print("Number of lines skipped: ",skippedLines)
 ######## Combine time points into timeCourseObjects
 titerObjectList = getTiterObjectListFromTimePointCollection(timePointCollection)
 ######## Combine timeCourseObjects into singleExperimentObjects
-singleExperimentObjectList = getSingleExperimentObjectListFromTiterObjectList(titerObjectList, substrateName)
+singleExperimentObjectList = getSingleExperimentObjectListFromTiterObjectList(titerObjectList, substrateName, 'titer')
 ######## Combine singleExperimentObjects into replicateExperimentObjects
 replicateExperimentObjectList = getReplicateExperimentObjectListFromSingleExperimentObjectList(singleExperimentObjectList)
 ######## List Experiment names

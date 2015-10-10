@@ -19,15 +19,22 @@ def getTiterObjectListFromTimePointCollection(timePointCollection):
                 titerObjectList[timePoint[key].getUniqueTimePointID()][key].addTimePoint(timePoint[key])
     return titerObjectList
 
-def getSingleExperimentObjectListFromTiterObjectList(titerObjectList, substrateName):
+def getSingleExperimentObjectListFromTiterObjectList(titerObjectList, substrateName, titerODFlag):
     singleExperimentObjectList = dict()
-    for key in titerObjectList:
-        singleExperimentObjectList[key] = singleExperimentData()
-        for key2 in titerObjectList[key]:
-            if key2 == substrateName:
-                singleExperimentObjectList[key].substrate = titerObjectList[key][key2]
-            else:
-                singleExperimentObjectList[key].setProduct(key2, titerObjectList[key][key2])
+    if titerODFlag=='titer':
+        for key in titerObjectList: #Go through each titerObjectList
+            singleExperimentObjectList[key] = singleExperimentData()
+            for key2 in titerObjectList[key]:
+                if key2 == substrateName:
+                    singleExperimentObjectList[key].substrate = titerObjectList[key][key2]
+                else:
+                    singleExperimentObjectList[key].setProduct(key2, titerObjectList[key][key2])
+    elif titerODFlag == 'OD':
+        for key in titerObjectList:
+            singleExperimentObjectList[key] = singleExperimentData()
+            singleExperimentObjectList[key].OD = titerObjectList[key]
+    else:
+        raise Exception("No titer/OD flag set")
     return singleExperimentObjectList
 
 def getReplicateExperimentObjectListFromSingleExperimentObjectList(singleExperimentObjectList):
