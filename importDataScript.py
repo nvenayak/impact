@@ -4,7 +4,9 @@ __author__ = 'Naveen'
 from DataObject import *
 from pyexcel_xlsx import get_data
 from dataParsingFunctions import *
+from plottingFunctions import *
 import matplotlib.pyplot as plt
+import copy
 import time
 import tkinter as tk
 
@@ -53,8 +55,16 @@ for i in range(4, len(data['titers'])):
             tempRunIdentifierObject.replicate = int(tempParsedReplicate[1])#tempParsedIdentifier[1]
             tempParsedTime = tempParsedIdentifier[2].split('=')
             tempRunIdentifierObject.t = float(tempParsedTime[1])#tempParsedIdentifier[2]
+
+
             for key in tempTimePointCollection:
-                tempTimePointCollection[key] = timePoint(tempRunIdentifierObject, key, tempRunIdentifierObject.t, data['titers'][i][titerNameColumn[key]])
+                tempRunIdentifierObject.titerName = key
+                if key == 'Glucose':
+                    tempRunIdentifierObject.titerType = 'substrate'
+                else:
+                    tempRunIdentifierObject.titerType = 'product'
+                tempTimePointCollection[key] = timePoint(copy.copy(tempRunIdentifierObject), key, tempRunIdentifierObject.t, data['titers'][i][titerNameColumn[key]])
+                #print(tempTimePointCollection[key].runIdentifier.titerName)
             timePointCollection.append(tempTimePointCollection.copy())
         else:
             skippedLines += 1
@@ -65,10 +75,14 @@ print("Number of lines skipped: ",skippedLines)
 
 ######## Combine time points into timeCourseObjects
 titerObjectList = getTiterObjectListFromTimePointCollection(timePointCollection)
+# for titerObjectKey in titerObjectList:
+#     for productKey in titerObjectList[titerObjectKey]:
+#         print(titerObjectList[titerObjectKey][productKey].runIdentifier,productKey)
 ######## Combine timeCourseObjects into singleExperimentObjects
 singleExperimentObjectList = getSingleExperimentObjectListFromTiterObjectList(titerObjectList, substrateName, 'titer')
 ######## Combine singleExperimentObjects into replicateExperimentObjects
 replicateExperimentObjectList = getReplicateExperimentObjectListFromSingleExperimentObjectList(singleExperimentObjectList)
+print(replicateExperimentObjectList)
 ######## List Experiment names
 print("Experiment Name\t# Replicates\t#Products")
 for key in replicateExperimentObjectList:
@@ -85,7 +99,7 @@ for strainsToPlotPair in strainsToPlotList:
 
 strainsToPlot = ['lacI  pKDL071','pTOG009IPTG','pTOG009aTc']
 #printYieldTimeCourse(replicateExperimentObjectList, strainsToPlot)
-printTimeCourse(replicateExperimentObjectList, strainsToPlot)
+printGenericTimeCourse(replicateExperimentObjectList, strainsToPlot, ["Acetate","Ethanol","Lactate"])
 printEndPointYield(replicateExperimentObjectList, strainsToPlot, 1)
 plt.show()
 

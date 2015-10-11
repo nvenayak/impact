@@ -5,11 +5,12 @@ from DataObject import *
 from pyexcel_xlsx import get_data
 from dataParsingFunctions import *
 import matplotlib.pyplot as plt
-import time
-import tkinter as tk
+from plottingFunctions import *
+
+
 
 ####### Define some constants
-fileName = "ODTest.xlsx"
+fileName = "2015.10.08 pTOG Automation Test.xlsx"
 substrateName = 'Glucose'
 titerDataSheetName = "titers"
 ODDataSheetName = 'OD'
@@ -33,53 +34,51 @@ timeCourseObjectList = dict()
 
 for row in data[ODDataSheetName][1:]:
     if type("asdf") == type(row[0]):
-        print('1')
         tempParsedIdentifier = row[0].split(',')
+        print(tempParsedIdentifier)
         if len(tempParsedIdentifier) == 0:
             print(tempParsedIdentifier," <-- not processed")
-        if len(tempParsedIdentifier) > 1 :
+        if len(tempParsedIdentifier) > 0 :
             tempRunIdentifierObject = runIdentifier()
             tempRunIdentifierObject.strainID = tempParsedIdentifier[0]
-        if len(tempParsedIdentifier) > 2 :
+        if len(tempParsedIdentifier) > 1 :
             tempRunIdentifierObject.identifier1 = tempParsedIdentifier[1]
-        if len(tempParsedIdentifier) > 3 :
+        if len(tempParsedIdentifier) > 2 :
             tempRunIdentifierObject.identifier2 = tempParsedIdentifier[2]
-        if len(tempParsedIdentifier) > 4 :
-            tempRunIdentifierObject.replicate = int(tempParsedIdentifier[3])#tempParsedIdentifier[1]
+        if len(tempParsedIdentifier) > 3 :
+            try:
+                tempRunIdentifierObject.replicate = int(tempParsedIdentifier[3])#tempParsedIdentifier[1]
+            except:
+                print("Couldn't parse replicate from ",tempParsedIdentifier)
+        tempRunIdentifierObject.titerName = 'OD600'
+        tempRunIdentifierObject.titerType = 'OD'
         tempTimeCourseObject = timeCourseObject()
-        tempTimeCourseObject.uniqueID = tempRunIdentifierObject
+        tempTimeCourseObject.runIdentifier = tempRunIdentifierObject
         tempTimeCourseObject.dataVec = np.array(row[1:])
-        tempTimeCourseObject.timeVec = data[ODDataSheetName][0][1:]
-        if tempTimeCourseObject.getTimeCourseID() in timeCourseObjectList:
-            print('Duplicate Object Found')
-            #raise Exception("Duplicate time course name found")
-        else:
-            timeCourseObjectList[tempTimeCourseObject.getTimeCourseID()] = tempTimeCourseObject
+        tempTimeCourseObject.timeVec = np.array(data[ODDataSheetName][0][1:])
+        print(tempTimeCourseObject.getTimeCourseID())
+        timeCourseObjectList[tempTimeCourseObject.getTimeCourseID()] = tempTimeCourseObject
+
+
+        # if tempTimeCourseObject.getTimeCourseID() in timeCourseObjectList:
+        #     print('Duplicate Object Found')
+        #     #raise Exception("Duplicate time course name found")
+        # else:
+print(len(timeCourseObjectList))
 
 singleExperimentObjectList = getSingleExperimentObjectListFromTiterObjectList(timeCourseObjectList, 'na', 'OD')
+
 replicateExperimentObjectList = getReplicateExperimentObjectListFromSingleExperimentObjectList(singleExperimentObjectList)
+# for key in replicateExperimentObjectList:
+    # print(len(replicateExperimentObjectList[key].singleExperimentList))
+    # print(replicateExperimentObjectList[key].std.OD.dataVec)
 
 
-#
-# ######## Parse the titer data into single experiment object list
-# ### NOTE: THIS PARSER IS NOT GENERIC AND MUST BE MODIFIED FOR YOUR SPECIFIC INPUT TYPE ###
-# for i in range(4, len(data['titers'])):
-#     if type("asdf") == type(data['titers'][i][0]):  #Check if the data is a string
-#         tempParsedIdentifier = data['titers'][i][0].split(',')  #Parse the string using comma delimiter
-#         if len(tempParsedIdentifier) >= 3:  #Ensure corect number of identifiers TODO make this general
-#             tempRunIdentifierObject = runIdentifier()
-#             tempParsedStrainIdentifier = tempParsedIdentifier[0].split("+")
-#             tempRunIdentifierObject.strainID = tempParsedStrainIdentifier[0]
-#             tempRunIdentifierObject.identifier1 = tempParsedStrainIdentifier[1]
-#             # tempRunIdentifierObject.identifier2 = tempParsedIdentifier[2]
-#             tempParsedReplicate = tempParsedIdentifier[1].split('=')
-#             tempRunIdentifierObject.replicate = int(tempParsedReplicate[1])#tempParsedIdentifier[1]
-#             tempParsedTime = tempParsedIdentifier[2].split('=')
-#             tempRunIdentifierObject.t = float(tempParsedTime[1])#tempParsedIdentifier[2]
-#             for key in tempTimePointCollection:
-#                 tempTimePointCollection[key] = timePoint(tempRunIdentifierObject, key, tempRunIdentifierObject.t, data['titers'][i][titerNameColumn[key]])
-#             timePointCollection.append(tempTimePointCollection.copy())
-#         else:
-#             skippedLines += 1
-#     else:
-#         skippedLines += 1
+strainsToPlot = list(replicateExperimentObjectList.keys())
+strainsToPlot = ['3KO-D1pTOG009IPTG','3KO-D1pTOG009aTc','3KO-D30pTOG009IPTG','3KO-D30pTOG009aTc']
+printTimeCourseOD(replicateExperimentObjectList, strainsToPlot)
+printGenericTimeCourse(replicateExperimentObjectList,strainsToPlot,['OD'])
+plt.show()
+# for i in range(0,len(strainsToPlot),4):
+#     printTimeCourseOD(replicateExperimentObjectList, strainsToPlot[i:i+3])
+#     plt.show()

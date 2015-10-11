@@ -7,7 +7,7 @@ def getTiterObjectListFromTimePointCollection(timePointCollection):
     for timePoint in timePointCollection:
         flag = 0
         for titerObjectKey in titerObjectList:
-            if timePoint["Glucose"].getUniqueTimePointID() == titerObjectList[titerObjectKey]["Glucose"].getTimeCourseID(): ##TODO We can check only one key since they should all be the same, this will be checked later
+            if timePoint[list(timePoint.keys())[0]].getUniqueTimePointID() == titerObjectList[titerObjectKey][list(timePoint.keys())[0]].getTimeCourseID(): ##TODO We can check only one key since they should all be the same, this will be checked later
                 for key in titerObjectList[titerObjectKey]:
                     titerObjectList[titerObjectKey][key].addTimePoint(timePoint[key])
                 flag = 1
@@ -25,14 +25,16 @@ def getSingleExperimentObjectListFromTiterObjectList(titerObjectList, substrateN
         for key in titerObjectList: #Go through each titerObjectList
             singleExperimentObjectList[key] = singleExperimentData()
             for key2 in titerObjectList[key]:
-                if key2 == substrateName:
-                    singleExperimentObjectList[key].substrate = titerObjectList[key][key2]
-                else:
-                    singleExperimentObjectList[key].setProduct(key2, titerObjectList[key][key2])
+                print(titerObjectList[key][key2].runIdentifier.returnUniqueID_singleExperiment())
+                singleExperimentObjectList[key].addTiterObject(titerObjectList[key][key2])
+                # if key2 == substrateName:
+                #     singleExperimentObjectList[key].substrate = titerObjectList[key][key2]
+                # else:
+                #     singleExperimentObjectList[key].setProduct(key2, titerObjectList[key][key2])
     elif titerODFlag == 'OD':
         for key in titerObjectList:
             singleExperimentObjectList[key] = singleExperimentData()
-            singleExperimentObjectList[key].OD = titerObjectList[key]
+            singleExperimentObjectList[key].addTiterObject(titerObjectList[key])
     else:
         raise Exception("No titer/OD flag set")
     return singleExperimentObjectList
@@ -42,7 +44,9 @@ def getReplicateExperimentObjectListFromSingleExperimentObjectList(singleExperim
     for key in singleExperimentObjectList:
         flag = 0
         for key2 in replicateExperimentObjectList:
+            print(key2, singleExperimentObjectList[key].getUniqueReplicateID())
             if key2 == singleExperimentObjectList[key].getUniqueReplicateID():
+                print("Replicate found")
                 replicateExperimentObjectList[key2].addReplicateExperiment(singleExperimentObjectList[key])
                 flag = 1
                 break

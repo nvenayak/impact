@@ -12,6 +12,11 @@ class runIdentifier(object):
         self.identifier2 = ''
         self.replicate = None
         self.time = None
+        self.titerName = 'None'
+        self.titerType = 'None'
+
+    def returnUniqueID_singleExperiment(self):
+        return self.strainID+self.identifier1+self.identifier1+str(self.replicate)+self.titerName+self.titerType
 
     def returnUniqueID(self):
         return self.strainID+self.identifier1+self.identifier2
@@ -32,7 +37,7 @@ class timePoint(object):
 class titerObject():
     def __init__(self):
         self.timePointList = []
-        self.uniqueID = runIdentifier()
+        self.runIdentifier = runIdentifier()
 
     def addTimePoint(self, timePoint):
         raise(Exception("No addTimePoint method defiend in the child"))
@@ -43,17 +48,18 @@ class titerObject():
                    self.timePointList[0].runIdentifier.identifier1+\
                    self.timePointList[0].runIdentifier.identifier2+\
                    str(self.timePointList[0].runIdentifier.replicate)
-        elif self.uniqueID.strainID != '':
-            return self.uniqueID.strainID+\
-                   self.uniqueID.identifier1+\
-                   self.uniqueID.identifier2+\
-                   str(self.uniqueID.replicate)
+        elif self.runIdentifier.strainID != '':
+            return self.runIdentifier.strainID+\
+                   self.runIdentifier.identifier1+\
+                   self.runIdentifier.identifier2+\
+                   str(self.runIdentifier.replicate)
         else:
-            raise Exception("No unique ID or time points in titerObjet()")
+            raise Exception("No unique ID or time points in titerObject()")
 
 
     def getReplicateID(self):
-        return self.timePointList[0].runIdentifier.strainID+self.timePointList[0].runIdentifier.identifier1+self.timePointList[0].runIdentifier.identifier2
+        #return self.runIdentifier
+        return self.runIdentifier.strainID+self.runIdentifier.identifier1+self.runIdentifier.identifier2
 
 class timeCourseObject(titerObject):
     #Object contains one time vector and one data vector
@@ -69,6 +75,13 @@ class timeCourseObject(titerObject):
 
     def addTimePoint(self, timePoint):
         self.timePointList.append(timePoint)
+        if len(self.timePointList) == 1:
+            self.runIdentifier = timePoint.runIdentifier
+        else:
+            for i in range(len(self.timePointList)-1):
+                if self.timePointList[i].runIdentifier.returnUniqueID_singleExperiment() != self.timePointList[i+1].runIdentifier.returnUniqueID_singleExperiment():
+                    raise Exception("runIdentifiers don't match within the timeCourse object")
+
         self.timePointList.sort(key=lambda timePoint: timePoint.t)
         self.timeVec = np.array([timePoint.t for timePoint in self.timePointList])
         self.dataVec = np.array([timePoint.titer for timePoint in self.timePointList])
@@ -84,8 +97,8 @@ class timeCourseObject(titerObject):
         #Fit and return the parameters
         flag = 0
         try:
-            popt=[0.01, 0.1, 1]
-            for i in range(1):
+            popt=[0.01, 0.5, 0.5]
+            for i in range(5):
                 popt, pcov = opt.curve_fit(growthEquation,self.timeVec,self.dataVec,popt)
             flag = 1
         except:
@@ -118,19 +131,49 @@ class singleExperimentData(object):
     #Object contains a series of timeCourseObjects related to a single experiment
     def __init__(self):
         self.__t = np.array([])
-        self.__OD = []
+        self.titerObjectList = dict()
+        self.ODKey = None
+        self.productKeys = []
+        self.substrateKey = None
+        self.runIdentifier = runIdentifier()
+        self._OD = None
         self.__substrate = None
         self.__products = dict()
         self.yields = dict()
 
+    def addTiterObject(self, titerObject):
+        #print(titerObject.runIdentifier.titerType)
+        if titerObject.runIdentifier.titerType == 'substrate':
+            self.titerObjectList[titerObject.runIdentifier.titerName] = titerObject
+            self.substrate = titerObject
+            self.substrateKey = titerObject.runIdentifier.titerName
+
+        if titerObject.runIdentifier.titerType == 'OD':
+            self.titerObjectList[titerObject.runIdentifier.titerName] = titerObject
+            self.OD = titerObject
+            self.ODKey = titerObject.runIdentifier.titerName
+
+        if titerObject.runIdentifier.titerType == 'product':
+            self.titerObjectList[titerObject.runIdentifier.titerName] = titerObject
+            self.products[titerObject.runIdentifier.titerName] = titerObject
+            self.productKeys.append(titerObject.runIdentifier.titerName)
+
+        if self.substrateKey != None and len(self.productKeys)>0:
+            self.calcYield()
+
+        self.checkTimeVectors()
+        #print(titerObject.runIdentifier.titerType)
+        #print(self.productKeys)
+
     #Setters and Getters
+
     @property
     def OD(self):
-        return self.__OD
+        return self._OD
 
     @OD.setter
     def OD(self, OD):
-        self.__OD = OD
+        self._OD = OD
         self.checkTimeVectors()
 
     @property
@@ -158,7 +201,6 @@ class singleExperimentData(object):
         return self.__products
 
     @products.setter
-
     def products(self, products):
         #print("setting products")
         self.__products = products
@@ -200,7 +242,8 @@ class singleExperimentData(object):
         return self.substrate.runIdentifier.strainID+self.substrate.runIdentifier.identifier1+self.substrate.runIdentifier.identifier2+str(self.substrate.runIdentifier.replicate)
 
     def getUniqueReplicateID(self):
-        return self.substrate.getReplicateID()
+        #print(list(self.titerObjectList.keys()))
+        return self.titerObjectList[list(self.titerObjectList.keys())[0]].getReplicateID()
 
     def calcSubstrateConsumed(self): #TODO implement function
         self.substrateConsumed = np.empty([len(self.substrate.dataVec)])
@@ -223,7 +266,7 @@ class singleExperimentDataShell(singleExperimentData):
 
     @singleExperimentData.OD.setter
     def OD(self, OD):
-        self.__OD = OD
+        self._OD = OD
 
     @singleExperimentData.products.setter
     def products(self, products):
@@ -240,16 +283,17 @@ class replicateExperimentObject(object):
         #self.checkReplicateUniqueIDMatch()
 
     def checkReplicateUniqueIDMatch(self):
+        #print('entered code')
         for i in range(len(self.singleExperimentList)-1):
             if self.singleExperimentList[i].getUniqueReplicateID() != self.singleExperimentList[i+1].getUniqueReplicateID():
-                raise(Exception("the replicates do not have the same uniqueID, either the uniqueID includes too much information or the strains don't match"))
+                raise Exception("the replicates do not have the same uniqueID, either the uniqueID includes too much information or the strains don't match")
 
             if (self.singleExperimentList[i].t != self.singleExperimentList[i+1].t).all():
-                raise(Exception("time vectors don't match within replicates"))
+                raise Exception("time vectors don't match within replicates")
             else:
                 self.t = self.singleExperimentList[i].t
 
-            if len(self.singleExperimentList[i].substrate.dataVec) != len(self.singleExperimentList[i+1].substrate.dataVec):
+            if False and len(self.singleExperimentList[i].substrate.dataVec) != len(self.singleExperimentList[i+1].substrate.dataVec): #TODO
                 print("Time Vector 1: ",self.singleExperimentList[i].t,"\nTime Vector 2: ",self.singleExperimentList[i+1].t)
                 print("Vector 1: ",self.singleExperimentList[i].substrate.dataVec,"\nVector 2: ",self.singleExperimentList[i+1].substrate.dataVec)
                 raise(Exception("length of substrate vectors do not match"))
@@ -260,6 +304,8 @@ class replicateExperimentObject(object):
 
     def addReplicateExperiment(self, newReplicateExperiment):
         self.singleExperimentList.append(newReplicateExperiment)
+        if len(self.singleExperimentList)==1:
+            self.t = self.singleExperimentList[0].t
         self.checkReplicateUniqueIDMatch()
         self.calcAverageAndDev()
 
@@ -271,7 +317,6 @@ class replicateExperimentObject(object):
         substrateFlag = 0
         yieldFlag = 0
         for singleExperiment in self.singleExperimentList:
-            # TODO timePoint,
             if singleExperiment.OD:
                 ODflag = 1
             if singleExperiment.products:
@@ -282,8 +327,13 @@ class replicateExperimentObject(object):
                 yieldFlag = 1
 
         if ODflag == 1:
-            self.avg.OD = np.mean([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
-            self.std.OD = np.std([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
+            self.avg.OD = timeCourseObject()
+            self.std.OD = timeCourseObject()
+            #print([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList])
+            self.avg.OD.timeVec = self.t
+            self.avg.OD.dataVec = np.mean([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
+            self.std.OD.dataVec = np.std([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
+            self.avg.OD.calcExponentialRate()
 
         if productFlag == 1:
             for key in self.singleExperimentList[0].products:
@@ -295,7 +345,7 @@ class replicateExperimentObject(object):
                 self.avg.products[key].rate = np.mean([singleExperimentObject.products[key].rate for singleExperimentObject in self.singleExperimentList],axis=0)
                 for singleExperimentObject in self.singleExperimentList:
                     singleExperimentObject.products[key].calcExponentialRate()
-                    print(singleExperimentObject.products[key].rate)
+                    # print(singleExperimentObject.products[key].rate)
 
         if substrateFlag == 1:
             self.avg.substrate = np.mean([singleExperimentObject.substrate.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
@@ -305,159 +355,5 @@ class replicateExperimentObject(object):
             for key in self.singleExperimentList[0].yields:
                 self.avg.yields[key] = np.mean([singleExperimentObject.yields[key] for singleExperimentObject in self.singleExperimentList],axis=0)
                 self.std.yields[key] = np.std([singleExperimentObject.yields[key] for singleExperimentObject in self.singleExperimentList],axis=0)
-                #print(self.avg.yields[key])
 
-def printTimeCourse(replicateExperimentObjectList, strainsToPlot):
-    # You typically want your plot to be ~1.33x wider than tall. This plot is a rare
-    # exception because of the number of lines being plotted on it.
-    # Common sizes: (10, 7.5) and (12, 9)
-    plt.figure(figsize=(12, 3.5))
-
-    handle = dict()
-    colors = plt.get_cmap('Set3')(np.linspace(0,1,len(strainsToPlot)))
-
-    #plt.hold(False)
-    product = "Ethanol"
-    pltNum = 0
-    plt.subplot(141)
-    for product in replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products:
-        pltNum += 1
-        ax = plt.subplot(1,len(replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products),pltNum)
-        ax.spines["top"].set_visible(False)
-        #ax.spines["bottom"].set_visible(False)
-        ax.spines["right"].set_visible(False)
-        #ax.spines["left"].set_visible(False)
-        colorIndex = 0
-        for key in strainsToPlot:
-            handle[key] = plt.errorbar(replicateExperimentObjectList[key].t,replicateExperimentObjectList[key].avg.products[product].dataVec,replicateExperimentObjectList[key].std.products[product].dataVec,lw=2.5,elinewidth=1,capsize=2,fmt='o-',color=colors[colorIndex])
-            print(replicateExperimentObjectList[key].avg.products[product].rate)
-            # handle[key] = plt.plot(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50),
-            #                                    replicateExperimentObjectList[key].avg.products[product].returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50)),'-',lw=2.5,color=colors[colorIndex])
-            colorIndex += 1
-        plt.xlabel("Time (hours)")
-        plt.ylabel(product+" Titer (g/L)")
-        ymin, ymax = plt.ylim()
-        plt.ylim([0,ymax])
-        plt.tight_layout()
-        plt.tick_params(right="off",top="off")
-    #plt.subplot(1,4,4)
-    plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.15, 0.5), loc=6, borderaxespad=0)
-    plt.subplots_adjust(right=0.75)
-
-    #plt.show()
-
-def printYieldTimeCourse(replicateExperimentObjectList, strainsToPlot):
-    # You typically want your plot to be ~1.33x wider than tall. This plot is a rare
-    # exception because of the number of lines being plotted on it.
-    # Common sizes: (10, 7.5) and (12, 9)
-    plt.figure(figsize=(12, 3))
-
-    handle = dict()
-    barWidth = 0.9/len(strainsToPlot)
-    #plt.hold(False)
-    pltNum = 0
-    colors = plt.get_cmap('Paired')(np.linspace(0,1.0,len(strainsToPlot)))
-    for product in replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products:
-        pltNum += 1
-        ax = plt.subplot(1,len(replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products)+1,pltNum)
-        ax.spines["top"].set_visible(False)
-        #ax.spines["bottom"].set_visible(False)
-        ax.spines["right"].set_visible(False)
-        #ax.spines["left"].set_visible(False)
-        location = 0
-        colorIndex = 0
-        for key in strainsToPlot:
-            index = np.arange(len(replicateExperimentObjectList[key].t))
-            handle[key] = plt.bar(index+location,replicateExperimentObjectList[key].avg.yields[product],barWidth,yerr=replicateExperimentObjectList[key].std.yields[product],color=colors[colorIndex],ecolor='k')
-            plt.xticks(index + barWidth, replicateExperimentObjectList[key].t)
-            location += barWidth
-            colorIndex += 1
-            # print(replicateExperimentObjectList[key].avg.products[product].rate)
-            # handle[key] = plt.plot(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50),
-            #                                    replicateExperimentObjectList[key].avg.products[product].returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50)),'-',lw=2.5)
-        plt.xlabel("Time (hours)")
-        plt.ylabel(product+" Yield (g/g)")
-        ymin, ymax = plt.ylim()
-        plt.ylim([0,1])
-        plt.tight_layout()
-    #plt.subplot(1,4,4)
-    plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.15, 0.5), loc=6, borderaxespad=0)
-    plt.subplots_adjust(right=1.05)
-
-def printEndPointYield(replicateExperimentObjectList, strainsToPlot, withLegend):
-
-
-    handle = dict()
-    colors = plt.get_cmap('Set2')(np.linspace(0,1.0,len(strainsToPlot)))
-
-    barWidth = 0.6
-    pltNum = 0
-
-
-
-    if withLegend == 0:
-        plt.figure(figsize=(6, 3))
-        for product in replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products:
-            endPointTiterAvg = []
-            endPointTiterStd = []
-            endPointTiterLabel = []
-            pltNum += 1
-            #ax = plt.subplot(0.8)
-            ax = plt.subplot(1,len(replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products),pltNum)
-            ax.spines["top"].set_visible(False)
-            #ax.spines["bottom"].set_visible(False)
-            ax.spines["right"].set_visible(False)
-            #ax.spines["left"].set_visible(False)
-            location = 0
-            index = np.arange(len(strainsToPlot))
-
-            for key in strainsToPlot:
-                endPointTiterLabel.append(key)
-                endPointTiterAvg.append(replicateExperimentObjectList[key].avg.yields[product][-1])
-                endPointTiterStd.append(replicateExperimentObjectList[key].std.yields[product][-1])
-            handle[key] = plt.bar(index,endPointTiterAvg,barWidth,yerr=endPointTiterStd,color=plt.get_cmap('Pastel1')(0.25),ecolor='black',capsize=5,error_kw=dict(elinewidth=1, capthick=1) )
-            location += barWidth
-            plt.xlabel("Time (hours)")
-            plt.ylabel(product+" Yield (g/g)")
-            ymin, ymax = plt.ylim()
-            plt.ylim([0,ymax])
-            plt.tight_layout()
-            plt.xticks(index + barWidth/2, endPointTiterLabel,rotation='45', ha='right', va='top')
-            ax.yaxis.set_ticks_position('left')
-            ax.xaxis.set_ticks_position('bottom')
-    if withLegend == 1:
-        plt.figure(figsize=(6, 2))
-
-        for product in replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products:
-            endPointTiterAvg = []
-            endPointTiterStd = []
-            endPointTiterLabel = []
-            pltNum += 1
-            ax = plt.subplot(1,len(replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products),pltNum)
-            ax.spines["top"].set_visible(False)
-            #ax.spines["bottom"].set_visible(False)
-            ax.spines["right"].set_visible(False)
-            #ax.spines["left"].set_visible(False)
-            location = 0
-            index = np.arange(len(strainsToPlot))
-
-            for key in strainsToPlot:
-                endPointTiterLabel.append(key)
-                endPointTiterAvg.append(replicateExperimentObjectList[key].avg.yields[product][-1])
-                endPointTiterStd.append(replicateExperimentObjectList[key].std.yields[product][-1])
-
-            barList = plt.bar(index,endPointTiterAvg,barWidth,yerr=endPointTiterStd,ecolor='k')
-            count = 0
-            for bar, count in zip(barList, range(len(strainsToPlot))):
-                bar.set_color(colors[count])
-            location += barWidth
-            plt.ylabel(product+" Titer (g/L)")
-            ymin, ymax = plt.ylim()
-            plt.ylim([0,ymax])
-            plt.tight_layout()
-            plt.xticks([])
-            ax.yaxis.set_ticks_position('left')
-            ax.xaxis.set_ticks_position('bottom')
-        plt.subplots_adjust(right=0.7)
-        plt.legend(barList,strainsToPlot,bbox_to_anchor=(1.15, 0.5), loc=6, borderaxespad=0)
 
