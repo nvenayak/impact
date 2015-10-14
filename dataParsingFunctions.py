@@ -25,7 +25,7 @@ def getSingleExperimentObjectListFromTiterObjectList(titerObjectList, substrateN
         for key in titerObjectList: #Go through each titerObjectList
             singleExperimentObjectList[key] = singleExperimentData()
             for key2 in titerObjectList[key]:
-                print(titerObjectList[key][key2].runIdentifier.returnUniqueID_singleExperiment())
+                #print(titerObjectList[key][key2].runIdentifier.returnUniqueID_singleExperiment())
                 singleExperimentObjectList[key].addTiterObject(titerObjectList[key][key2])
                 # if key2 == substrateName:
                 #     singleExperimentObjectList[key].substrate = titerObjectList[key][key2]
@@ -44,9 +44,9 @@ def getReplicateExperimentObjectListFromSingleExperimentObjectList(singleExperim
     for key in singleExperimentObjectList:
         flag = 0
         for key2 in replicateExperimentObjectList:
-            print(key2, singleExperimentObjectList[key].getUniqueReplicateID())
+            #print(key2, singleExperimentObjectList[key].getUniqueReplicateID())
             if key2 == singleExperimentObjectList[key].getUniqueReplicateID():
-                print("Replicate found")
+                #print("Replicate found")
                 replicateExperimentObjectList[key2].addReplicateExperiment(singleExperimentObjectList[key])
                 flag = 1
                 break

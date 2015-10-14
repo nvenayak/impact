@@ -98,14 +98,17 @@ for strainsToPlotPair in strainsToPlotList:
         strainsToPlot.append(strainToPlot)
 
 strainsToPlot = ['lacI  pKDL071','pTOG009IPTG','pTOG009aTc']
-#printYieldTimeCourse(replicateExperimentObjectList, strainsToPlot)
-printGenericTimeCourse(replicateExperimentObjectList, strainsToPlot, ["Acetate","Ethanol","Lactate"])
+# #printYieldTimeCourse(replicateExperimentObjectList, strainsToPlot)
+# strainsToPlot = ['pTOG009IPTG','pTOG009aTc']
+
+printTimeCourse(replicateExperimentObjectList, strainsToPlot)
+#printGenericTimeCourse(replicateExperimentObjectList, strainsToPlot, ["Acetate","Ethanol","Lactate"])
 printEndPointYield(replicateExperimentObjectList, strainsToPlot, 1)
 plt.show()
 
 
-# for strainsToPlot in strainsToPlotList:
-#     printTimeCourse(replicateExperimentObjectList, strainsToPlot)
-#     printYieldTimeCourse(replicateExperimentObjectList, strainsToPlot)
+for strainsToPlot in strainsToPlotList:
+    printTimeCourse(replicateExperimentObjectList, strainsToPlot)
+    #printYieldTimeCourse(replicateExperimentObjectList, strainsToPlot)
 #
 plt.show()
