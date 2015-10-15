@@ -3,14 +3,17 @@ __author__ = 'Naveen'
 ####### Import packages
 from DataObject import *
 from pyexcel_xlsx import get_data
+from dataParsingFunctions import *
+from plottingFunctions import *
+import matplotlib.pyplot as plt
+import copy
+import time
+import tkinter as tk
 
 ####### Define some constants
 fileName = "2015.05.19.LactateStoryData.xlsx"
 substrateName = 'Glucose'
 titerDataSheetName = "titers"
-
-
-###############################
 
 ####### Get data from xlsx file
 data = get_data(fileName)
@@ -32,52 +35,68 @@ for names in titerNameColumn:
     tempTimePointCollection[names] = []
 
 timePointCollection = []
-singleExperimentDataList = []
 skippedLines = 0
 
 ######## Parse the titer data into single experiment object list
-for i in range(6, len(data['titers'])):
+### NOTE: THIS PARSER IS NOT GENERIC AND MUST BE MODIFIED FOR YOUR SPECIFIC INPUT TYPE ###
+for i in range(4, len(data['titers'])):
     if type("asdf") == type(data['titers'][i][0]):  #Check if the data is a string
         tempParsedIdentifier = data['titers'][i][0].split(',')  #Parse the string using comma delimiter
         if len(tempParsedIdentifier) >= 3:  #Ensure corect number of identifiers TODO make this general
             tempRunIdentifierObject = runIdentifier()
-            tempRunIdentifierObject.strainID = tempParsedIdentifier[0]
-            #tempRunIdentifierObject.identifier1 = tempParsedIdentifier[1]
+            tempParsedStrainIdentifier = tempParsedIdentifier[0].split("+")
+            tempRunIdentifierObject.strainID = tempParsedStrainIdentifier[0]
+            tempRunIdentifierObject.identifier1 = tempParsedStrainIdentifier[1]
             # tempRunIdentifierObject.identifier2 = tempParsedIdentifier[2]
-            tempRunIdentifierObject.replicate = tempParsedIdentifier[1]
-            tempRunIdentifierObject.t = tempParsedIdentifier[2]
+            tempParsedReplicate = tempParsedIdentifier[1].split('=')
+            tempRunIdentifierObject.replicate = int(tempParsedReplicate[1])#tempParsedIdentifier[1]
+            tempParsedTime = tempParsedIdentifier[2].split('=')
+            tempRunIdentifierObject.t = float(tempParsedTime[1])#tempParsedIdentifier[2]
 
-            singleExperimentDataList.append(singleExperimentData())
+
             for key in tempTimePointCollection:
-                tempTimePointCollection[key] = timePoint(tempRunIdentifierObject, key, tempRunIdentifierObject.time, data['titers'][i][titerNameColumn[key]])
-                if key == substrateName:
-                    print(tempTimePointCollection[key])
-                    singleExperimentDataList[-1].substrate = tempTimePointCollection[key]
+                tempRunIdentifierObject.titerName = key
+                if key == 'Glucose':
+                    tempRunIdentifierObject.titerType = 'substrate'
                 else:
-                    singleExperimentDataList[-1].products[key] = tempTimePointCollection[key]
-
+                    tempRunIdentifierObject.titerType = 'product'
+                tempTimePointCollection[key] = timePoint(copy.copy(tempRunIdentifierObject), key, tempRunIdentifierObject.t, data['titers'][i][titerNameColumn[key]])
+                #print(tempTimePointCollection[key].runIdentifier.titerName)
             timePointCollection.append(tempTimePointCollection.copy())
         else:
-            skippedLines = skippedLines + 1
+            skippedLines += 1
     else:
-        skippedLines = skippedLines+1
-print("Number of lines skipped ",skippedLines)
+        skippedLines += 1
+
+print("Number of lines skipped: ",skippedLines)
 
 
-######## Combine replicate experiments
-uniqueTimePointCollection = dict()
-#Find unique timePointIdentifiers
-for i in singleExperimentDataList:
-    if i.getUniqueTimePointID() in uniqueTimePointCollection:
-        uniqueTimePointCollection[i.getUniqueTimePointID()].append(i)
-    else:
-        uniqueTimePointCollection[i.getUniqueTimePointID()] = [i]
+newProjectContainer = projectContainer()
+######## Combine time points into timeCourseObjects
+titerObjectList = getTiterObjectListFromTimePointCollection(timePointCollection)
 
-######### Build the replicate objects
-replicateExperimentObjectList = dict()
-replicateExperimentObject()
+# ----- Add the data to the projectContainer ----------------
+newProjectContainer.parseTiterObjectCollection(titerObjectList, 'titer')
 
-for key in uniqueTimePointCollection.keys():
-    replicateExperimentObjectList[key] = replicateExperimentObject()
-    for i in uniqueTimePointCollection[key]:
-        replicateExperimentObjectList[key].addReplicateExperiment(i)
+# ######## List Experiment names
+# print("Experiment Name\t# Replicates\t#Products")
+# for key in replicateExperimentObjectList:
+#     print(key,"\t\t",len(replicateExperimentObjectList[key].singleExperimentList))
+
+
+######## Strains To Plot
+strainsToPlotList = [['pTOG009IPTG','pTOG009aTc'],['pTOG007IPTG','pTOG007aTc'],['pTOG008IPTG','pTOG08aTc'],['pTOG0010IPTG','pTOG010aTc'],['lacI  pKDL071']]
+
+strainsToPlot = []
+for strainsToPlotPair in strainsToPlotList:
+    for strainToPlot in strainsToPlotPair:
+        strainsToPlot.append(strainToPlot)
+
+strainsToPlot = ['lacI  pKDL071','pTOG009IPTG','pTOG009aTc']
+# strainsToPlot = ['pTOG009IPTG','pTOG009aTc']
+
+newProjectContainer.printGenericTimeCourse(strainsToPlot, ["Acetate","Ethanol","Lactate"])
+newProjectContainer.printEndPointYield(strainsToPlot, 1)
+newProjectContainer.printYieldTimeCourse(strainsToPlot)
+
+plt.show()
