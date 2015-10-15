@@ -42,7 +42,7 @@ for row in data[ODDataSheetName][1:]:
         tempRunIdentifierObject.titerType = 'OD'
         tempTimeCourseObject = timeCourseObject()
         tempTimeCourseObject.runIdentifier = tempRunIdentifierObject
-        tempTimeCourseObject.timeVec = np.array(np.divide(data[ODDataSheetName][0][1:],3600)) #Data in seconds, data required to be in hours
+        tempTimeCourseObject.timeVec = np.array(np.divide(data[ODDataSheetName][0][1:], 3600)) #Data in seconds, data required to be in hours
         tempTimeCourseObject.dataVec = np.array(row[1:])
         timeCourseObjectList[tempTimeCourseObject.getTimeCourseID()] = tempTimeCourseObject
 
@@ -53,7 +53,7 @@ for row in data[ODDataSheetName][1:]:
 print("Parsed timeCourseObjects from data: ",len(timeCourseObjectList))
 
 
-
+## Add the data to the project
 newProjectContainer = projectContainer()
 newProjectContainer.parseTiterObjectCollection(timeCourseObjectList, 'OD')
 
