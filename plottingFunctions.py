@@ -41,9 +41,24 @@ def printGenericTimeCourse(replicateExperimentObjectList, strainsToPlot, titersT
         for key in strainsToPlot:
             xData = replicateExperimentObjectList[key].t
             if product == 'OD':
-                scaledTime = np.divide(replicateExperimentObjectList[key].t,3600)
-                handle[key] = plt.errorbar(scaledTime,replicateExperimentObjectList[key].avg.OD.dataVec,replicateExperimentObjectList[key].std.OD.dataVec,lw=2.5,elinewidth=1,capsize=2,fmt='o-',color=colors[colorIndex])
-                plt.fill_between(scaledTime,replicateExperimentObjectList[key].avg.OD.dataVec+replicateExperimentObjectList[key].std.OD.dataVec,replicateExperimentObjectList[key].avg.OD.dataVec-replicateExperimentObjectList[key].std.OD.dataVec,facecolor=colors[colorIndex],alpha=0.1)
+                removePointFraction = 6
+
+                scaledTime = replicateExperimentObjectList[key].t
+                handle[key] = plt.plot(np.linspace(min(scaledTime),max(scaledTime),50),
+                                        replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50)),'-',lw=1.5,color=colors[colorIndex])
+                handle[key] = plt.errorbar(scaledTime[::removePointFraction],replicateExperimentObjectList[key].avg.OD.dataVec[::removePointFraction],replicateExperimentObjectList[key].std.OD.dataVec[::removePointFraction],lw=2.5,elinewidth=1,capsize=2,fmt='o',markersize=5,color=colors[colorIndex])
+
+                plt.fill_between(scaledTime,replicateExperimentObjectList[key].avg.OD.dataVec+replicateExperimentObjectList[key].std.OD.dataVec,
+                                 replicateExperimentObjectList[key].avg.OD.dataVec-replicateExperimentObjectList[key].std.OD.dataVec,
+                                 facecolor=colors[colorIndex],alpha=0.1)
+                print(scaledTime[-1]+0.5,
+                         replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50))[-1],
+                         '$\mu$ = '+'{:.2f}'.format(replicateExperimentObjectList[key].avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicateExperimentObjectList[key].std.OD.rate[1]))
+
+                plt.text(scaledTime[-1]+0.5,
+                         replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50))[-1],
+                         '$\mu$ = '+'{:.2f}'.format(replicateExperimentObjectList[key].avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicateExperimentObjectList[key].std.OD.rate[1]),
+                         verticalalignment='center')
                 ylabel = 'OD600'
             else:
                 yData = replicateExperimentObjectList[key].avg.products[product].dataVec
@@ -52,12 +67,16 @@ def printGenericTimeCourse(replicateExperimentObjectList, strainsToPlot, titersT
 
             colorIndex += 1
 
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
-        ymin, ymax = plt.ylim()
-        plt.ylim([0,ymax])
-        plt.tight_layout()
-        plt.tick_params(right="off",top="off")
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    ymin, ymax = plt.ylim()
+    xmin, xmax = plt.xlim()
+    plt.xlim([0,xmax*1.2])
+    plt.ylim([0,ymax])
+    plt.tight_layout()
+    plt.tick_params(right="off",top="off")
+    plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
+    plt.subplots_adjust(right=0.7)
 
     if len(titersToPlot) == 1:
         plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0)
@@ -67,6 +86,8 @@ def printGenericTimeCourse(replicateExperimentObjectList, strainsToPlot, titersT
         plt.subplots_adjust(right=0.75)
     if len(titersToPlot) > 4:
         raise Exception("Unimplemented functionality")
+
+    plt.savefig('Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" H"+time.strftime('%H')+'-M'+time.strftime('%M')+'-S'+time.strftime('%S')+'.png')
 
 def printGrowthRateBarChart(replicateExperimentObjectList, strainsToPlot, sortBy):
     handle = dict()
@@ -79,7 +100,7 @@ def printGrowthRateBarChart(replicateExperimentObjectList, strainsToPlot, sortBy
 
 
     uniques = list(set([getattr(replicateExperimentObjectList[key].runIdentifier,sortBy) for key in strainsToPlot]))
-
+    uniques.sort()
     #Find max number of samples
     maxSamples = 0
     for unique in uniques:
@@ -93,6 +114,7 @@ def printGrowthRateBarChart(replicateExperimentObjectList, strainsToPlot, sortBy
 
     i = 0
     for unique in uniques:
+        print(unique)
         handle[unique] = plt.bar(index[0:len([replicateExperimentObjectList[key].avg.OD.rate[1] for key in strainsToPlot if getattr(replicateExperimentObjectList[key].runIdentifier,sortBy) == unique])],
                 [replicateExperimentObjectList[key].avg.OD.rate[1] for key in strainsToPlot if getattr(replicateExperimentObjectList[key].runIdentifier,sortBy) == unique],
                 barWidth, yerr=[replicateExperimentObjectList[key].std.OD.rate[1] for key in strainsToPlot if getattr(replicateExperimentObjectList[key].runIdentifier,sortBy) == unique],
@@ -104,15 +126,26 @@ def printGrowthRateBarChart(replicateExperimentObjectList, strainsToPlot, sortBy
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
     plt.ylabel('Growth Rate ($\mu$, h$^{-1}$)')
+    xticklabel = ''
+    for attribute in ['strainID','identifier1','identifier2']:
+        if attribute != sortBy:
+            xticklabel = xticklabel+attribute
+
+    if 'strainID' == sortBy:
+        tempticks =[replicateExperimentObjectList[key].runIdentifier.identifier1+'+'+replicateExperimentObjectList[key].runIdentifier.identifier2 for key in strainsToPlot if getattr(replicateExperimentObjectList[key].runIdentifier,sortBy) == maxIndex]
+    if 'identifier1' == sortBy:
+        tempticks = [replicateExperimentObjectList[key].runIdentifier.strainID +'+'+replicateExperimentObjectList[key].runIdentifier.identifier2 for key in strainsToPlot if getattr(replicateExperimentObjectList[key].runIdentifier,sortBy) == maxIndex]
+    if 'identifier2' == sortBy:
+        tempticks = [replicateExperimentObjectList[key].runIdentifier.strainID +'+'+replicateExperimentObjectList[key].runIdentifier.identifier1 for key in strainsToPlot if getattr(replicateExperimentObjectList[key].runIdentifier,sortBy) == maxIndex]
+
     plt.xticks(index-barWidth,
-               [replicateExperimentObjectList[key].runIdentifier.strainID+replicateExperimentObjectList[key].runIdentifier.identifier1 for key in strainsToPlot if getattr(replicateExperimentObjectList[key].runIdentifier,sortBy) == maxIndex],
+               tempticks,
+                #if getattr(replicateExperimentObjectList[key].runIdentifier,sortBy) == maxIndex],
                rotation='45', ha='right', va='top')
-
-    plt.subplots_adjust(right=0.75,bottom=0.1)
-
-    plt.legend([handle[key] for key in handle],uniques,bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0)
     plt.tight_layout()
-
+    plt.subplots_adjust(right=0.75)
+    #print([handle[key][0][0] for key in handle])
+    plt.legend([handle[key][0] for key in uniques],uniques,bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0)
 
 def printYieldTimeCourse(replicateExperimentObjectList, strainsToPlot):
     # You typically want your plot to be ~1.33x wider than tall. This plot is a rare
@@ -151,6 +184,91 @@ def printYieldTimeCourse(replicateExperimentObjectList, strainsToPlot):
     #plt.subplot(1,4,4)
     plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.15, 0.5), loc=6, borderaxespad=0)
     plt.subplots_adjust(right=1.05)
+
+#### Depricated Functions
+def printTimeCourse(replicateExperimentObjectList, strainsToPlot):
+    # You typically want your plot to be ~1.33x wider than tall. This plot is a rare
+    # exception because of the number of lines being plotted on it.
+    # Common sizes: (10, 7.5) and (12, 9)
+    plt.figure(figsize=(12, 3.5))
+
+    handle = dict()
+    colors = plt.get_cmap('Set3')(np.linspace(0,1,len(strainsToPlot)))
+
+    #plt.hold(False)
+    product = "Ethanol"
+    pltNum = 0
+    plt.subplot(141)
+    for product in replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products:
+        pltNum += 1
+        ax = plt.subplot(1,len(replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products),pltNum)
+        ax.spines["top"].set_visible(False)
+        #ax.spines["bottom"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        #ax.spines["left"].set_visible(False)
+        colorIndex = 0
+        for key in strainsToPlot:
+            # print(replicateExperimentObjectList[key].avg.products[product].rate)
+            # print(replicateExperimentObjectList[key].avg.products[product].returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50)))
+            handle[key] = plt.plot(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50),
+                                               replicateExperimentObjectList[key].avg.products[product].returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50)),'-',lw=2.5,color=colors[colorIndex])
+            handle[key] = plt.errorbar(replicateExperimentObjectList[key].t,replicateExperimentObjectList[key].avg.products[product].dataVec,replicateExperimentObjectList[key].std.products[product].dataVec,lw=2.5,elinewidth=1,capsize=2,fmt='o',color=colors[colorIndex])
+            colorIndex += 1
+        plt.xlabel("Time (hours)")
+        plt.ylabel(product+" Titer (g/L)")
+        ymin, ymax = plt.ylim()
+        plt.ylim([0,ymax])
+        plt.tight_layout()
+        plt.tick_params(right="off",top="off")
+    #plt.subplot(1,4,4)
+    plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.15, 0.5), loc=6, borderaxespad=0)
+    plt.subplots_adjust(right=0.75)
+
+def printTimeCourseOD(replicateExperimentObjectList, strainsToPlot):
+    # You typically want your plot to be ~1.33x wider than tall. This plot is a rare
+    # exception because of the number of lines being plotted on it.
+    # Common sizes: (10, 7.5) and (12, 9)
+    plt.figure(figsize=(12, 6))
+
+    handle = dict()
+    colors = plt.get_cmap('Set3')(np.linspace(0,1,len(strainsToPlot)))
+
+    pltNum = 0
+
+    pltNum += 1
+    ax = plt.subplot(111)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    colorIndex = 0
+    removePointFraction = 6
+    maxTextLabelHeight = 0
+    for key in strainsToPlot:
+        scaledTime = replicateExperimentObjectList[key].t
+        #handle[key] = plt.errorbar(replicateExperimentObjectList[key].t,replicateExperimentObjectList[key].avg.OD.dataVec,lw=2.5,fmt='-o',color=colors[colorIndex])
+        #print(replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(scaledTime),max(scaledTime),50)))
+        handle[key] = plt.plot(np.linspace(min(scaledTime),max(scaledTime),50),
+                                           replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50)),'-',lw=1.5,color=colors[colorIndex])
+        handle[key] = plt.errorbar(scaledTime[::removePointFraction],replicateExperimentObjectList[key].avg.OD.dataVec[::removePointFraction],replicateExperimentObjectList[key].std.OD.dataVec[::removePointFraction],lw=2.5,elinewidth=1,capsize=2,fmt='o',markersize=5,color=colors[colorIndex])
+        plt.fill_between(scaledTime,replicateExperimentObjectList[key].avg.OD.dataVec+replicateExperimentObjectList[key].std.OD.dataVec,replicateExperimentObjectList[key].avg.OD.dataVec-replicateExperimentObjectList[key].std.OD.dataVec,facecolor=colors[colorIndex],alpha=0.1)
+        colorIndex += 1
+        plt.text(scaledTime[-1]+0.5, replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50))[-1],'$\mu$ = '+'{:.2f}'.format(replicateExperimentObjectList[key].avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicateExperimentObjectList[key].std.OD.rate[1]), verticalalignment='center')
+        #print(scaledTime[-1]+0.5, replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50))[-1],'$\mu$ = '+'{:.2f}'.format(replicateExperimentObjectList[key].avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicateExperimentObjectList[key].std.OD.rate[1]),replicateExperimentObjectList[key].avg.OD.rate[0]," ",replicateExperimentObjectList[key].avg.OD.rate[1]," ",replicateExperimentObjectList[key].avg.OD.rate[2]," ",replicateExperimentObjectList[key].avg.OD.rate[3]," ",replicateExperimentObjectList[key].avg.OD.rate[4]," ",replicateExperimentObjectList[key].avg.OD.rate[5])
+        # if replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50))[-1] > maxTextLabelHeight:
+        #     maxTextLabelHeight = replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50))[-1]
+        #print(maxTextLabelHeight)
+    #plt.text(scaledTime[-1]+0.5,maxTextLabelHeight+0.01,'$\mu$',horizontalalignment = 'center', verticalalignment = 'center', fontsize=14)
+    plt.xlabel("Time (hours)")
+    plt.ylabel("OD600")
+    ymin, ymax = plt.ylim()
+    xmin, xmax = plt.xlim()
+    plt.ylim([0,ymax])
+    plt.xlim([0,xmax*1.2])
+    plt.tight_layout()
+    plt.tick_params(right="off",top="off")
+    #plt.subplot(1,4,4)
+    plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
+    plt.subplots_adjust(right=0.7)
+    plt.savefig('Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" H"+time.strftime('%H')+'-M'+time.strftime('%M')+'-S'+time.strftime('%S')+'.png')
 
 def printEndPointYield(replicateExperimentObjectList, strainsToPlot, withLegend):
     handle = dict()
@@ -224,89 +342,3 @@ def printEndPointYield(replicateExperimentObjectList, strainsToPlot, withLegend)
             ax.xaxis.set_ticks_position('bottom')
         plt.subplots_adjust(right=0.7)
         plt.legend(barList,strainsToPlot,bbox_to_anchor=(1.15, 0.5), loc=6, borderaxespad=0)
-
-
-#### Depricated Functions
-def printTimeCourse(replicateExperimentObjectList, strainsToPlot):
-    # You typically want your plot to be ~1.33x wider than tall. This plot is a rare
-    # exception because of the number of lines being plotted on it.
-    # Common sizes: (10, 7.5) and (12, 9)
-    plt.figure(figsize=(12, 3.5))
-
-    handle = dict()
-    colors = plt.get_cmap('Set3')(np.linspace(0,1,len(strainsToPlot)))
-
-    #plt.hold(False)
-    product = "Ethanol"
-    pltNum = 0
-    plt.subplot(141)
-    for product in replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products:
-        pltNum += 1
-        ax = plt.subplot(1,len(replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products),pltNum)
-        ax.spines["top"].set_visible(False)
-        #ax.spines["bottom"].set_visible(False)
-        ax.spines["right"].set_visible(False)
-        #ax.spines["left"].set_visible(False)
-        colorIndex = 0
-        for key in strainsToPlot:
-            # print(replicateExperimentObjectList[key].avg.products[product].rate)
-            # print(replicateExperimentObjectList[key].avg.products[product].returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50)))
-            handle[key] = plt.plot(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50),
-                                               replicateExperimentObjectList[key].avg.products[product].returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50)),'-',lw=2.5,color=colors[colorIndex])
-            handle[key] = plt.errorbar(replicateExperimentObjectList[key].t,replicateExperimentObjectList[key].avg.products[product].dataVec,replicateExperimentObjectList[key].std.products[product].dataVec,lw=2.5,elinewidth=1,capsize=2,fmt='o',color=colors[colorIndex])
-            colorIndex += 1
-        plt.xlabel("Time (hours)")
-        plt.ylabel(product+" Titer (g/L)")
-        ymin, ymax = plt.ylim()
-        plt.ylim([0,ymax])
-        plt.tight_layout()
-        plt.tick_params(right="off",top="off")
-    #plt.subplot(1,4,4)
-    plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.15, 0.5), loc=6, borderaxespad=0)
-    plt.subplots_adjust(right=0.75)
-
-def printTimeCourseOD(replicateExperimentObjectList, strainsToPlot):
-    # You typically want your plot to be ~1.33x wider than tall. This plot is a rare
-    # exception because of the number of lines being plotted on it.
-    # Common sizes: (10, 7.5) and (12, 9)
-    plt.figure(figsize=(12, 6))
-
-    handle = dict()
-    colors = plt.get_cmap('Set3')(np.linspace(0,1,len(strainsToPlot)))
-
-    pltNum = 0
-
-    pltNum += 1
-    ax = plt.subplot(111)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    colorIndex = 0
-    removePointFraction = 6
-    maxTextLabelHeight = 0
-    for key in strainsToPlot:
-        scaledTime = replicateExperimentObjectList[key].t#np.divide(replicateExperimentObjectList[key].t,3600)
-        #handle[key] = plt.errorbar(replicateExperimentObjectList[key].t,replicateExperimentObjectList[key].avg.OD.dataVec,lw=2.5,fmt='-o',color=colors[colorIndex])
-        #print(replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(scaledTime),max(scaledTime),50)))
-        handle[key] = plt.plot(np.linspace(min(scaledTime),max(scaledTime),50),
-                                           replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50)),'-',lw=1.5,color=colors[colorIndex])
-        handle[key] = plt.errorbar(scaledTime[::removePointFraction],replicateExperimentObjectList[key].avg.OD.dataVec[::removePointFraction],replicateExperimentObjectList[key].std.OD.dataVec[::removePointFraction],lw=2.5,elinewidth=1,capsize=2,fmt='o',markersize=5,color=colors[colorIndex])
-        plt.fill_between(scaledTime,replicateExperimentObjectList[key].avg.OD.dataVec+replicateExperimentObjectList[key].std.OD.dataVec,replicateExperimentObjectList[key].avg.OD.dataVec-replicateExperimentObjectList[key].std.OD.dataVec,facecolor=colors[colorIndex],alpha=0.1)
-        colorIndex += 1
-        plt.text(scaledTime[-1]+0.5, replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50))[-1],'$\mu$ = '+'{:.2f}'.format(replicateExperimentObjectList[key].avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicateExperimentObjectList[key].std.OD.rate[1]), verticalalignment='center')
-        print(scaledTime[-1]+0.5, replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50))[-1],'$\mu$ = '+'{:.2f}'.format(replicateExperimentObjectList[key].avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicateExperimentObjectList[key].std.OD.rate[1]))
-        # if replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50))[-1] > maxTextLabelHeight:
-        #     maxTextLabelHeight = replicateExperimentObjectList[key].avg.OD.returnCurveFitPoints(np.linspace(min(replicateExperimentObjectList[key].t),max(replicateExperimentObjectList[key].t),50))[-1]
-        #print(maxTextLabelHeight)
-    #plt.text(scaledTime[-1]+0.5,maxTextLabelHeight+0.01,'$\mu$',horizontalalignment = 'center', verticalalignment = 'center', fontsize=14)
-    plt.xlabel("Time (hours)")
-    plt.ylabel("OD600")
-    ymin, ymax = plt.ylim()
-    xmin, xmax = plt.xlim()
-    plt.ylim([0,ymax])
-    plt.xlim([0,xmax*1.2])
-    plt.tight_layout()
-    plt.tick_params(right="off",top="off")
-    #plt.subplot(1,4,4)
-    plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
-    plt.subplots_adjust(right=0.7)
-    #plt.savefig('Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" "+time.strftime('%H')+'-'+time.strftime('%M')+'.png')

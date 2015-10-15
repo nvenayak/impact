@@ -15,9 +15,6 @@ fileName = "2015.05.19.LactateStoryData.xlsx"
 substrateName = 'Glucose'
 titerDataSheetName = "titers"
 
-
-###############################
-
 ####### Get data from xlsx file
 data = get_data(fileName)
 
@@ -73,20 +70,18 @@ for i in range(4, len(data['titers'])):
 
 print("Number of lines skipped: ",skippedLines)
 
+
+newProjectContainer = projectContainer()
 ######## Combine time points into timeCourseObjects
 titerObjectList = getTiterObjectListFromTimePointCollection(timePointCollection)
-# for titerObjectKey in titerObjectList:
-#     for productKey in titerObjectList[titerObjectKey]:
-#         print(titerObjectList[titerObjectKey][productKey].runIdentifier,productKey)
-######## Combine timeCourseObjects into singleExperimentObjects
-singleExperimentObjectList = getSingleExperimentObjectListFromTiterObjectList(titerObjectList, substrateName, 'titer')
-######## Combine singleExperimentObjects into replicateExperimentObjects
-replicateExperimentObjectList = getReplicateExperimentObjectListFromSingleExperimentObjectList(singleExperimentObjectList)
-print(replicateExperimentObjectList)
-######## List Experiment names
-print("Experiment Name\t# Replicates\t#Products")
-for key in replicateExperimentObjectList:
-    print(key,"\t\t",len(replicateExperimentObjectList[key].singleExperimentList))
+
+# ----- Add the data to the projectContainer ----------------
+newProjectContainer.parseTiterObjectCollection(titerObjectList, 'titer')
+
+# ######## List Experiment names
+# print("Experiment Name\t# Replicates\t#Products")
+# for key in replicateExperimentObjectList:
+#     print(key,"\t\t",len(replicateExperimentObjectList[key].singleExperimentList))
 
 
 ######## Strains To Plot
@@ -98,17 +93,10 @@ for strainsToPlotPair in strainsToPlotList:
         strainsToPlot.append(strainToPlot)
 
 strainsToPlot = ['lacI  pKDL071','pTOG009IPTG','pTOG009aTc']
-# #printYieldTimeCourse(replicateExperimentObjectList, strainsToPlot)
 # strainsToPlot = ['pTOG009IPTG','pTOG009aTc']
 
-printTimeCourse(replicateExperimentObjectList, strainsToPlot)
-#printGenericTimeCourse(replicateExperimentObjectList, strainsToPlot, ["Acetate","Ethanol","Lactate"])
-printEndPointYield(replicateExperimentObjectList, strainsToPlot, 1)
-plt.show()
+newProjectContainer.printGenericTimeCourse(strainsToPlot, ["Acetate","Ethanol","Lactate"])
+newProjectContainer.printEndPointYield(strainsToPlot, 1)
+newProjectContainer.printYieldTimeCourse(strainsToPlot)
 
-
-for strainsToPlot in strainsToPlotList:
-    printTimeCourse(replicateExperimentObjectList, strainsToPlot)
-    #printYieldTimeCourse(replicateExperimentObjectList, strainsToPlot)
-#
 plt.show()
