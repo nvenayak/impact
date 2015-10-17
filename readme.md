@@ -1,0 +1,1 @@
+This package is intended to help parse HPLC and OD time course data. This package is in development but basic functionality is present.
