@@ -1,20 +1,23 @@
 __author__ = 'Naveen'
 
 ####### Import packages
-from DataObject import *
-from pyexcel_xlsx import get_data
-from plottingFunctions import *
 import pickle
+import os
+
+from pyexcel_xlsx import get_data
+
+from DataObject import *
+
+####### Define some constants
+fileName = os.path.join(os.path.dirname(__file__),"rawData/2015.05.19.LactateStoryData.xlsx")
+saveFileName = os.path.join(os.path.dirname(__file__),'pickledData/importDataScriptPickle.p')
+substrateName = 'Glucose'
+titerDataSheetName = "titers"
 
 # Reparse the data, or load from old pickle?
-p1 = False
+loadFromPickle = True
 
-if p1 == True:
-    ####### Define some constants
-    fileName = "2015.05.19.LactateStoryData.xlsx"
-    substrateName = 'Glucose'
-    titerDataSheetName = "titers"
-
+if loadFromPickle == False:
     ####### Get data from xlsx file
     data = get_data(fileName)
 
@@ -75,9 +78,9 @@ if p1 == True:
     newProjectContainer.parseTimePointCollection(timePointList)
 
     # Dump the data in a pickle for storage
-    pickle.dump(newProjectContainer, open('importDataScriptPickle.p','wb'))
+    pickle.dump(newProjectContainer, open(saveFileName,'wb'))
 else:
-    newProjectContainer = pickle.load(open('importDataScriptPickle.p','rb'))
+    newProjectContainer = pickle.load(open(saveFileName,'rb'))
 
 # ######## List Experiment names
 # print("Experiment Name\t# Replicates\t#Products")
