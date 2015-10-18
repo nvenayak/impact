@@ -1,6 +1,6 @@
 __author__ = 'Naveen'
-from DataObject import *
-from pyexcel_xlsx import get_data
+from dataImportandPlottingToolbox.DataObject import *
+
 
 def getTiterObjectListFromTimePointCollection(timePointCollection):
     titerObjectList = dict()

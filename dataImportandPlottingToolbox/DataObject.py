@@ -1,11 +1,20 @@
+'''
+Written by: Naveen Venyak
+Date:       October, 2015
+
+This is the main data object container. Almost all functionality is contained here.
+'''
+
 __author__ = 'Naveen Venayak'
 
 import numpy as np
-import scipy.optimize as opt
-from lmfit import Model
 import matplotlib.pyplot as plt
-import time
+
+from lmfit import Model
 from pyexcel_xlsx import get_data
+
+import os
+import time
 import copy
 import pickle
 
@@ -62,7 +71,7 @@ class projectContainer(object):
                     #     #raise Exception("Duplicate time course name found")
                     # else:
             tf = time.time()
-            print("Parsed %i timeCourseObjects in %0.3fs" % (len(self.titerObjectDict),tf-t0))
+            print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.titerObjectDict),tf-t0))
             self.parseTiterObjectCollection(self.titerObjectDict)
 
     def parseTimePointCollection(self, timePointList):
@@ -76,7 +85,7 @@ class projectContainer(object):
                 self.titerObjectDict[timePoint.getUniqueTimePointID()] = timeCourseObject()
                 self.titerObjectDict[timePoint.getUniqueTimePointID()].addTimePoint(timePoint)
         tf = time.time()
-        print("Parsed %i titer objects in %0.1fs" % (len(self.titerObjectDict),(tf-t0)))
+        print("Parsed %i titer objects in %0.1fs\n" % (len(self.titerObjectDict),(tf-t0)))
         self.parseTiterObjectCollection(self.titerObjectDict)
 
     def parseTiterObjectCollection(self, titerObjectDict):
@@ -90,7 +99,7 @@ class projectContainer(object):
                 self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].addTiterObject(titerObjectDict[titerObjectDictKey])
 
         tf = time.time()
-        print("Parsed %i titer objects in %0.1fms" % (len(self.singleExperimentObjectDict),(tf-t0)*1000))
+        print("Parsed %i titer objects in %0.1fms\n" % (len(self.singleExperimentObjectDict),(tf-t0)*1000))
         self.parseSingleExperimentObjectList(self.singleExperimentObjectDict)
 
     def parseSingleExperimentObjectList(self, singleExperimentObjectList):
@@ -109,10 +118,10 @@ class projectContainer(object):
                 self.replicateExperimentObjectDict[singleExperimentObjectList[key].getUniqueReplicateID()] = replicateExperimentObject()
                 self.replicateExperimentObjectDict[singleExperimentObjectList[key].getUniqueReplicateID()].addReplicateExperiment(singleExperimentObjectList[key])
         tf = time.time()
-        print("Parsed %i titer objects in %0.1fs" % (len(self.replicateExperimentObjectDict),(tf-t0)))
+        print("Parsed %i titer objects in %0.1fs\n" % (len(self.replicateExperimentObjectDict),(tf-t0)))
 
     def pickle(self, fileName):
-        pickle.dump([self.timePointDict, self.titerObjectDict, self.singleExperimentObjectDict, self.replicateExperimentObjectDict], open(fileName,'wb')) #[getattr(self, attr) for attr in self.__dict__]
+        pickle.dump([self.timePointDict, self.titerObjectDict, self.singleExperimentObjectDict, self.replicateExperimentObjectDict], open(fileName,'wb'))
 
     def unpickle(self, fileName):
         with open(fileName,'rb') as data:
@@ -125,6 +134,7 @@ class projectContainer(object):
         # Plot all product titers if none specified TODO: Add an option to plot OD as well
         if titersToPlot == []:
             titersToPlot = [[[product for product in singleExperiment.products] for singleExperiment in self.replicateExperimentObjectDict[key].singleExperimentList] for key in self.replicateExperimentObjectDict]
+
             # Flatten list and find the uniques
             titersToPlot = [y for x in titersToPlot for y in x]
             titersToPlot = set([y for x in titersToPlot for y in x])
@@ -148,10 +158,12 @@ class projectContainer(object):
             # Choose the subplot layout
             if len(titersToPlot) == 1:
                 ax = plt.subplot(111)
-            if len(titersToPlot) > 1:
+            elif len(titersToPlot) < 5:
                 ax = plt.subplot(1,len(titersToPlot),pltNum)
-            if len(titersToPlot) > 4:
-                ax = plt.subplot(2,len(titersToPlot),pltNum)
+            elif len(titersToPlot) < 9:
+                ax = plt.subplot(2,(len(titersToPlot)+1)/2,pltNum)
+            else:
+                raise Exception("Unimplemented Functionality")
 
             # Set some axis aesthetics
             ax.spines["top"].set_visible(False)
@@ -190,19 +202,19 @@ class projectContainer(object):
 
                     handle[key] = plt.plot(np.linspace(min(scaledTime),max(scaledTime),50),
                                             self.replicateExperimentObjectDict[key].avg.products[product].returnCurveFitPoints(np.linspace(min(self.replicateExperimentObjectDict[key].t),max(self.replicateExperimentObjectDict[key].t),50)),
-                                           '-',lw=1.5,color=colors[colorIndex])
+                                           '-',lw=0.5,color=colors[colorIndex])
 
-                    handle[key] = plt.errorbar(self.replicateExperimentObjectDict[key].t,self.replicateExperimentObjectDict[key].avg.products[product].dataVec,self.replicateExperimentObjectDict[key].std.products[product].dataVec,lw=2.5,elinewidth=1,capsize=2,fmt='o',color=colors[colorIndex])
+                    handle[key] = plt.errorbar(self.replicateExperimentObjectDict[key].t,self.replicateExperimentObjectDict[key].avg.products[product].dataVec,self.replicateExperimentObjectDict[key].std.products[product].dataVec,lw=2.5,elinewidth=1,capsize=2,fmt='o-',color=colors[colorIndex])
                     ylabel = product+" Titer (g/L)"
 
                 colorIndex += 1
 
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
-        ymin, ymax = plt.ylim()
-        xmin, xmax = plt.xlim()
-        plt.xlim([0,xmax*1.2])
-        plt.ylim([0,ymax])
+            plt.xlabel(xlabel)
+            plt.ylabel(ylabel)
+            ymin, ymax = plt.ylim()
+            xmin, xmax = plt.xlim()
+            plt.xlim([0,xmax*1.2])
+            plt.ylim([0,ymax])
         plt.tight_layout()
         plt.tick_params(right="off",top="off")
         plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
@@ -211,14 +223,15 @@ class projectContainer(object):
         if len(titersToPlot) == 1:
             plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0)
             plt.subplots_adjust(right=0.7)
-        if len(titersToPlot) > 1:
-            plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.15, 0.5), loc=6, borderaxespad=0)
+        elif len(titersToPlot) < 4:
+            plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0)
             plt.subplots_adjust(right=0.75)
-        if len(titersToPlot) > 4:
-            raise Exception("Plotting >4 plots is unimplemented functionality")
+        else:
+            plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 1.1), loc=6, borderaxespad=0)
+            plt.subplots_adjust(right=0.75)
 
         # Save the figure
-        plt.savefig('Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" H"+time.strftime('%H')+'-M'+time.strftime('%M')+'-S'+time.strftime('%S')+'.png')
+        plt.savefig(os.path.join(os.path.dirname(__file__),'Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" H"+time.strftime('%H')+'-M'+time.strftime('%M')+'-S'+time.strftime('%S')+'.png'))
 
     def printGrowthRateBarChart(self, strainsToPlot, sortBy):
         handle = dict()
@@ -554,7 +567,6 @@ class timeCourseObject(titerObject):
         #     plt.plot(self.timeVec,self.returnCurveFitPoints(self.timeVec),'g-')
         #     print(self.returnCurveFitPoints(self.timeVec))
         #     plt.show()
-
 
 class endPointObject(titerObject):
     def __init__(self, runID, t, data):

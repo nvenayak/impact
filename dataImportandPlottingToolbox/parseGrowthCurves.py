@@ -5,9 +5,10 @@ Date:       October, 2015
 This file will parse data in standard 'NV_OD' format and output plots of the data
 '''
 
+
 # Define some constants
-rawDataFileName = "2015.10.08 pTOG Automation Test.xlsx"
-saveFileName = 'parseGrowthCurvesPickle.p'
+rawDataFileName = "rawData/2015.10.08 pTOG Automation Test.xlsx"
+saveFileName = 'pickledData/parseGrowthCurvesPickle.p'
 dataFormat = 'NV_OD'
 p1 = True  # True to re-parse data, False to load data
 
