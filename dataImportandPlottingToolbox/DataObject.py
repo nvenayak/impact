@@ -13,14 +13,116 @@ import matplotlib.pyplot as plt
 from lmfit import Model
 from pyexcel_xlsx import get_data
 
+from PyQt4 import QtGui, QtCore
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+
 import os
 import time
 import copy
 import pickle
+import sys
 
-######################################################################################################################
-#####    This is the project container. This is the ultimate wrapper for all data and plotting functions           ###
-######################################################################################################################
+class Window(QtGui.QDialog):
+    def __init__(self, newProjectContainer, parent=None):
+        super(Window, self).__init__(parent)
+        self.newProjectContainer = newProjectContainer
+
+        # a figure instance to plot on
+        self.figure = plt.figure()
+        self.strainsToPlot = self.newProjectContainer.getAllStrains()
+        self.titersToPlot = self.newProjectContainer.getAllTiters()
+        self.sortBy = 'identifier1'
+        self.plotType = 'printGenericTimeCourse'
+        # self.newProjectContainer.printGrowthRateBarChart(self.figure,strainsToPlot=self.strainsToPlot)
+
+        # this is the Canvas Widget that displays the `figure`
+        # it takes the `figure` instance as a parameter to __init__
+        self.canvas = FigureCanvas(self.figure)
+
+        # this is the Navigation widget
+        # it takes the Canvas widget and a parent
+        self.toolbar = NavigationToolbar(self.canvas, self)
+
+        # Just some button connected to `plot` method
+        self.button = QtGui.QPushButton('Plot')
+        # self.button.clicked.connect(self.plot)
+
+        comboBox = QtGui.QComboBox(self)
+        comboBox.addItem('strainID')
+        comboBox.addItem('identifier1')
+        comboBox.addItem('identifier2')
+        comboBox.activated[str].connect(self.updateSortBy)
+
+        plotTypeComboBox = QtGui.QComboBox(self)
+        plotTypeComboBox.addItem('printGenericTimeCourse')
+        plotTypeComboBox.addItem('printGrowthRateBarChart')
+        plotTypeComboBox.activated[str].connect(self.updatePlotType)
+
+        self.checkBox = dict()
+        for strain in self.strainsToPlot:
+            self.checkBox[strain] = (QtGui.QCheckBox(strain,self))
+            self.checkBox[strain].stateChanged.connect(self.updateStrainsToPlot)
+
+        self.titersCheckBox = dict()
+        for titer in self.titersToPlot:
+            self.titersCheckBox[titer] = (QtGui.QCheckBox(titer,self))
+            self.titersCheckBox[titer].stateChanged.connect(self.updateTiters)
+
+        # set the layout
+
+        leftVertLayout = QtGui.QVBoxLayout()
+        leftVertLayout.addWidget(self.toolbar)
+        leftVertLayout.addWidget(self.canvas)
+
+
+        rightVertLayout = QtGui.QVBoxLayout()
+        rightVertLayout.addWidget(plotTypeComboBox)
+        rightVertLayout.addWidget(comboBox)
+        for strainToPlot in self.strainsToPlot:
+            rightVertLayout.addWidget(self.checkBox[strainToPlot])
+
+        titersVertLayout = QtGui.QVBoxLayout()
+        for titer in self.titersToPlot:
+            titersVertLayout.addWidget(self.titersCheckBox[titer])
+
+        horLayout = QtGui.QHBoxLayout()
+        horLayout.addLayout(leftVertLayout)
+        horLayout.addLayout(rightVertLayout)
+        horLayout.addLayout(titersVertLayout)
+        self.setLayout(horLayout)
+
+    def updatePlotType(self, plotType):
+        self.plotType = plotType
+        self.updateFigure()
+
+    def updateSortBy(self, sortBy):
+        print('in here')
+        self.sortBy = sortBy
+        self.updateFigure()
+
+    def updateStrainsToPlot(self):
+        self.strainsToPlot = []
+        for checkBoxKey in self.checkBox:
+            if self.checkBox[checkBoxKey].checkState() == QtCore.Qt.Checked:
+                self.strainsToPlot.append(checkBoxKey)
+        self.updateFigure()
+
+    def updateTiters(self):
+        self.titersToPlot = []
+        for titerCheckBoxKey in self.titersCheckBox:
+            if self.titersCheckBox[titerCheckBoxKey].checkState() == QtCore.Qt.Checked:
+                self.titersToPlot.append(titerCheckBoxKey)
+        self.updateFigure()
+
+    def updateFigure(self):
+        #getattr(self.newProjectContainer,self.plotType)(self.figure, self.strainsToPlot, self.sortBy)
+        if self.plotType == 'printGenericTimeCourse':
+            self.newProjectContainer.printGenericTimeCourse(figHandle=self.figure, strainsToPlot=self.strainsToPlot,titersToPlot=self.titersToPlot)
+        if self.plotType == 'printGrowthRateBarChart':
+            self.newProjectContainer.printGrowthRateBarChart(self.figure, self.strainsToPlot, self.sortBy)
+        self.canvas.draw()
+
 class projectContainer(object):
     colorMap = 'Set3'
 
@@ -30,18 +132,44 @@ class projectContainer(object):
         self.singleExperimentObjectDict = dict()
         self.replicateExperimentObjectDict = dict()
 
+    def plottingGUI(self):
+        app = QtGui.QApplication(sys.argv)
+
+        main = Window(self)
+        main.show()
+
+        sys.exit(app.exec_())
+
     def getAllStrains(self):
         temp = [key for key in self.replicateExperimentObjectDict if self.replicateExperimentObjectDict[key].runIdentifier.identifier1 != '']
-        return temp.sort()
+        temp.sort()
+        print(temp)
+        return temp
+
+    def getAllTiters(self):
+        titersToPlot = [[[product for product in singleExperiment.products] for singleExperiment in self.replicateExperimentObjectDict[key].singleExperimentList] for key in self.replicateExperimentObjectDict]
+
+        # Flatten list and find the uniques
+        titersToPlot = [y for x in titersToPlot for y in x]
+        titersToPlot =  list(set([y for x in titersToPlot for y in x]))
+
+        ODList = [[singleExperiment.OD for singleExperiment in self.replicateExperimentObjectDict[key].singleExperimentList] for key in self.replicateExperimentObjectDict]
+        ODList = list(set([y for x in ODList for y in x]))
+
+        print(ODList)
+        if ODList[0] != None:
+            titersToPlot.append('OD')
+
+        return titersToPlot
 
     def parseRawData(self, fileName, dataFormat):
         if dataFormat == 'NV_OD':
-            ####### Get data from xlsx file
+            # Get data from xlsx file
             data = get_data(fileName)
             print('Imported data from %s' % (fileName))
 
             t0 = time.time()
-            ####### Check for correct data for import
+            # Check for correct data for import
             if 'OD' not in data.keys():
                 raise Exception("No sheet named 'OD' found")
             else:
@@ -50,19 +178,19 @@ class projectContainer(object):
             # if 'titers' not in data.keys():
             #     raise Exception("No sheet named 'titers' found")
 
-
-            ####### Parse data into timeCourseObjects
+            # Parse data into timeCourseObjects
             skippedLines = 0
             timeCourseObjectList = dict()
             for row in data[ODDataSheetName][1:]:
-                tempRunIdentifierObject = runIdentifier()
+                temp_run_identifier_object = runIdentifier()
                 if type("asdf") == type(row[0]):
-                    tempRunIdentifierObject.getRunIdentifier(row[0])
-                    tempRunIdentifierObject.titerName = 'OD600'
-                    tempRunIdentifierObject.titerType = 'OD'
+                    temp_run_identifier_object.getRunIdentifier(row[0])
+                    temp_run_identifier_object.titerName = 'OD600'
+                    temp_run_identifier_object.titerType = 'OD'
                     tempTimeCourseObject = timeCourseObject()
-                    tempTimeCourseObject.runIdentifier = tempRunIdentifierObject
-                    tempTimeCourseObject.timeVec = np.array(np.divide(data[ODDataSheetName][0][1:], 3600)) #Data in seconds, data required to be in hours
+                    tempTimeCourseObject.runIdentifier = temp_run_identifier_object
+                    # Data in seconds, data required to be in hours
+                    tempTimeCourseObject.timeVec = np.array(np.divide(data[ODDataSheetName][0][1:], 3600))
                     tempTimeCourseObject.dataVec = np.array(row[1:])
                     self.titerObjectDict[tempTimeCourseObject.getTimeCourseID()] = copy.copy(tempTimeCourseObject)
 
@@ -108,9 +236,7 @@ class projectContainer(object):
         for key in singleExperimentObjectList:
             flag = 0
             for key2 in self.replicateExperimentObjectDict:
-                #print(key2, singleExperimentObjectList[key].getUniqueReplicateID())
                 if key2 == singleExperimentObjectList[key].getUniqueReplicateID():
-                    #print("Replicate found")
                     self.replicateExperimentObjectDict[key2].addReplicateExperiment(singleExperimentObjectList[key])
                     flag = 1
                     break
@@ -127,17 +253,23 @@ class projectContainer(object):
         with open(fileName,'rb') as data:
             self.timePointDict, self.titerObjectDict, self.singleExperimentObjectDict, self.replicateExperimentObjectDict = pickle.load(data)
 
-    def printGenericTimeCourse(self, strainsToPlot=[], titersToPlot=[]):
+    def printGenericTimeCourse(self, figHandle = [], strainsToPlot=[], titersToPlot=[]):
+
+        figHandle.set_facecolor('w')
+
         if strainsToPlot == []:
             strainsToPlot = [key for key in self.replicateExperimentObjectDict]
 
+        print('strains to plot',strainsToPlot)
         # Plot all product titers if none specified TODO: Add an option to plot OD as well
         if titersToPlot == []:
             titersToPlot = [[[product for product in singleExperiment.products] for singleExperiment in self.replicateExperimentObjectDict[key].singleExperimentList] for key in self.replicateExperimentObjectDict]
 
             # Flatten list and find the uniques
             titersToPlot = [y for x in titersToPlot for y in x]
-            titersToPlot = set([y for x in titersToPlot for y in x])
+            titersToPlot = list(set([y for x in titersToPlot for y in x]))
+
+        print('titers to plot',titersToPlot)
 
         # Determine optimal figure size
         if len(titersToPlot) == 1:
@@ -147,7 +279,9 @@ class projectContainer(object):
         if len(titersToPlot) > 4:
             figureSize = (12,7)
 
-        plt.figure(figsize=figureSize)
+        figHandle#.set_size_inches(figureSize, forward=True)
+        # plt.figure(figsize=figureSize)
+        plt.clf()
 
         colors = plt.get_cmap(self.colorMap)(np.linspace(0,1,len(strainsToPlot)))
 
@@ -198,6 +332,7 @@ class projectContainer(object):
                              verticalalignment='center')
                     ylabel = 'OD600'
                 else:
+                    print('key',key,'product',product)
                     scaledTime = self.replicateExperimentObjectDict[key].t
 
                     handle[key] = plt.plot(np.linspace(min(scaledTime),max(scaledTime),50),
@@ -233,37 +368,46 @@ class projectContainer(object):
         # Save the figure
         plt.savefig(os.path.join(os.path.dirname(__file__),'Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" H"+time.strftime('%H')+'-M'+time.strftime('%M')+'-S'+time.strftime('%S')+'.png'))
 
-    def printGrowthRateBarChart(self, strainsToPlot, sortBy):
-        handle = dict()
+    def printGrowthRateBarChart(self, figHandle=plt.figure(figsize=(9, 5)), strainsToPlot=[], sortBy='identifier1'):
+        if strainsToPlot == []:
+            strainsToPlot = [key for key in self.replicateExperimentObjectDict]
 
-        plt.figure(figsize=(9, 5))
+        # Sort the strains to plot to HELP ensure that things are in the same order
+        # TODO should find a better way to ensure this is the case
+        strainsToPlot.sort()
 
+        # Clear the plot and set some aesthetics
+        plt.cla()
         ax = plt.subplot(111)
+        figHandle.set_facecolor('w')
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
 
-
+        # Find all the unique identifier based on which identifier to 'sortBy'
         uniques = list(set([getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) for key in strainsToPlot]))
         uniques.sort()
-        #Find max number of samples
+
+        # Find max number of samples (in case they all aren't the same)
         maxSamples = 0
         for unique in uniques:
             if len([self.replicateExperimentObjectDict[key].avg.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique]) > maxSamples:
                 maxSamples = len([self.replicateExperimentObjectDict[key].avg.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique])
                 maxIndex = unique
 
-        scaleFactor = 3
-        barWidth = 0.9/len(uniques)*scaleFactor
-        index = np.arange(maxSamples)*scaleFactor
+
+        barWidth = 0.9/len(uniques)
+        index = np.arange(maxSamples)
         colors = plt.get_cmap('Set2')(np.linspace(0,1.0,len(uniques)))
 
         i = 0
+        handle = dict()
         for unique in uniques:
+            print([key for key in strainsToPlot])
+            print([key for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique])
             handle[unique] = plt.bar(index[0:len([self.replicateExperimentObjectDict[key].avg.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique])],
                     [self.replicateExperimentObjectDict[key].avg.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique],
                     barWidth, yerr=[self.replicateExperimentObjectDict[key].std.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique],
                     color = colors[i],ecolor='k',capsize=5,error_kw=dict(elinewidth=1, capthick=1))
-            #xaxislabels.append
             i += 1
             index = index+barWidth
 
@@ -276,17 +420,27 @@ class projectContainer(object):
                 xticklabel = xticklabel+attribute
 
         if 'strainID' == sortBy:
-            tempticks =[self.replicateExperimentObjectDict[key].runIdentifier.identifier1+'+'+self.replicateExperimentObjectDict[key].runIdentifier.identifier2 for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == maxIndex]
+            tempticks =[self.replicateExperimentObjectDict[key].runIdentifier.identifier1+'+'+
+                        self.replicateExperimentObjectDict[key].runIdentifier.identifier2 for key in strainsToPlot
+                        if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == maxIndex]
         if 'identifier1' == sortBy:
-            tempticks = [self.replicateExperimentObjectDict[key].runIdentifier.strainID +'+'+self.replicateExperimentObjectDict[key].runIdentifier.identifier2 for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == maxIndex]
+            tempticks = [self.replicateExperimentObjectDict[key].runIdentifier.strainID +'+'+
+                         self.replicateExperimentObjectDict[key].runIdentifier.identifier2 for key in strainsToPlot
+                         if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == maxIndex]
         if 'identifier2' == sortBy:
-            tempticks = [self.replicateExperimentObjectDict[key].runIdentifier.strainID +'+'+self.replicateExperimentObjectDict[key].runIdentifier.identifier1 for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == maxIndex]
+            tempticks = [self.replicateExperimentObjectDict[key].runIdentifier.strainID +'+'+
+                         self.replicateExperimentObjectDict[key].runIdentifier.identifier1 for key in strainsToPlot
+                         if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == maxIndex]
+        tempticks.sort()
 
-        plt.xticks(index-barWidth, tempticks, rotation='45', ha='right', va='top')
+        plt.xticks(index-0.4, tempticks, rotation='45', ha='right', va='top')
         plt.tight_layout()
         plt.subplots_adjust(right=0.75)
         #print([handle[key][0][0] for key in handle])
         plt.legend([handle[key][0] for key in uniques],uniques,bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0)
+        # ax.hold(False)
+
+        return figHandle
 
     def printEndPointYield(self, strainsToPlot, withLegend):
         replicateExperimentObjectList = self.replicateExperimentObjectDict

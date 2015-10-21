@@ -96,10 +96,11 @@ else:
 #     for strainToPlot in strainsToPlotPair:
 #         strainsToPlot.append(strainToPlot)
 
-strainsToPlot = ['lacI  pKDL071','pTOG009IPTG','pTOG009aTc']
-
-newProjectContainer.printGenericTimeCourse(strainsToPlot=strainsToPlot)
-# newProjectContainer.printEndPointYield(strainsToPlot, 1)
-# newProjectContainer.printYieldTimeCourse(strainsToPlot)
-
-plt.show()
+# strainsToPlot = ['lacI  pKDL071','pTOG009IPTG','pTOG009aTc']
+#
+# newProjectContainer.printGenericTimeCourse(strainsToPlot=strainsToPlot)
+# # newProjectContainer.printEndPointYield(strainsToPlot, 1)
+# # newProjectContainer.printYieldTimeCourse(strainsToPlot)
+#
+# plt.show()
+newProjectContainer.plottingGUI()
