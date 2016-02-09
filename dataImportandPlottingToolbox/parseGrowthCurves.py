@@ -4,11 +4,15 @@ Date:       October, 2015
 
 This file will parse data in standard 'NV_OD' format and output plots of the data
 '''
-
+import os
 
 # Define some constants
 rawDataFileName = "rawData/2015.10.08 pTOG Automation Test.xlsx"
 saveFileName = 'pickledData/parseGrowthCurvesPickle.p'
+# print(saveFileName)
+# saveFileName = os.path.join(os.path.dirname(__file__),saveFileName)
+# print(saveFileName)
+
 dataFormat = 'NV_OD'
 p1 = False  # True to re-parse data, False to load data
 
@@ -28,6 +32,7 @@ else:
     newProjectContainer.unpickle(saveFileName)
 
 newProjectContainer.plottingGUI()
+# newProjectContainer.printGenericTimeCourse()
 
 # # Choose strains to plot
 # strainsToPlot = ['3KO-D1pTOG009IPTG','3KO-D1pTOG009aTc','3KO-D30pTOG009IPTG','3KO-D30pTOG009aTc','3KO-D1pTOG010IPTG','3KO-D1pTOG010aTc','3KO-D30pTOG010IPTG','3KO-D30pTOG010aTc']
