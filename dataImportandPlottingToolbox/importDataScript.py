@@ -39,5 +39,5 @@ for strainsToPlotPair in strainsToPlotList:
 # newProjectContainer.printEndPointYield(strainsToPlot, 0)
 # plt.show()
 # # newProjectContainer.printYieldTimeCourse(strainsToPlot)
-
-newProjectContainer.plottingGUI()
+# newProjectContainer.printEndPointYield(titersToPlot=['Ethanol','Acetate','Lactate'])
+# newProjectContainer.plottingGUI()

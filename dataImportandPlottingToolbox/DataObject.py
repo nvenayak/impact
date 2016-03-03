@@ -8,6 +8,7 @@ This is the main data object container. Almost all functionality is contained he
 __author__ = 'Naveen Venayak'
 
 import numpy as np
+from scipy.signal import savgol_filter
 import matplotlib.pyplot as plt
 
 from lmfit import Model
@@ -57,6 +58,7 @@ class Window(QtGui.QDialog):
         plotTypeComboBox = QtGui.QComboBox(self)
         plotTypeComboBox.addItem('printGenericTimeCourse')
         plotTypeComboBox.addItem('printGrowthRateBarChart')
+        plotTypeComboBox.addItem('printAllReplicateTimeCourse')
         plotTypeComboBox.activated[str].connect(self.updatePlotType)
 
         self.checkBox = dict()
@@ -68,6 +70,8 @@ class Window(QtGui.QDialog):
         for titer in self.titersToPlot:
             self.titersCheckBox[titer] = (QtGui.QCheckBox(titer,self))
             self.titersCheckBox[titer].stateChanged.connect(self.updateTiters)
+
+
 
         # set the layout
 
@@ -115,12 +119,19 @@ class Window(QtGui.QDialog):
                 self.titersToPlot.append(titerCheckBoxKey)
         self.updateFigure()
 
+    # def updateBadReplicates(self):
+    #     for replicateCheckBoxKey in self.replicateCheckBox:
+
+
+
     def updateFigure(self):
         #getattr(self.newProjectContainer,self.plotType)(self.figure, self.strainsToPlot, self.sortBy)
         if self.plotType == 'printGenericTimeCourse':
             self.newProjectContainer.printGenericTimeCourse(figHandle=self.figure, strainsToPlot=self.strainsToPlot,titersToPlot=self.titersToPlot, removePointFraction=4, plotCurveFit=True)
         if self.plotType == 'printGrowthRateBarChart':
             self.newProjectContainer.printGrowthRateBarChart(self.figure, self.strainsToPlot, self.sortBy)
+        if self.plotType == 'printAllReplicateTimeCourse':
+            self.newProjectContainer.printAllReplicateTimeCourse(self.figure, self.strainsToPlot)
         self.canvas.draw()
 
 class projectContainer(object):
@@ -194,6 +205,7 @@ class projectContainer(object):
                     tempTimeCourseObject.runIdentifier = temp_run_identifier_object
                     # Data in seconds, data required to be in hours
                     tempTimeCourseObject.timeVec = np.array(np.divide(data[ODDataSheetName][0][1:], 3600))
+
                     tempTimeCourseObject.dataVec = np.array(row[1:])
                     self.titerObjectDict[tempTimeCourseObject.getTimeCourseID()] = copy.copy(tempTimeCourseObject)
 
@@ -254,10 +266,64 @@ class projectContainer(object):
                 else:
                     skippedLines += 1
 
+        if dataFormat == 'NV_titers0.2':
+            substrateName = 'Glucose'
+            titerDataSheetName = "titers"
+
+            if 'titers' not in data.keys():
+                raise Exception("No sheet named 'titers' found")
+
+            ######## Initialize variables
+            titerNameColumn = dict()
+            for i in range(1,len(data[titerDataSheetName][2])):
+                titerNameColumn[data[titerDataSheetName][2][i]] = i
+
+            tempTimePointCollection = dict()
+            for names in titerNameColumn:
+                tempTimePointCollection[names] = []
+
+            timePointCollection = []
+            skippedLines = 0
+            # timePointList = []
+
+            ######## Parse the titer data into single experiment object list
+            ### NOTE: THIS PARSER IS NOT GENERIC AND MUST BE MODIFIED FOR YOUR SPECIFIC INPUT TYPE ###
+            for i in range(4, len(data['titers'])):
+                if type("asdf") == type(data['titers'][i][0]):  #Check if the data is a string
+                    temp_run_identifier_object = runIdentifier()
+                    temp_run_identifier_object.getRunIdentifier(data['titers'][i][0])
+
+                    tempParsedIdentifier = data['titers'][i][0].split(',')  #Parse the string using comma delimiter
+
+                    temp_run_identifier_object.t = 15.#tempParsedIdentifier[2]
+
+                    for key in tempTimePointCollection:
+                        temp_run_identifier_object.titerName = key
+                        if key == 'Glucose':
+                            temp_run_identifier_object.titerType = 'substrate'
+                            self.timePointList.append(timePoint(copy.copy(temp_run_identifier_object), key, 0, 15))
+                        else:
+                            temp_run_identifier_object.titerType = 'product'
+                            self.timePointList.append(timePoint(copy.copy(temp_run_identifier_object), key, 0, 0))
+                        self.timePointList.append(timePoint(copy.copy(temp_run_identifier_object), key, temp_run_identifier_object.t, data['titers'][i][titerNameColumn[key]]))
+
+
+                    else:
+                        skippedLines += 1
+                else:
+                    skippedLines += 1
+
             tf = time.time()
             print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timePointList),tf-t0))
             print("Number of lines skipped: ",skippedLines)
             self.parseTimePointCollection(self.timePointList)
+
+
+    # def parseTimePointCollection(self, timePointList):  # Combine all time points into time vectors for experiments
+    # def parseTiterObjectCollection(self, titerObjectDict):  # Combine all the titer objects into single experiments
+    #                                                         # (e.g. all titers for one strain)
+    # def parseSingleExperimentObjectList(self, singleExperimentObjectList):  # Parse replicate experiments
+
 
     def parseTimePointCollection(self, timePointList):
         print('Parsing time point list...')
@@ -282,7 +348,6 @@ class projectContainer(object):
             else:
                 self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()] = singleExperimentData()
                 self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].addTiterObject(titerObjectDict[titerObjectDictKey])
-
         tf = time.time()
         print("Parsed %i titer objects in %0.1fms\n" % (len(self.singleExperimentObjectDict),(tf-t0)*1000))
         self.parseSingleExperimentObjectList(self.singleExperimentObjectDict)
@@ -389,7 +454,7 @@ class projectContainer(object):
                     if showGrowthRates==True:
                         plt.text(scaledTime[-1]+0.5,
                                  self.replicateExperimentObjectDict[key].avg.OD.returnCurveFitPoints(np.linspace(min(self.replicateExperimentObjectDict[key].t),max(self.replicateExperimentObjectDict[key].t),50))[-1],
-                                 '$\mu$ = '+'{:.2f}'.format(self.replicateExperimentObjectDict[key].avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(self.replicateExperimentObjectDict[key].std.OD.rate[1]),
+                                 '$\mu$ = '+'{:.2f}'.format(self.replicateExperimentObjectDict[key].avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(self.replicateExperimentObjectDict[key].std.OD.rate[1])+', n='+str(len(self.replicateExperimentObjectDict[key].replicateIDs)-len(self.replicateExperimentObjectDict[key].badReplicates)),
                                  verticalalignment='center')
                     ylabel = 'OD$_{600}$'
                 else:
@@ -428,7 +493,11 @@ class projectContainer(object):
         # Save the figure
         plt.savefig(os.path.join(os.path.dirname(__file__),'Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" H"+time.strftime('%H')+'-M'+time.strftime('%M')+'-S'+time.strftime('%S')+'.png'))
         # plt.show()
-    def printGrowthRateBarChart(self, figHandle=plt.figure(figsize=(9, 5)), strainsToPlot=[], sortBy='identifier1'):
+
+    def printGrowthRateBarChart(self, figHandle=[], strainsToPlot=[], sortBy='identifier1'):
+        if figHandle == []:
+            figHandle = plt.figure(figsize=(9,5))
+
         if strainsToPlot == []:
             strainsToPlot = [key for key in self.replicateExperimentObjectDict]
 
@@ -500,7 +569,34 @@ class projectContainer(object):
 
         return figHandle
 
-    def printEndPointYield(self, strainsToPlot=[], withLegend=1):
+    def printEndPointYield(self, figHandle=[], strainsToPlot=[], titersToPlot=[], sortBy='identifier2', withLegend=2):
+
+        if figHandle == []:
+            figHandle = plt.figure(figsize=(9, 5))
+
+        if strainsToPlot == []:
+            strainsToPlot = self.getAllStrains()
+
+        if titersToPlot == []:
+            titersToPlot = self.getAllTiters()
+
+        # Clear the plot and set some aesthetics
+        plt.cla()
+        ax = plt.subplot(111)
+        figHandle.set_facecolor('w')
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+
+        # uniques = list(set([getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) for key in strainsToPlot]))
+        # uniques.sort()
+        #
+        # # Find max number of samples (in case they all aren't the same)
+        # maxSamples = 0
+        # for unique in uniques:
+        #     if len([self.replicateExperimentObjectDict[key].avg.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique]) > maxSamples:
+        #         maxSamples = len([self.replicateExperimentObjectDict[key].avg.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique])
+        #         maxIndex = unique
+
         replicateExperimentObjectList = self.replicateExperimentObjectDict
         handle = dict()
         colors = plt.get_cmap('Set2')(np.linspace(0,1.0,len(strainsToPlot)))
@@ -508,9 +604,106 @@ class projectContainer(object):
         barWidth = 0.6
         pltNum = 0
 
+        if withLegend == 2:
+            # # First determine which items to separate plot by (titer/OD, strain, id1, id2)
+            # # TODO implement this
+            #
+            # # Then determine which items to group the plot by
+
+
+
+            for product in titersToPlot:
+                uniques = list(set([getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) for key in strainsToPlot]))
+                uniques.sort()
+
+                # Find max number of samples (in case they all aren't the same)
+                maxSamples = 0
+                for unique in uniques:
+                    if len([self.replicateExperimentObjectDict[key].avg.products[product] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique]) > maxSamples:
+                    # if len([self.replicateExperimentObjectDict[key].avg.products[prodKey] for prodkey in self.replicateExperimentObjectDict[key] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique]) > maxSamples:
+                        maxSamples = len([self.replicateExperimentObjectDict[key].avg.products[product] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique])
+                        maxIndex = unique
+
+                # Create empty arrays to store data
+                endPointTiterAvg=[]
+                endPointTiterStd=[]
+                endPointTiterLabel=[]
+
+                # Choose plot number
+                pltNum += 1
+                ax = plt.subplot(1,len(titersToPlot),pltNum)
+
+                # Initial variables and choose plotting locations of bars
+                location = 0
+
+                # Prepare data for plotting
+                for key in strainsToPlot:
+                    if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique:
+                        endPointTiterLabel.append(key)
+                        endPointTiterAvg.append(replicateExperimentObjectList[key].avg.yields[product][-1])
+                        endPointTiterStd.append(replicateExperimentObjectList[key].std.yields[product][-1])
+
+                barWidth = 0.9/len(uniques)
+                index = np.arange(maxSamples)
+                colors = plt.get_cmap('Set2')(np.linspace(0,1.0,len(uniques)))
+
+                i=0
+                for unique in uniques:
+                    print([self.replicateExperimentObjectDict[key].avg.yields[product][-1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique])
+                    print(len([self.replicateExperimentObjectDict[key].avg.yields[product][-1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique]))
+                    print([getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique])
+                    print()
+                    handle[unique] = plt.bar(index[0:len([self.replicateExperimentObjectDict[key].avg.products[product] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique])],
+                                            [self.replicateExperimentObjectDict[key].avg.yields[product][-1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique],
+                                            barWidth,
+                                            yerr=[self.replicateExperimentObjectDict[key].std.yields[product][-1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique],
+                                            color = colors[i],ecolor='k',capsize=5,error_kw=dict(elinewidth=1, capthick=1)
+                                            )
+                    index = index+barWidth
+                    i+=1
+
+                plt.ylabel(product+" Yield (g/g)")
+                ymin, ymax = plt.ylim()
+                plt.ylim([0,ymax])
+
+                endPointTiterLabel.sort()
+
+                xticklabel = ''
+                for attribute in ['strainID','identifier1','identifier2']:
+                    if attribute != sortBy:
+                        xticklabel = xticklabel+attribute
+
+                if 'strainID' == sortBy:
+                    tempticks =[self.replicateExperimentObjectDict[key].runIdentifier.identifier1+'+'+
+                                self.replicateExperimentObjectDict[key].runIdentifier.identifier2 for key in strainsToPlot
+                                if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == maxIndex]
+                if 'identifier1' == sortBy:
+                    tempticks = [self.replicateExperimentObjectDict[key].runIdentifier.strainID +'+'+
+                                 self.replicateExperimentObjectDict[key].runIdentifier.identifier2 for key in strainsToPlot
+                                 if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == maxIndex]
+                if 'identifier2' == sortBy:
+                    tempticks = [self.replicateExperimentObjectDict[key].runIdentifier.strainID +'+'+
+                                 self.replicateExperimentObjectDict[key].runIdentifier.identifier1 for key in strainsToPlot
+                                 if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == maxIndex]
+                tempticks.sort()
+
+
+
+                plt.xticks(index-0.4, tempticks, rotation='45', ha='right', va='top')
+
+                ax.yaxis.set_ticks_position('left')
+                ax.xaxis.set_ticks_position('bottom')
+            figManager = plt.get_current_fig_manager()
+            figManager.window.showMaximized()
+            plt.tight_layout()
+            plt.subplots_adjust(right=0.875)
+            plt.legend([handle[key][0] for key in uniques],uniques,bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0)
+
+
+
         if withLegend == 0:
             plt.figure(figsize=(6, 3))
-            for product in replicateExperimentObjectList[list(replicateExperimentObjectList.keys())[0]].avg.products:
+            for product in titersToPlot:
                 endPointTiterAvg = []
                 endPointTiterStd = []
                 endPointTiterLabel = []
@@ -530,6 +723,7 @@ class projectContainer(object):
                     endPointTiterLabel.append(key)
                     endPointTiterAvg.append(replicateExperimentObjectList[key].avg.yields[product][-1])
                     endPointTiterStd.append(replicateExperimentObjectList[key].std.yields[product][-1])
+
                 handle[key] = plt.bar(index,endPointTiterAvg,barWidth,yerr=endPointTiterStd,color=plt.get_cmap('Set2')(0.25),ecolor='black',capsize=5,error_kw=dict(elinewidth=1, capthick=1) )
                 location += barWidth
                 plt.xlabel("Time (hours)")
@@ -541,6 +735,7 @@ class projectContainer(object):
                 plt.xticks(index + barWidth/2, endPointTiterLabel,rotation='45', ha='right', va='top')
                 ax.yaxis.set_ticks_position('left')
                 ax.xaxis.set_ticks_position('bottom')
+
         if withLegend == 1:
             plt.figure(figsize=(6, 2))
 
@@ -614,6 +809,19 @@ class projectContainer(object):
         #plt.subplot(1,4,4)
         plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.15, 0.5), loc=6, borderaxespad=0)
         plt.subplots_adjust(right=1.05)
+
+    def printAllReplicateTimeCourse(self, figHandle=[], strainToPlot=[]):
+
+        if figHandle == []:
+            figHandle = plt.figure(figsize=(9, 5))
+
+        plt.clf()
+        if len(strainToPlot) > 1:
+            strainToPlot = self.getAllStrains()[0]
+        for singleExperiment in self.replicateExperimentObjectDict[strainToPlot[0]].singleExperimentList:
+            plt.plot(singleExperiment.OD.timeVec,singleExperiment.OD.dataVec)
+        plt.ylabel(singleExperiment.runIdentifier.returnUniqueID())
+        # plt.tight_layout()
 
 class runIdentifier(object):
     #Base runIdentifier object
@@ -695,26 +903,126 @@ class timeCourseObject(titerObject):
         self.timeVec = None
         self._dataVec = None
         self.rate = None
+        self.removeDeathPhaseFlag = False
+        self.useFilteredDataFlag = False
+
+        self.savgolFilterWindowSize = 51
 
     @property
     def dataVec(self):
-        return self._dataVec
+        if self.useFilteredDataFlag == True:
+            return savgol_filter(self._dataVec,self.savgolFilterWindowSize,3)
+        else:
+            return self._dataVec
 
     @dataVec.setter
     def dataVec(self, dataVec):
-        self._dataVec = dataVec
-        if len(dataVec)>6:
-            self.calcExponentialRate()
 
+        if 1 == 0:
+            # Find the last point of the growth phase
+
+            # Find the maximum of the data
+            maxGrowthIndex = np.where(dataVec == np.max(dataVec))[0]
+            print(maxGrowthIndex)
+            # Check points after this for a decrease
+            filteredData = savgol_filter(dataVec,51,3)
+            diff = np.diff(filteredData)
+            count = 1
+            flag = 0
+            deathPhaseStartIndex = len(dataVec)
+            for i in range(maxGrowthIndex,len(dataVec)):
+                if diff[i-1] < 0:
+                    count += 1
+                    flag = 1
+                else:
+                    if flag == 1:
+                        count = 0
+                if count > 5:
+                    deathPhaseStartIndex = i
+                    break
+
+            print('death phase starts at:',deathPhaseStartIndex)
+
+
+
+
+        if self.removeDeathPhaseFlag == True:
+            try:
+                if np.max(dataVec) > 0.2:
+                    filteredData = savgol_filter(dataVec,51,3)
+                    diff = np.diff(filteredData)
+
+                    count=0
+                    # print(diff)
+                    flag = 0
+                    for i in range(len(diff)-1):
+                        if diff[i] < 0:
+                            flag = 1
+                            count+=1
+                            if count > 20:
+                                self._dataVec = filteredData[0:i]
+                                self.timeVec = self.timeVec[0:i]
+                                break
+                        elif count > 0:
+                            count = 1
+                            flag = 0
+                    if flag == 0:
+                        self._dataVec = dataVec
+                    plt.plot(self._dataVec,'r.')
+                    plt.plot(dataVec,'b-')
+                    plt.show()
+                else:
+                   self._dataVec = dataVec
+
+                if len(self.dataVec)>6:
+                    self.calcExponentialRate()
+            except:
+                self._dataVec = filteredData#dataVec
+
+                if len(self.dataVec)>6:
+                    self.calcExponentialRate()
+        else:
+            self._dataVec = dataVec
+
+            if len(self.dataVec)>6:
+                self.calcExponentialRate()
+
+    # def returnCurveFitPoints(self, t):
+    #    # print(self.rate)
+    #    Linf = self.rate[0]
+    #    k = self.rate[1]
+    #    delta = self.rate[2]
+    #    gamma = self.rate[3]
+    #
+    #    return Linf*np.power((1+(delta-1)*np.exp(-k*(t-gamma))) ,1/(1-delta))
+
+
+    # Generalized Logistic Return Curve Fit
     def returnCurveFitPoints(self, t):
        # print(self.rate)
        A = self.rate[0]
        B = self.rate[1]
        C = self.rate[2]
-       K = self.rate[3]
-       Q = self.rate[4]
+       Q = self.rate[3]
+       K = self.rate[4]
        nu = self.rate[5]
        return A + (    (K-A)      /     (     np.power((C+Q*np.exp(-B*t)),(1/nu))     )       )
+
+    # def returnCurveFitPoints(self, t):
+    #
+    #     # Gompertz 3 param
+    #     # # print(self.rate)
+    #     # A = self.rate[0]
+    #     # mu = self.rate[1]
+    #     # lamb = self.rate[2]
+    #     # return A*np.exp(-np.exp(mu*np.e/A*(lamb-t)+1))
+    #
+    #     # Richard 4 param
+    #     A = self.rate[0]
+    #     mu = self.rate[1]
+    #     lamb = self.rate[2]
+    #     nu = self.rate[3]
+    #     return A*np.power((1+nu*np.exp(1+nu)*np.exp(mu/A*np.power((1+nu),(1+1/nu))*(lamb-t))),(-1/nu))
 
     def addTimePoint(self, timePoint):
         self.timePointList.append(timePoint)
@@ -733,9 +1041,27 @@ class timeCourseObject(titerObject):
         else:
             self.rate = [0,0,0,0,0,0]
 
+
     def calcExponentialRate(self):
         #Define the growth equation to fit parameters
+
+        # # 4-parameter Richard Equation
+        # def growthEquation(t, Linf, k, gamma, delta):#, K, Q, nu):
+        #     return Linf*np.power((1+(delta-1)*np.exp(-k*(t-gamma))) ,1/(1-delta))
+
+
+
+        # # Gompertz 3 param
+        # def growthEquation(t, A, mu, lamb):
+        #     return A*np.exp(-np.exp(mu*np.e/A*(lamb-t)+1))
+
+        # # Modified Richards 4 param
+        # def growthEquation(t, A, mu, lamb, nu):
+        #     return A*np.power((1+nu*np.exp(1+nu)*np.exp(mu/A*np.power((1+nu),(1+1/nu))*(lamb-t))),(-1/nu))
+
+        # Generalized logistic
         def growthEquation(t, A, B, C, K, Q, nu):
+            # return A * B / (A+((B-A)*np.exp(-C*t)))
             return A + ((K-A)/(np.power((C+Q*np.exp(-B*t)),(1/nu))))
 
         # Fit and return the parameters
@@ -749,25 +1075,55 @@ class timeCourseObject(titerObject):
             gmod.set_param_hint('K', value = max(self.dataVec))#, max=5)
             gmod.set_param_hint('nu', value=1, vary=False)
         elif self.runIdentifier.titerType == 'OD':
+            # gmod.set_param_hint('Linf', value=0.1, max=1)#np.min(self.dataVec), min=0.9*np.min(self.dataVec),max=1.1*np.min(self.dataVec))
+            # gmod.set_param_hint('k',value=.25)#, min=0.001, max=0.5)
+            # gmod.set_param_hint('delta', value=0)#, vary=False)#, vary=False)#, min=0.99, max=1.01)#, vary=False)
+            # gmod.set_param_hint('gamma', value=0)#, min = 1, max = 10)#value=8)#, max = 10)
+
+            #Generalized Logistic Parameters
             gmod.set_param_hint('A', value=np.min(self.dataVec), min=0.9*np.min(self.dataVec),max=1.1*np.min(self.dataVec))
-            gmod.set_param_hint('B',value=0.2, min=0.001, max=0.5)
-            gmod.set_param_hint('C', value=1, min = 0.7, vary=False)#, vary=False)#, min=0.99, max=1.01)#, vary=False)
-            gmod.set_param_hint('Q', min = 1, max = 10)#value=8)#, max = 10)
+            gmod.set_param_hint('B',value=0.5, min=0.001, max=1)
+            gmod.set_param_hint('C', value=1)#, vary=False)#, min = 0.7)#, vary=False)#, vary=False)#, min=0.99, max=1.01)#, vary=False)
+            gmod.set_param_hint('Q', value=0.01)#, min = 1, max = 10)#value=8)#, max = 10)
             gmod.set_param_hint('K', value = max(self.dataVec), max=1.1*max(self.dataVec))
             gmod.set_param_hint('nu', value=1)#, vary=False)
+
+            # # Gompertz Parameters
+            # gmod.set_param_hint('A', value=np.min(self.dataVec))
+            # gmod.set_param_hint('mu',value=0.5)#, min=0.001, max=0.5)
+            # gmod.set_param_hint('lamb', value=1)#, vary=False)#, min = 0.7)#, vary=False)#, vary=False)#, min=0.99, max=1.01)#, vary=False)
+
+            # # Richard Parameters
+            # gmod.set_param_hint('A', value=np.max(self.dataVec), max=np.max(self.dataVec))
+            # gmod.set_param_hint('mu',value=0.01, min=0.001, max=0.5)#, min=0.001, max=0.5)
+            # gmod.set_param_hint('lamb', value=-6)#)np.log(0.15))#, min=-1)# min=np.log(np.min(self.dataVec)*0.9))#, vary=False)#, min = 0.7)#, vary=False)#, vary=False)#, min=0.99, max=1.01)#, vary=False)
+            # gmod.set_param_hint('nu',value=1)#, min=-5, max=5)
+
         else:
             print('Unidentified titer type:'+self.runIdentifier.titerType)
         params = gmod.make_params()
 
         result = gmod.fit (self.dataVec, params, t=self.timeVec, method = 'slsqp')
 
-        print(result.best_values)
-        plt.plot(self.timeVec,self.dataVec, 'bo')
-        plt.plot(self.timeVec,  result.init_fit,'k--')
-        plt.plot(self.timeVec, result.best_fit,'r-')
-        plt.show()
+        # print(result.best_values)
+        # plt.plot(self.timeVec,self.dataVec, 'bo')
+        # plt.plot(self.timeVec,  result.init_fit,'k--')
+        # plt.plot(self.timeVec, result.best_fit,'r-')
+        # plt.show()
 
         self.rate = [0,0,0,0,0,0]
+        # # 4-Parameter Richard
+        # for key in result.best_values:
+        #     if key == 'Linf':
+        #         self.rate[0] = result.best_values[key]
+        #     if key == 'k':
+        #         self.rate[1] = result.best_values[key]
+        #     if key == 'delta':
+        #         self.rate[2] = result.best_values[key]
+        #     if key == 'gamma':
+        #         self.rate[3] = result.best_values[key]
+
+        # Generalized Logistic params
         for key in result.best_values:
             if key == 'A':
                 self.rate[0] = result.best_values[key]
@@ -775,12 +1131,33 @@ class timeCourseObject(titerObject):
                 self.rate[1] = result.best_values[key]
             if key == 'C':
                 self.rate[2] = result.best_values[key]
-            if key == 'K':
-                self.rate[3] = result.best_values[key]
             if key == 'Q':
+                self.rate[3] = result.best_values[key]
+            if key == 'K':
                 self.rate[4] = result.best_values[key]
             if key == 'nu':
                 self.rate[5] = result.best_values[key]
+
+        # # Gompertz
+        # for key in result.best_values:
+        #     if key == 'A':
+        #         self.rate[0] = result.best_values[key]
+        #     if key == 'mu':
+        #         self.rate[1] = result.best_values[key]
+        #     if key == 'lamb':
+        #         self.rate[2] = result.best_values[key]
+
+        # # Richard
+        # for key in result.best_values:
+        #     if key == 'A':
+        #         self.rate[0] = result.best_values[key]
+        #     if key == 'mu':
+        #         self.rate[1] = result.best_values[key]
+        #     if key == 'lamb':
+        #         self.rate[2] = result.best_values[key]
+        #     if key == 'nu':
+        #         self.rate[3] = result.best_values[key]
+
         # if len(self.dataVec)>10:
         #     print(result.best_values)
         #     print(self.rate)
@@ -900,27 +1277,29 @@ class singleExperimentData(object):
         self.runIdentifier.time = None
 
     def checkTimeVectors(self):
-        t = []
-        flag = 0
-        if self.OD:
-            self._t = self.OD.timeVec
-            t.append(self.OD.timeVec)
+        checkTimeVectorsFlag = 1
+        if checkTimeVectorsFlag == 1:
+            t = []
+            flag = 0
+            if self.OD:
+                self._t = self.OD.timeVec
+                t.append(self.OD.timeVec)
 
-        if self.substrate:
-            self._t = self.substrate.timeVec
-            t.append(self.substrate.timeVec)
+            if self.substrate:
+                self._t = self.substrate.timeVec
+                t.append(self.substrate.timeVec)
 
-        if self.products:
-            for key in self.products:
-                self._t = self.products[key].timeVec
-                t.append(self.products[key].timeVec)
+            if self.products:
+                for key in self.products:
+                    self._t = self.products[key].timeVec
+                    t.append(self.products[key].timeVec)
 
-        for i in range(len(t)-1):
-            if (t[i] != t[i+1]).all():
-                flag = 1
+            for i in range(len(t)-1):
+                if (t[i] != t[i+1]).all():
+                    flag = 1
 
-        if flag==1:
-            raise(Exception("Time vectors within an experiment don't match, must implement new methods to deal with this type of data (if even possible)"))
+            if flag==1:
+                raise(Exception("Time vectors within an experiment don't match, must implement new methods to deal with this type of data (if even possible)"))
 
     def getUniqueTimePointID(self):
         return self.substrate.runIdentifier.strainID+self.substrate.runIdentifier.identifier1+self.substrate.runIdentifier.identifier2+str(self.substrate.runIdentifier.replicate)
@@ -964,7 +1343,10 @@ class replicateExperimentObject(object):
         self.singleExperimentList = []
         self.runIdentifier = runIdentifier()
         self.useReplicate = dict()
+        self.badReplicates = []
+        self.replicateIDs = []
         #self.checkReplicateUniqueIDMatch()
+
 
     def checkReplicateUniqueIDMatch(self):
         for i in range(len(self.singleExperimentList)-1):
@@ -972,6 +1354,7 @@ class replicateExperimentObject(object):
                 raise Exception("the replicates do not have the same uniqueID, either the uniqueID includes too much information or the strains don't match")
 
             if (self.singleExperimentList[i].t != self.singleExperimentList[i+1].t).all():
+                print(self.singleExperimentList[i].t,self.singleExperimentList[i].t)
                 raise Exception("time vectors don't match within replicates")
             else:
                 self.t = self.singleExperimentList[i].t
@@ -990,10 +1373,18 @@ class replicateExperimentObject(object):
         if len(self.singleExperimentList)==1:
             self.t = self.singleExperimentList[0].t
         self.checkReplicateUniqueIDMatch()
-        self.calcAverageAndDev()
+
         self.runIdentifier = newReplicateExperiment.runIdentifier
-        self.runIdentifier.replicate = None
+        # self.runIdentifier.replicate = None
         self.runIdentifier.time = None
+        # print('Replicate being added: ',newReplicateExperiment.runIdentifier.replicate)
+        self.replicateIDs.append(newReplicateExperiment.runIdentifier.replicate)
+        self.replicateIDs.sort()
+        # print('number of replicates: ',len(self.replicateIDs))
+        self.calcAverageAndDev()
+        # print('Replicate IDs: ',self.replicateIDs)
+        # for i in self.replicateIDs:
+        #     print(i)
 
     def calcAverageAndDev(self):    #Calculate averages
         #First check what data exists
@@ -1015,11 +1406,36 @@ class replicateExperimentObject(object):
             self.avg.OD = timeCourseObjectShell()
             self.std.OD = timeCourseObjectShell()
             self.avg.OD.timeVec = self.t
-            self.avg.OD.dataVec = np.mean([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
-            self.std.OD.dataVec = np.std([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
-            self.std.OD.dataVec = np.std([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList], axis=0)
-            self.avg.OD.rate = np.mean([singleExperimentObject.OD.rate for singleExperimentObject in self.singleExperimentList], axis=0)#calcExponentialRate()
-            self.std.OD.rate = np.std([singleExperimentObject.OD.rate for singleExperimentObject in self.singleExperimentList], axis=0)
+            # Perform outlier test
+            # print('Number of Replicates: ',len(self.replicateIDs))
+            self.badReplicates = []
+            if len(self.replicateIDs) > 2:
+                tempVar = 0
+                tempRate = dict()
+                for testReplicate in self.replicateIDs:
+                    tempRate[testReplicate] = np.std([singleExperimentObject.OD.rate for singleExperimentObject in self.singleExperimentList
+                                                      if singleExperimentObject.runIdentifier.replicate != testReplicate], axis=0)[1]   # Perform this test only on growth rate
+                    # print('repnum',testReplicate,'STDEV',tempRate[testReplicate])
+                # minDev = 9999
+                # minDevKey = ''
+                # for tempRateKey in tempRate:
+                #     if tempRate[tempRateKey] < minDev:
+                #         minDevKey = tempRateKey
+                minDevKey = min(tempRate,key=tempRate.get)
+                # for tempRateKey in tempRate:
+                tempRateKey = minDevKey
+                # print(tempRate[tempRateKey])
+                # print(np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]))
+                # print(tempRate[tempRateKey]/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]))
+                # print(np.abs(tempRate[tempRateKey]-np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]))/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]))
+                if tempRate[tempRateKey]/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]) < 0.5 :
+                    self.badReplicates.append(int(tempRateKey))
+
+            # print(self.badReplicates)
+            self.avg.OD.dataVec = np.mean([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList if singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)
+            self.std.OD.dataVec = np.std([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList if singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)
+            self.avg.OD.rate = np.mean([singleExperimentObject.OD.rate for singleExperimentObject in self.singleExperimentList if singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)#calcExponentialRate()
+            self.std.OD.rate = np.std([singleExperimentObject.OD.rate for singleExperimentObject in self.singleExperimentList if singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)
 
         if productFlag == 1:
             for key in self.singleExperimentList[0].products:
