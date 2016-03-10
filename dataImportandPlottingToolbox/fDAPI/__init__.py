@@ -18,8 +18,11 @@ from PyQt4 import QtGui, QtCore
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 
+import sqlite3 as sql
+
 import os
 import time
+import datetime
 import copy
 import pickle
 import sys
@@ -138,10 +141,23 @@ class projectContainer(object):
     colorMap = 'Set3'
 
     def __init__(self):
+        # Initialize variables
         self.timePointList = []#dict()
         self.titerObjectDict = dict()
         self.singleExperimentObjectDict = dict()
         self.replicateExperimentObjectDict = dict()
+
+
+        # SQLite stuff
+        # Initialize database
+        conn = sql.connect('temptSQLite3db.db')
+        c = conn.cursor()
+        for table in ['timePointTable','timeCourseTable','singleExperimentTable','replicateExperimentTable']:
+            c.execute("CREATE TABLE IF NOT EXISTS %s (datestamp TEXT, strainID TEXT, identifier1 TEXT, identifier2 TEXT, replicate INTEGER, time REAL, titerName TEXT, titerType TEXT, timeVec BLOB, dataVec BLOB) "%table)
+        conn.commit()
+        c.close()
+        conn.close()
+
 
     def plottingGUI(self):
         app = QtGui.QApplication(sys.argv)
@@ -379,7 +395,7 @@ class projectContainer(object):
 
     def printGenericTimeCourse(self, figHandle = [], strainsToPlot=[], titersToPlot=[], removePointFraction=1, shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True ):
         if figHandle == []:
-            figHandle = plt.figure()
+            figHandle = plt.figure(figsize=(12,8))
 
         figHandle.set_facecolor('w')
 
@@ -468,30 +484,31 @@ class projectContainer(object):
                     ylabel = product+" Titer (g/L)"
 
                 colorIndex += 1
-
+                # plt.show()
             plt.xlabel(xlabel)
             plt.ylabel(ylabel)
             ymin, ymax = plt.ylim()
             xmin, xmax = plt.xlim()
             plt.xlim([0,xmax*1.2])
             plt.ylim([0,ymax])
+        # plt.style.use('ggplot')
         plt.tight_layout()
         plt.tick_params(right="off",top="off")
-        plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
+        # plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
         plt.subplots_adjust(right=0.7)
 
         if len(titersToPlot) == 1:
-            plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0)
+            plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
             plt.subplots_adjust(right=0.7)
         elif len(titersToPlot) < 4:
-            plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0)
+            plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
             plt.subplots_adjust(right=0.75)
         else:
-            plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 1.1), loc=6, borderaxespad=0)
+            plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 1.1), loc=6, borderaxespad=0, frameon=False)
             plt.subplots_adjust(right=0.75)
 
         # Save the figure
-        plt.savefig(os.path.join(os.path.dirname(__file__),'Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" H"+time.strftime('%H')+'-M'+time.strftime('%M')+'-S'+time.strftime('%S')+'.png'))
+        # plt.savefig(os.path.join(os.path.dirname(__file__),'Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" H"+time.strftime('%H')+'-M'+time.strftime('%M')+'-S'+time.strftime('%S')+'.png'))
         # plt.show()
 
     def printGrowthRateBarChart(self, figHandle=[], strainsToPlot=[], sortBy='identifier1'):
@@ -830,7 +847,7 @@ class runIdentifier(object):
         self.identifier1 = ''       # e.g. pTOG009
         self.identifier2 = ''       # e.g. IPTG
         self.replicate = None       # e.g. 1
-        self.time = None            # e.g. 0
+        self.time = -1            # e.g. 0
         self.titerName = 'None'     # e.g. Lactate
         self.titerType = 'None'     # e.g. titer or OD
 
@@ -871,10 +888,18 @@ class timePoint(object):
     def getUniqueTimePointID(self):
         return self.runIdentifier.strainID+self.runIdentifier.identifier1+self.runIdentifier.identifier2+str(self.runIdentifier.replicate)+self.runIdentifier.titerName
 
-class titerObject():
+class titerObject(object):
     def __init__(self):
         self.timePointList = []
-        self.runIdentifier = runIdentifier()
+        self._runIdentifier = runIdentifier()
+
+    @property
+    def runIdentifier(self):
+        return self._runIdentifier
+
+    @runIdentifier.setter
+    def runIdentifier(self, runIdentifier):
+        self._runIdentifier = runIdentifier
 
     def addTimePoint(self, timePoint):
         raise(Exception("No addTimePoint method defiend in the child"))
@@ -904,9 +929,9 @@ class timeCourseObject(titerObject):
         self._dataVec = None
         self.rate = None
         self.removeDeathPhaseFlag = False
-        self.useFilteredDataFlag = False
+        self.useFilteredDataFlag = True
 
-        self.savgolFilterWindowSize = 51
+        self.savgolFilterWindowSize = 21    # Must be odd
 
     @property
     def dataVec(self):
@@ -983,6 +1008,25 @@ class timeCourseObject(titerObject):
                     self.calcExponentialRate()
         else:
             self._dataVec = dataVec
+
+            # SQLite stuff
+            # Initialize database
+            # conn = sql.connect('temptSQLite3db.db')
+            # c = conn.cursor()
+            # c.execute("""INSERT INTO timeCourseTable VALUES (?,?,?,?,?,?,?,?,?)""" ,
+            #           (datetime.datetime.now().strftime("%Y%m%d %H:%M"),
+            #           self.runIdentifier.strainID,
+            #           self.runIdentifier.identifier1,
+            #           self.runIdentifier.identifier2,
+            #           self.runIdentifier.replicate,
+            #           self.runIdentifier.time,
+            #           self.runIdentifier.titerName,
+            #           self.runIdentifier.titerType))
+            # conn.commit()
+            # c.close()
+            # conn.close()
+
+
 
             if len(self.dataVec)>6:
                 self.calcExponentialRate()
@@ -1081,11 +1125,11 @@ class timeCourseObject(titerObject):
             # gmod.set_param_hint('gamma', value=0)#, min = 1, max = 10)#value=8)#, max = 10)
 
             #Generalized Logistic Parameters
-            gmod.set_param_hint('A', value=np.min(self.dataVec), min=0.9*np.min(self.dataVec),max=1.1*np.min(self.dataVec))
+            gmod.set_param_hint('A', value=np.min(self.dataVec), min=0.975*np.min(self.dataVec),max=1.025*np.min(self.dataVec))
             gmod.set_param_hint('B',value=0.5, min=0.001, max=1)
             gmod.set_param_hint('C', value=1)#, vary=False)#, min = 0.7)#, vary=False)#, vary=False)#, min=0.99, max=1.01)#, vary=False)
             gmod.set_param_hint('Q', value=0.01)#, min = 1, max = 10)#value=8)#, max = 10)
-            gmod.set_param_hint('K', value = max(self.dataVec), max=1.1*max(self.dataVec))
+            gmod.set_param_hint('K', value = max(self.dataVec), min=0.975*max(self.dataVec), max=1.025*max(self.dataVec))
             gmod.set_param_hint('nu', value=1)#, vary=False)
 
             # # Gompertz Parameters
@@ -1406,28 +1450,19 @@ class replicateExperimentObject(object):
             self.avg.OD = timeCourseObjectShell()
             self.std.OD = timeCourseObjectShell()
             self.avg.OD.timeVec = self.t
+
+
             # Perform outlier test
-            # print('Number of Replicates: ',len(self.replicateIDs))
             self.badReplicates = []
             if len(self.replicateIDs) > 2:
                 tempVar = 0
                 tempRate = dict()
                 for testReplicate in self.replicateIDs:
-                    tempRate[testReplicate] = np.std([singleExperimentObject.OD.rate for singleExperimentObject in self.singleExperimentList
-                                                      if singleExperimentObject.runIdentifier.replicate != testReplicate], axis=0)[1]   # Perform this test only on growth rate
-                    # print('repnum',testReplicate,'STDEV',tempRate[testReplicate])
-                # minDev = 9999
-                # minDevKey = ''
-                # for tempRateKey in tempRate:
-                #     if tempRate[tempRateKey] < minDev:
-                #         minDevKey = tempRateKey
+                    tempRate[testReplicate] = np.sum(np.std([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList
+                                                      if singleExperimentObject.runIdentifier.replicate != testReplicate], axis=0))   # Perform this test only on growth rate
                 minDevKey = min(tempRate,key=tempRate.get)
-                # for tempRateKey in tempRate:
                 tempRateKey = minDevKey
-                # print(tempRate[tempRateKey])
-                # print(np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]))
-                # print(tempRate[tempRateKey]/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]))
-                # print(np.abs(tempRate[tempRateKey]-np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]))/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]))
+
                 if tempRate[tempRateKey]/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]) < 0.5 :
                     self.badReplicates.append(int(tempRateKey))
 
