@@ -38,6 +38,8 @@ class Window(QtGui.QDialog):
         self.titersToPlot = self.newProjectContainer.getAllTiters()
         self.sortBy = 'identifier1'
         self.plotType = 'printGenericTimeCourse'
+        self.showGrowthRates = True
+        self.plotCurveFit = True
         # self.newProjectContainer.printGrowthRateBarChart(self.figure,strainsToPlot=self.strainsToPlot)
 
         # this is the Canvas Widget that displays the `figure`
@@ -74,7 +76,11 @@ class Window(QtGui.QDialog):
             self.titersCheckBox[titer] = (QtGui.QCheckBox(titer,self))
             self.titersCheckBox[titer].stateChanged.connect(self.updateTiters)
 
-
+        self.optionsCheckBox = dict()
+        for key in ['showGrowthRates','plotCurveFit']:
+            self.optionsCheckBox[key] = QtGui.QCheckBox(key,self)
+            self.optionsCheckBox[key].stateChanged.connect(self.updateOption)
+            self.optionsCheckBox[key].setChecked = True
 
         # set the layout
 
@@ -93,10 +99,15 @@ class Window(QtGui.QDialog):
         for titer in self.titersToPlot:
             titersVertLayout.addWidget(self.titersCheckBox[titer])
 
+        optionsVertLayout = QtGui.QVBoxLayout()
+        for option in self.optionsCheckBox:
+            optionsVertLayout.addWidget(self.optionsCheckBox[option])
+
         horLayout = QtGui.QHBoxLayout()
         horLayout.addLayout(leftVertLayout)
         horLayout.addLayout(rightVertLayout)
         horLayout.addLayout(titersVertLayout)
+        horLayout.addLayout(optionsVertLayout)
         self.setLayout(horLayout)
 
     def updatePlotType(self, plotType):
@@ -104,7 +115,7 @@ class Window(QtGui.QDialog):
         self.updateFigure()
 
     def updateSortBy(self, sortBy):
-        print('in here')
+        # print('in here')
         self.sortBy = sortBy
         self.updateFigure()
 
@@ -122,6 +133,13 @@ class Window(QtGui.QDialog):
                 self.titersToPlot.append(titerCheckBoxKey)
         self.updateFigure()
 
+    def updateOption(self):
+        for checkBoxKey in self.optionsCheckBox:
+            if self.optionsCheckBox[checkBoxKey].checkState() == QtCore.Qt.Checked:
+                setattr(self,checkBoxKey,True)
+            else:
+                setattr(self,checkBoxKey,False)
+        self.updateFigure()
     # def updateBadReplicates(self):
     #     for replicateCheckBoxKey in self.replicateCheckBox:
 
@@ -130,7 +148,7 @@ class Window(QtGui.QDialog):
     def updateFigure(self):
         #getattr(self.newProjectContainer,self.plotType)(self.figure, self.strainsToPlot, self.sortBy)
         if self.plotType == 'printGenericTimeCourse':
-            self.newProjectContainer.printGenericTimeCourse(figHandle=self.figure, strainsToPlot=self.strainsToPlot,titersToPlot=self.titersToPlot, removePointFraction=4, plotCurveFit=True)
+            self.newProjectContainer.printGenericTimeCourse(figHandle=self.figure, strainsToPlot=self.strainsToPlot,titersToPlot=self.titersToPlot, removePointFraction=4, plotCurveFit=self.plotCurveFit, showGrowthRates=self.showGrowthRates)
         if self.plotType == 'printGrowthRateBarChart':
             self.newProjectContainer.printGrowthRateBarChart(self.figure, self.strainsToPlot, self.sortBy)
         if self.plotType == 'printAllReplicateTimeCourse':
@@ -163,7 +181,7 @@ class projectContainer(object):
         app = QtGui.QApplication(sys.argv)
 
         main = Window(self)
-        main.show()
+        main.showMaximized()
 
         sys.exit(app.exec_())
 
@@ -317,7 +335,7 @@ class projectContainer(object):
                         temp_run_identifier_object.titerName = key
                         if key == 'Glucose':
                             temp_run_identifier_object.titerType = 'substrate'
-                            self.timePointList.append(timePoint(copy.copy(temp_run_identifier_object), key, 0, 15))
+                            self.timePointList.append(timePoint(copy.copy(temp_run_identifier_object), key, 0, 12))
                         else:
                             temp_run_identifier_object.titerType = 'product'
                             self.timePointList.append(timePoint(copy.copy(temp_run_identifier_object), key, 0, 0))
@@ -928,8 +946,9 @@ class timeCourseObject(titerObject):
         self.timeVec = None
         self._dataVec = None
         self.rate = None
-        self.removeDeathPhaseFlag = False
-        self.useFilteredDataFlag = True
+        self.removeDeathPhaseFlag = True
+        self.useFilteredDataFlag = False
+        self.deathPhaseStart = None
 
         self.savgolFilterWindowSize = 21    # Must be odd
 
@@ -950,7 +969,7 @@ class timeCourseObject(titerObject):
             maxGrowthIndex = np.where(dataVec == np.max(dataVec))[0]
             print(maxGrowthIndex)
             # Check points after this for a decrease
-            filteredData = savgol_filter(dataVec,51,3)
+            filteredData = savgol_filter(dataVec,31,3)
             diff = np.diff(filteredData)
             count = 1
             flag = 0
@@ -962,18 +981,20 @@ class timeCourseObject(titerObject):
                 else:
                     if flag == 1:
                         count = 0
-                if count > 5:
-                    deathPhaseStartIndex = i
+                if count > 10:
+                    deathPhaseStartIndex = i-10
                     break
 
             print('death phase starts at:',deathPhaseStartIndex)
 
 
 
+        self._dataVec = dataVec
+        self.deathPhaseStart = len(dataVec)
 
         if self.removeDeathPhaseFlag == True:
-            try:
-                if np.max(dataVec) > 0.2:
+            if np.max(dataVec) > 0.2:
+                try:
                     filteredData = savgol_filter(dataVec,51,3)
                     diff = np.diff(filteredData)
 
@@ -984,30 +1005,43 @@ class timeCourseObject(titerObject):
                         if diff[i] < 0:
                             flag = 1
                             count+=1
-                            if count > 20:
-                                self._dataVec = filteredData[0:i]
-                                self.timeVec = self.timeVec[0:i]
+                            if count > 10:
+                                # self._dataVec = filteredData[0:i-10]
+                                # self.timeVec = self.timeVec[0:i-10]
+                                self.deathPhaseStart = i-10
                                 break
                         elif count > 0:
                             count = 1
                             flag = 0
-                    if flag == 0:
-                        self._dataVec = dataVec
-                    plt.plot(self._dataVec,'r.')
-                    plt.plot(dataVec,'b-')
+                    # if flag == 0:
+                    #     self.deathPhaseStart = len(dataVec)
+                        # self._dataVec = dataVec
+                    # print(len(self._dataVec)," ",len(self.timeVec))
+                    plt.plot(self._dataVec[0:self.deathPhaseStart],'r.')
+                    plt.plot(self._dataVec,'b-')
                     plt.show()
-                else:
-                   self._dataVec = dataVec
+                except Exception as e:
+                    print(e)
+                    print(dataVec)
+                    # self.deathPhaseStart = len(dataVec)
 
-                if len(self.dataVec)>6:
-                    self.calcExponentialRate()
-            except:
-                self._dataVec = filteredData#dataVec
+            if self.deathPhaseStart == 0:
+                 self.deathPhaseStart = len(self.dataVec)
 
-                if len(self.dataVec)>6:
-                    self.calcExponentialRate()
-        else:
-            self._dataVec = dataVec
+            # else:
+            #     self.deathPhaseStart = len(dataVec)
+                # self._dataVec = dataVec
+
+            # if len(self.dataVec)>6:
+            #     self.calcExponentialRate()
+            # except Exception as e:
+            #     print("excepted")
+            #     print(e)
+            #     self.deathPhaseStart = len(dataVec)
+            #     self._dataVec = filteredData#dataVec
+
+                # if len(self.dataVec)>6:
+                #     self.calcExponentialRate()
 
             # SQLite stuff
             # Initialize database
@@ -1026,10 +1060,10 @@ class timeCourseObject(titerObject):
             # c.close()
             # conn.close()
 
-
-
-            if len(self.dataVec)>6:
-                self.calcExponentialRate()
+        # self._dataVec = dataVec
+        print(self.deathPhaseStart)
+        if len(self.dataVec)>6:
+            self.calcExponentialRate()
 
     # def returnCurveFitPoints(self, t):
     #    # print(self.rate)
@@ -1147,7 +1181,7 @@ class timeCourseObject(titerObject):
             print('Unidentified titer type:'+self.runIdentifier.titerType)
         params = gmod.make_params()
 
-        result = gmod.fit (self.dataVec, params, t=self.timeVec, method = 'slsqp')
+        result = gmod.fit (self.dataVec[0:self.deathPhaseStart], params, t=self.timeVec[0:self.deathPhaseStart], method = 'slsqp')
 
         # print(result.best_values)
         # plt.plot(self.timeVec,self.dataVec, 'bo')
@@ -1452,8 +1486,22 @@ class replicateExperimentObject(object):
             self.avg.OD.timeVec = self.t
 
 
+            # # Perform outlier test
+            # self.badReplicates = []
+            # if len(self.replicateIDs) > 2:
+            #     tempVar = 0
+            #     tempRate = dict()
+            #     for testReplicate in self.replicateIDs:
+            #         tempRate[testReplicate] = np.sum(np.std([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList
+            #                                           if singleExperimentObject.runIdentifier.replicate != testReplicate], axis=0))   # Perform this test only on growth rate
+            #     minDevKey = min(tempRate,key=tempRate.get)
+            #     tempRateKey = minDevKey
+            #
+            #     if tempRate[tempRateKey]/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]) < 0.5 :
+            #         self.badReplicates.append(int(tempRateKey))
+
             # Perform outlier test
-            self.badReplicates = []
+            # self.badReplicates = []
             if len(self.replicateIDs) > 2:
                 tempVar = 0
                 tempRate = dict()
@@ -1463,8 +1511,9 @@ class replicateExperimentObject(object):
                 minDevKey = min(tempRate,key=tempRate.get)
                 tempRateKey = minDevKey
 
-                if tempRate[tempRateKey]/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]) < 0.5 :
+                if tempRate[tempRateKey]/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]) < 0.6 :
                     self.badReplicates.append(int(tempRateKey))
+
 
             # print(self.badReplicates)
             self.avg.OD.dataVec = np.mean([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList if singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)
