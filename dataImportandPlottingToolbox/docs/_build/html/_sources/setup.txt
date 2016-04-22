@@ -1,0 +1,16 @@
+Quick Start Guide
+**********************************
+This package is dependent on scipy, numpy, lmfit and pyexcel. It has only been tested on python 3.4.
+
+An anaconda3 base installation is recommended and available here: https://www.continuum.io/downloads
+
+Following a successful Anaconda installation, the following commands should be executed in the console:
+
+- pip install lmfit
+- pip install pyexcel_xls
+
+The following should be executed in the root fDAPI directory (which contains setup.py)
+
+- setup.py install
+
+To verify the installation was successful, run the testProjectDB.py file, you should get an output indicating 96 titer objects are parsed and a GUI should load.
