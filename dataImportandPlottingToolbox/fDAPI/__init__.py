@@ -10,6 +10,7 @@ __author__ = 'Naveen Venayak'
 import numpy as np
 from scipy.signal import savgol_filter
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 from lmfit import Model
 from pyexcel_xlsx import get_data
@@ -26,6 +27,539 @@ import datetime
 import copy
 import pickle
 import sys
+
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow, Project):
+        self.Project = Project()
+        MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.resize(1016, 764)
+        MainWindow.setAutoFillBackground(False)
+        self.centralwidget = QtGui.QWidget(MainWindow)
+        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+        self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.label_3 = QtGui.QLabel(self.centralwidget)
+        self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.verticalLayout.addWidget(self.label_3)
+        spacerItem = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.verticalLayout.addItem(spacerItem)
+
+
+
+
+        self.comboBox = QtGui.QComboBox(self.centralwidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
+        self.comboBox.setSizePolicy(sizePolicy)
+        self.comboBox.setEditable(False)
+        self.comboBox.setObjectName(_fromUtf8("comboBox"))
+        for i, row in enumerate(self.Project.getExperiments()):
+            self.comboBox.addItem(_fromUtf8(row[1]+' - '+row[2]))
+
+
+
+
+        self.verticalLayout.addWidget(self.comboBox)
+        self.verticalLayout_3 = QtGui.QVBoxLayout()
+        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
+        self.label = QtGui.QLabel(self.centralwidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setObjectName(_fromUtf8("label"))
+        self.verticalLayout_3.addWidget(self.label)
+        self.verticalLayout.addLayout(self.verticalLayout_3)
+
+
+        self.tableWidget = QtGui.QTableWidget(self.centralwidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
+        self.tableWidget.setSizePolicy(sizePolicy)
+        self.tableWidget.setMinimumSize(QtCore.QSize(500, 0))
+        self.tableWidget.setMaximumSize(QtCore.QSize(100000, 16777215))
+        self.tableWidget.setObjectName(_fromUtf8("tableWidget"))
+        self.tableWidget.setColumnCount(4)
+        self.tableWidget.itemChanged.connect(self.updateStrainsToPlot)
+        self.tableWidget.setRowCount(8)
+
+
+
+        # for row in self.Project.getExperiments():
+        #     print(row)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setVerticalHeaderItem(0, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setVerticalHeaderItem(1, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setVerticalHeaderItem(2, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setVerticalHeaderItem(3, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setVerticalHeaderItem(4, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setVerticalHeaderItem(5, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setVerticalHeaderItem(6, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setVerticalHeaderItem(7, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setHorizontalHeaderItem(0, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setHorizontalHeaderItem(1, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setHorizontalHeaderItem(2, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setHorizontalHeaderItem(3, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(0, 0, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(0, 1, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(0, 2, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(1, 0, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(1, 1, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(1, 2, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(2, 0, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(2, 1, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(3, 0, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(3, 1, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(4, 0, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(4, 1, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(5, 0, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(5, 1, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(6, 0, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(6, 1, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(7, 0, item)
+        # item = QtGui.QTableWidgetItem()
+        # self.tableWidget.setItem(7, 1, item)
+        self.verticalLayout.addWidget(self.tableWidget)
+
+        self.pushButton_updatePlot = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_updatePlot.setObjectName(_fromUtf8("pushButton_updatePlot"))
+        self.pushButton_updatePlot.clicked.connect(self.updateFigure)
+        self.verticalLayout.addWidget(self.pushButton_updatePlot)
+        self.pushButton_updatePlot.setText(_translate("MainWindow", "Update Plot", None))
+
+
+        self.verticalLayout_2 = QtGui.QVBoxLayout()
+        self.verticalLayout_2.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
+        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        self.label_2 = QtGui.QLabel(self.centralwidget)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.verticalLayout_2.addWidget(self.label_2)
+
+        # print('unique titers')
+        self.titerCheckBoxList = []
+        for titer in self.Project.getAllTiterNames():
+            self.titerCheckBoxList.append([QtGui.QCheckBox(self.centralwidget),titer])
+            self.titerCheckBoxList[-1][0].setObjectName(_fromUtf8(titer))
+            self.titerCheckBoxList[-1][0].setText(_translate("MainWindow", titer, None))
+            self.titerCheckBoxList[-1][0].stateChanged.connect(self.updateTitersToPlot)
+            self.verticalLayout_2.addWidget(self.titerCheckBoxList[-1][0])
+
+
+        self.verticalLayout.addLayout(self.verticalLayout_2)
+        self.horizontalLayout.addLayout(self.verticalLayout)
+        self.verticalLayout_4 = QtGui.QVBoxLayout()
+        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
+
+        # this is the Canvas Widget that displays the `figure`
+        # it takes the `figure` instance as a parameter to __init__
+        self.figure = plt.figure()
+        self.mpl_canvas = FigureCanvas(self.figure)
+
+        # this is the Navigation widget
+        # it takes the Canvas widget and a parent
+        self.mpl_toolbar = NavigationToolbar(self.mpl_canvas, self.centralwidget)
+
+        self.verticalLayout_4.addWidget(self.mpl_toolbar)
+
+        self.verticalLayout_4.addWidget(self.mpl_canvas)
+        self.horizontalLayout.addLayout(self.verticalLayout_4)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1016, 21))
+        self.menubar.setObjectName(_fromUtf8("menubar"))
+        self.menuFile = QtGui.QMenu(self.menubar)
+        self.menuFile.setObjectName(_fromUtf8("menuFile"))
+        self.menuData = QtGui.QMenu(self.menubar)
+        self.menuData.setObjectName(_fromUtf8("menuData"))
+        self.menuPlot = QtGui.QMenu(self.menubar)
+        self.menuPlot.setObjectName(_fromUtf8("menuPlot"))
+        self.menuView = QtGui.QMenu(self.menubar)
+        self.menuView.setObjectName(_fromUtf8("menuView"))
+        self.menuSort_strains_by = QtGui.QMenu(self.menuView)
+        self.menuSort_strains_by.setObjectName(_fromUtf8("menuSort_strains_by"))
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(MainWindow)
+        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        MainWindow.setStatusBar(self.statusbar)
+        self.actionImport_data_from_file = QtGui.QAction(MainWindow)
+        self.actionImport_data_from_file.setCheckable(False)
+        self.actionImport_data_from_file.setChecked(False)
+        self.actionImport_data_from_file.setObjectName(_fromUtf8("actionImport_data_from_file"))
+        self.actionExport_data_to_file = QtGui.QAction(MainWindow)
+        self.actionExport_data_to_file.setObjectName(_fromUtf8("actionExport_data_to_file"))
+        self.actionExit = QtGui.QAction(MainWindow)
+        self.actionExit.setObjectName(_fromUtf8("actionExit"))
+        self.actionData_statistics = QtGui.QAction(MainWindow)
+        self.actionData_statistics.setObjectName(_fromUtf8("actionData_statistics"))
+        self.action_2 = QtGui.QAction(MainWindow)
+        self.action_2.setObjectName(_fromUtf8("action_2"))
+        self.actionStrain_ID = QtGui.QAction(MainWindow)
+        self.actionStrain_ID.setObjectName(_fromUtf8("actionStrain_ID"))
+        self.actionIdentifier_1 = QtGui.QAction(MainWindow)
+        self.actionIdentifier_1.setObjectName(_fromUtf8("actionIdentifier_1"))
+        self.actionIdentifier_2 = QtGui.QAction(MainWindow)
+        self.actionIdentifier_2.setObjectName(_fromUtf8("actionIdentifier_2"))
+        self.menuFile.addAction(self.actionExit)
+        self.menuData.addAction(self.actionImport_data_from_file)
+        self.menuData.addAction(self.actionExport_data_to_file)
+        self.menuData.addSeparator()
+        self.menuData.addAction(self.actionData_statistics)
+        self.menuPlot.addAction(self.action_2)
+        self.menuSort_strains_by.addAction(self.actionStrain_ID)
+        self.menuSort_strains_by.addAction(self.actionIdentifier_1)
+        self.menuSort_strains_by.addAction(self.actionIdentifier_2)
+        self.menuView.addAction(self.menuSort_strains_by.menuAction())
+        self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuData.menuAction())
+        self.menubar.addAction(self.menuPlot.menuAction())
+        self.menubar.addAction(self.menuView.menuAction())
+
+        # Prepare list of all check boxes possible
+        data = self.Project.getAllStrainNames()
+
+        self.strainCheckBoxList = []
+        for i, row in enumerate(data):
+            item = QtGui.QTableWidgetItem('')
+            item.setFlags(QtCore.Qt.ItemIsUserCheckable |
+                          QtCore.Qt.ItemIsEnabled)
+            item.setCheckState(QtCore.Qt.Unchecked)
+            self.strainCheckBoxList.append([row[0],row[1],row[2],row[3],item,row[4]])
+
+        self.comboBox.activated.connect(self.experimentSelect)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def updateTitersToPlot(self):
+        print('in here')
+        self.titersToPlot = []
+        for row in self.titerCheckBoxList:
+            if row[0].checkState() == QtCore.Qt.Checked:
+                self.titersToPlot.append(row[1])
+
+
+    def updateStrainsToPlot(self):
+        self.strainsToPlot = []
+        for row in self.strainCheckBoxList:
+            if row[4].checkState() == QtCore.Qt.Checked:
+                self.strainsToPlot.append(row)
+        # self.updateFigure()
+
+    def updateFigure(self):
+        self.Project.printGenericTimeCourse(figHandle = self.figure, strainsToPlot=self.strainsToPlot, titersToPlot=self.titersToPlot, removePointFraction=1, shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True )
+        self.mpl_canvas.draw()
+
+    def experimentSelect(self, id):
+        # data = self.Project.getAllStrainsByIDSQL(id)
+        id += 1
+        for row in range(self.tableWidget.rowCount()):
+            self.tableWidget.takeItem(row,3)
+
+        self.tableWidget.setRowCount(len([row[0] for row in self.strainCheckBoxList if row[0] == id]))
+
+
+
+        index = 0
+        print([row[4] for row in self.strainCheckBoxList])
+        for row in self.strainCheckBoxList:
+            if row[0] == id:
+                for j in range(3):
+                    item = QtGui.QTableWidgetItem()
+                    item.setText(_translate("MainWindow", row[j+1], None))
+                    self.tableWidget.setItem(index,j,item)
+                self.tableWidget.setItem(index,3,row[4])
+                index += 1
+        # for i, row in enumerate(self.strainCheckBoxList):
+
+        # for i, row in enumerate(data):
+        #     for j, column in enumerate(row):
+        #         item = QtGui.QTableWidgetItem()
+        #         item.setText(_translate("MainWindow", data[i][j], None))
+        #         self.tableWidget.setItem(i,j,item)
+        #     item = QtGui.QTableWidgetItem('')
+        #     item.setFlags(QtCore.Qt.ItemIsUserCheckable |
+        #                   QtCore.Qt.ItemIsEnabled)
+        #     item.setCheckState(QtCore.Qt.Unchecked)
+        #     self.tableWidget.setItem(i,3,item)
+
+    def populateExperiments(self):
+        pass
+        data = Project.getExperiments()
+        # self.comboBox.
+
+        # item = self.tableWidget.verticalHeaderItem(0)
+        # item.setText(_translate("MainWindow", "1", None))
+        # item = self.tableWidget.verticalHeaderItem(1)
+        # item.setText(_translate("MainWindow", "2", None))
+        # item = self.tableWidget.verticalHeaderItem(2)
+        # item.setText(_translate("MainWindow", "3", None))
+        # item = self.tableWidget.verticalHeaderItem(3)
+        # item.setText(_translate("MainWindow", "4", None))
+        # item = self.tableWidget.verticalHeaderItem(4)
+        # item.setText(_translate("MainWindow", "5", None))
+        # item = self.tableWidget.verticalHeaderItem(5)
+        # item.setText(_translate("MainWindow", "6", None))
+        # item = self.tableWidget.verticalHeaderItem(6)
+        # item.setText(_translate("MainWindow", "7", None))
+        # item = self.tableWidget.verticalHeaderItem(7)
+        # item.setText(_translate("MainWindow", "8", None))
+        # item = self.tableWidget.horizontalHeaderItem(0)
+        # item.setText(_translate("MainWindow", "Strain", None))
+        # item = self.tableWidget.horizontalHeaderItem(1)
+        # item.setText(_translate("MainWindow", "ID 1", None))
+        # item = self.tableWidget.horizontalHeaderItem(2)
+        # item.setText(_translate("MainWindow", "ID 2", None))
+        # item = self.tableWidget.horizontalHeaderItem(3)
+        # item.setText(_translate("MainWindow", "Plot?", None))
+        # __sortingEnabled = self.tableWidget.isSortingEnabled()
+        # self.tableWidget.setSortingEnabled(False)
+
+
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(_translate("MainWindow", "fDAPI: Fermentation Data Analysis and Plotting Inventory", None))
+        self.label_3.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:600;\">Data Browser</span></p></body></html>", None))
+        # self.comboBox.setItemText(0, _translate("MainWindow", "Experiment #1", None))
+        # self.comboBox.setItemText(1, _translate("MainWindow", "Experiment #2", None))
+        # self.comboBox.setItemText(2, _translate("MainWindow", "Experiment #3", None))
+        self.label.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:10pt; font-weight:600;\">Strains</span></p></body></html>", None))
+
+
+        # self.tableWidget.setSortingEnabled(__sortingEnabled)
+        self.label_2.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:10pt; font-weight:600;\">Titers</span></p></body></html>", None))
+        # self.checkBox_4.setText(_translate("MainWindow", "CheckBox", None))
+        self.menuFile.setTitle(_translate("MainWindow", "File", None))
+        self.menuData.setTitle(_translate("MainWindow", "Data", None))
+        self.menuPlot.setTitle(_translate("MainWindow", "Plot", None))
+        self.menuView.setTitle(_translate("MainWindow", "View", None))
+        self.menuSort_strains_by.setTitle(_translate("MainWindow", "Sort strains by..", None))
+        self.actionImport_data_from_file.setText(_translate("MainWindow", "Import data from file", None))
+        self.actionExport_data_to_file.setText(_translate("MainWindow", "Export data to file", None))
+        self.actionExit.setText(_translate("MainWindow", "Exit", None))
+        self.actionData_statistics.setText(_translate("MainWindow", "Data statistics", None))
+        self.action_2.setText(_translate("MainWindow", "Options", None))
+        self.actionStrain_ID.setText(_translate("MainWindow", "Strain ID", None))
+        self.actionIdentifier_1.setText(_translate("MainWindow", "Identifier 1", None))
+        self.actionIdentifier_2.setText(_translate("MainWindow", "Identifier 2", None))
+
+class fDAPI_login(object):
+    def __init__(self):
+       # SQLite stuff
+        # Initialize database
+        conn = sql.connect('userDB.db')
+        c = conn.cursor()
+        c.execute("CREATE TABLE IF NOT EXISTS %s (username TEXT, password TEXT) "% "userpass")
+        conn.commit()
+        c.close()
+        conn.close()
+
+class mainWindow(QtGui.QDialog):
+    def __init__(self,Project,parent=None):
+        super(mainWindow, self).__init__(parent)
+        self.Project = Project
+        # Populate the experimental data combo box
+        projectData = Project.getExperiments()
+        print(projectData[0][0])
+        experimentComboBox = QtGui.QComboBox(self)
+        for i in range(len(projectData)):
+            experimentComboBox.addItem(projectData[i][1])#+' - '+exptDescrpt[i])
+        experimentComboBox.activated[str].connect(self.exptComboBoxSelect)
+
+        # Initiate experiment list
+        # experimentListView = QtGui.QListView()
+        # sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # experimentListView.setSizePolicy(sizePolicy)
+
+        self.checkBox = dict()
+        self.titersCheckBox = dict()
+
+
+        # top bar
+        topBarHorzLayout = QtGui.QHBoxLayout()
+        topBarButtons = []
+        for button in ['Input Data','Plot Options','Visual Options']:
+            topBarButtons.append(QtGui.QPushButton(button))
+            topBarHorzLayout.addWidget(topBarButtons[-1])
+
+        # data selection layout
+        self.dataSelectionLayout = QtGui.QVBoxLayout()
+        self.dataSelectionLayout.addWidget(experimentComboBox)
+        self.strainsToPlotVertLayout = QtGui.QVBoxLayout()
+        self.dataSelectionLayout.addLayout(self.strainsToPlotVertLayout)
+        # self.dataSelectionLayout.addWidget(QtGui.QSpacerItem(1,0))
+        self.titersLayout = QtGui.QVBoxLayout()
+        self.dataSelectionLayout.addLayout(self.titersLayout)
+
+        # dataSelectionLayout.addWidget(experimentListView)
+
+        # Plotting stuff
+        self.figure = plt.figure()
+        # self.strainsToPlot = self.newProjectContainer.getAllStrains()
+        # self.titersToPlot = self.newProjectContainer.getAllTiters()
+        self.sortBy = 'identifier1'
+        self.plotType = 'printGenericTimeCourse'
+        self.showGrowthRates = True
+        self.plotCurveFit = True
+
+        # this is the Canvas Widget that displays the `figure`
+        # it takes the `figure` instance as a parameter to __init__
+        self.mpl_canvas = FigureCanvas(self.figure)
+
+        # this is the Navigation widget
+        # it takes the Canvas widget and a parent
+        self.mpl_toolbar = NavigationToolbar(self.mpl_canvas, self)
+
+        plotVertLayout = QtGui.QVBoxLayout()
+        plotVertLayout.addWidget(self.mpl_toolbar)
+        plotVertLayout.addWidget(self.mpl_canvas)
+
+
+        bottomHorzLayout = QtGui.QHBoxLayout()
+        bottomHorzLayout.addLayout(self.dataSelectionLayout)
+        bottomHorzLayout.addLayout(plotVertLayout)
+
+        mainVertLayout = QtGui.QVBoxLayout()
+        mainVertLayout.addLayout(topBarHorzLayout)
+        mainVertLayout.addLayout(bottomHorzLayout)
+
+
+        self.setLayout(mainVertLayout)
+
+    def exptComboBoxSelect(self,exptName):
+        # On selection of a new experiment, must clear all plotting data
+        if len(self.checkBox)>0:
+            for key in self.checkBox:
+                self.checkBox[key].close()
+
+        if len(self.titersCheckBox) > 0:
+            for key in self.titersCheckBox:
+                self.titersCheckBox[key].close()
+
+        # Set the current object as the selected experiment
+        self.newProjectContainer = [experiment[2] for experiment in self.Project.experimentList if experiment[0] == exptName][0]
+
+        # Populate the list of strains and add to layout
+        self.strainsToPlot = self.newProjectContainer.getAllStrains()
+        # self.strainsToPlot = []
+        for strain in self.strainsToPlot:
+            self.checkBox[strain] = (QtGui.QCheckBox(strain,self))
+            self.checkBox[strain].stateChanged.connect(self.updateStrainsToPlot)
+            self.strainsToPlotVertLayout.addWidget(self.checkBox[strain])
+        # for key in self.checkBox:
+
+
+        # self.dataSelectionLayout.addLayout(self.strainsToPlotVertLayout)
+
+
+        # Populate list of titers and add to layout
+        self.titersToPlot = self.newProjectContainer.getAllTiters()
+        #
+        #
+        #
+        for titer in self.titersToPlot:
+            self.titersCheckBox[titer] = (QtGui.QCheckBox(titer,self))
+            self.titersCheckBox[titer].stateChanged.connect(self.updateTiters)
+            self.titersLayout.addWidget(self.titersCheckBox[titer])
+
+
+
+        self.sortBy = 'identifier1'
+        self.plotType = 'printGenericTimeCourse'
+
+        # self.updateFigure()
+        # pass
+        # for experimentDate in Project.getExperiments():
+            
+    def updatePlotType(self, plotType):
+        self.plotType = plotType
+        self.updateFigure()
+
+    def updateSortBy(self, sortBy):
+        # print('in here')
+        self.sortBy = sortBy
+        self.updateFigure()
+
+    def updateStrainsToPlot(self):
+        self.strainsToPlot = []
+        for checkBoxKey in self.checkBox:
+            if self.checkBox[checkBoxKey].checkState() == QtCore.Qt.Checked:
+                self.strainsToPlot.append(checkBoxKey)
+        self.updateFigure()
+
+    def updateTiters(self):
+        self.titersToPlot = []
+        for titerCheckBoxKey in self.titersCheckBox:
+            if self.titersCheckBox[titerCheckBoxKey].checkState() == QtCore.Qt.Checked:
+                self.titersToPlot.append(titerCheckBoxKey)
+        self.updateFigure()
+
+    def updateOption(self):
+        for checkBoxKey in self.optionsCheckBox:
+            if self.optionsCheckBox[checkBoxKey].checkState() == QtCore.Qt.Checked:
+                setattr(self,checkBoxKey,True)
+            else:
+                setattr(self,checkBoxKey,False)
+        self.updateFigure()
+
+    def updateFigure(self):
+        #getattr(self.newProjectContainer,self.plotType)(self.figure, self.strainsToPlot, self.sortBy)
+        if self.plotType == 'printGenericTimeCourse':
+            self.newProjectContainer.printGenericTimeCourse(figHandle=self.figure, strainsToPlot=self.strainsToPlot,titersToPlot=self.titersToPlot, removePointFraction=4, plotCurveFit=self.plotCurveFit, showGrowthRates=self.showGrowthRates)
+        if self.plotType == 'printGrowthRateBarChart':
+            self.newProjectContainer.printGrowthRateBarChart(self.figure, self.strainsToPlot, self.sortBy)
+        if self.plotType == 'printAllReplicateTimeCourse':
+            self.newProjectContainer.printAllReplicateTimeCourse(self.figure, self.strainsToPlot)
+        self.mpl_canvas.draw()
 
 class Window(QtGui.QDialog):
     def __init__(self, newProjectContainer, parent=None):
@@ -155,9 +689,453 @@ class Window(QtGui.QDialog):
             self.newProjectContainer.printAllReplicateTimeCourse(self.figure, self.strainsToPlot)
         self.canvas.draw()
 
-class projectContainer(object):
+class Project(object):
     colorMap = 'Set3'
 
+    def __init__(self):
+
+        # c.execute("CREATE TABLE IF NOT EXISTS %s (datestamp TEXT, strainID TEXT, identifier1 TEXT, identifier2 TEXT, replicate INTEGER, time REAL, titerName TEXT, titerType TEXT, timeVec BLOB, dataVec BLOB) "%table)
+
+        #print('Searching for available databases...')
+        # conn = sql.connect('defaultProjectDatabase.db')
+        # c = conn.cursor()
+        # c.execute(
+        #     'CREATE TABLE IF NOT EXISTS experimentTable(datestamp TEXT, description TEXT, data BLOB)'
+        # )
+
+        # #load data
+        # c.execute("SELECT datestamp, description, data from experimentTable")
+        # data = c.fetchall()
+        # if len(data) > 0:
+        #     self.experimentData = []
+        #     self.experimentDescription = []
+        #     self.experimentData = []
+        #     print(data[0][2])
+        #     print('break')
+        #     print(str(data[0][2]))
+        #     a = pickle.loads(str(data[0][2]))
+        #     print('set a')
+        #     for row in data:
+        #         self.experimentDate = row[0]
+        #         self.experimentDescription = row[1]
+        #         self.experimentData = pickle.loads(str(row[2]))
+
+        self.dbName = 'defaultProjectDatabase.db'
+        try:
+            print('tried it')
+            self.experimentList = pickle.load(open('testpickle.p','rb'))
+        except Exception as e:
+            print('caught it')
+            self.experimentList = []
+
+        print('length of experimentList on fileOpen/Create: ',self.experimentList)
+
+        conn = sql.connect(self.dbName)
+        c = conn.cursor()
+        c.execute("CREATE TABLE IF NOT EXISTS replicateExperiment (experimentID INT, strainID TEXT, identifier1 TEXT, identifier2 TEXT)")
+        c.execute("CREATE TABLE IF NOT EXISTS experiments (dateAdded TEXT, experimentDate TEXT, experimentDescription TEXT)")
+        conn.commit()
+        c.close()
+        conn.close()
+        # print(experimentDataRaw[0])
+        # test = pickle.loads(str(experimentDataRaw[0]))
+        # self.experimentData = [pickle.loads(str(experimentDataRaw[i])) for i in range(len(experimentDataRaw))]
+
+        # for experiment in self.experimentDataRaw
+        #     self.experimentData = pickle.loads(self.experimentDataRaw)
+        # print([self.experimentDate, self.experimentName])
+        # c.close()
+        # conn.close()
+
+    def newExperiment(self, dateStamp, description,rawData):
+        experiment = projectContainer()
+        experiment.parseRawData(rawData[0],rawData[1])
+        # conn = sql.connect('defaultProjectDatabase.db')
+        # c = conn.cursor()
+        # preppedData = sql.Binary(pickle.dumps(experiment,pickle.HIGHEST_PROTOCOL))
+        # c.execute("INSERT INTO experimentTable(datestamp,description,data) VALUES(?, ?, ?)",(dateStamp,description,preppedData))
+        # conn.commit()
+        # c.close()
+        # conn.close()
+        self.experimentList.append([dateStamp, description, experiment])
+
+        # Build tables for each of the lists within experimentList
+        conn = sql.connect(self.dbName)
+        c = conn.cursor()
+
+        c.execute("INSERT INTO experiments (dateAdded, experimentDate, experimentDescription) VALUES (?,?,?)",
+                  (datetime.datetime.now().strftime("%Y%m%d %H:%M"),dateStamp,description))
+
+        for attrName, tableName in zip(['timePointList','titerObjectDict','singleExperimentObjectDict','replicateExperimentObjectDict'],
+                                       ['timePoint', 'titerObject', 'singleExperiment', 'replicateExperiment']):
+            if attrName == 'replicateExperimentObjectDict':
+                for key in getattr(experiment,attrName):
+                    c.execute("INSERT INTO replicateExperiment (experimentID, strainID, identifier1, identifier2) VALUES (?, ?,?,?)",
+                              (len(self.experimentList),
+                               getattr(experiment,attrName)[key].runIdentifier.strainID,
+                               getattr(experiment,attrName)[key].runIdentifier.identifier1,
+                               getattr(experiment,attrName)[key].runIdentifier.identifier2)
+                              )
+
+
+            # if attrName == 'singleExperimentObject'
+
+            # if attrName == 'timePointList':
+            #     for timePoint in getattr(experiment,attrName):
+            #         c.execute("INSERT INTO ? ( VALUES (?,?,?,?)")
+            # for key in getattr(experiment,attrName):
+            #     getattr(experiment,attrName)[key]
+
+        c.close()
+        conn.commit()
+        conn.close()
+        # self.timePointList = []#dict()
+        # self.titerObjectDict = dict()
+        # self.singleExperimentObjectDict = dict()
+        # self.replicateExperimentObjectDict = dict()
+
+            # SQLite stuff
+            # Initialize database
+            # conn = sql.connect('temptSQLite3db.db')
+            # c = conn.cursor()
+            # c.execute("""INSERT INTO timeCourseTable VALUES (?,?,?,?,?,?,?,?,?)""" ,
+            #           (datetime.datetime.now().strftime("%Y%m%d %H:%M"),
+            #           self.runIdentifier.strainID,
+            #           self.runIdentifier.identifier1,
+            #           self.runIdentifier.identifier2,
+            #           self.runIdentifier.replicate,
+            #           self.runIdentifier.time,
+            #           self.runIdentifier.titerName,
+            #           self.runIdentifier.titerType))
+            # conn.commit()
+            # c.close()
+            # conn.close()
+
+        # c.execute(
+        #     "I"
+        # )
+
+
+
+        pickle.dump(self.experimentList,open('testpickle.p','wb'))
+
+    def getExperiments(self):
+        print('There are ',len(self.experimentList),' experiments')
+        # print(self.experimentList)
+        conn = sql.connect(self.dbName)
+        c = conn.cursor()
+        c.execute("SELECT rowid, experimentDate, experimentDescription FROM experiments")
+        data = c.fetchall()
+        c.close()
+        conn.close()
+        return data
+
+        # return [[row[0] for row in self.experimentList],[row[1] for row in self.experimentList]]
+        # return [[experimentList.]]
+        # conn = sql.connect('defaultProjectDatabase.db')
+        # c = conn.cursor()
+        # c.execute("SELECT datestamp, description FROM experimentTable")
+        # data = c.fetchall()
+        # c.close()
+        # conn.close()
+        # return data
+
+    def getAllStrainNames(self):
+        conn = sql.connect(self.dbName)
+        c = conn.cursor()
+        c.execute("SELECT experimentID, strainID, identifier1, identifier2 FROM replicateExperiment order by experimentID ASC, strainID ASC, identifier1 ASC, identifier2 ASC")
+        data = list(c.fetchall())
+        dataList = []
+        for row in data:
+            dataList.append(list(row))
+        c.close()
+        conn.close()
+        # print(dataList)
+        # print(self.experimentList[row[0]-1])
+        for row in dataList:
+            row.append(self.experimentList[row[0]-1][2].replicateExperimentObjectDict[row[1]+row[2]+row[3]])
+        # print(dataList)
+        return dataList
+
+    def getAllTiterNames(self):
+        titerNames = []
+        for experiment in self.experimentList:
+            for key in experiment[2].replicateExperimentObjectDict:
+                for singleExperiment in experiment[2].replicateExperimentObjectDict[key].singleExperimentList:
+                    for product in singleExperiment.products:
+                       titerNames.append(product)
+
+                    if singleExperiment.OD != None:
+                        titerNames.append('OD')
+        uniqueTiterNames = set(titerNames)
+
+        # titersToPlot = [[[product for product in singleExperiment.products] for singleExperiment in self.replicateExperimentObjectDict[key].singleExperimentList] for key in self.replicateExperimentObjectDict]
+        #
+        #
+        # titersToPlot = [[[product for product in singleExperiment.products] for singleExperiment in self.replicateExperimentObjectDict[key].singleExperimentList] for key in self.replicateExperimentObjectDict]
+        #
+        # # Flatten list and find the uniques
+        # titersToPlot = [y for x in titersToPlot for y in x]
+        # titersToPlot =  list(set([y for x in titersToPlot for y in x]))
+        #
+        # ODList = [[singleExperiment.OD for singleExperiment in self.replicateExperimentObjectDict[key].singleExperimentList] for key in self.replicateExperimentObjectDict]
+        # ODList = list(set([y for x in ODList for y in x]))
+        #
+        # # print(ODList)
+        # if ODList[0] != None:
+        #     titersToPlot.append('OD')
+
+        return uniqueTiterNames
+
+    def getAllStrainsByIDSQL(self, experiment_id):
+        conn = sql.connect(self.dbName)
+        c = conn.cursor()
+        experiment_id += 1
+        c.execute("SELECT strainID, identifier1, identifier2 FROM replicateExperiment  WHERE (experimentID = ?)",(experiment_id,))
+        data = c.fetchall()
+        c.close()
+        conn.close()
+        return data
+
+    def getReplicateExperimentFromID(self, id):
+        conn = sql.connect(self.dbName)
+        c = conn.cursor()
+        c.execute("SELECT experimentID, strainID, identifier1, identifier2 FROM replicateExperiment WHERE (rowid = ?)",(id,))
+        data = c.fetchall()
+        c.close()
+        conn.close()
+        a = [data[0], data[1]+data[2]+data[3]]
+        return a
+
+    def plottingGUI(self):
+        app = QtGui.QApplication(sys.argv)
+        app.setApplicationName('fDAPI Plotting Interface')
+
+        main = mainWindow(self)
+        main.showMaximized()
+
+        sys.exit(app.exec_())
+
+    def plottingGUI2(self):
+        app = QtGui.QApplication(sys.argv)
+        app.setApplicationName('fDAPI Plotting Interface')
+        MainWindow = QtGui.QMainWindow()
+        ui = Ui_MainWindow()
+        ui.setupUi(MainWindow, Project)
+        MainWindow.showMaximized()
+
+        sys.exit(app.exec_())
+
+    def printGenericTimeCourse(self, figHandle = [], strainsToPlot=[], titersToPlot=[], removePointFraction=1, shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True ):
+        if figHandle == []:
+            figHandle = plt.figure(figsize=(12,8))
+
+        figHandle.set_facecolor('w')
+
+        # if strainsToPlot == []:
+        #     strainsToPlot = self.getAllStrainNames()
+            # replicateExperimentObjects
+        # Plot all product titers if none specified TODO: Add an option to plot OD as well
+        if titersToPlot == []:
+            titersToPlot = ['OD']#self.getAllTiters()
+        else:
+            # Check if titer exists for each strainToPlot
+            titersToPlotPerStrain = []
+            for row in strainsToPlot:
+                temp = []
+                for i, product in enumerate(titersToPlot):
+                    if product in row[5].singleExperimentList[0].products:
+                        temp.append(True)
+                    else:
+                        temp.append(False)
+                titersToPlotPerStrain.append(temp)
+        titerNames = []
+        for experiment in self.experimentList:
+            for key in experiment[2].replicateExperimentObjectDict:
+                for singleExperiment in experiment[2].replicateExperimentObjectDict[key].singleExperimentList:
+                    for product in singleExperiment.products:
+                       titerNames.append(product)
+
+                    if singleExperiment.OD != None:
+                        titerNames.append('OD')
+        uniqueTiterNames = set(titerNames)
+
+        # print(strainsToPlot,titersToPlot)
+
+        # Determine optimal figure size
+        if len(titersToPlot) == 1:
+            figureSize = (12,6)
+        if len(titersToPlot) > 1:
+            figureSize = (12,3.5)
+        if len(titersToPlot) > 4:
+            figureSize = (12,7)
+
+        if plotCurveFit==True:
+            plotSymbol = 'o'
+        else:
+            plotSymbol = 'o-'
+
+        figHandle#.set_size_inches(figureSize, forward=True)
+        # plt.figure(figsize=figureSize)
+        plt.clf()
+        # print(strainsToPlot)
+        colors = plt.get_cmap(self.colorMap)(np.linspace(0,1,len(strainsToPlot)))
+
+        useNewColorScheme = 1
+        if useNewColorScheme == 1:
+            # Gather some information about the data
+            uniques = dict()
+            numUniques = dict()
+            for identifier, col in zip(['experiment','strainID','identifier1','identifier2'],[0,1,2,3]):
+                uniques[identifier] = set(row[col] for row in strainsToPlot)
+                numUniques[identifier] = len(uniques[identifier])
+
+            # Check number of unique identifier1s for each of the two identifier2s
+            for identifier, col in zip(['experiment','strainID','identifier1','identifier2'],[0,1,2,3]):
+                if identifier == 'identifier1':
+                    uniques[identifier]
+
+            # print(row[3] for row in strainsToPlot)
+            lenEachUniqueID = []
+            for id in uniques['identifier2']:
+                lenEachUniqueID.append(len([0 for row in strainsToPlot if row[3] == id]))
+
+            # Test coloring by
+            cmap = []
+            cmap.append('Blues')
+            cmap.append('Greens')
+            colors_test = []
+            colors_test.append(plt.get_cmap(cmap[0])(np.linspace(0.2,0.9,lenEachUniqueID[0])))
+            colors_test.append(plt.get_cmap(cmap[1])(np.linspace(0.2,0.9,lenEachUniqueID[1])))
+
+            colorList = []
+            i = 0
+            j = 0
+            for row in strainsToPlot:
+                if row[3] == list(uniques['identifier2'])[0]:
+                    colorList.append(colors_test[0][i])
+                    i += 1
+                if row[3] == list(uniques['identifier2'])[1]:
+                    colorList.append(colors_test[1][j])
+                    j += 1
+
+            colors = colorList
+
+
+        pltNum = 0
+        handleArray = [None for i in range(len(strainsToPlot))]
+        lineLabelsArray = [None for i in range(len(strainsToPlot))]
+        for product in titersToPlot:
+            pltNum += 1
+
+            # Choose the subplot layout
+            if len(titersToPlot) == 1:
+                ax = plt.subplot(111)
+            elif len(titersToPlot) < 5:
+                ax = plt.subplot(1,len(titersToPlot),pltNum)
+            elif len(titersToPlot) < 9:
+                ax = plt.subplot(2,(len(titersToPlot)+1)/2,pltNum)
+            else:
+                raise Exception("Unimplemented Functionality")
+
+            # Set some axis aesthetics
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
+
+            colorIndex = 0
+            handle = dict()
+            xlabel = 'Time (hours)'
+
+
+            handle_ebar = []
+            handle = []
+            minOneLinePlotted = False
+
+            for i, row in enumerate(strainsToPlot):
+                replicateToPlot = row[5]
+                if product in replicateToPlot.singleExperimentList[0].products or (product == 'OD' and replicateToPlot.singleExperimentList[0].OD != None):
+                    # print(row)
+
+                    lineLabelsArray[i] = (str(row[0])+'\t'+row[1]+'\t'+row[2]+'\t'+row[3]).expandtabs()
+                    xData = replicateToPlot.t
+
+                    if product == 'OD':
+                        scaledTime = replicateToPlot.t
+                        # Plot the fit curve
+                        if plotCurveFit==True:
+                            handleArray[i] = plt.plot(np.linspace(min(scaledTime),max(scaledTime),50),
+                                                    replicateToPlot.avg.OD.returnCurveFitPoints(np.linspace(min(replicateToPlot.t),max(replicateToPlot.t),50)),
+                                                   '-',lw=1.5,color=colors[colorIndex])[0]
+
+
+                        # Plot the data
+                        temp = plt.errorbar(scaledTime[::removePointFraction],
+                                                   replicateToPlot.avg.OD.dataVec[::removePointFraction],
+                                                   replicateToPlot.std.OD.dataVec[::removePointFraction],
+                                                   lw=2.5,elinewidth=1,capsize=2,fmt=plotSymbol,markersize=5,color=colors[colorIndex])[0]
+                        if plotCurveFit == False : handleArray[i] = temp
+
+                        handleArray[i] = mpatches.Patch(color=colors[colorIndex])
+
+                        # Fill in the error bar range
+                        if shadeErrorRegion==True:
+                            plt.fill_between(scaledTime,replicateToPlot.avg.OD.dataVec+replicateToPlot.std.OD.dataVec,
+                                             replicateToPlot.avg.OD.dataVec-replicateToPlot.std.OD.dataVec,
+                                             facecolor=colors[colorIndex],alpha=0.1)
+                        # Add growth rates at end of curve
+                        if showGrowthRates==True:
+                            plt.text(scaledTime[-1]+0.5,
+                                     replicateToPlot.avg.OD.returnCurveFitPoints(np.linspace(min(replicateToPlot.t),max(replicateToPlot.t),50))[-1],
+                                     '$\mu$ = '+'{:.2f}'.format(replicateToPlot.avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicateToPlot.std.OD.rate[1])+', n='+str(len(replicateToPlot.replicateIDs)-len(replicateToPlot.badReplicates)),
+                                     verticalalignment='center')
+                        ylabel = 'OD$_{600}$'
+                    else:
+
+                        scaledTime = replicateToPlot.t
+
+                        handleArray[i] = plt.plot(np.linspace(min(scaledTime),max(scaledTime),50),
+                                                replicateToPlot.avg.products[product].returnCurveFitPoints(np.linspace(min(replicateToPlot.t),max(replicateToPlot.t),50)),
+                                               '-',lw=0.5,color=colors[colorIndex])[0]
+                        handleArray[i] = mpatches.Patch(color=colors[colorIndex])
+
+                        handle_ebar.append(plt.errorbar(replicateToPlot.t,replicateToPlot.avg.products[product].dataVec,replicateToPlot.std.products[product].dataVec,lw=2.5,elinewidth=1,capsize=2,fmt='o-',color=colors[colorIndex]))
+                        ylabel = product+" Titer (g/L)"
+                    minOneLinePlotted = True
+                colorIndex += 1
+            if minOneLinePlotted == True:
+                plt.xlabel(xlabel)
+                plt.ylabel(ylabel)
+                ymin, ymax = plt.ylim()
+                xmin, xmax = plt.xlim()
+                plt.xlim([0,xmax*1.2])
+                plt.ylim([0,ymax])
+        # plt.style.use('ggplot')
+        plt.tight_layout()
+        plt.tick_params(right="off",top="off")
+        # print(handle)
+        # print(lineLabels)
+        print(handleArray)
+        print(lineLabelsArray)
+        plt.legend(handleArray,lineLabelsArray,bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
+        plt.subplots_adjust(right=0.7)
+
+        if len(titersToPlot) == 1:
+            plt.legend(handleArray,lineLabelsArray,bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
+            plt.subplots_adjust(right=0.7)
+        elif len(titersToPlot) < 4:
+            plt.legend(handleArray,lineLabelsArray,bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
+            plt.subplots_adjust(right=0.75)
+        else:
+            plt.legend(handleArray,lineLabelsArray,bbox_to_anchor=(1.05, 1.1), loc=6, borderaxespad=0, frameon=False)
+            plt.subplots_adjust(right=0.75)
+
+        # Save the figure
+        # plt.savefig(os.path.join(os.path.dirname(__file__),'Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" H"+time.strftime('%H')+'-M'+time.strftime('%M')+'-S'+time.strftime('%S')+'.png'))
+        # plt.show()
+
+
+class projectContainer(object):
+    colorMap = 'Set2'
     def __init__(self):
         # Initialize variables
         self.timePointList = []#dict()
@@ -190,6 +1168,8 @@ class projectContainer(object):
         temp.sort()
         # print(temp)
         return temp
+
+
 
     def getAllTiters(self):
         titersToPlot = [[[product for product in singleExperiment.products] for singleExperiment in self.replicateExperimentObjectDict[key].singleExperimentList] for key in self.replicateExperimentObjectDict]
@@ -518,7 +1498,7 @@ class projectContainer(object):
         if len(titersToPlot) == 1:
             plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
             plt.subplots_adjust(right=0.7)
-        elif len(titersToPlot) < 4:
+        elif len(titersToPlot) < 5:
             plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
             plt.subplots_adjust(right=0.75)
         else:
@@ -946,9 +1926,12 @@ class timeCourseObject(titerObject):
         self.timeVec = None
         self._dataVec = None
         self.rate = None
+
+        # Parameters
         self.removeDeathPhaseFlag = True
         self.useFilteredDataFlag = False
         self.deathPhaseStart = None
+        self.blankSubtractionFlag = True
 
         self.savgolFilterWindowSize = 21    # Must be odd
 
@@ -961,32 +1944,6 @@ class timeCourseObject(titerObject):
 
     @dataVec.setter
     def dataVec(self, dataVec):
-
-        if 1 == 0:
-            # Find the last point of the growth phase
-
-            # Find the maximum of the data
-            maxGrowthIndex = np.where(dataVec == np.max(dataVec))[0]
-            print(maxGrowthIndex)
-            # Check points after this for a decrease
-            filteredData = savgol_filter(dataVec,31,3)
-            diff = np.diff(filteredData)
-            count = 1
-            flag = 0
-            deathPhaseStartIndex = len(dataVec)
-            for i in range(maxGrowthIndex,len(dataVec)):
-                if diff[i-1] < 0:
-                    count += 1
-                    flag = 1
-                else:
-                    if flag == 1:
-                        count = 0
-                if count > 10:
-                    deathPhaseStartIndex = i-10
-                    break
-
-            print('death phase starts at:',deathPhaseStartIndex)
-
 
 
         self._dataVec = dataVec
@@ -1017,9 +1974,9 @@ class timeCourseObject(titerObject):
                     #     self.deathPhaseStart = len(dataVec)
                         # self._dataVec = dataVec
                     # print(len(self._dataVec)," ",len(self.timeVec))
-                    plt.plot(self._dataVec[0:self.deathPhaseStart],'r.')
-                    plt.plot(self._dataVec,'b-')
-                    plt.show()
+                    # plt.plot(self._dataVec[0:self.deathPhaseStart],'r.')
+                    # plt.plot(self._dataVec,'b-')
+                    # plt.show()
                 except Exception as e:
                     print(e)
                     print(dataVec)
@@ -1061,7 +2018,7 @@ class timeCourseObject(titerObject):
             # conn.close()
 
         # self._dataVec = dataVec
-        print(self.deathPhaseStart)
+        # print(self.deathPhaseStart)
         if len(self.dataVec)>6:
             self.calcExponentialRate()
 
@@ -1118,6 +2075,17 @@ class timeCourseObject(titerObject):
             self.calcExponentialRate()
         else:
             self.rate = [0,0,0,0,0,0]
+
+
+    # def curveFitInput(self):
+    #     def __init__(self):
+    #         self.gmod = None
+    #
+    #
+    #     def growthEquation():
+    #         raise(Exception('implement this function'))
+    #
+    # def
 
 
     def calcExponentialRate(self):
@@ -1246,6 +2214,10 @@ class timeCourseObject(titerObject):
             # plt.plot(self.timeVec,self.returnCurveFitPoints(self.timeVec),'g-')
             # print(self.returnCurveFitPoints(self.timeVec))
             # plt.show()
+
+# class exp(object):
+#     def __init__(self):
+
 
 class timeCourseObjectShell(timeCourseObject):
     @timeCourseObject.dataVec.setter
