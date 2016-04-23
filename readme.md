@@ -1,1 +1,4 @@
-This package is intended to help parse HPLC and OD time course data. This package is in development but basic functionality is present.
+Fermentation Data Analysis and Plotting Inventory
+===================================================
+This package is intended to help parse, analyze, plot and store time course data common to fermentation, including
+OD, titers and fluorescence.
