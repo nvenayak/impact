@@ -18,6 +18,7 @@ print(exptInfo)
 # proj.newExperiment('2015.04.14','pTOG Test with new heat seal',['rawData/2016.04.14 pTOG Characterization.xlsx', 'NV_OD'])
 
 # proj.newExperiment('2016.02.05','pTOG Titers Test',['rawData/2016.02.05 pTOG Characterization Titers.xlsx', 'NV_titers0.2'])
+proj.newExperiment('2016.04.21','pTOG Test - Preculture - with double seal, 0.5mM Sulfide',['rawData/2016.04.21 pTOG Characterization - Preculture.xlsx', 'NV_OD'])
 
 # print(proj.getExperiments())
 # proj.plottingGUI()

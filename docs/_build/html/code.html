@@ -108,9 +108,36 @@
 Date:       October, 2015</p>
 <p>This is the main data object container. Almost all functionality is contained here.</p>
 <dl class="class">
+<dt id="fDAPI.CurveFitObject">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">CurveFitObject</code><span class="sig-paren">(</span><em>paramList</em>, <em>growthEquation</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.CurveFitObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for curve fitting objects</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>paramList: List of parameters, with initial guess, max and min values</dt>
+<dd>Each parameter is a dict with the following form
+{&#8216;name&#8217;: str PARAMETER NAME,
+&#8216;guess&#8217;: float or lambda function
+&#8216;max&#8217;: float or lambda function
+&#8216;min&#8217;: float or lambda function
+&#8216;vary&#8217; True or False}</dd>
+<dt>growthEquation: A function to fit with the following form:</dt>
+<dd>def growthEquation(t, param1, param2, ..): return f(param1,param2,..)</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
 <dt id="fDAPI.Project">
 <em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">Project</code><a class="headerlink" href="#fDAPI.Project" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="class">
+<dt id="fDAPI.endPointObject">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">endPointObject</code><span class="sig-paren">(</span><em>runID</em>, <em>t</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.endPointObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a child of <code class="xref py py-class docutils literal"><span class="pre">titerObject</span></code> which does not calcualte any time-based data</p>
+</dd></dl>
 
 <dl class="class">
 <dt id="fDAPI.replicateExperimentObject">
@@ -121,16 +148,21 @@ titers which are stored within it</p>
 <dt id="fDAPI.replicateExperimentObject.addReplicateExperiment">
 <code class="descname">addReplicateExperiment</code><span class="sig-paren">(</span><em>newReplicateExperiment</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.replicateExperimentObject.addReplicateExperiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a singleExperimentData object to this list of replicates</p>
-<p>mewReplicateExperiment: A <code class="xref py py-class docutils literal"><span class="pre">singleExperimentData</span></code> object</p>
+<p>mewReplicateExperiment: A <a class="reference internal" href="#fDAPI.singleExperimentData" title="fDAPI.singleExperimentData"><code class="xref py py-class docutils literal"><span class="pre">singleExperimentData</span></code></a> object</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="fDAPI.replicateExperimentObject.calcAverageAndDev">
 <code class="descname">calcAverageAndDev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.replicateExperimentObject.calcAverageAndDev" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the statistics on the singleExperimentData objects
-:return:</p>
+<dd><p>Calculates the statistics on the singleExperimentData objects</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="fDAPI.singleExperimentData">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">singleExperimentData</code><a class="headerlink" href="#fDAPI.singleExperimentData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container for single experiment data. This includes all data for a single strain (OD, titers, fluorescence, etc.)</p>
 </dd></dl>
 
 <dl class="class">
@@ -138,6 +170,18 @@ titers which are stored within it</p>
 <em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">singleExperimentDataShell</code><a class="headerlink" href="#fDAPI.singleExperimentDataShell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object which overwrites the singleExperimentData objects setters and getters, acts as a shell of data with the
 same structure as singleExperimentData</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="fDAPI.timeCourseObject">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">timeCourseObject</code><a class="headerlink" href="#fDAPI.timeCourseObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Child of <code class="xref py py-class docutils literal"><span class="pre">titerObject</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="fDAPI.timeCourseObjectShell">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">timeCourseObjectShell</code><a class="headerlink" href="#fDAPI.timeCourseObjectShell" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a shell of :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>~titerObject&#8217; with an overidden setter to be used as a container</p>
 </dd></dl>
 
 </div>
