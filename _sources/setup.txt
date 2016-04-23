@@ -1,0 +1,26 @@
+Quick Start Guide
+**********************************
+This package is dependent on scipy, numpy, PyQt4, lmfit and pyexcel. It has only been tested on python 3.4.
+
+An anaconda3 base installation is recommended and available here: https://www.continuum.io/downloads
+
+Following a successful Anaconda installation, the following commands should be executed in the console:
+
+Curve fitting toolbox used in placed of scipy.optimize:
+
+- pip install lmfit
+
+Package to allow easy import of xls files (which is more convenient than using csv)
+
+- pip install pyexcel_xls
+
+Package to allow serialization of functions which are not explicitely declared
+
+- pip install dill
+
+
+The following should be executed in the root fDAPI directory (which contains setup.py)
+
+- setup.py install
+
+To verify the installation was successful, run the testProjectDB.py file, you should get an output indicating 96 titer objects are parsed and a GUI should load.
