@@ -1,12 +1,13 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
-    name='dataImportandPlottingToolbox',
-    version='',
+    name='fDAPI',
+    version='0.0.0',
     packages=['fDAPI'],
-    url='',
+    url='www.github.com/nvenayak/dataimportandplottingtoolbox',
     license='',
-    author='Naveen',
-    author_email='',
-    description=''
+    author='Naveen Venayak',
+    author_email='naveen.venayak@gmail.com',
+    description='Toolbox for parsing, analyzing and plotting fermentation data including OD, titers and fluorescence',
+    install_requires=['pyexcel_xlsx','lmfit','dill']
 )

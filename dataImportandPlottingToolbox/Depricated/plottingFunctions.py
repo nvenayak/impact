@@ -140,7 +140,7 @@ def printGrowthRateBarChart(replicateExperimentObjectList, strainsToPlot, sortBy
 
     plt.xticks(index-barWidth,
                tempticks,
-                #if getattr(replicateExperimentObjectList[key].runIdentifier,sortBy) == maxIndex],
+                #if getattr(replicateExperimentObjectList[key].RunIdentifier,sortBy) == maxIndex],
                rotation='45', ha='right', va='top')
     plt.tight_layout()
     plt.subplots_adjust(right=0.75)

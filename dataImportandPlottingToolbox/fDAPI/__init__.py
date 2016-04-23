@@ -7,26 +7,22 @@ This is the main data object container. Almost all functionality is contained he
 
 __author__ = 'Naveen Venayak'
 
+import sqlite3 as sql
+import time
+import datetime
+import copy
+import sys
+
 import numpy as np
 from scipy.signal import savgol_filter
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-
 from lmfit import Model
 from pyexcel_xlsx import get_data
-
 from PyQt4 import QtGui, QtCore
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
-
-import sqlite3 as sql
-
-import os
-import time
-import datetime
-import copy
-import pickle
-import sys
+import dill as pickle
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -636,7 +632,7 @@ class Project(object):
         # conn.close()
 
     def newExperiment(self, dateStamp, description,rawData):
-        experiment = projectContainer()
+        experiment = Experiment()
         experiment.parseRawData(rawData[0],rawData[1])
         # conn = sql.connect('defaultProjectDatabase.db')
         # c = conn.cursor()
@@ -655,7 +651,7 @@ class Project(object):
                   (datetime.datetime.now().strftime("%Y%m%d %H:%M"),dateStamp,description))
 
         for attrName, tableName in zip(['timePointList','titerObjectDict','singleExperimentObjectDict','replicateExperimentObjectDict'],
-                                       ['timePoint', 'titerObject', 'singleExperiment', 'replicateExperiment']):
+                                       ['TimePoint', 'Titer', 'singleExperiment', 'replicateExperiment']):
             if attrName == 'replicateExperimentObjectDict':
                 for key in getattr(experiment,attrName):
                     c.execute("INSERT INTO replicateExperiment (experimentID, strainID, identifier1, identifier2) VALUES (?, ?,?,?)",
@@ -669,7 +665,7 @@ class Project(object):
             # if attrName == 'singleExperimentObject'
 
             # if attrName == 'timePointList':
-            #     for timePoint in getattr(experiment,attrName):
+            #     for TimePoint in getattr(experiment,attrName):
             #         c.execute("INSERT INTO ? ( VALUES (?,?,?,?)")
             # for key in getattr(experiment,attrName):
             #     getattr(experiment,attrName)[key]
@@ -688,13 +684,13 @@ class Project(object):
             # c = conn.cursor()
             # c.execute("""INSERT INTO timeCourseTable VALUES (?,?,?,?,?,?,?,?,?)""" ,
             #           (datetime.datetime.now().strftime("%Y%m%d %H:%M"),
-            #           self.runIdentifier.strainID,
-            #           self.runIdentifier.identifier1,
-            #           self.runIdentifier.identifier2,
-            #           self.runIdentifier.replicate,
-            #           self.runIdentifier.time,
-            #           self.runIdentifier.titerName,
-            #           self.runIdentifier.titerType))
+            #           self.RunIdentifier.strainID,
+            #           self.RunIdentifier.identifier1,
+            #           self.RunIdentifier.identifier2,
+            #           self.RunIdentifier.replicate,
+            #           self.RunIdentifier.time,
+            #           self.RunIdentifier.titerName,
+            #           self.RunIdentifier.titerType))
             # conn.commit()
             # c.close()
             # conn.close()
@@ -1000,10 +996,7 @@ class Project(object):
         # plt.style.use('ggplot')
         plt.tight_layout()
         plt.tick_params(right="off",top="off")
-        # print(handle)
-        # print(lineLabels)
-        print(handleArray)
-        print(lineLabelsArray)
+
         plt.legend(handleArray,lineLabelsArray,bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
         plt.subplots_adjust(right=0.7)
 
@@ -1022,7 +1015,7 @@ class Project(object):
         # plt.show()
 
 
-class projectContainer(object):
+class Experiment(object):
     colorMap = 'Set2'
     def __init__(self):
         # Initialize variables
@@ -1098,12 +1091,12 @@ class projectContainer(object):
             skippedLines = 0
             timeCourseObjectList = dict()
             for row in data[ODDataSheetName][1:]:
-                temp_run_identifier_object = runIdentifier()
+                temp_run_identifier_object = RunIdentifier()
                 if type("asdf") == type(row[0]):
                     temp_run_identifier_object.getRunIdentifier(row[0])
                     temp_run_identifier_object.titerName = 'OD600'
                     temp_run_identifier_object.titerType = 'OD'
-                    tempTimeCourseObject = timeCourseObject()
+                    tempTimeCourseObject = TimeCourse()
                     tempTimeCourseObject.runIdentifier = temp_run_identifier_object
                     # Data in seconds, data required to be in hours
                     tempTimeCourseObject.timeVec = np.array(np.divide(data[ODDataSheetName][0][1:], 3600))
@@ -1145,7 +1138,7 @@ class projectContainer(object):
                 if type("asdf") == type(data['titers'][i][0]):  #Check if the data is a string
                     tempParsedIdentifier = data['titers'][i][0].split(',')  #Parse the string using comma delimiter
                     if len(tempParsedIdentifier) >= 3:  #Ensure corect number of identifiers TODO make this general
-                        tempRunIdentifierObject = runIdentifier()
+                        tempRunIdentifierObject = RunIdentifier()
                         tempParsedStrainIdentifier = tempParsedIdentifier[0].split("+")
                         tempRunIdentifierObject.strainID = tempParsedStrainIdentifier[0]
                         tempRunIdentifierObject.identifier1 = tempParsedStrainIdentifier[1]
@@ -1161,7 +1154,7 @@ class projectContainer(object):
                                 tempRunIdentifierObject.titerType = 'substrate'
                             else:
                                 tempRunIdentifierObject.titerType = 'product'
-                            self.timePointList.append(timePoint(copy.copy(tempRunIdentifierObject), key, tempRunIdentifierObject.t, data['titers'][i][titerNameColumn[key]]))
+                            self.timePointList.append(TimePoint(copy.copy(tempRunIdentifierObject), key, tempRunIdentifierObject.t, data['titers'][i][titerNameColumn[key]]))
 
                     else:
                         skippedLines += 1
@@ -1192,7 +1185,7 @@ class projectContainer(object):
             ### NOTE: THIS PARSER IS NOT GENERIC AND MUST BE MODIFIED FOR YOUR SPECIFIC INPUT TYPE ###
             for i in range(4, len(data['titers'])):
                 if type("asdf") == type(data['titers'][i][0]):  #Check if the data is a string
-                    temp_run_identifier_object = runIdentifier()
+                    temp_run_identifier_object = RunIdentifier()
                     temp_run_identifier_object.getRunIdentifier(data['titers'][i][0])
 
                     tempParsedIdentifier = data['titers'][i][0].split(',')  #Parse the string using comma delimiter
@@ -1203,11 +1196,11 @@ class projectContainer(object):
                         temp_run_identifier_object.titerName = key
                         if key == 'Glucose':
                             temp_run_identifier_object.titerType = 'substrate'
-                            self.timePointList.append(timePoint(copy.copy(temp_run_identifier_object), key, 0, 12))
+                            self.timePointList.append(TimePoint(copy.copy(temp_run_identifier_object), key, 0, 12))
                         else:
                             temp_run_identifier_object.titerType = 'product'
-                            self.timePointList.append(timePoint(copy.copy(temp_run_identifier_object), key, 0, 0))
-                        self.timePointList.append(timePoint(copy.copy(temp_run_identifier_object), key, temp_run_identifier_object.t, data['titers'][i][titerNameColumn[key]]))
+                            self.timePointList.append(TimePoint(copy.copy(temp_run_identifier_object), key, 0, 0))
+                        self.timePointList.append(TimePoint(copy.copy(temp_run_identifier_object), key, temp_run_identifier_object.t, data['titers'][i][titerNameColumn[key]]))
 
 
                     else:
@@ -1235,7 +1228,7 @@ class projectContainer(object):
             if timePoint.getUniqueTimePointID() in self.titerObjectDict:
                 self.titerObjectDict[timePoint.getUniqueTimePointID()].addTimePoint(timePoint)
             else:
-                self.titerObjectDict[timePoint.getUniqueTimePointID()] = timeCourseObject()
+                self.titerObjectDict[timePoint.getUniqueTimePointID()] = TimeCourse()
                 self.titerObjectDict[timePoint.getUniqueTimePointID()].addTimePoint(timePoint)
         tf = time.time()
         print("Parsed %i titer objects in %0.1fs\n" % (len(self.titerObjectDict),(tf-t0)))
@@ -1248,7 +1241,7 @@ class projectContainer(object):
             if titerObjectDict[titerObjectDictKey].getTimeCourseID() in self.singleExperimentObjectDict:
                 self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].addTiterObject(titerObjectDict[titerObjectDictKey])
             else:
-                self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()] = singleExperimentData()
+                self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()] = SingleTrial()
                 self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].addTiterObject(titerObjectDict[titerObjectDictKey])
         tf = time.time()
         print("Parsed %i titer objects in %0.1fms\n" % (len(self.singleExperimentObjectDict),(tf-t0)*1000))
@@ -1265,7 +1258,7 @@ class projectContainer(object):
                     flag = 1
                     break
             if flag == 0:
-                self.replicateExperimentObjectDict[singleExperimentObjectList[key].getUniqueReplicateID()] = replicateExperimentObject()
+                self.replicateExperimentObjectDict[singleExperimentObjectList[key].getUniqueReplicateID()] = ReplicateTrial()
                 self.replicateExperimentObjectDict[singleExperimentObjectList[key].getUniqueReplicateID()].addReplicateExperiment(singleExperimentObjectList[key])
         tf = time.time()
         print("Parsed %i titer objects in %0.1fs\n" % (len(self.replicateExperimentObjectDict),(tf-t0)))
@@ -1490,14 +1483,14 @@ class projectContainer(object):
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
 
-        # uniques = list(set([getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) for key in strainsToPlot]))
+        # uniques = list(set([getattr(self.replicateExperimentObjectDict[key].RunIdentifier,sortBy) for key in strainsToPlot]))
         # uniques.sort()
         #
         # # Find max number of samples (in case they all aren't the same)
         # maxSamples = 0
         # for unique in uniques:
-        #     if len([self.replicateExperimentObjectDict[key].avg.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique]) > maxSamples:
-        #         maxSamples = len([self.replicateExperimentObjectDict[key].avg.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique])
+        #     if len([self.replicateExperimentObjectDict[key].avg.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].RunIdentifier,sortBy) == unique]) > maxSamples:
+        #         maxSamples = len([self.replicateExperimentObjectDict[key].avg.OD.rate[1] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].RunIdentifier,sortBy) == unique])
         #         maxIndex = unique
 
         replicateExperimentObjectList = self.replicateExperimentObjectDict
@@ -1523,7 +1516,7 @@ class projectContainer(object):
                 maxSamples = 0
                 for unique in uniques:
                     if len([self.replicateExperimentObjectDict[key].avg.products[product] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique]) > maxSamples:
-                    # if len([self.replicateExperimentObjectDict[key].avg.products[prodKey] for prodkey in self.replicateExperimentObjectDict[key] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique]) > maxSamples:
+                    # if len([self.replicateExperimentObjectDict[key].avg.products[prodKey] for prodkey in self.replicateExperimentObjectDict[key] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].RunIdentifier,sortBy) == unique]) > maxSamples:
                         maxSamples = len([self.replicateExperimentObjectDict[key].avg.products[product] for key in strainsToPlot if getattr(self.replicateExperimentObjectDict[key].runIdentifier,sortBy) == unique])
                         maxIndex = unique
 
@@ -1726,8 +1719,8 @@ class projectContainer(object):
         plt.ylabel(singleExperiment.runIdentifier.returnUniqueID())
         # plt.tight_layout()
 
-class runIdentifier(object):
-    #Base runIdentifier object
+class RunIdentifier(object):
+    #Base RunIdentifier object
     def __init__(self):
         self.strainID = ''          # e.g. MG1655 dlacI
         self.identifier1 = ''       # e.g. pTOG009
@@ -1764,7 +1757,7 @@ class runIdentifier(object):
     def returnUniqueExptID(self):
         return self.strainID+self.identifier1+self.identifier2+str(self.replicate)
 
-class timePoint(object):
+class TimePoint(object):
     def __init__(self, runID, titerName, t, titer):
         self.runIdentifier = runID
         self.titerName = titerName
@@ -1774,10 +1767,10 @@ class timePoint(object):
     def getUniqueTimePointID(self):
         return self.runIdentifier.strainID+self.runIdentifier.identifier1+self.runIdentifier.identifier2+str(self.runIdentifier.replicate)+self.runIdentifier.titerName
 
-class titerObject(object):
+class Titer(object):
     def __init__(self):
         self.timePointList = []
-        self._runIdentifier = runIdentifier()
+        self._runIdentifier = RunIdentifier()
 
     @property
     def runIdentifier(self):
@@ -1788,7 +1781,7 @@ class titerObject(object):
         self._runIdentifier = runIdentifier
 
     def addTimePoint(self, timePoint):
-        raise(Exception("No addTimePoint method defiend in the child"))
+        raise(Exception("No addTimePoint method defined in the child"))
 
     def getTimeCourseID(self):
         if len(self.timePointList)>0:
@@ -1802,15 +1795,61 @@ class titerObject(object):
                    self.runIdentifier.identifier2+\
                    str(self.runIdentifier.replicate)
         else:
-            raise Exception("No unique ID or time points in titerObject()")
+            raise Exception("No unique ID or time points in Titer()")
 
     def getReplicateID(self):
-        #return self.runIdentifier
         return self.runIdentifier.strainID+self.runIdentifier.identifier1+self.runIdentifier.identifier2
 
-class timeCourseObject(titerObject):
+class CurveFitObject(object):
+    """
+    Wrapper for curve fitting objects
+
+    Parameters:
+        paramList: List of parameters, with initial guess, max and min values
+            Each parameter is a dict with the following form
+            {'name': str PARAMETER NAME,
+            'guess': float or lambda function
+            'max': float or lambda function
+            'min': float or lambda function
+            'vary' True or False}
+        growthEquation: A function to fit with the following form:
+            def growthEquation(t, param1, param2, ..): return f(param1,param2,..)
+    """
+    def __init__(self,paramList,growthEquation):
+        self.paramList = paramList
+        self.growthEquation = growthEquation
+        self.gmod = Model(growthEquation)
+
+    def calcFit(self, t, data, method='slsqp'):
+        for param in self.paramList:
+            # Check if the parameter is a lambda function
+            temp = dict()
+            for hint in ['guess','min','max']:
+                if type(param[hint]) == type(lambda x: 0):
+                    try:
+                        temp[hint] = param[hint](data)
+                    except Exception as e:
+                        print(param[hint])
+                        print(data)
+                        raise Exception(e)
+
+                else:
+                    temp[hint] = param[hint]
+
+            self.gmod.set_param_hint(param['name'],
+                                     value=temp['guess'],
+                                     min=temp['min'],
+                                     max=temp['max'])
+        params = self.gmod.make_params()
+        result = self.gmod.fit(data,params,t=t,method=method)
+        return result
+
+class TimeCourse(Titer):
+    """
+    Child of :class:`~Titer` which contains curve fitting relevant to time course data
+    """
     def __init__(self):
-        titerObject.__init__(self)
+        Titer.__init__(self)
         self.timeVec = None
         self._dataVec = None
         self.rate = None
@@ -1823,30 +1862,7 @@ class timeCourseObject(titerObject):
 
         self.savgolFilterWindowSize = 21    # Must be odd
 
-        class CurveFitObject(object):
-            def __init__(self,paramList,growthEquation):
-                self.paramList = paramList
-                self.growthEquation = growthEquation
-                self.gmod = Model(growthEquation)
-
-            def calcFit(self, t, data, method='slsqp'):
-                for param in self.paramList:
-                    # Check if the parameter is a lambda function
-                    temp = dict()
-                    for hint in ['guess','min','max']:
-                        if type(param[hint]) == type(lambda x: 0):
-                            temp[hint] = param[hint](data)
-                        else:
-                            temp[hint] = param[hint]
-
-                    self.gmod.set_param_hint(param['name'],
-                                             value=temp['guess'],
-                                             min=temp['min'],
-                                             max=temp['max'])
-                params = self.gmod.make_params()
-                result = self.gmod.fit(data,params,t=t,method=method)
-                return result
-
+        # Declare some standard curve fitting objects here
         self.curveFitObjectDict = dict()
         def growthEquation(t, A, B, C, Q, K, nu): return A + ((K-A)/(np.power((C+Q*np.exp(-B*t)),(1/nu))))
         keys = ['name','guess','min','max','vary']
@@ -1860,6 +1876,7 @@ class timeCourseObject(titerObject):
                                         growthEquation
                                         )
 
+        # Declare the default curve fit
         self.fitType = 'logisticGrowth'
 
     @property
@@ -1888,8 +1905,6 @@ class timeCourseObject(titerObject):
                             flag = 1
                             count+=1
                             if count > 10:
-                                # self._dataVec = filteredData[0:i-10]
-                                # self.timeVec = self.timeVec[0:i-10]
                                 self.deathPhaseStart = i-10
                                 break
                         elif count > 0:
@@ -1910,34 +1925,19 @@ class timeCourseObject(titerObject):
             if self.deathPhaseStart == 0:
                  self.deathPhaseStart = len(self.dataVec)
 
-            # else:
-            #     self.deathPhaseStart = len(dataVec)
-                # self._dataVec = dataVec
-
-            # if len(self.dataVec)>6:
-            #     self.calcExponentialRate()
-            # except Exception as e:
-            #     print("excepted")
-            #     print(e)
-            #     self.deathPhaseStart = len(dataVec)
-            #     self._dataVec = filteredData#dataVec
-
-                # if len(self.dataVec)>6:
-                #     self.calcExponentialRate()
-
             # SQLite stuff
             # Initialize database
             # conn = sql.connect('temptSQLite3db.db')
             # c = conn.cursor()
             # c.execute("""INSERT INTO timeCourseTable VALUES (?,?,?,?,?,?,?,?,?)""" ,
             #           (datetime.datetime.now().strftime("%Y%m%d %H:%M"),
-            #           self.runIdentifier.strainID,
-            #           self.runIdentifier.identifier1,
-            #           self.runIdentifier.identifier2,
-            #           self.runIdentifier.replicate,
-            #           self.runIdentifier.time,
-            #           self.runIdentifier.titerName,
-            #           self.runIdentifier.titerType))
+            #           self.RunIdentifier.strainID,
+            #           self.RunIdentifier.identifier1,
+            #           self.RunIdentifier.identifier2,
+            #           self.RunIdentifier.replicate,
+            #           self.RunIdentifier.time,
+            #           self.RunIdentifier.titerName,
+            #           self.RunIdentifier.titerType))
             # conn.commit()
             # c.close()
             # conn.close()
@@ -2007,20 +2007,20 @@ class timeCourseObject(titerObject):
             # print(self.returnCurveFitPoints(self.timeVec))
             # plt.show()
 
-class timeCourseObjectShell(timeCourseObject):
+class TimeCourseShell(TimeCourse):
     """
-    This is a shell of :class:`~titerObject' with an overidden setter to be used as a container
+    This is a shell of :class:`~Titer' with an overidden setter to be used as a container
     """
-    @timeCourseObject.dataVec.setter
+    @TimeCourse.dataVec.setter
     def dataVec(self, dataVec):
         self._dataVec = dataVec
 
-class endPointObject(titerObject):
+class EndPoint(Titer):
     """
-    This is a child of :class:`~titerObject` which does not calcualte any time-based data
+    This is a child of :class:`~Titer` which does not calcualte any time-based data
     """
     def __init__(self, runID, t, data):
-        titerObject.__init__(self, runID, t, data)
+        Titer.__init__(self, runID, t, data)
 
     def addTimePoint(self, timePoint):
         if len(self.timePointList) < 2:
@@ -2031,7 +2031,7 @@ class endPointObject(titerObject):
         if len(self.timePointList) == 2:
             self.timePointList.sort(key=lambda timePoint: timePoint.t)
 
-class singleExperimentData(object):
+class SingleTrial(object):
     """
     Container for single experiment data. This includes all data for a single strain (OD, titers, fluorescence, etc.)
     """
@@ -2044,7 +2044,7 @@ class singleExperimentData(object):
         self.substrateKey = None
         self.fluorescenceKeys = None
 
-        self.runIdentifier = runIdentifier()
+        self.runIdentifier = RunIdentifier()
 
         self._OD = None
         self._substrate = None
@@ -2163,38 +2163,38 @@ class singleExperimentData(object):
         for productKey in self.products:
             self.yields[productKey] = np.divide(self.products[productKey].dataVec,self.substrateConsumed)
 
-class singleExperimentDataShell(singleExperimentData):
+class SingleTrialDataShell(SingleTrial):
     """
-    Object which overwrites the singleExperimentData objects setters and getters, acts as a shell of data with the
-    same structure as singleExperimentData
+    Object which overwrites the SingleTrial objects setters and getters, acts as a shell of data with the
+    same structure as SingleTrial
     """
 
     def __init__(self):
-        singleExperimentData.__init__(self)
+        SingleTrial.__init__(self)
 
-    @singleExperimentData.substrate.setter
+    @SingleTrial.substrate.setter
     def substrate(self, substrate):
         self._substrate = substrate
 
-    @singleExperimentData.OD.setter
+    @SingleTrial.OD.setter
     def OD(self, OD):
         self._OD = OD
 
-    @singleExperimentData.products.setter
+    @SingleTrial.products.setter
     def products(self, products):
         self._products = products
 
-class replicateExperimentObject(object):
+class ReplicateTrial(object):
     """
-    This object stores singleExperimentData objects and calculates statistics on these replicates for each of the
+    This object stores SingleTrial objects and calculates statistics on these replicates for each of the
     titers which are stored within it
     """
     def __init__(self):
-        self.avg = singleExperimentDataShell()
-        self.std = singleExperimentDataShell()
+        self.avg = SingleTrialDataShell()
+        self.std = SingleTrialDataShell()
         self.t = None
         self.singleExperimentList = []
-        self.runIdentifier = runIdentifier()
+        self.runIdentifier = RunIdentifier()
         self.useReplicate = dict()
         self.badReplicates = []
         self.replicateIDs = []
@@ -2223,9 +2223,9 @@ class replicateExperimentObject(object):
 
     def addReplicateExperiment(self, newReplicateExperiment):
         """
-        Add a singleExperimentData object to this list of replicates
+        Add a SingleTrial object to this list of replicates
 
-        mewReplicateExperiment: A :class:`~singleExperimentData` object
+        mewReplicateExperiment: A :class:`~SingleTrial` object
         """
         self.singleExperimentList.append(newReplicateExperiment)
         if len(self.singleExperimentList)==1:
@@ -2241,7 +2241,7 @@ class replicateExperimentObject(object):
 
     def calcAverageAndDev(self):
         """
-        Calculates the statistics on the singleExperimentData objects
+        Calculates the statistics on the SingleTrial objects
         """
 
         # First, check what data exists
@@ -2263,8 +2263,8 @@ class replicateExperimentObject(object):
         # Then, calculate statistics for available data
         if ODflag == 1:
             # Place this data in a shell, with no setters and getters
-            self.avg.OD = timeCourseObjectShell()
-            self.std.OD = timeCourseObjectShell()
+            self.avg.OD = TimeCourseShell()
+            self.std.OD = TimeCourseShell()
             self.avg.OD.timeVec = self.t
 
             # Remove replicates which significantly increase the standard deviation
@@ -2287,8 +2287,8 @@ class replicateExperimentObject(object):
 
         if productFlag == 1:
             for key in self.singleExperimentList[0].products:
-                self.avg.products[key] = timeCourseObjectShell()
-                self.std.products[key] = timeCourseObjectShell()
+                self.avg.products[key] = TimeCourseShell()
+                self.std.products[key] = TimeCourseShell()
                 self.avg.products[key].dataVec = np.mean([singleExperimentObject.products[key].dataVec for singleExperimentObject in self.singleExperimentList],axis=0)
                 self.std.products[key].dataVec = np.std([singleExperimentObject.products[key].dataVec for singleExperimentObject in self.singleExperimentList],axis=0)
                 self.avg.products[key].rate = np.mean([singleExperimentObject.products[key].rate for singleExperimentObject in self.singleExperimentList],axis=0)

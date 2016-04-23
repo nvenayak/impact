@@ -104,12 +104,20 @@
             
   <div class="section" id="quick-start-guide">
 <h1>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Permalink to this headline">¶</a></h1>
-<p>This package is dependent on scipy, numpy, lmfit and pyexcel. It has only been tested on python 3.4.</p>
+<p>This package is dependent on scipy, numpy, PyQt4, lmfit and pyexcel. It has only been tested on python 3.4.</p>
 <p>An anaconda3 base installation is recommended and available here: <a class="reference external" href="https://www.continuum.io/downloads">https://www.continuum.io/downloads</a></p>
 <p>Following a successful Anaconda installation, the following commands should be executed in the console:</p>
+<p>Curve fitting toolbox used in placed of scipy.optimize:</p>
 <ul class="simple">
 <li>pip install lmfit</li>
+</ul>
+<p>Package to allow easy import of xls files (which is more convenient than using csv)</p>
+<ul class="simple">
 <li>pip install pyexcel_xls</li>
+</ul>
+<p>Package to allow serialization of functions which are not explicitely declared</p>
+<ul class="simple">
+<li>pip install dill</li>
 </ul>
 <p>The following should be executed in the root fDAPI directory (which contains setup.py)</p>
 <ul class="simple">

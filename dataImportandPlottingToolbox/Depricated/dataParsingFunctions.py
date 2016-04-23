@@ -26,9 +26,9 @@ def getTiterObjectListFromTimePointCollection(timePointCollection):
 #     singleExperimentObjectList = dict()
 #     if titerODFlag=='titer':
 #         for key in titerObjectList: #Go through each titerObjectList
-#             singleExperimentObjectList[key] = singleExperimentData()
+#             singleExperimentObjectList[key] = SingleTrial()
 #             for key2 in titerObjectList[key]:
-#                 #print(titerObjectList[key][key2].runIdentifier.returnUniqueID_singleExperiment())
+#                 #print(titerObjectList[key][key2].RunIdentifier.returnUniqueID_singleExperiment())
 #                 singleExperimentObjectList[key].addTiterObject(titerObjectList[key][key2])
 #                 # if key2 == substrateName:
 #                 #     singleExperimentObjectList[key].substrate = titerObjectList[key][key2]
@@ -36,7 +36,7 @@ def getTiterObjectListFromTimePointCollection(timePointCollection):
 #                 #     singleExperimentObjectList[key].setProduct(key2, titerObjectList[key][key2])
 #     elif titerODFlag == 'OD':
 #         for key in titerObjectList:
-#             singleExperimentObjectList[key] = singleExperimentData()
+#             singleExperimentObjectList[key] = SingleTrial()
 #             singleExperimentObjectList[key].addTiterObject(titerObjectList[key])
 #     else:
 #         raise Exception("No titer/OD flag set")
@@ -54,7 +54,7 @@ def getTiterObjectListFromTimePointCollection(timePointCollection):
 #                 flag = 1
 #                 break
 #         if flag == 0:
-#             replicateExperimentObjectList[singleExperimentObjectList[key].getUniqueReplicateID()] = replicateExperimentObject()
+#             replicateExperimentObjectList[singleExperimentObjectList[key].getUniqueReplicateID()] = ReplicateTrial()
 #             tempID = singleExperimentObjectList[key].getUniqueReplicateID()
 #             replicateExperimentObjectList[singleExperimentObjectList[key].getUniqueReplicateID()].addReplicateExperiment(singleExperimentObjectList[key])
 #     return replicateExperimentObjectList
