@@ -60,9 +60,6 @@ class Ui_MainWindow(object):
         spacerItem = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
         self.verticalLayout.addItem(spacerItem)
 
-
-
-
         self.comboBox = QtGui.QComboBox(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -73,9 +70,6 @@ class Ui_MainWindow(object):
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         for i, row in enumerate(self.Project.getExperiments()):
             self.comboBox.addItem(_fromUtf8(row[1]+' - '+row[2]))
-
-
-
 
         self.verticalLayout.addWidget(self.comboBox)
         self.verticalLayout_3 = QtGui.QVBoxLayout()
@@ -90,7 +84,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.label)
         self.verticalLayout.addLayout(self.verticalLayout_3)
 
-
         self.tableWidget = QtGui.QTableWidget(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -103,71 +96,14 @@ class Ui_MainWindow(object):
         self.tableWidget.setColumnCount(4)
         self.tableWidget.itemChanged.connect(self.updateStrainsToPlot)
         self.tableWidget.setRowCount(8)
-
-
-
-        # for row in self.Project.getExperiments():
-        #     print(row)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setVerticalHeaderItem(0, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setVerticalHeaderItem(1, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setVerticalHeaderItem(2, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setVerticalHeaderItem(3, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setVerticalHeaderItem(4, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setVerticalHeaderItem(5, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setVerticalHeaderItem(6, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setVerticalHeaderItem(7, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setHorizontalHeaderItem(0, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setHorizontalHeaderItem(1, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setHorizontalHeaderItem(2, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setHorizontalHeaderItem(3, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(0, 0, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(0, 1, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(0, 2, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(1, 0, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(1, 1, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(1, 2, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(2, 0, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(2, 1, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(3, 0, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(3, 1, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(4, 0, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(4, 1, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(5, 0, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(5, 1, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(6, 0, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(6, 1, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(7, 0, item)
-        # item = QtGui.QTableWidgetItem()
-        # self.tableWidget.setItem(7, 1, item)
+        item = QtGui.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(0, item)
+        item = QtGui.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(1, item)
+        item = QtGui.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(2, item)
+        item = QtGui.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(3, item)
         self.verticalLayout.addWidget(self.tableWidget)
 
         self.pushButton_updatePlot = QtGui.QPushButton(self.centralwidget)
@@ -176,7 +112,6 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.pushButton_updatePlot)
         self.pushButton_updatePlot.setText(_translate("MainWindow", "Update Plot", None))
 
-
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
@@ -184,7 +119,6 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.verticalLayout_2.addWidget(self.label_2)
 
-        # print('unique titers')
         self.titerCheckBoxList = []
         for titer in self.Project.getAllTiterNames():
             self.titerCheckBoxList.append([QtGui.QCheckBox(self.centralwidget),titer])
@@ -192,7 +126,6 @@ class Ui_MainWindow(object):
             self.titerCheckBoxList[-1][0].setText(_translate("MainWindow", titer, None))
             self.titerCheckBoxList[-1][0].stateChanged.connect(self.updateTitersToPlot)
             self.verticalLayout_2.addWidget(self.titerCheckBoxList[-1][0])
-
 
         self.verticalLayout.addLayout(self.verticalLayout_2)
         self.horizontalLayout.addLayout(self.verticalLayout)
@@ -207,7 +140,6 @@ class Ui_MainWindow(object):
         # this is the Navigation widget
         # it takes the Canvas widget and a parent
         self.mpl_toolbar = NavigationToolbar(self.mpl_canvas, self.centralwidget)
-
         self.verticalLayout_4.addWidget(self.mpl_toolbar)
 
         self.verticalLayout_4.addWidget(self.mpl_canvas)
@@ -295,7 +227,7 @@ class Ui_MainWindow(object):
         # self.updateFigure()
 
     def updateFigure(self):
-        self.Project.printGenericTimeCourse(figHandle = self.figure, strainsToPlot=self.strainsToPlot, titersToPlot=self.titersToPlot, removePointFraction=1, shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True )
+        self.Project.printGenericTimeCourse(figHandle = self.figure, strainsToPlot=self.strainsToPlot, titersToPlot=self.titersToPlot, removePointFraction=4, shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True )
         self.mpl_canvas.draw()
 
     def experimentSelect(self, id):
@@ -305,8 +237,6 @@ class Ui_MainWindow(object):
             self.tableWidget.takeItem(row,3)
 
         self.tableWidget.setRowCount(len([row[0] for row in self.strainCheckBoxList if row[0] == id]))
-
-
 
         index = 0
         print([row[4] for row in self.strainCheckBoxList])
@@ -318,51 +248,6 @@ class Ui_MainWindow(object):
                     self.tableWidget.setItem(index,j,item)
                 self.tableWidget.setItem(index,3,row[4])
                 index += 1
-        # for i, row in enumerate(self.strainCheckBoxList):
-
-        # for i, row in enumerate(data):
-        #     for j, column in enumerate(row):
-        #         item = QtGui.QTableWidgetItem()
-        #         item.setText(_translate("MainWindow", data[i][j], None))
-        #         self.tableWidget.setItem(i,j,item)
-        #     item = QtGui.QTableWidgetItem('')
-        #     item.setFlags(QtCore.Qt.ItemIsUserCheckable |
-        #                   QtCore.Qt.ItemIsEnabled)
-        #     item.setCheckState(QtCore.Qt.Unchecked)
-        #     self.tableWidget.setItem(i,3,item)
-
-    def populateExperiments(self):
-        pass
-        data = Project.getExperiments()
-        # self.comboBox.
-
-        # item = self.tableWidget.verticalHeaderItem(0)
-        # item.setText(_translate("MainWindow", "1", None))
-        # item = self.tableWidget.verticalHeaderItem(1)
-        # item.setText(_translate("MainWindow", "2", None))
-        # item = self.tableWidget.verticalHeaderItem(2)
-        # item.setText(_translate("MainWindow", "3", None))
-        # item = self.tableWidget.verticalHeaderItem(3)
-        # item.setText(_translate("MainWindow", "4", None))
-        # item = self.tableWidget.verticalHeaderItem(4)
-        # item.setText(_translate("MainWindow", "5", None))
-        # item = self.tableWidget.verticalHeaderItem(5)
-        # item.setText(_translate("MainWindow", "6", None))
-        # item = self.tableWidget.verticalHeaderItem(6)
-        # item.setText(_translate("MainWindow", "7", None))
-        # item = self.tableWidget.verticalHeaderItem(7)
-        # item.setText(_translate("MainWindow", "8", None))
-        # item = self.tableWidget.horizontalHeaderItem(0)
-        # item.setText(_translate("MainWindow", "Strain", None))
-        # item = self.tableWidget.horizontalHeaderItem(1)
-        # item.setText(_translate("MainWindow", "ID 1", None))
-        # item = self.tableWidget.horizontalHeaderItem(2)
-        # item.setText(_translate("MainWindow", "ID 2", None))
-        # item = self.tableWidget.horizontalHeaderItem(3)
-        # item.setText(_translate("MainWindow", "Plot?", None))
-        # __sortingEnabled = self.tableWidget.isSortingEnabled()
-        # self.tableWidget.setSortingEnabled(False)
-
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "fDAPI: Fermentation Data Analysis and Plotting Inventory", None))
@@ -690,6 +575,9 @@ class Window(QtGui.QDialog):
         self.canvas.draw()
 
 class Project(object):
+    """
+    """
+
     colorMap = 'Set3'
 
     def __init__(self):
@@ -926,7 +814,7 @@ class Project(object):
 
         sys.exit(app.exec_())
 
-    def printGenericTimeCourse(self, figHandle = [], strainsToPlot=[], titersToPlot=[], removePointFraction=1, shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True ):
+    def printGenericTimeCourse(self, figHandle = [], strainsToPlot=[], titersToPlot=[], removePointFraction=6, shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True ):
         if figHandle == []:
             figHandle = plt.figure(figsize=(12,8))
 
@@ -981,7 +869,7 @@ class Project(object):
         # print(strainsToPlot)
         colors = plt.get_cmap(self.colorMap)(np.linspace(0,1,len(strainsToPlot)))
 
-        useNewColorScheme = 1
+        useNewColorScheme = 0
         if useNewColorScheme == 1:
             # Gather some information about the data
             uniques = dict()
@@ -1935,6 +1823,45 @@ class timeCourseObject(titerObject):
 
         self.savgolFilterWindowSize = 21    # Must be odd
 
+        class CurveFitObject(object):
+            def __init__(self,paramList,growthEquation):
+                self.paramList = paramList
+                self.growthEquation = growthEquation
+                self.gmod = Model(growthEquation)
+
+            def calcFit(self, t, data, method='slsqp'):
+                for param in self.paramList:
+                    # Check if the parameter is a lambda function
+                    temp = dict()
+                    for hint in ['guess','min','max']:
+                        if type(param[hint]) == type(lambda x: 0):
+                            temp[hint] = param[hint](data)
+                        else:
+                            temp[hint] = param[hint]
+
+                    self.gmod.set_param_hint(param['name'],
+                                             value=temp['guess'],
+                                             min=temp['min'],
+                                             max=temp['max'])
+                params = self.gmod.make_params()
+                result = self.gmod.fit(data,params,t=t,method=method)
+                return result
+
+        self.curveFitObjectDict = dict()
+        def growthEquation(t, A, B, C, Q, K, nu): return A + ((K-A)/(np.power((C+Q*np.exp(-B*t)),(1/nu))))
+        keys = ['name','guess','min','max','vary']
+        self.curveFitObjectDict['logisticGrowth'] = CurveFitObject(
+                                        [dict(zip(keys,['A',np.min,lambda data: 0.975*np.min(data),lambda data:1.025*np.min(data),True])),
+                                        dict(zip(keys,['B',lambda data: 0.5, lambda data: 0.001, lambda data: 1,True])),
+                                        dict(zip(keys,['C',1,None,None,True])),
+                                        dict(zip(keys,['Q',0.01,None,None,True])),
+                                        dict(zip(keys,['K',max,lambda data: 0.975*max(data),lambda data: 1.025*max(data),True])),
+                                        dict(zip(keys,['nu',1,None,None,True]))],
+                                        growthEquation
+                                        )
+
+        self.fitType = 'logisticGrowth'
+
     @property
     def dataVec(self):
         if self.useFilteredDataFlag == True:
@@ -1944,8 +1871,6 @@ class timeCourseObject(titerObject):
 
     @dataVec.setter
     def dataVec(self, dataVec):
-
-
         self._dataVec = dataVec
         self.deathPhaseStart = len(dataVec)
 
@@ -2022,42 +1947,8 @@ class timeCourseObject(titerObject):
         if len(self.dataVec)>6:
             self.calcExponentialRate()
 
-    # def returnCurveFitPoints(self, t):
-    #    # print(self.rate)
-    #    Linf = self.rate[0]
-    #    k = self.rate[1]
-    #    delta = self.rate[2]
-    #    gamma = self.rate[3]
-    #
-    #    return Linf*np.power((1+(delta-1)*np.exp(-k*(t-gamma))) ,1/(1-delta))
-
-
-    # Generalized Logistic Return Curve Fit
     def returnCurveFitPoints(self, t):
-       # print(self.rate)
-       A = self.rate[0]
-       B = self.rate[1]
-       C = self.rate[2]
-       Q = self.rate[3]
-       K = self.rate[4]
-       nu = self.rate[5]
-       return A + (    (K-A)      /     (     np.power((C+Q*np.exp(-B*t)),(1/nu))     )       )
-
-    # def returnCurveFitPoints(self, t):
-    #
-    #     # Gompertz 3 param
-    #     # # print(self.rate)
-    #     # A = self.rate[0]
-    #     # mu = self.rate[1]
-    #     # lamb = self.rate[2]
-    #     # return A*np.exp(-np.exp(mu*np.e/A*(lamb-t)+1))
-    #
-    #     # Richard 4 param
-    #     A = self.rate[0]
-    #     mu = self.rate[1]
-    #     lamb = self.rate[2]
-    #     nu = self.rate[3]
-    #     return A*np.power((1+nu*np.exp(1+nu)*np.exp(mu/A*np.power((1+nu),(1+1/nu))*(lamb-t))),(-1/nu))
+       return self.curveFitObjectDict[self.fitType].growthEquation(t, *self.rate)
 
     def addTimePoint(self, timePoint):
         self.timePointList.append(timePoint)
@@ -2076,133 +1967,34 @@ class timeCourseObject(titerObject):
         else:
             self.rate = [0,0,0,0,0,0]
 
-
-    # def curveFitInput(self):
-    #     def __init__(self):
-    #         self.gmod = None
-    #
-    #
-    #     def growthEquation():
-    #         raise(Exception('implement this function'))
-    #
-    # def
-
-
     def calcExponentialRate(self):
-        #Define the growth equation to fit parameters
-
-        # # 4-parameter Richard Equation
-        # def growthEquation(t, Linf, k, gamma, delta):#, K, Q, nu):
-        #     return Linf*np.power((1+(delta-1)*np.exp(-k*(t-gamma))) ,1/(1-delta))
-
-
-
-        # # Gompertz 3 param
-        # def growthEquation(t, A, mu, lamb):
-        #     return A*np.exp(-np.exp(mu*np.e/A*(lamb-t)+1))
-
-        # # Modified Richards 4 param
-        # def growthEquation(t, A, mu, lamb, nu):
-        #     return A*np.power((1+nu*np.exp(1+nu)*np.exp(mu/A*np.power((1+nu),(1+1/nu))*(lamb-t))),(-1/nu))
-
-        # Generalized logistic
-        def growthEquation(t, A, B, C, K, Q, nu):
-            # return A * B / (A+((B-A)*np.exp(-C*t)))
-            return A + ((K-A)/(np.power((C+Q*np.exp(-B*t)),(1/nu))))
-
-        # Fit and return the parameters
-        gmod = Model(growthEquation)
 
         if self.runIdentifier.titerType == 'titer' or self.runIdentifier.titerType == 'substrate' or self.runIdentifier.titerType == 'product':
-            gmod.set_param_hint('A', value=np.min(self.dataVec))
-            gmod.set_param_hint('B',value=2)
-            gmod.set_param_hint('C', value=1, vary=False)
-            gmod.set_param_hint('Q', value=0.1)#, max = 10)
-            gmod.set_param_hint('K', value = max(self.dataVec))#, max=5)
-            gmod.set_param_hint('nu', value=1, vary=False)
-        elif self.runIdentifier.titerType == 'OD':
-            # gmod.set_param_hint('Linf', value=0.1, max=1)#np.min(self.dataVec), min=0.9*np.min(self.dataVec),max=1.1*np.min(self.dataVec))
-            # gmod.set_param_hint('k',value=.25)#, min=0.001, max=0.5)
-            # gmod.set_param_hint('delta', value=0)#, vary=False)#, vary=False)#, min=0.99, max=1.01)#, vary=False)
-            # gmod.set_param_hint('gamma', value=0)#, min = 1, max = 10)#value=8)#, max = 10)
-
-            #Generalized Logistic Parameters
-            gmod.set_param_hint('A', value=np.min(self.dataVec), min=0.975*np.min(self.dataVec),max=1.025*np.min(self.dataVec))
-            gmod.set_param_hint('B',value=0.5, min=0.001, max=1)
-            gmod.set_param_hint('C', value=1)#, vary=False)#, min = 0.7)#, vary=False)#, vary=False)#, min=0.99, max=1.01)#, vary=False)
-            gmod.set_param_hint('Q', value=0.01)#, min = 1, max = 10)#value=8)#, max = 10)
-            gmod.set_param_hint('K', value = max(self.dataVec), min=0.975*max(self.dataVec), max=1.025*max(self.dataVec))
-            gmod.set_param_hint('nu', value=1)#, vary=False)
-
-            # # Gompertz Parameters
+            print('Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py')
             # gmod.set_param_hint('A', value=np.min(self.dataVec))
-            # gmod.set_param_hint('mu',value=0.5)#, min=0.001, max=0.5)
-            # gmod.set_param_hint('lamb', value=1)#, vary=False)#, min = 0.7)#, vary=False)#, vary=False)#, min=0.99, max=1.01)#, vary=False)
-
-            # # Richard Parameters
-            # gmod.set_param_hint('A', value=np.max(self.dataVec), max=np.max(self.dataVec))
-            # gmod.set_param_hint('mu',value=0.01, min=0.001, max=0.5)#, min=0.001, max=0.5)
-            # gmod.set_param_hint('lamb', value=-6)#)np.log(0.15))#, min=-1)# min=np.log(np.min(self.dataVec)*0.9))#, vary=False)#, min = 0.7)#, vary=False)#, vary=False)#, min=0.99, max=1.01)#, vary=False)
-            # gmod.set_param_hint('nu',value=1)#, min=-5, max=5)
-
+            # gmod.set_param_hint('B',value=2)
+            # gmod.set_param_hint('C', value=1, vary=False)
+            # gmod.set_param_hint('Q', value=0.1)#, max = 10)
+            # gmod.set_param_hint('K', value = max(self.dataVec))#, max=5)
+            # gmod.set_param_hint('nu', value=1, vary=False)
+        elif self.runIdentifier.titerType == 'OD':
+            result = self.curveFitObjectDict[self.fitType].calcFit(self.timeVec[0:self.deathPhaseStart], self.dataVec[0:self.deathPhaseStart], method = 'slsqp')
+            self.rate = [0,0,0,0,0,0]
+            for i, key in enumerate(result.best_values):
+                if key == 'A':
+                    self.rate[0] = result.best_values[key]
+                if key == 'B':
+                    self.rate[1] = result.best_values[key]
+                if key == 'C':
+                    self.rate[2] = result.best_values[key]
+                if key == 'Q':
+                    self.rate[3] = result.best_values[key]
+                if key == 'K':
+                    self.rate[4] = result.best_values[key]
+                if key == 'nu':
+                    self.rate[5] = result.best_values[key]
         else:
             print('Unidentified titer type:'+self.runIdentifier.titerType)
-        params = gmod.make_params()
-
-        result = gmod.fit (self.dataVec[0:self.deathPhaseStart], params, t=self.timeVec[0:self.deathPhaseStart], method = 'slsqp')
-
-        # print(result.best_values)
-        # plt.plot(self.timeVec,self.dataVec, 'bo')
-        # plt.plot(self.timeVec,  result.init_fit,'k--')
-        # plt.plot(self.timeVec, result.best_fit,'r-')
-        # plt.show()
-
-        self.rate = [0,0,0,0,0,0]
-        # # 4-Parameter Richard
-        # for key in result.best_values:
-        #     if key == 'Linf':
-        #         self.rate[0] = result.best_values[key]
-        #     if key == 'k':
-        #         self.rate[1] = result.best_values[key]
-        #     if key == 'delta':
-        #         self.rate[2] = result.best_values[key]
-        #     if key == 'gamma':
-        #         self.rate[3] = result.best_values[key]
-
-        # Generalized Logistic params
-        for key in result.best_values:
-            if key == 'A':
-                self.rate[0] = result.best_values[key]
-            if key == 'B':
-                self.rate[1] = result.best_values[key]
-            if key == 'C':
-                self.rate[2] = result.best_values[key]
-            if key == 'Q':
-                self.rate[3] = result.best_values[key]
-            if key == 'K':
-                self.rate[4] = result.best_values[key]
-            if key == 'nu':
-                self.rate[5] = result.best_values[key]
-
-        # # Gompertz
-        # for key in result.best_values:
-        #     if key == 'A':
-        #         self.rate[0] = result.best_values[key]
-        #     if key == 'mu':
-        #         self.rate[1] = result.best_values[key]
-        #     if key == 'lamb':
-        #         self.rate[2] = result.best_values[key]
-
-        # # Richard
-        # for key in result.best_values:
-        #     if key == 'A':
-        #         self.rate[0] = result.best_values[key]
-        #     if key == 'mu':
-        #         self.rate[1] = result.best_values[key]
-        #     if key == 'lamb':
-        #         self.rate[2] = result.best_values[key]
-        #     if key == 'nu':
-        #         self.rate[3] = result.best_values[key]
 
         # if len(self.dataVec)>10:
         #     print(result.best_values)
@@ -2215,16 +2007,18 @@ class timeCourseObject(titerObject):
             # print(self.returnCurveFitPoints(self.timeVec))
             # plt.show()
 
-# class exp(object):
-#     def __init__(self):
-
-
 class timeCourseObjectShell(timeCourseObject):
+    """
+    This is a shell of :class:`~titerObject' with an overidden setter to be used as a container
+    """
     @timeCourseObject.dataVec.setter
     def dataVec(self, dataVec):
         self._dataVec = dataVec
 
 class endPointObject(titerObject):
+    """
+    This is a child of :class:`~titerObject` which does not calcualte any time-based data
+    """
     def __init__(self, runID, t, data):
         titerObject.__init__(self, runID, t, data)
 
@@ -2238,7 +2032,9 @@ class endPointObject(titerObject):
             self.timePointList.sort(key=lambda timePoint: timePoint.t)
 
 class singleExperimentData(object):
-    #Object contains a series of timeCourseObjects related to a single experiment
+    """
+    Container for single experiment data. This includes all data for a single strain (OD, titers, fluorescence, etc.)
+    """
     def __init__(self):
         self._t = np.array([])
         self.titerObjectList = dict()
@@ -2257,7 +2053,7 @@ class singleExperimentData(object):
 
         self.yields = dict()
 
-    # --------------------------- Setters and Getters
+    # Setters and Getters
     @property
     def OD(self):
         return self._OD
@@ -2368,9 +2164,13 @@ class singleExperimentData(object):
             self.yields[productKey] = np.divide(self.products[productKey].dataVec,self.substrateConsumed)
 
 class singleExperimentDataShell(singleExperimentData):
+    """
+    Object which overwrites the singleExperimentData objects setters and getters, acts as a shell of data with the
+    same structure as singleExperimentData
+    """
+
     def __init__(self):
         singleExperimentData.__init__(self)
-        #self._OD = timeCourseObjectShell()
 
     @singleExperimentData.substrate.setter
     def substrate(self, substrate):
@@ -2385,7 +2185,10 @@ class singleExperimentDataShell(singleExperimentData):
         self._products = products
 
 class replicateExperimentObject(object):
-    #Calculates statistics based on replicates
+    """
+    This object stores singleExperimentData objects and calculates statistics on these replicates for each of the
+    titers which are stored within it
+    """
     def __init__(self):
         self.avg = singleExperimentDataShell()
         self.std = singleExperimentDataShell()
@@ -2419,29 +2222,34 @@ class replicateExperimentObject(object):
                     raise(Exception("length of product vector "+str(key)+" do not match"))
 
     def addReplicateExperiment(self, newReplicateExperiment):
+        """
+        Add a singleExperimentData object to this list of replicates
+
+        mewReplicateExperiment: A :class:`~singleExperimentData` object
+        """
         self.singleExperimentList.append(newReplicateExperiment)
         if len(self.singleExperimentList)==1:
             self.t = self.singleExperimentList[0].t
         self.checkReplicateUniqueIDMatch()
 
         self.runIdentifier = newReplicateExperiment.runIdentifier
-        # self.runIdentifier.replicate = None
         self.runIdentifier.time = None
-        # print('Replicate being added: ',newReplicateExperiment.runIdentifier.replicate)
-        self.replicateIDs.append(newReplicateExperiment.runIdentifier.replicate)
+        self.replicateIDs.append(newReplicateExperiment.runIdentifier.replicate)    #TODO remove this redundant functionality
         self.replicateIDs.sort()
-        # print('number of replicates: ',len(self.replicateIDs))
         self.calcAverageAndDev()
-        # print('Replicate IDs: ',self.replicateIDs)
-        # for i in self.replicateIDs:
-        #     print(i)
 
-    def calcAverageAndDev(self):    #Calculate averages
-        #First check what data exists
+
+    def calcAverageAndDev(self):
+        """
+        Calculates the statistics on the singleExperimentData objects
+        """
+
+        # First, check what data exists
         ODflag = 0
         productFlag = 0
         substrateFlag = 0
         yieldFlag = 0
+
         for singleExperiment in self.singleExperimentList:
             if singleExperiment.OD:
                 ODflag = 1
@@ -2452,30 +2260,15 @@ class replicateExperimentObject(object):
             if singleExperiment.yields:
                 yieldFlag = 1
 
+        # Then, calculate statistics for available data
         if ODflag == 1:
+            # Place this data in a shell, with no setters and getters
             self.avg.OD = timeCourseObjectShell()
             self.std.OD = timeCourseObjectShell()
             self.avg.OD.timeVec = self.t
 
-
-            # # Perform outlier test
-            # self.badReplicates = []
-            # if len(self.replicateIDs) > 2:
-            #     tempVar = 0
-            #     tempRate = dict()
-            #     for testReplicate in self.replicateIDs:
-            #         tempRate[testReplicate] = np.sum(np.std([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList
-            #                                           if singleExperimentObject.runIdentifier.replicate != testReplicate], axis=0))   # Perform this test only on growth rate
-            #     minDevKey = min(tempRate,key=tempRate.get)
-            #     tempRateKey = minDevKey
-            #
-            #     if tempRate[tempRateKey]/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]) < 0.5 :
-            #         self.badReplicates.append(int(tempRateKey))
-
-            # Perform outlier test
-            # self.badReplicates = []
+            # Remove replicates which significantly increase the standard deviation
             if len(self.replicateIDs) > 2:
-                tempVar = 0
                 tempRate = dict()
                 for testReplicate in self.replicateIDs:
                     tempRate[testReplicate] = np.sum(np.std([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList
@@ -2486,11 +2279,10 @@ class replicateExperimentObject(object):
                 if tempRate[tempRateKey]/np.mean([tempRate[tempRateKey2] for tempRateKey2 in tempRate if tempRateKey2 != tempRateKey]) < 0.6 :
                     self.badReplicates.append(int(tempRateKey))
 
-
-            # print(self.badReplicates)
+            # Calculate the statistics on the data and parameters
             self.avg.OD.dataVec = np.mean([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList if singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)
             self.std.OD.dataVec = np.std([singleExperimentObject.OD.dataVec for singleExperimentObject in self.singleExperimentList if singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)
-            self.avg.OD.rate = np.mean([singleExperimentObject.OD.rate for singleExperimentObject in self.singleExperimentList if singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)#calcExponentialRate()
+            self.avg.OD.rate = np.mean([singleExperimentObject.OD.rate for singleExperimentObject in self.singleExperimentList if singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)
             self.std.OD.rate = np.std([singleExperimentObject.OD.rate for singleExperimentObject in self.singleExperimentList if singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)
 
         if productFlag == 1:
