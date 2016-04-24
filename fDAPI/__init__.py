@@ -102,11 +102,11 @@ class Ui_MainWindow(object):
         self.tableWidget.setHorizontalHeaderItem(3, item)
         self.verticalLayout.addWidget(self.tableWidget)
 
-        self.pushButton_updatePlot = QtGui.QPushButton(self.centralwidget)
-        self.pushButton_updatePlot.setObjectName(_fromUtf8("pushButton_updatePlot"))
-        self.pushButton_updatePlot.clicked.connect(self.updateFigure)
-        self.verticalLayout.addWidget(self.pushButton_updatePlot)
-        self.pushButton_updatePlot.setText(_translate("MainWindow", "Update Plot", None))
+        self.pushButton_clear = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_clear.setObjectName(_fromUtf8("pushButton_clear"))
+        self.pushButton_clear.clicked.connect(self.clearStrainsToPlot)
+        self.pushButton_clear.setText(_translate("MainWindow", "Clear", None))
+        self.verticalLayout.addWidget(self.pushButton_clear)
 
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
@@ -122,8 +122,14 @@ class Ui_MainWindow(object):
             self.titerCheckBoxList[-1][0].setText(_translate("MainWindow", titer, None))
             self.titerCheckBoxList[-1][0].stateChanged.connect(self.updateTitersToPlot)
             self.verticalLayout_2.addWidget(self.titerCheckBoxList[-1][0])
-
         self.verticalLayout.addLayout(self.verticalLayout_2)
+
+        self.pushButton_updatePlot = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_updatePlot.setObjectName(_fromUtf8("pushButton_updatePlot"))
+        self.pushButton_updatePlot.clicked.connect(self.updateFigure)
+        self.pushButton_updatePlot.setText(_translate("MainWindow", "Update Plot", None))
+        self.verticalLayout.addWidget(self.pushButton_updatePlot)
+
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.verticalLayout_4 = QtGui.QVBoxLayout()
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
@@ -170,12 +176,21 @@ class Ui_MainWindow(object):
         self.actionData_statistics.setObjectName(_fromUtf8("actionData_statistics"))
         self.action_2 = QtGui.QAction(MainWindow)
         self.action_2.setObjectName(_fromUtf8("action_2"))
+
         self.actionStrain_ID = QtGui.QAction(MainWindow)
         self.actionStrain_ID.setObjectName(_fromUtf8("actionStrain_ID"))
+        self.actionStrain_ID.triggered.connect(self.updateSortByStrain)
+
         self.actionIdentifier_1 = QtGui.QAction(MainWindow)
         self.actionIdentifier_1.setObjectName(_fromUtf8("actionIdentifier_1"))
+        self.actionIdentifier_1.triggered.connect(self.updateSortById1)
+
+
         self.actionIdentifier_2 = QtGui.QAction(MainWindow)
         self.actionIdentifier_2.setObjectName(_fromUtf8("actionIdentifier_2"))
+        self.actionIdentifier_1.triggered.connect(self.updateSortById2)
+
+
         self.menuFile.addAction(self.actionExit)
         self.menuData.addAction(self.actionImport_data_from_file)
         self.menuData.addAction(self.actionExport_data_to_file)
@@ -207,6 +222,16 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.sortByCol = 0
+        self.sortComboBox = dict()
+        self.selectedStrain = 'All'
+        self.selectedid1 = 'All'
+        self.selectedid2 = 'All'
+
+    def updateSortByStrain(self):   self.sortByCol = 1
+    def updateSortById1(self):  self.sortByCol = 2
+    def updateSortById2(self):  self.sortByCol = 3
+
     def updateTitersToPlot(self):
         print('in here')
         self.titersToPlot = []
@@ -226,17 +251,57 @@ class Ui_MainWindow(object):
         self.Project.printGenericTimeCourse(figHandle = self.figure, strainsToPlot=self.strainsToPlot, titersToPlot=self.titersToPlot, removePointFraction=4, shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True )
         self.mpl_canvas.draw()
 
+    def selectStrain(self, selection):  self.selectedStrain = selection
+    def selectid1(self, selection): self.selectedid1 = selection
+    def selectid2(self, selection): self.selectedid2 = selection
+
+    def clearStrainsToPlot(self): [row[4].setCheckState(QtCore.Qt.Unchecked) for row in self.strainCheckBoxList]
+
+    def selectStrainsUpdate(self):
+        for row in self.strainCheckBoxList:
+            if row[0] == self.selectedId and (row[1] == self.selectedStrain or self.selectedStrain == 'All') \
+                    and (row[2] == self.selectedid1 or self.selectedid1 == 'All')\
+                    and (row[3] == self.selectedid2 or self.selectedid2 == 'All'):
+                row[4].setCheckState(QtCore.Qt.Checked)
+
     def experimentSelect(self, id):
         # data = self.Project.getAllStrainsByIDSQL(id)
         id += 1
+        self.selectedId = id
         for row in range(self.tableWidget.rowCount()):
             self.tableWidget.takeItem(row,3)
 
-        self.tableWidget.setRowCount(len([row[0] for row in self.strainCheckBoxList if row[0] == id]))
+        for col, key in zip(range(3),['strain','id1','id2']):
+            uniques = list(set(row[col+1] for row in self.strainCheckBoxList if row[0] == id))
+            self.sortComboBox[key] = QtGui.QComboBox()
+            if key == 'strain': self.sortComboBox[key].activated[str].connect(self.selectStrain)
+            if key == 'id1': self.sortComboBox[key].activated[str].connect(self.selectid1)
+            if key == 'id2': self.sortComboBox[key].activated[str].connect(self.selectid2)
+            self.sortComboBox[key].addItem('All')
+            [self.sortComboBox[key].addItem(unique) for unique in uniques]
+            self.tableWidget.setCellWidget(0,col,self.sortComboBox[key])
 
-        index = 0
-        print([row[4] for row in self.strainCheckBoxList])
-        for row in self.strainCheckBoxList:
+        self.selectStrainsPushButton = QtGui.QPushButton(self.centralwidget)
+        self.selectStrainsPushButton.clicked.connect(self.selectStrainsUpdate)
+        self.tableWidget.setCellWidget(0,3,self.selectStrainsPushButton)
+        self.selectStrainsPushButton.setText(_translate("MainWindow", "Select", None))
+        item = QtGui.QTableWidgetItem()
+        item.setText(_translate("MainWindow", "", None))
+        self.tableWidget.setVerticalHeaderItem(0, item)
+
+        numRows = len([row[0] for row in self.strainCheckBoxList if row[0] == id])+1
+
+        self.tableWidget.setRowCount(numRows)
+        for i in range(numRows-1):
+            item = QtGui.QTableWidgetItem()
+            item.setText(_translate("MainWindow", str(i+1), None))
+            self.tableWidget.setVerticalHeaderItem(i+1, item)
+
+
+
+        index = 1
+        sortedStrains = sorted(self.strainCheckBoxList, key=lambda x: x[self.sortByCol])
+        for row in sortedStrains:
             if row[0] == id:
                 for j in range(3):
                     item = QtGui.QTableWidgetItem()
