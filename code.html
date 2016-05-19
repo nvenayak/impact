@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Auto Generated Documentation &mdash; Fermentation Data Analysis and Plotting Inventory 0.0.0 documentation</title>
@@ -14,7 +15,6 @@
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 
   
   
@@ -31,10 +31,10 @@
 
   
     <link rel="top" title="Fermentation Data Analysis and Plotting Inventory 0.0.0 documentation" href="index.html"/>
-        <link rel="prev" title="Quick Start Guide" href="setup.html"/> 
+        <link rel="prev" title="Importing and Working with fDAPI.TimeCourse Objects" href="timeCourseTutorial.html"/> 
 
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -44,11 +44,27 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
-          <a href="index.html" class="fa fa-home"> Fermentation Data Analysis and Plotting Inventory</a>
-        
-        
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Fermentation Data Analysis and Plotting Inventory
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -56,22 +72,27 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-      </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
           
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
-              <ul class="current">
+            
+            
+                <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importingData.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timeCourseTutorial.html">Importing and Working with fDAPI.TimeCourse Objects</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Auto Generated Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
+            
           
-        
+        </div>
       </div>
-      &nbsp;
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -86,22 +107,163 @@
       
       <div class="wy-nav-content">
         <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
     <li>Auto Generated Documentation</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/code.txt" rel="nofollow"> View page source</a>
+          
+            <a href="_sources/code.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
   </ul>
   <hr/>
 </div>
-          <div role="main" class="document">
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
-  <div class="section" id="auto-generated-documentation">
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput,
+div.nbinput > div,
+div.nbinput div[class^=highlight],
+div.nbinput div[class^=highlight] pre,
+div.nboutput,
+div.nboutput > div,
+div.nboutput div[class^=highlight],
+div.nboutput div[class^=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput div[class^=highlight] pre {
+    line-height: unset;
+}
+
+/* input/output containers */
+div.nbinput,
+div.nboutput {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+}
+
+/* input container */
+div.nbinput {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput > :first-child pre {
+    color: #303F9F;
+}
+
+/* output prompt */
+div.nboutput > :first-child pre {
+    color: #D84315;
+}
+
+/* all prompts */
+div.nbinput > :first-child[class^=highlight],
+div.nboutput > :first-child[class^=highlight],
+div.nboutput > :first-child {
+    min-width: 11ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+
+/* input/output area */
+div.nbinput > :nth-child(2)[class^=highlight],
+div.nboutput > :nth-child(2),
+div.nboutput > :nth-child(2)[class^=highlight] {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+}
+
+/* input area */
+div.nbinput > :nth-child(2)[class^=highlight] {
+    border: 1px solid #cfcfcf;
+    border-radius: 2px;
+    background: #f7f7f7;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.pngmath center alignment in output cells */
+div.nboutput div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput  > :nth-child(2).stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-bold { font-weight: bold; }
+</style>
+<div class="section" id="auto-generated-documentation">
 <h1>Auto Generated Documentation<a class="headerlink" href="#auto-generated-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <span class="target" id="module-fDAPI"></span><p>Written by: Naveen Venyak
@@ -115,12 +277,16 @@ Date:       October, 2015</p>
 <dt>Parameters:</dt>
 <dd><dl class="first last docutils">
 <dt>paramList: List of parameters, with initial guess, max and min values</dt>
-<dd>Each parameter is a dict with the following form
-{&#8216;name&#8217;: str PARAMETER NAME,
-&#8216;guess&#8217;: float or lambda function
-&#8216;max&#8217;: float or lambda function
-&#8216;min&#8217;: float or lambda function
-&#8216;vary&#8217; True or False}</dd>
+<dd><dl class="first last docutils">
+<dt>Each parameter is a dict with the following form</dt>
+<dd><p class="first">{&#8216;name&#8217;: str PARAMETER NAME,</p>
+<p>&#8216;guess&#8217;: float or lambda function</p>
+<p>&#8216;max&#8217;: float or lambda function</p>
+<p>&#8216;min&#8217;: float or lambda function</p>
+<p class="last">&#8216;vary&#8217; True or False}</p>
+</dd>
+</dl>
+</dd>
 <dt>growthEquation: A function to fit with the following form:</dt>
 <dd>def growthEquation(t, param1, param2, ..): return f(param1,param2,..)</dd>
 </dl>
@@ -129,59 +295,59 @@ Date:       October, 2015</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="fDAPI.EndPoint">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">EndPoint</code><span class="sig-paren">(</span><em>runID</em>, <em>t</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.EndPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a child of <code class="xref py py-class docutils literal"><span class="pre">Titer</span></code> which does not calcualte any time-based data</p>
+</dd></dl>
+
+<dl class="class">
 <dt id="fDAPI.Project">
 <em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">Project</code><a class="headerlink" href="#fDAPI.Project" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
-<dt id="fDAPI.endPointObject">
-<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">endPointObject</code><span class="sig-paren">(</span><em>runID</em>, <em>t</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.endPointObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a child of <code class="xref py py-class docutils literal"><span class="pre">titerObject</span></code> which does not calcualte any time-based data</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="fDAPI.replicateExperimentObject">
-<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">replicateExperimentObject</code><a class="headerlink" href="#fDAPI.replicateExperimentObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>This object stores singleExperimentData objects and calculates statistics on these replicates for each of the
+<dt id="fDAPI.ReplicateTrial">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">ReplicateTrial</code><a class="headerlink" href="#fDAPI.ReplicateTrial" title="Permalink to this definition">¶</a></dt>
+<dd><p>This object stores SingleTrial objects and calculates statistics on these replicates for each of the
 titers which are stored within it</p>
 <dl class="method">
-<dt id="fDAPI.replicateExperimentObject.addReplicateExperiment">
-<code class="descname">addReplicateExperiment</code><span class="sig-paren">(</span><em>newReplicateExperiment</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.replicateExperimentObject.addReplicateExperiment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a singleExperimentData object to this list of replicates</p>
-<p>mewReplicateExperiment: A <a class="reference internal" href="#fDAPI.singleExperimentData" title="fDAPI.singleExperimentData"><code class="xref py py-class docutils literal"><span class="pre">singleExperimentData</span></code></a> object</p>
+<dt id="fDAPI.ReplicateTrial.addReplicateExperiment">
+<code class="descname">addReplicateExperiment</code><span class="sig-paren">(</span><em>newReplicateExperiment</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.ReplicateTrial.addReplicateExperiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a SingleTrial object to this list of replicates</p>
+<p>mewReplicateExperiment: A <a class="reference internal" href="#fDAPI.SingleTrial" title="fDAPI.SingleTrial"><code class="xref py py-class docutils literal"><span class="pre">SingleTrial</span></code></a> object</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="fDAPI.replicateExperimentObject.calcAverageAndDev">
-<code class="descname">calcAverageAndDev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.replicateExperimentObject.calcAverageAndDev" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the statistics on the singleExperimentData objects</p>
+<dt id="fDAPI.ReplicateTrial.calcAverageAndDev">
+<code class="descname">calcAverageAndDev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.ReplicateTrial.calcAverageAndDev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the statistics on the SingleTrial objects</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="fDAPI.singleExperimentData">
-<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">singleExperimentData</code><a class="headerlink" href="#fDAPI.singleExperimentData" title="Permalink to this definition">¶</a></dt>
+<dt id="fDAPI.SingleTrial">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">SingleTrial</code><a class="headerlink" href="#fDAPI.SingleTrial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Container for single experiment data. This includes all data for a single strain (OD, titers, fluorescence, etc.)</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="fDAPI.singleExperimentDataShell">
-<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">singleExperimentDataShell</code><a class="headerlink" href="#fDAPI.singleExperimentDataShell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Object which overwrites the singleExperimentData objects setters and getters, acts as a shell of data with the
-same structure as singleExperimentData</p>
+<dt id="fDAPI.SingleTrialDataShell">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">SingleTrialDataShell</code><a class="headerlink" href="#fDAPI.SingleTrialDataShell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object which overwrites the SingleTrial objects setters and getters, acts as a shell of data with the
+same structure as SingleTrial</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="fDAPI.timeCourseObject">
-<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">timeCourseObject</code><a class="headerlink" href="#fDAPI.timeCourseObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Child of <code class="xref py py-class docutils literal"><span class="pre">titerObject</span></code></p>
+<dt id="fDAPI.TimeCourse">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">TimeCourse</code><span class="sig-paren">(</span><em>removeDeathPhaseFlag=False</em>, <em>useFilteredData=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.TimeCourse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Child of <code class="xref py py-class docutils literal"><span class="pre">Titer</span></code> which contains curve fitting relevant to time course data</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="fDAPI.timeCourseObjectShell">
-<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">timeCourseObjectShell</code><a class="headerlink" href="#fDAPI.timeCourseObjectShell" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a shell of :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>~titerObject&#8217; with an overidden setter to be used as a container</p>
+<dt id="fDAPI.TimeCourseShell">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">TimeCourseShell</code><span class="sig-paren">(</span><em>removeDeathPhaseFlag=False</em>, <em>useFilteredData=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.TimeCourseShell" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a shell of :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>~Titer&#8217; with an overidden setter to be used as a container</p>
 </dd></dl>
 
 </div>
@@ -195,13 +361,14 @@ same structure as singleExperimentData</p>
 </div>
 
 
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="setup.html" class="btn btn-neutral" title="Quick Start Guide"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="timeCourseTutorial.html" class="btn btn-neutral" title="Importing and Working with fDAPI.TimeCourse Objects" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -211,12 +378,13 @@ same structure as singleExperimentData</p>
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Naveen Venayak.
+
     </p>
   </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
 </footer>
+
         </div>
       </div>
 
@@ -240,6 +408,7 @@ same structure as singleExperimentData</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
