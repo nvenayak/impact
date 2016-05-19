@@ -1,0 +1,21 @@
+{% extends "fDAPI_core/input.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        If the experiment details are not in the database, please detail them here. Then, you will be able to add the data
+          for this experiment.
+      </div>
+    </div>
+
+    <form action="/your-name/" method="post">
+        {% csrf_token %}
+        <table class="table">
+            {{ newExperimentForm.as_table }}
+        </table>
+
+        <input type="submit" value="Submit" />
+    </form>
+</div>
+{% endblock %}
