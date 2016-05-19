@@ -1,4 +1,4 @@
-__author__ = 'Naveen'
+# __author__ = 'Naveen'
 from fDAPI import *
 proj = Project()
 exptInfo = """\
@@ -23,3 +23,6 @@ proj.newExperiment('2016.04.21','pTOG Test - Preculture - with double seal, 0.5m
 # print(proj.getExperiments())
 # proj.plottingGUI()
 proj.plottingGUI2()
+# {''}
+# expt = Experiment()
+# expt.initDB('test1234.db')

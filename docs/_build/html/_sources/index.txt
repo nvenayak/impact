@@ -10,8 +10,11 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   
+
    setup
+   gettingStarted
+   importingData
+   timeCourseTutorial
    code
 
 
