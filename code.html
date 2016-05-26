@@ -271,11 +271,11 @@ Date:       October, 2015</p>
 <p>This is the main data object container. Almost all functionality is contained here.</p>
 <dl class="class">
 <dt id="fDAPI.CurveFitObject">
-<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">CurveFitObject</code><span class="sig-paren">(</span><em>paramList</em>, <em>growthEquation</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.CurveFitObject" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">CurveFitObject</code><span class="sig-paren">(</span><em>paramList</em>, <em>growthEquation</em>, <em>method='leastsq'</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.CurveFitObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper for curve fitting objects</p>
 <dl class="docutils">
 <dt>Parameters:</dt>
-<dd><dl class="first last docutils">
+<dd><dl class="first docutils">
 <dt>paramList: List of parameters, with initial guess, max and min values</dt>
 <dd><dl class="first last docutils">
 <dt>Each parameter is a dict with the following form</dt>
@@ -290,6 +290,7 @@ Date:       October, 2015</p>
 <dt>growthEquation: A function to fit with the following form:</dt>
 <dd>def growthEquation(t, param1, param2, ..): return f(param1,param2,..)</dd>
 </dl>
+<p class="last">method: lmfit method (slsqp, leastsq)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -318,8 +319,8 @@ titers which are stored within it</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="fDAPI.ReplicateTrial.calcAverageAndDev">
-<code class="descname">calcAverageAndDev</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.ReplicateTrial.calcAverageAndDev" title="Permalink to this definition">¶</a></dt>
+<dt id="fDAPI.ReplicateTrial.calculate_statistics">
+<code class="descname">calculate_statistics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.ReplicateTrial.calculate_statistics" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the statistics on the SingleTrial objects</p>
 </dd></dl>
 
