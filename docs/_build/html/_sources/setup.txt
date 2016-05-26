@@ -12,14 +12,14 @@ Curve fitting toolbox used in placed of scipy.optimize:
 
 Package to allow easy import of xls files (which is more convenient than using csv)
 
-- pip install pyexcel_xls
+- pip install pyexcel_xlsx
 
 Package to allow serialization of functions which are not explicitely declared
 
 - pip install dill
 
 
-The following should be executed in the root fDAPI directory (which contains setup.py)
+The following should be executed in the root fDAPI directory (which contains setup.py), and should install the above packages if not already installed.
 
 - setup.py install
 

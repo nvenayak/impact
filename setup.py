@@ -9,5 +9,5 @@ setup(
     author='Naveen Venayak',
     author_email='naveen.venayak@gmail.com',
     description='Toolbox for parsing, analyzing and plotting fermentation data including OD, titers and fluorescence',
-    install_requires=['pyexcel_xlsx','lmfit','dill']
+    install_requires=['pyexcel_xlsx','lmfit==0.8.3','dill','numpy','scipy','copy','datetime','time','sqlite3','matplotlib','QtGUI']
 )

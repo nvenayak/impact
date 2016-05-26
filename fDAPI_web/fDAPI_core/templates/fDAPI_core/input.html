@@ -1,0 +1,134 @@
+<head>
+{% include "fDAPI_core/includes/header.html" %}
+{% include "fDAPI_core/includes/navbar.html" %}
+</head>
+
+<style>
+    .handsontable col.rowHeader {
+    width: 180px;
+</style>
+
+<body class="body" style="background-color:#f6f6f6">
+    <ul class="nav nav-tabs">
+      <li role="presentation" class="active"><a href="/newExperiment">New Experiment</a></li>
+      <li role="presentation"><a href="/input/">Bulk Import Data</a></li>
+    </ul>
+    <br>
+{% block content %}
+
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                            <div class="panel-body">
+                                To import data, please first select your data layout. Please visit _____________ for a list of available layouts or
+                                ___________ to design your own.
+                                <br><br>
+                                <div class="dropdown">
+                                  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    Please select import layout.
+                                    <span class="caret"></span>
+                                  </button>
+                                  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a href="#">NV_OD</a></li>
+                                    <li><a href="#">NV_titers</a></li>
+                                      <li><a href="#">Information on adding layouts..</a></li>
+                                  </ul>
+                                </div>
+                                <br>
+                                <div class="btn-group pull-right" role="group" aria-label="...">
+                                  <button name="save" id="save" type="button" class="btn btn-default">Import Data</button>
+                                </div>
+                                <div class="controls">
+                                    <button name="load" id="load" class="btn btn-default">Load</button>
+                                    <!--<button name="save" id="save" class="btn btn-default">Import Data</button>-->
+                                </div>
+                            </div>
+                  </div>
+            </div>
+
+          <div class="col-md-9">
+              <h4>Importing data with the following layout: <b>NV_OD</b></h4>
+                <div id="example1" class="hot"></div>
+          </div>
+
+        </div>
+    </div>
+
+
+<script>
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+  var
+    $$ = function(id) {
+      return document.getElementById(id);
+    },
+    container = $$('example1'),
+    exampleConsole = $$('example1console'),
+    autosave = $$('autosave'),
+    load = $$('load'),
+    save = $$('save'),
+    autosaveNotification,
+    hot;
+
+  hot = new Handsontable(container, {
+    startRows: 11, //301
+    startCols: 11,//301
+    colHeaders: ['StrainID (CSV)', 'timePoint_1', 'timePoint_2', 'timePoint_3', 'timePoint_4', 'timePoint_5', 'timePoint_6', 'timePoint_7', 'timePoint_8', 'timePoint_9', 'timePoint_10', 'timePoint_11', 'timePoint_12', 'timePoint_13', 'timePoint_14', 'timePoint_15', 'timePoint_16', 'timePoint_17', 'timePoint_18', 'timePoint_19', 'timePoint_20', 'timePoint_21', 'timePoint_22', 'timePoint_23', 'timePoint_24', 'timePoint_25', 'timePoint_26', 'timePoint_27', 'timePoint_28', 'timePoint_29', 'timePoint_30', 'timePoint_31', 'timePoint_32', 'timePoint_33', 'timePoint_34', 'timePoint_35', 'timePoint_36', 'timePoint_37', 'timePoint_38', 'timePoint_39', 'timePoint_40', 'timePoint_41', 'timePoint_42', 'timePoint_43', 'timePoint_44', 'timePoint_45', 'timePoint_46', 'timePoint_47', 'timePoint_48', 'timePoint_49', 'timePoint_50', 'timePoint_51', 'timePoint_52', 'timePoint_53', 'timePoint_54', 'timePoint_55', 'timePoint_56', 'timePoint_57', 'timePoint_58', 'timePoint_59', 'timePoint_60', 'timePoint_61', 'timePoint_62', 'timePoint_63', 'timePoint_64', 'timePoint_65', 'timePoint_66', 'timePoint_67', 'timePoint_68', 'timePoint_69', 'timePoint_70', 'timePoint_71', 'timePoint_72', 'timePoint_73', 'timePoint_74', 'timePoint_75', 'timePoint_76', 'timePoint_77', 'timePoint_78', 'timePoint_79', 'timePoint_80', 'timePoint_81', 'timePoint_82', 'timePoint_83', 'timePoint_84', 'timePoint_85', 'timePoint_86', 'timePoint_87', 'timePoint_88', 'timePoint_89', 'timePoint_90', 'timePoint_91', 'timePoint_92', 'timePoint_93', 'timePoint_94', 'timePoint_95', 'timePoint_96', 'timePoint_97', 'timePoint_98', 'timePoint_99', 'timePoint_100', 'timePoint_101', 'timePoint_102', 'timePoint_103', 'timePoint_104', 'timePoint_105', 'timePoint_106', 'timePoint_107', 'timePoint_108', 'timePoint_109', 'timePoint_110', 'timePoint_111', 'timePoint_112', 'timePoint_113', 'timePoint_114', 'timePoint_115', 'timePoint_116', 'timePoint_117', 'timePoint_118', 'timePoint_119', 'timePoint_120', 'timePoint_121', 'timePoint_122', 'timePoint_123', 'timePoint_124', 'timePoint_125', 'timePoint_126', 'timePoint_127', 'timePoint_128', 'timePoint_129', 'timePoint_130', 'timePoint_131', 'timePoint_132', 'timePoint_133', 'timePoint_134', 'timePoint_135', 'timePoint_136', 'timePoint_137', 'timePoint_138', 'timePoint_139', 'timePoint_140', 'timePoint_141', 'timePoint_142', 'timePoint_143', 'timePoint_144', 'timePoint_145', 'timePoint_146', 'timePoint_147', 'timePoint_148', 'timePoint_149', 'timePoint_150', 'timePoint_151', 'timePoint_152', 'timePoint_153', 'timePoint_154', 'timePoint_155', 'timePoint_156', 'timePoint_157', 'timePoint_158', 'timePoint_159', 'timePoint_160', 'timePoint_161', 'timePoint_162', 'timePoint_163', 'timePoint_164', 'timePoint_165', 'timePoint_166', 'timePoint_167', 'timePoint_168', 'timePoint_169', 'timePoint_170', 'timePoint_171', 'timePoint_172', 'timePoint_173', 'timePoint_174', 'timePoint_175', 'timePoint_176', 'timePoint_177', 'timePoint_178', 'timePoint_179', 'timePoint_180', 'timePoint_181', 'timePoint_182', 'timePoint_183', 'timePoint_184', 'timePoint_185', 'timePoint_186', 'timePoint_187', 'timePoint_188', 'timePoint_189', 'timePoint_190', 'timePoint_191', 'timePoint_192', 'timePoint_193', 'timePoint_194', 'timePoint_195', 'timePoint_196', 'timePoint_197', 'timePoint_198', 'timePoint_199', 'timePoint_200', 'timePoint_201', 'timePoint_202', 'timePoint_203', 'timePoint_204', 'timePoint_205', 'timePoint_206', 'timePoint_207', 'timePoint_208', 'timePoint_209', 'timePoint_210', 'timePoint_211', 'timePoint_212', 'timePoint_213', 'timePoint_214', 'timePoint_215', 'timePoint_216', 'timePoint_217', 'timePoint_218', 'timePoint_219', 'timePoint_220', 'timePoint_221', 'timePoint_222', 'timePoint_223', 'timePoint_224', 'timePoint_225', 'timePoint_226', 'timePoint_227', 'timePoint_228', 'timePoint_229', 'timePoint_230', 'timePoint_231', 'timePoint_232', 'timePoint_233', 'timePoint_234', 'timePoint_235', 'timePoint_236', 'timePoint_237', 'timePoint_238', 'timePoint_239', 'timePoint_240', 'timePoint_241', 'timePoint_242', 'timePoint_243', 'timePoint_244', 'timePoint_245', 'timePoint_246', 'timePoint_247', 'timePoint_248', 'timePoint_249', 'timePoint_250', 'timePoint_251', 'timePoint_252', 'timePoint_253', 'timePoint_254', 'timePoint_255', 'timePoint_256', 'timePoint_257', 'timePoint_258', 'timePoint_259', 'timePoint_260', 'timePoint_261', 'timePoint_262', 'timePoint_263', 'timePoint_264', 'timePoint_265', 'timePoint_266', 'timePoint_267', 'timePoint_268', 'timePoint_269', 'timePoint_270', 'timePoint_271', 'timePoint_272', 'timePoint_273', 'timePoint_274', 'timePoint_275', 'timePoint_276', 'timePoint_277', 'timePoint_278', 'timePoint_279', 'timePoint_280', 'timePoint_281', 'timePoint_282', 'timePoint_283', 'timePoint_284', 'timePoint_285', 'timePoint_286', 'timePoint_287', 'timePoint_288', 'timePoint_289', 'timePoint_290', 'timePoint_291', 'timePoint_292', 'timePoint_293', 'timePoint_294', 'timePoint_295', 'timePoint_296', 'timePoint_297', 'timePoint_298', 'timePoint_299', 'timePoint_300'],
+    rowHeaders: ['Time (hours)','strain_1', 'strain_2', 'strain_3', 'strain_4', 'strain_5', 'strain_6', 'strain_7', 'strain_8', 'strain_9', 'strain_10', 'strain_11', 'strain_12', 'strain_13', 'strain_14', 'strain_15', 'strain_16', 'strain_17', 'strain_18', 'strain_19', 'strain_20', 'strain_21', 'strain_22', 'strain_23', 'strain_24', 'strain_25', 'strain_26', 'strain_27', 'strain_28', 'strain_29', 'strain_30', 'strain_31', 'strain_32', 'strain_33', 'strain_34', 'strain_35', 'strain_36', 'strain_37', 'strain_38', 'strain_39', 'strain_40', 'strain_41', 'strain_42', 'strain_43', 'strain_44', 'strain_45', 'strain_46', 'strain_47', 'strain_48', 'strain_49', 'strain_50', 'strain_51', 'strain_52', 'strain_53', 'strain_54', 'strain_55', 'strain_56', 'strain_57', 'strain_58', 'strain_59', 'strain_60', 'strain_61', 'strain_62', 'strain_63', 'strain_64', 'strain_65', 'strain_66', 'strain_67', 'strain_68', 'strain_69', 'strain_70', 'strain_71', 'strain_72', 'strain_73', 'strain_74', 'strain_75', 'strain_76', 'strain_77', 'strain_78', 'strain_79', 'strain_80', 'strain_81', 'strain_82', 'strain_83', 'strain_84', 'strain_85', 'strain_86', 'strain_87', 'strain_88', 'strain_89', 'strain_90', 'strain_91', 'strain_92', 'strain_93', 'strain_94', 'strain_95', 'strain_96', 'strain_97', 'strain_98', 'strain_99', 'strain_100', 'strain_101', 'strain_102', 'strain_103', 'strain_104', 'strain_105', 'strain_106', 'strain_107', 'strain_108', 'strain_109', 'strain_110', 'strain_111', 'strain_112', 'strain_113', 'strain_114', 'strain_115', 'strain_116', 'strain_117', 'strain_118', 'strain_119', 'strain_120', 'strain_121', 'strain_122', 'strain_123', 'strain_124', 'strain_125', 'strain_126', 'strain_127', 'strain_128', 'strain_129', 'strain_130', 'strain_131', 'strain_132', 'strain_133', 'strain_134', 'strain_135', 'strain_136', 'strain_137', 'strain_138', 'strain_139', 'strain_140', 'strain_141', 'strain_142', 'strain_143', 'strain_144', 'strain_145', 'strain_146', 'strain_147', 'strain_148', 'strain_149', 'strain_150', 'strain_151', 'strain_152', 'strain_153', 'strain_154', 'strain_155', 'strain_156', 'strain_157', 'strain_158', 'strain_159', 'strain_160', 'strain_161', 'strain_162', 'strain_163', 'strain_164', 'strain_165', 'strain_166', 'strain_167', 'strain_168', 'strain_169', 'strain_170', 'strain_171', 'strain_172', 'strain_173', 'strain_174', 'strain_175', 'strain_176', 'strain_177', 'strain_178', 'strain_179', 'strain_180', 'strain_181', 'strain_182', 'strain_183', 'strain_184', 'strain_185', 'strain_186', 'strain_187', 'strain_188', 'strain_189', 'strain_190', 'strain_191', 'strain_192', 'strain_193', 'strain_194', 'strain_195', 'strain_196', 'strain_197', 'strain_198', 'strain_199', 'strain_200', 'strain_201', 'strain_202', 'strain_203', 'strain_204', 'strain_205', 'strain_206', 'strain_207', 'strain_208', 'strain_209', 'strain_210', 'strain_211', 'strain_212', 'strain_213', 'strain_214', 'strain_215', 'strain_216', 'strain_217', 'strain_218', 'strain_219', 'strain_220', 'strain_221', 'strain_222', 'strain_223', 'strain_224', 'strain_225', 'strain_226', 'strain_227', 'strain_228', 'strain_229', 'strain_230', 'strain_231', 'strain_232', 'strain_233', 'strain_234', 'strain_235', 'strain_236', 'strain_237', 'strain_238', 'strain_239', 'strain_240', 'strain_241', 'strain_242', 'strain_243', 'strain_244', 'strain_245', 'strain_246', 'strain_247', 'strain_248', 'strain_249', 'strain_250', 'strain_251', 'strain_252', 'strain_253', 'strain_254', 'strain_255', 'strain_256', 'strain_257', 'strain_258', 'strain_259', 'strain_260', 'strain_261', 'strain_262', 'strain_263', 'strain_264', 'strain_265', 'strain_266', 'strain_267', 'strain_268', 'strain_269', 'strain_270', 'strain_271', 'strain_272', 'strain_273', 'strain_274', 'strain_275', 'strain_276', 'strain_277', 'strain_278', 'strain_279', 'strain_280', 'strain_281', 'strain_282', 'strain_283', 'strain_284', 'strain_285', 'strain_286', 'strain_287', 'strain_288', 'strain_289', 'strain_290', 'strain_291', 'strain_292', 'strain_293', 'strain_294', 'strain_295', 'strain_296', 'strain_297', 'strain_298', 'strain_299', 'strain_300'],
+//    colHeaders: ['StrainID (CSV)', 'timePoint_1', 'timePoint_2', 'timePoint_3', 'timePoint_4', 'timePoint_5', 'timePoint_6', 'timePoint_7', 'timePoint_8', 'timePoint_9', 'timePoint_10'],
+//    rowHeaders: ['Time (hours)','strain_1', 'strain_2', 'strain_3', 'strain_4', 'strain_5', 'strain_6', 'strain_7', 'strain_8', 'strain_9', 'strain_10'],
+    width: 1200,
+    height: 700
+  });
+
+  Handsontable.Dom.addEvent(load, 'click', function() {
+    $.ajax('scripts/json/load.json', 'GET', '', function(res) {
+      var data = JSON.parse(res.response);
+
+      hot.loadData(data.data);
+      exampleConsole.innerText = 'Data loaded';
+    });
+  });
+
+  Handsontable.Dom.addEvent(save, 'click', function() {
+    // save all cell's data
+    $.ajax({
+    url: '/input/inputData',
+    type: 'POST',
+    data: JSON.stringify({data: hot.getData()})
+    });
+  });
+</script>
+{% endblock %}
+</body>
+                         
