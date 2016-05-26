@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -8,11 +9,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/">fDAPI: Fermentation Data Analysis and Plotting Interface</a>
+      <div><a class="navbar-brand" href="/"><img height="100%" class="image-responsive" alt="Brand" src="{% static 'FermAT_logo.svg' %}"></a></div>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <p class="navbar-text">Fermentation Analysis Toolbox</p>
         <ul class="nav navbar-nav navbar-right">
             <li class="active"><a href="/input/">Input&nbsp&nbsp<span class="glyphicon glyphicon-open" aria-hidden="true"></span></a></li>
             <li><a href="/">Analyze&nbsp&nbsp<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span></a></li>

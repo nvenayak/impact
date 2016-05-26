@@ -56,38 +56,20 @@ def register(request):
 @login_required()
 def core(request):
     exptInfo = fDAPI.Project().getAllExperimentInfo_django(dbName)
-    request.session['exptInfo'] = exptInfo
+    data = modifyMainPageSessionData(request, exptInfo = exptInfo)
 
-
-    if 'strainInfo' in request.session.keys():
-        strainInfo = request.session['strainInfo']
-    else:
-        strainInfo = []
-
-    if 'selectedStrainsInfo' in request.session.keys():
-        selectedStrainsInfo = request.session['selectedStrainsInfo']
-    else:
-        selectedStrainsInfo = []
-
-    return render(request, 'fDAPI_core/home.html',{'strainInfo':strainInfo,
-                                                   'exptInfo':exptInfo,
-                                                   'selectedStrainsInfo': selectedStrainsInfo})
+    return render(request, 'fDAPI_core/home.html', data)
 
 # @login_required
 def experimentSelect(request, experimentID):
-    exptInfo = request.session['exptInfo']
     strainInfo = fDAPI.Experiment().getAllStrains_django(dbName,experimentID)
     request.session['strainInfo'] = strainInfo
-
-    if 'selectedStrainsInfo' in request.session.keys():
-        selectedStrainsInfo = request.session['selectedStrainsInfo']
-    else:
-        selectedStrainsInfo = []
 
     # Determine the unique identifiers for use in the sorting dropdown
     uniqueIDs = dict()
     for key in ['strainID','identifier1','identifier2']:
         uniqueIDs[key] = sorted(set([strain[key] for strain in strainInfo]))
+
     data = modifyMainPageSessionData(request, uniqueIDs = uniqueIDs)
     return render(request, 'fDAPI_core/home.html', data)
 
@@ -112,24 +94,31 @@ def selectStrains(request):
 
         data = modifyMainPageSessionData(request, strainsToPlot = strainsToPlot,
                                          selectedStrainsInfo = request.session['selectedStrainsInfo'])
-
+        updateFigure(request)
         # Determine the set of titers available for all selected strains
         data = modifyMainPageSessionData(request, titerNames = fDAPI.Project().getTitersSelectedStrains_django(dbName, data['selectedStrainsInfo']))
-
+    else:
+        return HttpResponse('Expected POST for selectStrains')
     return render(request, 'fDAPI_core/home.html',data)
 
 def removeStrains(request):
     if request.method == 'POST':
         request.session['selectedStrainsInfo'] = [strain for strain in request.session['selectedStrainsInfo'] if str(strain['replicateID']) not in request.POST.keys()]
 
-        data = modifyMainPageSessionData(request)
+        data = updateFigure(request)
         return render(request, 'fDAPI_core/home.html',data)
     else:
         return HttpResponse('Expected POST data for /selectTiters/')
 
+def clearData(request):
+    data = modifyMainPageSessionData(request, selectedStrainsInfo = [])
+
+    return render(request, 'fDAPI_core/home.html', data)
+
 def selectTiters(request):
     if request.method == 'POST':
-        data = modifyMainPageSessionData(request, selectedTiters = [titer for titer in request.session['titerNames'] if titer in request.POST.keys()])
+        modifyMainPageSessionData(request, selectedTiters = [titer for titer in request.session['titerNames'] if titer in request.POST.keys()])
+        data = updateFigure(request)
         return render(request, 'fDAPI_core/home.html', data)
     else:
         return HttpResponse('Expected POST data for /selectTiters/')
@@ -141,6 +130,8 @@ def selectStrainSubset(request):
         for key in request.POST.keys():
             print(request.POST[key])
 
+        modifyMainPageSessionData(request)
+
         for strain in request.session['strainInfo']:
             if (strain['strainID'] == request.POST['strainID'] or request.POST['strainID'] == 'All')\
                     and (strain['identifier1'] == request.POST['identifier1'] or request.POST['identifier1'] == 'All') \
@@ -149,8 +140,7 @@ def selectStrainSubset(request):
                 request.session['selectedStrainsInfo'].append(strain)
 
 
-
-        data = modifyMainPageSessionData(request)
+        data = updateFigure(request)
         return render(request, 'fDAPI_core/home.html',data)
     else:
         return HttpResponse('Expected POST')
@@ -160,12 +150,8 @@ def selectMainWindow(request, mainWindowSelection):
         request.session['mainWindow'] = mainWindowSelection
         experiment = fDAPI.Experiment()
         experiment.loadFromDB(dbName,1)
-        data = modifyMainPageSessionData(request, plotlyCode = fDAPI.Project().printGenericTimeCourse_plotly(dbName = dbName,
-                                                                                                             strainsToPlot = request.session['strainsToPlot'],
-                                                                                                             titersToPlot = request.session['selectedTiters'],
-                                                                                                             removePointFraction = 1,
-                                                                                                             )
-                                         )
+        updateFigure(request)
+        data = modifyMainPageSessionData(request)
     elif mainWindowSelection == 'rawData':
         request.session['mainWindow'] = mainWindowSelection
         data = modifyMainPageSessionData(request)
@@ -173,6 +159,21 @@ def selectMainWindow(request, mainWindowSelection):
         data = modifyMainPageSessionData(request)
     return render(request, 'fDAPI_core/home.html',data)
 
+def updateFigure(request):
+    if 'mainWindow' in request.session.keys():
+        if request.session['mainWindow'] == 'plot' and\
+                len(request.session['selectedStrainsInfo']) > 0 and\
+                len(request.session['selectedTiters']) > 0:
+            data = modifyMainPageSessionData(request, plotlyCode = fDAPI.printGenericTimeCourse_plotly(dbName = dbName,
+                                                                                                         strainsToPlot = [strain['replicateID'] for strain in request.session['selectedStrainsInfo']],
+                                                                                                         titersToPlot = request.session['selectedTiters'],
+                                                                                                         removePointFraction = 1,dataType = 'raw'
+                                                                                                         ))
+        else:
+             data = modifyMainPageSessionData(request)
+    else:
+         data = modifyMainPageSessionData(request)
+    return data
 
 def modifyMainPageSessionData(request, **kwargs):
     data = dict()
@@ -185,6 +186,7 @@ def modifyMainPageSessionData(request, **kwargs):
             data[key] = request.session[key]
         else:
             data[key] = []
+            request.session[key] = []
 
     return data
 
@@ -262,7 +264,7 @@ def inputData(request):
 
 
     else:
-        print('NOT POST WTF')
+        print('EXPECTED POST')
 
 
 

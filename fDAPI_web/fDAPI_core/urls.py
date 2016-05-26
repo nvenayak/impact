@@ -38,6 +38,7 @@ urlpatterns = [
     url(r'^selectStrainSubset/$',views.selectStrainSubset),
     url(r'^removeStrains/$',views.removeStrains),
     url(r'^selectTiters/$',views.selectTiters),
+    url(r'^clearData/$',views.clearData),
 
 
     url(r'^mainWindow/(?P<mainWindowSelection>[a-z|A-Z]+)$',views.selectMainWindow),
