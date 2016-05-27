@@ -22,11 +22,10 @@ from lmfit import Model
 from pyexcel_xlsx import get_data
 
 import dill as pickle
-from .QtGUI import *
+# from .QtGUI import *
 
 
 def initDB(dbName):
-    # SQLite stuff
     # Initialize database
     conn = sql.connect(dbName)
     c = conn.cursor()
