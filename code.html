@@ -271,7 +271,7 @@ Date:       October, 2015</p>
 <p>This is the main data object container. Almost all functionality is contained here.</p>
 <dl class="class">
 <dt id="fDAPI.CurveFitObject">
-<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">CurveFitObject</code><span class="sig-paren">(</span><em>paramList</em>, <em>growthEquation</em>, <em>method='leastsq'</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.CurveFitObject" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">CurveFitObject</code><span class="sig-paren">(</span><em>paramList</em>, <em>growthEquation</em>, <em>method='slsqp'</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.CurveFitObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper for curve fitting objects</p>
 <dl class="docutils">
 <dt>Parameters:</dt>
@@ -302,11 +302,6 @@ Date:       October, 2015</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="fDAPI.Project">
-<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">Project</code><a class="headerlink" href="#fDAPI.Project" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
 <dt id="fDAPI.ReplicateTrial">
 <em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">ReplicateTrial</code><a class="headerlink" href="#fDAPI.ReplicateTrial" title="Permalink to this definition">¶</a></dt>
 <dd><p>This object stores SingleTrial objects and calculates statistics on these replicates for each of the
@@ -322,6 +317,22 @@ titers which are stored within it</p>
 <dt id="fDAPI.ReplicateTrial.calculate_statistics">
 <code class="descname">calculate_statistics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.ReplicateTrial.calculate_statistics" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the statistics on the SingleTrial objects</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="fDAPI.RunIdentifier">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">RunIdentifier</code><a class="headerlink" href="#fDAPI.RunIdentifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Carries information about the run through all the objects</p>
+<dl class="method">
+<dt id="fDAPI.RunIdentifier.parse_RunIdentifier_from_csv">
+<code class="descname">parse_RunIdentifier_from_csv</code><span class="sig-paren">(</span><em>csv_RunIdentifier</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.RunIdentifier.parse_RunIdentifier_from_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to parse a CSV runIdentifier</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd>csv_RunIdentifier: a comma-separated string containing a RunIdentifier in standard form - strainID,identifier1,identifier2,replicate</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -348,7 +359,50 @@ same structure as SingleTrial</p>
 <dl class="class">
 <dt id="fDAPI.TimeCourseShell">
 <em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">TimeCourseShell</code><span class="sig-paren">(</span><em>removeDeathPhaseFlag=False</em>, <em>useFilteredData=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.TimeCourseShell" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a shell of :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>~Titer&#8217; with an overidden setter to be used as a container</p>
+<dd><p>This is a shell of <code class="xref py py-class docutils literal"><span class="pre">Titer</span></code> with an overidden setter to be used as a container</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="fDAPI.TimePoint">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">TimePoint</code><span class="sig-paren">(</span><em>runID</em>, <em>titerName</em>, <em>t</em>, <em>titer</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.TimePoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="fDAPI.generateSyntheticData">
+<code class="descclassname">fDAPI.</code><code class="descname">generateSyntheticData</code><span class="sig-paren">(</span><em>y0</em>, <em>t</em>, <em>model</em>, <em>biomass_keys</em>, <em>substrate_keys</em>, <em>product_keys</em>, <em>noise=0</em>, <em>plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.generateSyntheticData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates synthetic data</p>
+<dl class="docutils">
+<dt>y0 <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd>Starting values</dd>
+<dt>t <span class="classifier-delimiter">:</span> <span class="classifier">array</span></dt>
+<dd>Time vector</dd>
+<dt>model: cobraPy model</dt>
+<dd>Optimized cobraPy model</dd>
+<dt>biomass_keys: list</dt>
+<dd>A list with the a string of the biomass name</dd>
+<dt>substrate_keys: list</dt>
+<dd>A list with the a string of the susbstrate name</dd>
+<dt>product_keys: list</dt>
+<dd>A list of strings of product names</dd>
+<dt>noise: float, optional</dt>
+<dd>If you&#8217;d like to add some noise to parameters</dd>
+<dt>plot <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd>Flag for plotting data</dd>
+</dl>
+<dl class="docutils">
+<dt>dFBA_profile: dict</dt>
+<dd>Returns a dict with time profiles for each product, substrate and biomass</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="fDAPI.init_db">
+<code class="descclassname">fDAPI.</code><code class="descname">init_db</code><span class="sig-paren">(</span><em>dbName</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.init_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initiates the standard sqlite database</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>dbName (str): str database name</dd>
+</dl>
 </dd></dl>
 
 </div>
