@@ -167,7 +167,7 @@ def updateFigure(request):
             data = modifyMainPageSessionData(request, plotlyCode = fDAPI.printGenericTimeCourse_plotly(dbName = dbName,
                                                                                                          strainsToPlot = [strain['replicateID'] for strain in request.session['selectedStrainsInfo']],
                                                                                                          titersToPlot = request.session['selectedTiters'],
-                                                                                                         removePointFraction = 1,dataType = 'raw'
+                                                                                                         dataType = 'raw'
                                                                                                          ))
         else:
              data = modifyMainPageSessionData(request)

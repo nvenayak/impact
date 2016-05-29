@@ -103,8 +103,8 @@ for condition in ['Aerobic','Anaerobic']:
     experiment.addReplicateTrial(replicateTrial)
 
 
-# fDAPI.init_db(dbName = "default_fDAPI_db.sqlite3")
-# experimentID = experiment.commitToDB(dbName = "default_fDAPI_db.sqlite3")
+fDAPI.init_db(dbName = "../default_fDAPI_db.sqlite3")
+experimentID = experiment.commitToDB(dbName = "../default_fDAPI_db.sqlite3")
 experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'file')
 # plt.show()
 #
