@@ -175,6 +175,7 @@ def updateFigure(request):
          data = modifyMainPageSessionData(request)
     return data
 
+
 def modifyMainPageSessionData(request, **kwargs):
     data = dict()
     for key in ['strainInfo','exptInfo','selectedStrainsInfo','mainWindow', 'plotlyCode',
