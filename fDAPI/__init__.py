@@ -192,7 +192,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     elif len(titersToPlot) < 9:
         rows = 2
         fig = tools.make_subplots(rows=2, cols=4)
-        height = 400
+        height = 800
     else:
         raise Exception("Unimplemented Functionality")
 
@@ -205,7 +205,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         yieldFlag = False
         titerFlag = True
         productivityFlag = False
-        endpoint_flag = True
+        endpoint_flag = False
         sortBy = 'identifier1'
 
         trace = []
@@ -531,9 +531,9 @@ class CurveFitObject(object):
         self.method = method
 
     def calcFit(self, t, data, method=None, **kwargs):
-        print('befor: ', method)
+        # print('befor: ', method)
         if method is None: method = self.method
-        print('after: ', method)
+        # print('after: ', method)
         for param in self.paramList:
             # print(param)
             # Check if the parameter is a lambda function
@@ -758,8 +758,8 @@ class TimeCourse(Titer):
             # print(self.dataVec)
             # print(self.timeVec[0:self.deathPhaseStart])
             # print(self.dataVec[0:self.deathPhaseStart])
-            print('Started fit')
-            print(self.fit_type)
+            # print('Started fit')
+            # print(self.fit_type)
             result = self.curve_fit_dict[self.fit_type].calcFit(self.timeVec[0:self.deathPhaseStart],
                                                                 self.dataVec[
                                                                 0:self.deathPhaseStart])  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
