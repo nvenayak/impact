@@ -429,13 +429,13 @@ main elements:</p>
 <div class="container">
 <div class="highlight"><pre>
 Please use biomass titerType instead of:  OD
+titerName :      OD600
 strainID :       MG1655 d(lacI)
-replicate :      None
-identifier2 :    IPTG
-identifier1 :    pKDL071
 time :   -1
 _titerType :     biomass
-titerName :      OD600
+identifier1 :    pKDL071
+identifier2 :    IPTG
+replicate :      None
 </pre></div></div>
 </div>
 </div>
@@ -461,11 +461,11 @@ time point for a single strain and titer type</p>
 </div>
 <div class="container">
 <div class="highlight"><pre>
-runIdentifier :  &lt;fDAPI.RunIdentifier object at 0x000002A0335AF518&gt;
-titerName :      OD600
 titer :  3
-units :  {&apos;titer&apos;: &apos;g&apos;, &apos;t&apos;: &apos;h&apos;}
+titerName :      OD600
+units :  {&apos;t&apos;: &apos;h&apos;, &apos;titer&apos;: &apos;g&apos;}
 t :      10
+runIdentifier :  &lt;fDAPI.RunIdentifier object at 0x0000028990D69E10&gt;
 </pre></div></div>
 </div>
 </div>
@@ -525,65 +525,29 @@ depend on how the raw data is parsed.</p>
 <div class="highlight"><pre>
 Building and Adding TimePoints one-by-one
 --------------------------------------------------------
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
 Time:  [ 0  2  4  6  8 10 12 14 16 18 20 22 24 26]
 Data:  [ 0.02  0.1   0.2   0.4   0.8   1.6   1.7   1.72  1.72  1.6   1.55  1.5
   1.45  1.4 ]
+titerName :      OD600
 strainID :       MG1655 d(lacI)
-replicate :      None
-identifier2 :    IPTG
-identifier1 :    pKDL071
 time :   -1
 _titerType :     biomass
-titerName :      OD600
+identifier1 :    pKDL071
+identifier2 :    IPTG
+replicate :      None
 
 
 
 Adding the timeVec/dataVec directly
 --------------------------------------------------------
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
 Time:  [ 0  2  4  6  8 10 12 14 16 18 20 22 24 26]
 Data:  [ 0.02  0.1   0.2   0.4   0.8   1.6   1.7   1.72  1.72  1.6   1.55  1.5
@@ -647,8 +611,8 @@ so4_e        -0.06            5drib_c      0.00
 k_e          -0.05            glyclt_e     0.00
 mg2_e        -0.00            mththf_c     0.00
 fe2_e        -0.00            4crsol_c     0.00
-fe3_e        -0.00            meoh_e       0.00
-cl_e         -0.00            amob_c       0.00
+fe3_e        -0.00            amob_c       0.00
+cl_e         -0.00            meoh_e       0.00
 ca2_e        -0.00
 cu2_e        -0.00
 mn2_e        -0.00
@@ -728,14 +692,10 @@ cobalt2_e    -0.00
 </div>
 <div class="container">
 <div class="highlight"><pre>
+Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
+Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Please use biomass titerType instead of:  OD
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 </pre></div></div>
@@ -770,10 +730,9 @@ dFBA data</p>
 <div class="nboutput container">
 <div class="container">
 </div>
-<div class="stderr container">
-<div class="highlight"><pre>
-C:\Users\Naveen\Anaconda3\lib\site-packages\scipy\integrate\odepack.py:218 ODEintWarning: Excess work done on this call (perhaps wrong Dfun type). Run with full_output = 1 to get quantitative information.
-</pre></div></div>
+<div class="container">
+<img alt="_images/gettingStarted_15_0.png" src="_images/gettingStarted_15_0.png" />
+</div>
 </div>
 <div class="nboutput container">
 <div class="container">
@@ -796,18 +755,11 @@ C:\Users\Naveen\Anaconda3\lib\site-packages\scipy\integrate\odepack.py:218 ODEin
 <img alt="_images/gettingStarted_15_3.png" src="_images/gettingStarted_15_3.png" />
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<img alt="_images/gettingStarted_15_4.png" src="_images/gettingStarted_15_4.png" />
-</div>
-</div>
 <div class="nboutput nblast container">
 <div class="container">
 </div>
 <div class="container">
-<img alt="_images/gettingStarted_15_5.png" src="_images/gettingStarted_15_5.png" />
+<img alt="_images/gettingStarted_15_4.png" src="_images/gettingStarted_15_4.png" />
 </div>
 </div>
 <div class="nbinput container">
@@ -860,40 +812,24 @@ C:\Users\Naveen\Anaconda3\lib\site-packages\scipy\integrate\odepack.py:218 ODEin
 <div class="container">
 <div class="highlight"><pre>
 Please use biomass titerType instead of:  OD
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Please use biomass titerType instead of:  OD
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Please use biomass titerType instead of:  OD
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Please use biomass titerType instead of:  OD
-Started fit
-growthEquation_generalized_logistic
-befor:  None
-after:  slsqp
 Finished fit
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
@@ -928,8 +864,9 @@ Curve fitting for titers unimplemented in restructured curve fitting. Please see
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">fDAPI</span><span class="o">.</span><span class="n">init_db</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../20160518test_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
-<span class="n">experimentID</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">commitToDB</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../20160518test_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
+<span class="n">fDAPI</span><span class="o">.</span><span class="n">init_db</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
+<span class="n">experimentID</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">commitToDB</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">experimentID</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -938,7 +875,8 @@ Curve fitting for titers unimplemented in restructured curve fitting. Please see
 </div>
 <div class="container">
 <div class="highlight"><pre>
-Committed experiment # 23  to DB  ../20160518test_fDAPI_db.sqlite3
+Committed experiment # 24  to DB  ../20160518test_fDAPI_db.sqlite3
+24
 </pre></div></div>
 </div>
 <div class="nbinput container">
@@ -966,7 +904,7 @@ This is the format of your plot grid:
 <div class="container">
 </div>
 <div class="container">
-<div id="cd46ef67-fc10-497a-b6d6-cd8adb52d717" style="height: 400; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("cd46ef67-fc10-497a-b6d6-cd8adb52d717", [{"xaxis": "x1", "mode": "lines+markers", "y": [0.05, 0.06329970975936136, 0.0801596195893474, 0.1015390822446236, 0.12865772902767567, 0.16306657675599442, 0.2067386967962554, 0.26218486484113324, 0.3326011230247875, 0.4220571199969073, 0.5357365775503462, 0.6802444075934496, 0.8639990826352092, 1.0977340823098276, 1.3951389500910034, 1.7736790833554283, 1.829615179181484, 2.1909499117508986, 2.2791268170167958, 2.2791268170167958], "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic", "showlegend": true, "error_y": {"visible": true, "color": "rgb(215,48,39)", "type": "data", "array": [0.0, 0.0010619425888388372, 0.002705886838190806, 0.005172007711086111, 0.008788917293415497, 0.014004305290631524, 0.02142580964609849, 0.03187543886559921, 0.04646195256447083, 0.06667698736342005, 0.09452257502968413, 0.13268011744321603, 0.18473406189677435, 0.2554677123427597, 0.35125409757694503, 0.4805720100055645, 0.20710119841708052, 0.19013094269507055, 0.13427342333180511, 0.13427342333180511]}, "marker": {"color": "rgb(215,48,39)"}, "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "yaxis": "y1"}, {"xaxis": "x2", "mode": "lines+markers", "y": [0.0, 0.9929568236192281, 2.2506114684736866, 3.8440000719211804, 5.863355181045662, 8.423330267675025, 11.66965641305063, 15.787626549853055, 21.012912636148958, 27.64536186321088, 36.06659825694604, 46.76248666808523, 60.35181214937921, 77.62290624427557, 99.58043820058072, 127.50521145098094, 137.21455858334784, 165.4170414335277, 172.7358562671901, 172.7358562671901], "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic", "showlegend": false, "error_y": {"visible": true, "color": "rgb(215,48,39)", "type": "data", "array": [0.0, 0.07099800442916893, 0.17087862439025503, 0.31455263543040257, 0.5230051796122889, 0.8252041545169028, 1.2607277121110005, 1.8833665581022674, 2.766002173504649, 4.007147800276824, 5.7396693701359185, 8.142378497713882, 11.45541641661242, 16.00064484094331, 22.20864617197513, 30.654442110658707, 5.482886436556358, 1.5585157635970042, 7.577344347850504, 7.577344347850504]}, "marker": {"color": "rgb(215,48,39)"}, "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "yaxis": "y2"}, {"xaxis": "x3", "mode": "lines+markers", "y": [0.0, 0.46088358990258876, 1.043973684226825, 1.7818752528710513, 2.7159488325242265, 3.8986775364829453, 5.396678372959641, 7.294534496178474, 9.69967373548347, 12.748581077897674, 16.614712430862937, 21.518578760391442, 27.74060012124749, 35.637495569806596, 45.66318860232938, 58.39548063051358, 66.05122528263698, 79.50313476625945, 82.87028200312568, 82.87028200312568], "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic", "showlegend": false, "error_y": {"visible": true, "color": "rgb(215,48,39)", "type": "data", "array": [0.0, 0.027547533018045602, 0.05645964108455354, 0.08747354494815231, 0.12355945092178461, 0.17210855147218268, 0.24693892613550902, 0.3685134406852476, 0.5632505478599372, 0.8647123766042665, 1.317108308259411, 1.9801011293330244, 2.9347274183859504, 4.290944430090064, 6.197527288413563, 8.85517683706241, 5.306294741137017, 3.4086718444018826, 0.60001036737964, 0.60001036737964]}, "marker": {"color": "rgb(215,48,39)"}, "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "yaxis": "y3"}, {"xaxis": "x4", "mode": "lines+markers", "y": [0.0, 0.44938797440574824, 1.0177572115616913, 1.7368079578006905, 2.6467421039018304, 3.7985588440775793, 5.25697456282469, 7.104137910811027, 9.444358142153927, 12.41012507628601, 16.169776044743692, 20.937263566712076, 26.984603581210592, 34.65774492416101, 44.39680723596349, 56.76189812765829, 65.6193373841691, 79.1582194818474, 82.71657205573024, 82.71657205573024], "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic", "showlegend": false, "error_y": {"visible": true, "color": "rgb(215,48,39)", "type": "data", "array": [0.0, 0.032085740666968544, 0.0650746857602642, 0.09816103161432686, 0.1312711538951186, 0.16696321166865788, 0.21416800478671175, 0.2923548545693114, 0.4311689913715557, 0.6662487480077915, 1.0399606027908188, 1.6074377476515442, 2.4436304254661794, 3.650956206782417, 5.368787927978308, 7.785923482421054, 1.4045051092290484, 1.3135932558454784, 4.871903089372821, 4.871903089372821]}, "marker": {"color": "rgb(215,48,39)"}, "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "yaxis": "y4"}], {"yaxis1": {"title": "Ec_biomass_iJO1366_core_53p95M ", "domain": [0.0, 1.0], "anchor": "x1"}, "yaxis4": {"title": "EX_etoh_e ", "domain": [0.0, 1.0], "anchor": "x4"}, "yaxis3": {"title": "EX_ac_e ", "domain": [0.0, 1.0], "anchor": "x3"}, "xaxis4": {"title": "Time (hours)", "domain": [0.7875000000000001, 1.0], "anchor": "y4"}, "height": 400, "yaxis2": {"title": "EX_for_e ", "domain": [0.0, 1.0], "anchor": "x2"}, "xaxis1": {"title": "Time (hours)", "domain": [0.0, 0.2125], "anchor": "y1"}, "xaxis2": {"title": "Time (hours)", "domain": [0.2625, 0.475], "anchor": "y2"}, "xaxis3": {"title": "Time (hours)", "domain": [0.525, 0.7375], "anchor": "y3"}}, {"linkText": "Export to plot.ly", "showLink": false})});</script></div>
+<div id="d9e7b176-3aa9-49b8-b891-e35488602c4c" style="height: 400; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("d9e7b176-3aa9-49b8-b891-e35488602c4c", [{"xaxis": "x1", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.0007396702642384835, 0.001886871179576258, 0.0036104197281457634, 0.006141445395054218, 0.009795004144027503, 0.014998909246781947, 0.022332118053003298, 0.032575780146435626, 0.04678101853924323, 0.06635882652923823, 0.093199151368727, 0.12982847493103075, 0.17961813086709827, 0.24705943458265497, 0.3381267411192012, 0.2790806212689763, 0.13933841582438491, 0.13933841582438491, 0.13933841582438491], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.05, 0.06371350373813998, 0.08119915329417103, 0.10349756364426957, 0.13193725521011498, 0.16821453604061448, 0.21449561522392008, 0.2735471447599773, 0.348903130339976, 0.4450783729430895, 0.5678414438172827, 0.7245638536703447, 0.9246667300647295, 1.180192321874549, 1.506535295752958, 1.9233786377170503, 2.3164845051078258, 2.4923016019704614, 2.4923016019704614, 2.4923016019704614], "yaxis": "y1", "showlegend": true}, {"xaxis": "x2", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.043685841968538926, 0.11191216538904408, 0.21609984562088702, 0.37190541435145696, 0.6007225906551066, 0.9316979483787347, 1.4044224916505479, 2.072517795166162, 3.008405568452772, 4.30964388329013, 6.107334109133182, 8.577263250615825, 11.954656005036219, 16.553686179760025, 22.79325837761059, 16.840963220270332, 9.154144593074985, 9.154144593074985, 9.154144593074985], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.9989988683384671, 2.2724989382880683, 3.896151117157563, 5.96651720215708, 8.60686686597981, 11.974586685254963, 16.270650277757298, 21.75172483404065, 28.74565019660275, 37.67123228448005, 49.063557480369006, 63.60637140892422, 82.1735001102744, 105.88184494194616, 136.1591951087561, 164.74539499057443, 177.95026690926312, 177.95026690926312, 177.95026690926312], "yaxis": "y2", "showlegend": false}, {"xaxis": "x3", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.027957003406385395, 0.06699575748524475, 0.12191295747892289, 0.19937353288399007, 0.30854434733929254, 0.46194061684883725, 0.6765584607890356, 0.97538886669326, 1.3894366535359917, 1.9604067426388485, 2.7442712198747023, 3.8159983526156727, 5.275814061311078, 7.257483110371232, 9.939250955654513, 9.753811976359472, 6.084597293556328, 6.084597293556328, 6.084597293556328], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.4706432838810561, 1.0705764075525894, 1.8354148583591932, 2.8106123038269204, 4.054185660357801, 5.6401971745969135, 7.663204146646475, 10.243946036301534, 13.536614029841063, 17.73814437948814, 23.100100773345176, 29.94386849561061, 38.6800863656531, 49.833501049166856, 64.07476130096363, 77.80268886869806, 83.8745962907671, 83.8745962907671, 83.8745962907671], "yaxis": "y3", "showlegend": false}, {"xaxis": "x4", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.03203652318521393, 0.06844808495989124, 0.1100491399194442, 0.1583613286752149, 0.21630386235127513, 0.2892976051342813, 0.38677089841054657, 0.5238357675883865, 0.7228339674177895, 1.014832877741325, 1.4416961894488616, 2.0594285644806294, 2.943175881043923, 4.194112856416855, 5.9486031482960025, 4.196213287076251, 7.780029956522453, 7.780029956522453, 7.780029956522453], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.45621842962573744, 1.0372475046462233, 1.77733307253968, 2.7201452306394804, 3.9213794341663055, 5.4520777505231885, 7.40287001352094, 9.889390493090593, 13.05919692412413, 17.10060959607666, 22.2540052039324, 28.82624874992169, 37.209138371744345, 47.902981691358264, 61.54673582754471, 74.83505243738729, 81.40241322840673, 81.40241322840673, 81.40241322840673], "yaxis": "y4", "showlegend": false}], {"xaxis1": {"domain": [0.0, 0.2125], "title": "Time (hours)", "anchor": "y1"}, "yaxis4": {"domain": [0.0, 1.0], "title": "EX_etoh_e ", "anchor": "x4"}, "xaxis3": {"domain": [0.525, 0.7375], "title": "Time (hours)", "anchor": "y3"}, "yaxis3": {"domain": [0.0, 1.0], "title": "EX_ac_e ", "anchor": "x3"}, "yaxis1": {"domain": [0.0, 1.0], "title": "Ec_biomass_iJO1366_core_53p95M ", "anchor": "x1"}, "yaxis2": {"domain": [0.0, 1.0], "title": "EX_for_e ", "anchor": "x2"}, "xaxis2": {"domain": [0.2625, 0.475], "title": "Time (hours)", "anchor": "y2"}, "height": 400, "xaxis4": {"domain": [0.7875000000000001, 1.0], "title": "Time (hours)", "anchor": "y4"}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
 </div>
 <div class="nbinput nblast container">
 <div class="highlight-none"><div class="highlight"><pre>
@@ -1006,7 +944,17 @@ This is the format of your plot grid:
 <div class="container">
 </div>
 <div class="container">
-<div id="90ec7f79-4efb-4e38-b9cb-3982b114ceb1" style="height: 400; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("90ec7f79-4efb-4e38-b9cb-3982b114ceb1", [{"xaxis": "x1", "mode": "lines+markers", "y": [0.05, 0.06329970975936136, 0.0801596195893474, 0.1015390822446236, 0.12865772902767567, 0.16306657675599442, 0.2067386967962554, 0.26218486484113324, 0.3326011230247875, 0.4220571199969073, 0.5357365775503462, 0.6802444075934496, 0.8639990826352092, 1.0977340823098276, 1.3951389500910034, 1.7736790833554283, 1.829615179181484, 2.1909499117508986, 2.2791268170167958, 2.2791268170167958], "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic", "showlegend": true, "error_y": {"visible": true, "color": "rgb(215,48,39)", "type": "data", "array": [0.0, 0.0010619425888388372, 0.002705886838190806, 0.005172007711086111, 0.008788917293415497, 0.014004305290631524, 0.02142580964609849, 0.03187543886559921, 0.04646195256447083, 0.06667698736342005, 0.09452257502968413, 0.13268011744321603, 0.18473406189677435, 0.2554677123427597, 0.35125409757694503, 0.4805720100055645, 0.20710119841708052, 0.19013094269507055, 0.13427342333180511, 0.13427342333180511]}, "marker": {"color": "rgb(215,48,39)"}, "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "yaxis": "y1"}, {"xaxis": "x2", "mode": "lines+markers", "y": [0.0, 0.9929568236192281, 2.2506114684736866, 3.8440000719211804, 5.863355181045662, 8.423330267675025, 11.66965641305063, 15.787626549853055, 21.012912636148958, 27.64536186321088, 36.06659825694604, 46.76248666808523, 60.35181214937921, 77.62290624427557, 99.58043820058072, 127.50521145098094, 137.21455858334784, 165.4170414335277, 172.7358562671901, 172.7358562671901], "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic", "showlegend": false, "error_y": {"visible": true, "color": "rgb(215,48,39)", "type": "data", "array": [0.0, 0.07099800442916893, 0.17087862439025503, 0.31455263543040257, 0.5230051796122889, 0.8252041545169028, 1.2607277121110005, 1.8833665581022674, 2.766002173504649, 4.007147800276824, 5.7396693701359185, 8.142378497713882, 11.45541641661242, 16.00064484094331, 22.20864617197513, 30.654442110658707, 5.482886436556358, 1.5585157635970042, 7.577344347850504, 7.577344347850504]}, "marker": {"color": "rgb(215,48,39)"}, "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "yaxis": "y2"}, {"xaxis": "x3", "mode": "lines+markers", "y": [0.0, 0.46088358990258876, 1.043973684226825, 1.7818752528710513, 2.7159488325242265, 3.8986775364829453, 5.396678372959641, 7.294534496178474, 9.69967373548347, 12.748581077897674, 16.614712430862937, 21.518578760391442, 27.74060012124749, 35.637495569806596, 45.66318860232938, 58.39548063051358, 66.05122528263698, 79.50313476625945, 82.87028200312568, 82.87028200312568], "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic", "showlegend": false, "error_y": {"visible": true, "color": "rgb(215,48,39)", "type": "data", "array": [0.0, 0.027547533018045602, 0.05645964108455354, 0.08747354494815231, 0.12355945092178461, 0.17210855147218268, 0.24693892613550902, 0.3685134406852476, 0.5632505478599372, 0.8647123766042665, 1.317108308259411, 1.9801011293330244, 2.9347274183859504, 4.290944430090064, 6.197527288413563, 8.85517683706241, 5.306294741137017, 3.4086718444018826, 0.60001036737964, 0.60001036737964]}, "marker": {"color": "rgb(215,48,39)"}, "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "yaxis": "y3"}, {"xaxis": "x4", "mode": "lines+markers", "y": [0.0, 0.44938797440574824, 1.0177572115616913, 1.7368079578006905, 2.6467421039018304, 3.7985588440775793, 5.25697456282469, 7.104137910811027, 9.444358142153927, 12.41012507628601, 16.169776044743692, 20.937263566712076, 26.984603581210592, 34.65774492416101, 44.39680723596349, 56.76189812765829, 65.6193373841691, 79.1582194818474, 82.71657205573024, 82.71657205573024], "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic", "showlegend": false, "error_y": {"visible": true, "color": "rgb(215,48,39)", "type": "data", "array": [0.0, 0.032085740666968544, 0.0650746857602642, 0.09816103161432686, 0.1312711538951186, 0.16696321166865788, 0.21416800478671175, 0.2923548545693114, 0.4311689913715557, 0.6662487480077915, 1.0399606027908188, 1.6074377476515442, 2.4436304254661794, 3.650956206782417, 5.368787927978308, 7.785923482421054, 1.4045051092290484, 1.3135932558454784, 4.871903089372821, 4.871903089372821]}, "marker": {"color": "rgb(215,48,39)"}, "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "yaxis": "y4"}], {"yaxis1": {"title": "Ec_biomass_iJO1366_core_53p95M ", "domain": [0.0, 1.0], "anchor": "x1"}, "yaxis4": {"title": "EX_etoh_e ", "domain": [0.0, 1.0], "anchor": "x4"}, "yaxis3": {"title": "EX_ac_e ", "domain": [0.0, 1.0], "anchor": "x3"}, "xaxis4": {"title": "Time (hours)", "domain": [0.7875000000000001, 1.0], "anchor": "y4"}, "height": 400, "yaxis2": {"title": "EX_for_e ", "domain": [0.0, 1.0], "anchor": "x2"}, "xaxis1": {"title": "Time (hours)", "domain": [0.0, 0.2125], "anchor": "y1"}, "xaxis2": {"title": "Time (hours)", "domain": [0.2625, 0.475], "anchor": "y2"}, "xaxis3": {"title": "Time (hours)", "domain": [0.525, 0.7375], "anchor": "y3"}}, {"linkText": "Export to plot.ly", "showLink": false})});</script></div>
+<div id="ec40d4c3-f946-4ca9-a41b-ae555a66e6e7" style="height: 400; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("ec40d4c3-f946-4ca9-a41b-ae555a66e6e7", [{"xaxis": "x1", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.0007396702642384835, 0.001886871179576258, 0.0036104197281457634, 0.006141445395054218, 0.009795004144027503, 0.014998909246781947, 0.022332118053003298, 0.032575780146435626, 0.04678101853924323, 0.06635882652923823, 0.093199151368727, 0.12982847493103075, 0.17961813086709827, 0.24705943458265497, 0.3381267411192012, 0.2790806212689763, 0.13933841582438491, 0.13933841582438491, 0.13933841582438491], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.05, 0.06371350373813998, 0.08119915329417103, 0.10349756364426957, 0.13193725521011498, 0.16821453604061448, 0.21449561522392008, 0.2735471447599773, 0.348903130339976, 0.4450783729430895, 0.5678414438172827, 0.7245638536703447, 0.9246667300647295, 1.180192321874549, 1.506535295752958, 1.9233786377170503, 2.3164845051078258, 2.4923016019704614, 2.4923016019704614, 2.4923016019704614], "yaxis": "y1", "showlegend": true}, {"xaxis": "x2", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.043685841968538926, 0.11191216538904408, 0.21609984562088702, 0.37190541435145696, 0.6007225906551066, 0.9316979483787347, 1.4044224916505479, 2.072517795166162, 3.008405568452772, 4.30964388329013, 6.107334109133182, 8.577263250615825, 11.954656005036219, 16.553686179760025, 22.79325837761059, 16.840963220270332, 9.154144593074985, 9.154144593074985, 9.154144593074985], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.9989988683384671, 2.2724989382880683, 3.896151117157563, 5.96651720215708, 8.60686686597981, 11.974586685254963, 16.270650277757298, 21.75172483404065, 28.74565019660275, 37.67123228448005, 49.063557480369006, 63.60637140892422, 82.1735001102744, 105.88184494194616, 136.1591951087561, 164.74539499057443, 177.95026690926312, 177.95026690926312, 177.95026690926312], "yaxis": "y2", "showlegend": false}, {"xaxis": "x3", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.027957003406385395, 0.06699575748524475, 0.12191295747892289, 0.19937353288399007, 0.30854434733929254, 0.46194061684883725, 0.6765584607890356, 0.97538886669326, 1.3894366535359917, 1.9604067426388485, 2.7442712198747023, 3.8159983526156727, 5.275814061311078, 7.257483110371232, 9.939250955654513, 9.753811976359472, 6.084597293556328, 6.084597293556328, 6.084597293556328], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.4706432838810561, 1.0705764075525894, 1.8354148583591932, 2.8106123038269204, 4.054185660357801, 5.6401971745969135, 7.663204146646475, 10.243946036301534, 13.536614029841063, 17.73814437948814, 23.100100773345176, 29.94386849561061, 38.6800863656531, 49.833501049166856, 64.07476130096363, 77.80268886869806, 83.8745962907671, 83.8745962907671, 83.8745962907671], "yaxis": "y3", "showlegend": false}, {"xaxis": "x4", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.03203652318521393, 0.06844808495989124, 0.1100491399194442, 0.1583613286752149, 0.21630386235127513, 0.2892976051342813, 0.38677089841054657, 0.5238357675883865, 0.7228339674177895, 1.014832877741325, 1.4416961894488616, 2.0594285644806294, 2.943175881043923, 4.194112856416855, 5.9486031482960025, 4.196213287076251, 7.780029956522453, 7.780029956522453, 7.780029956522453], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.45621842962573744, 1.0372475046462233, 1.77733307253968, 2.7201452306394804, 3.9213794341663055, 5.4520777505231885, 7.40287001352094, 9.889390493090593, 13.05919692412413, 17.10060959607666, 22.2540052039324, 28.82624874992169, 37.209138371744345, 47.902981691358264, 61.54673582754471, 74.83505243738729, 81.40241322840673, 81.40241322840673, 81.40241322840673], "yaxis": "y4", "showlegend": false}], {"xaxis1": {"domain": [0.0, 0.2125], "title": "Time (hours)", "anchor": "y1"}, "yaxis4": {"domain": [0.0, 1.0], "title": "EX_etoh_e ", "anchor": "x4"}, "xaxis3": {"domain": [0.525, 0.7375], "title": "Time (hours)", "anchor": "y3"}, "yaxis3": {"domain": [0.0, 1.0], "title": "EX_ac_e ", "anchor": "x3"}, "yaxis1": {"domain": [0.0, 1.0], "title": "Ec_biomass_iJO1366_core_53p95M ", "anchor": "x1"}, "yaxis2": {"domain": [0.0, 1.0], "title": "EX_for_e ", "anchor": "x2"}, "xaxis2": {"domain": [0.2625, 0.475], "title": "Time (hours)", "anchor": "y2"}, "height": 400, "xaxis4": {"domain": [0.7875000000000001, 1.0], "title": "Time (hours)", "anchor": "y4"}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
+</div>
+<div class="nbinput nblast container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>

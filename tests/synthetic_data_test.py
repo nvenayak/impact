@@ -1,5 +1,12 @@
+import Experiment
+import ReplicateTrial
+import SingleTrial
+import Titer
+import TrialIdentifier
+
 __author__ = 'Naveen'
 import fDAPI
+import fDAPI.synthetic_data
 
 # Let's generate some data using cobraPy and dFBA
 import cobra
@@ -21,7 +28,7 @@ info = {
 
 n_replicates = 2
 
-experiment = fDAPI.Experiment(info = info)
+experiment = Experiment.Experiment(info = info)
 
 for condition in ['Aerobic','Anaerobic']:
     # Let's grab the iJO1366 E. coli model
@@ -51,7 +58,7 @@ for condition in ['Aerobic','Anaerobic']:
     replicateList = []
     for i in range(n_replicates):
         # Let's add some noise to the data to simulate experimental error and generate some more data
-        dFBA_profiles = fDAPI.generateSyntheticData(y0, t, model, biomass_keys, substrate_keys, product_keys, noise = 0.1, plot = False)
+        dFBA_profiles = fDAPI.synthetic_data.generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, noise = 0.1, plot = False)
         replicateList.append(dFBA_profiles)
 
     import matplotlib.pyplot as plt
@@ -67,7 +74,7 @@ for condition in ['Aerobic','Anaerobic']:
     for replicate in replicateList:
         timeCourseList = []
         for exchange in biomass_keys+substrate_keys+product_keys:
-            runIdentifier = fDAPI.RunIdentifier()
+            runIdentifier = TrialIdentifier.RunIdentifier()
             runIdentifier.strainID = 'iJO1366'
             runIdentifier.identifier1 = condition
             runIdentifier.replicate = i+1
@@ -81,20 +88,20 @@ for condition in ['Aerobic','Anaerobic']:
                 runIdentifier.titerName = exchange
                 runIdentifier.titerType = 'product'
 
-            tempTimeCourse = fDAPI.TimeCourse()
+            tempTimeCourse = Titer.TimeCourse()
             tempTimeCourse.runIdentifier = runIdentifier
             tempTimeCourse.timeVec = t
             tempTimeCourse.dataVec = replicate[exchange]
             timeCourseList.append(tempTimeCourse)
 
             # Now we can build a singleTrial object and load all the data
-            singleTrial = fDAPI.SingleTrial()
+            singleTrial = SingleTrial.SingleTrial()
             for timeCourse in timeCourseList:
                 singleTrial.addTiterObject(timeCourse)
 
         singleTrialList.append(singleTrial)
 
-    replicateTrial = fDAPI.ReplicateTrial()
+    replicateTrial = ReplicateTrial.ReplicateTrial()
     for singleTrial in singleTrialList:
         replicateTrial.addReplicateExperiment(singleTrial)
 
@@ -110,9 +117,10 @@ experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'fi
 #
 # import matplotlib.pyplot as plt
 # # Now let's recreate the experiment object and load the data from the db
-# experiment = fDAPI.Experiment()
-# experiment.loadFromDB(dbName = 'default_fDAPI_db.sqlite3', experimentID = 1)
-#
+experiment = fDAPI.Experiment()
+experiment.loadFromDB(dbName = 'default_fDAPI_db.sqlite3', experimentID = 1)
+experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'file')
+
 # for key in experiment.replicateExperimentObjectDict:
 #     print(vars(experiment.replicateExperimentObjectDict[key].singleTrialList[0]))
 # for titersToPlot in [['OD'],product_keys]:

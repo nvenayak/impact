@@ -266,10 +266,7 @@ div.nboutput  > :nth-child(2).stderr {
 <div class="section" id="auto-generated-documentation">
 <h1>Auto Generated Documentation<a class="headerlink" href="#auto-generated-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
-<span class="target" id="module-fDAPI"></span><p>Written by: Naveen Venyak
-Date:       October, 2015</p>
-<p>This is the main data object container. Almost all functionality is contained here.</p>
-<dl class="class">
+<span class="target" id="module-fDAPI"></span><dl class="class">
 <dt id="fDAPI.CurveFitObject">
 <em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">CurveFitObject</code><span class="sig-paren">(</span><em>paramList</em>, <em>growthEquation</em>, <em>method='slsqp'</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.CurveFitObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper for curve fitting objects</p>
@@ -302,6 +299,11 @@ Date:       October, 2015</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="fDAPI.Project">
+<em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">Project</code><a class="headerlink" href="#fDAPI.Project" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
 <dt id="fDAPI.ReplicateTrial">
 <em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">ReplicateTrial</code><a class="headerlink" href="#fDAPI.ReplicateTrial" title="Permalink to this definition">¶</a></dt>
 <dd><p>This object stores SingleTrial objects and calculates statistics on these replicates for each of the
@@ -325,6 +327,22 @@ titers which are stored within it</p>
 <dt id="fDAPI.RunIdentifier">
 <em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">RunIdentifier</code><a class="headerlink" href="#fDAPI.RunIdentifier" title="Permalink to this definition">¶</a></dt>
 <dd><p>Carries information about the run through all the objects</p>
+<dl class="docutils">
+<dt>strainID <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Strain name e.g. &#8216;MG1655 del(adh,pta)&#8217;</dd>
+<dt>identifier1 ; str, optional</dt>
+<dd>First identifier, plasmid e.g. &#8216;pTrc99a&#8217;)</dd>
+<dt>identifier2 <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>Second identifier, inducer e.g. &#8216;IPTG&#8217;)</dd>
+<dt>replicate <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>The replicate number, e.g. &#8216;1&#8217;,&#8216;2&#8217;,&#8216;3&#8217;,&#8216;4&#8217;</dd>
+<dt>time <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>The time of the data point, only relevant in TimePoint objects</dd>
+<dt>titerName <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>The name of the titer, e.g. &#8216;OD600&#8217;,&#8217;Lactate&#8217;,&#8217;Ethanol&#8217;,&#8217;Glucose&#8217;</dd>
+<dt>titerType <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>The type of titer, three acceptable values e.g. &#8216;biomass&#8217;,&#8217;substrate&#8217;,&#8217;product&#8217;</dd>
+</dl>
 <dl class="method">
 <dt id="fDAPI.RunIdentifier.parse_RunIdentifier_from_csv">
 <code class="descname">parse_RunIdentifier_from_csv</code><span class="sig-paren">(</span><em>csv_RunIdentifier</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.RunIdentifier.parse_RunIdentifier_from_csv" title="Permalink to this definition">¶</a></dt>
@@ -366,34 +384,6 @@ same structure as SingleTrial</p>
 <dt id="fDAPI.TimePoint">
 <em class="property">class </em><code class="descclassname">fDAPI.</code><code class="descname">TimePoint</code><span class="sig-paren">(</span><em>runID</em>, <em>titerName</em>, <em>t</em>, <em>titer</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.TimePoint" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="function">
-<dt id="fDAPI.generateSyntheticData">
-<code class="descclassname">fDAPI.</code><code class="descname">generateSyntheticData</code><span class="sig-paren">(</span><em>y0</em>, <em>t</em>, <em>model</em>, <em>biomass_keys</em>, <em>substrate_keys</em>, <em>product_keys</em>, <em>noise=0</em>, <em>plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#fDAPI.generateSyntheticData" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates synthetic data</p>
-<dl class="docutils">
-<dt>y0 <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
-<dd>Starting values</dd>
-<dt>t <span class="classifier-delimiter">:</span> <span class="classifier">array</span></dt>
-<dd>Time vector</dd>
-<dt>model: cobraPy model</dt>
-<dd>Optimized cobraPy model</dd>
-<dt>biomass_keys: list</dt>
-<dd>A list with the a string of the biomass name</dd>
-<dt>substrate_keys: list</dt>
-<dd>A list with the a string of the susbstrate name</dd>
-<dt>product_keys: list</dt>
-<dd>A list of strings of product names</dd>
-<dt>noise: float, optional</dt>
-<dd>If you&#8217;d like to add some noise to parameters</dd>
-<dt>plot <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd>Flag for plotting data</dd>
-</dl>
-<dl class="docutils">
-<dt>dFBA_profile: dict</dt>
-<dd>Returns a dict with time profiles for each product, substrate and biomass</dd>
-</dl>
-</dd></dl>
 
 <dl class="function">
 <dt id="fDAPI.init_db">
