@@ -1,0 +1,120 @@
+Time Course Tutorial
+************************************
+.. code:: python
+
+    import sys
+    sys.path.append('../')
+    
+    import fDAPI
+    import numpy as np
+    
+    import matplotlib.pyplot as plt
+
+Initialize the time course object, and set the titer type (for curve
+fitting)
+
+.. code:: python
+
+    timeCourse = fDAPI.TimeCourse()
+    timeCourse.runIdentifier.titerType = 'OD'
+
+.. code:: python
+
+    timeCourse.timeVec = [0,2,4,6,8,10,12,14,16,18,20,22]
+    timeCourse.dataVec = [0.02,0.1,0.2,0.4,0.8,1.6,1.7,1.6,1.55,1.5,1.45,1.4]
+
+
+.. parsed-literal::
+
+    [0.02, 0.1, 0.2, 0.4, 0.8, 1.6, 1.7, 1.6, 1.55, 1.5, 1.45, 1.4]
+    [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22]
+    
+
+Now that the data is imported, curve fitting has already been performed
+and we can retrieve the curve fit parameters
+
+.. code:: python
+
+    timeCourse.rate
+
+
+
+
+.. parsed-literal::
+
+    [0.020000346333546377,
+     0.66992273696618088,
+     1.0029327161846362,
+     4.3400817877537614,
+     1.6575,
+     0.045461977453648987]
+
+
+
+We can also retrieve and plot the curve fit data
+
+.. code:: python
+
+    %matplotlib inline
+    handle = []
+    curveFitTimeVec = np.linspace(0,max(timeCourse.timeVec),50)
+    handle.append(plt.plot(curveFitTimeVec,timeCourse.returnCurveFitPoints(curveFitTimeVec))[0])
+    handle.append(plt.plot(timeCourse.timeVec,timeCourse.dataVec)[0])
+    plt.ylabel('OD$_{600}$')
+    plt.xlabel('Time (hours)')
+    plt.legend(handle,['Curve Fit','Raw Data'],loc=2)
+
+
+
+
+.. parsed-literal::
+
+    <matplotlib.legend.Legend at 0xaa76828>
+
+
+
+
+.. image:: timeCourseTutorial_files/timeCourseTutorial_7_1.png
+
+
+Now, we can notice that the curve fit is biased by the deatphase. Here
+we can enable the removeDeathPhaseFlag = True
+
+.. code:: python
+
+    timeCourse = fDAPI.TimeCourse(removeDeathPhaseFlag = True)
+    timeCourse.runIdentifier.titerType = 'OD'
+    
+    timeCourse.timeVec = [0,2,4,6,8,10,12,14,16,18,20,22]
+    timeCourse.dataVec = [0.02,0.1,0.2,0.4,0.8,1.6,1.7,1.6,1.55,1.5,1.45,1.4]
+    print(timeCourse.deathPhaseStart)
+    # print('Death phase starts at: ',timeCourse.timeVec(timeCourse.deathPhaseStart),'hours')
+    %matplotlib inline
+    handle = []
+    curveFitTimeVec = np.linspace(0,max(timeCourse.timeVec),50)
+    handle.append(plt.plot(curveFitTimeVec,timeCourse.returnCurveFitPoints(curveFitTimeVec))[0])
+    handle.append(plt.plot(timeCourse.timeVec,timeCourse.dataVec)[0])
+    plt.ylabel('OD$_{600}$')
+    plt.xlabel('Time (hours)')
+    plt.legend(handle,['Curve Fit','Raw Data'],loc=2)
+    
+
+
+.. parsed-literal::
+
+    [0.02, 0.1, 0.2, 0.4, 0.8, 1.6, 1.7, 1.6]
+    [0, 2, 4, 6, 8, 10, 12, 14]
+    8
+    
+
+
+
+.. parsed-literal::
+
+    <matplotlib.legend.Legend at 0xb246400>
+
+
+
+
+.. image:: timeCourseTutorial_files/timeCourseTutorial_9_2.png
+
