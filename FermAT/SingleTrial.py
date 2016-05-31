@@ -3,7 +3,7 @@ import dill as pickle
 
 import sqlite3 as sql
 
-from fDAPI.TrialIdentifier import RunIdentifier
+from FermAT.TrialIdentifier import RunIdentifier
 
 class SingleTrial(object):
     """

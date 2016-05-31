@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(
-    name='fDAPI',
+    name='FermAT',
     version='0.0.0',
-    packages=['fDAPI'],
+    packages=['FermAT'],
     url='www.github.com/nvenayak/dataimportandplottingtoolbox',
     license='',
     author='Naveen Venayak',

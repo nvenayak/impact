@@ -1,4 +1,4 @@
-from fDAPI.TrialIdentifier import RunIdentifier
+from FermAT.TrialIdentifier import RunIdentifier
 import sqlite3 as sql
 
 class Experiment(object):
@@ -322,7 +322,7 @@ class Experiment(object):
 
         replicateTrialList = [self.replicateExperimentObjectDict[key] for key in strainsToPlot]
 
-        from fDAPI import printGenericTimeCourse_plotly
+        from FermAT import printGenericTimeCourse_plotly
         printGenericTimeCourse_plotly(replicateTrialList=replicateTrialList, titersToPlot=titersToPlot,
                                       output_type=output_type)
 

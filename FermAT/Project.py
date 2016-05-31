@@ -1,4 +1,4 @@
-from fDAPI.TrialIdentifier import RunIdentifier
+from FermAT.TrialIdentifier import RunIdentifier
 import sqlite3 as sql
 
 class Project(object):
@@ -218,7 +218,7 @@ class Project(object):
 
     def plottingGUI(self):
         app = QtGui.QApplication(sys.argv)
-        app.setApplicationName('fDAPI Plotting Interface')
+        app.setApplicationName('FermAT Plotting Interface')
 
         main = mainWindow(self)
         main.showMaximized()
@@ -227,7 +227,7 @@ class Project(object):
 
     def plottingGUI2(self):
         app = QtGui.QApplication(sys.argv)
-        app.setApplicationName('fDAPI Plotting Interface')
+        app.setApplicationName('FermAT Plotting Interface')
         MainWindow = QtGui.QMainWindow()
         ui = Ui_MainWindow()
         ui.setupUi(MainWindow, Project)

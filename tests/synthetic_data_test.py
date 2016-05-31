@@ -5,8 +5,8 @@ import Titer
 import TrialIdentifier
 
 __author__ = 'Naveen'
-import fDAPI
-import fDAPI.synthetic_data
+import FermAT
+import FermAT.synthetic_data
 
 # Let's generate some data using cobraPy and dFBA
 import cobra
@@ -58,7 +58,7 @@ for condition in ['Aerobic','Anaerobic']:
     replicateList = []
     for i in range(n_replicates):
         # Let's add some noise to the data to simulate experimental error and generate some more data
-        dFBA_profiles = fDAPI.synthetic_data.generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, noise = 0.1, plot = False)
+        dFBA_profiles = FermAT.synthetic_data.generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, noise = 0.1, plot = False)
         replicateList.append(dFBA_profiles)
 
     import matplotlib.pyplot as plt
@@ -110,14 +110,14 @@ for condition in ['Aerobic','Anaerobic']:
     experiment.addReplicateTrial(replicateTrial)
 
 
-fDAPI.init_db(dbName = "../default_fDAPI_db.sqlite3")
+FermAT.init_db(dbName ="../default_fDAPI_db.sqlite3")
 experimentID = experiment.commitToDB(dbName = "../default_fDAPI_db.sqlite3")
 experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'file')
 # plt.show()
 #
 # import matplotlib.pyplot as plt
 # # Now let's recreate the experiment object and load the data from the db
-experiment = fDAPI.Experiment()
+experiment = FermAT.Experiment()
 experiment.loadFromDB(dbName = 'default_fDAPI_db.sqlite3', experimentID = 1)
 experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'file')
 

@@ -18,7 +18,6 @@ class RunIdentifier(object):
         The name of the titer, e.g. 'OD600','Lactate','Ethanol','Glucose'
     titerType : str
         The type of titer, three acceptable values e.g. 'biomass','substrate','product'
-
     """
 
     def __init__(self):

@@ -1,9 +1,6 @@
-import numpy as np
-import sqlite3 as sql
+from FermAT.SingleTrial import *
+from FermAT.Titer import *
 
-from fDAPI.TrialIdentifier import RunIdentifier
-from fDAPI.SingleTrial import *
-from fDAPI.Titer import *
 class ReplicateTrial(object):
     """
     This object stores SingleTrial objects and calculates statistics on these replicates for each of the
@@ -72,6 +69,9 @@ class ReplicateTrial(object):
         self.t = self.singleTrialList[0].t
 
     def checkReplicateUniqueIDMatch(self):
+        """
+        Ensures that the uniqueIDs match for all te replicate experiments
+        """
         for i in range(len(self.singleTrialList) - 1):
             if self.singleTrialList[i].getUniqueReplicateID() != self.singleTrialList[i + 1].getUniqueReplicateID():
                 raise Exception(
@@ -98,8 +98,12 @@ class ReplicateTrial(object):
         """
         Add a SingleTrial object to this list of replicates
 
-        mewReplicateExperiment: A :class:`~SingleTrial` object
+        Parameters
+        ----------
+        newReplicateExperiment : :class:`~SingleTrial`
+            Add a SingleTrial
         """
+
         self.singleTrialList.append(newReplicateExperiment)
         if len(self.singleTrialList) == 1:
             self.t = self.singleTrialList[0].t

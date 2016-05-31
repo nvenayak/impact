@@ -1,24 +1,21 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-# from forms import newExperimentForm
+
 from .forms import newExperimentForm
 
 from django.contrib.auth.views import *
 # from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 
-
-
 import sys
 import os
 
 # Add the toolbox path
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../'))
-import fDAPI
+import FermAT
 
 # Set the default dbName, stored in the root directory
 dbName = os.path.join(os.path.dirname(__file__),"../../default_fDAPI_db.sqlite3")
-
 
 
 # Create your views here.
@@ -55,14 +52,14 @@ def register(request):
 
 @login_required()
 def core(request):
-    exptInfo = fDAPI.Project().getAllExperimentInfo_django(dbName)
+    exptInfo = FermAT.Project().getAllExperimentInfo_django(dbName)
     data = modifyMainPageSessionData(request, exptInfo = exptInfo)
 
     return render(request, 'fDAPI_core/home.html', data)
 
 # @login_required
 def experimentSelect(request, experimentID):
-    strainInfo = fDAPI.Experiment().getAllStrains_django(dbName,experimentID)
+    strainInfo = FermAT.Experiment().getAllStrains_django(dbName, experimentID)
     request.session['strainInfo'] = strainInfo
 
     # Determine the unique identifiers for use in the sorting dropdown
@@ -96,7 +93,7 @@ def selectStrains(request):
                                          selectedStrainsInfo = request.session['selectedStrainsInfo'])
         updateFigure(request)
         # Determine the set of titers available for all selected strains
-        data = modifyMainPageSessionData(request, titerNames = fDAPI.Project().getTitersSelectedStrains_django(dbName, data['selectedStrainsInfo']))
+        data = modifyMainPageSessionData(request, titerNames = FermAT.Project().getTitersSelectedStrains_django(dbName, data['selectedStrainsInfo']))
     else:
         return HttpResponse('Expected POST for selectStrains')
     return render(request, 'fDAPI_core/home.html',data)
@@ -148,7 +145,7 @@ def selectStrainSubset(request):
 def selectMainWindow(request, mainWindowSelection):
     if mainWindowSelection == 'plot':
         request.session['mainWindow'] = mainWindowSelection
-        experiment = fDAPI.Experiment()
+        experiment = FermAT.Experiment()
         experiment.loadFromDB(dbName,1)
         updateFigure(request)
         data = modifyMainPageSessionData(request)
@@ -164,11 +161,11 @@ def updateFigure(request):
         if request.session['mainWindow'] == 'plot' and\
                 len(request.session['selectedStrainsInfo']) > 0 and\
                 len(request.session['selectedTiters']) > 0:
-            data = modifyMainPageSessionData(request, plotlyCode = fDAPI.printGenericTimeCourse_plotly(dbName = dbName,
-                                                                                                         strainsToPlot = [strain['replicateID'] for strain in request.session['selectedStrainsInfo']],
-                                                                                                         titersToPlot = request.session['selectedTiters'],
-                                                                                                         dataType = 'raw'
-                                                                                                         ))
+            data = modifyMainPageSessionData(request, plotlyCode = FermAT.printGenericTimeCourse_plotly(dbName = dbName,
+                                                                                                        strainsToPlot = [strain['replicateID'] for strain in request.session['selectedStrainsInfo']],
+                                                                                                        titersToPlot = request.session['selectedTiters'],
+                                                                                                        dataType = 'raw'
+                                                                                                        ))
         else:
              data = modifyMainPageSessionData(request)
     else:
@@ -259,7 +256,7 @@ def inputData(request):
                             cleanedRow.append(float(col))
                     cleanedData.append(cleanedRow)
             # Load the data into the model
-            expt = fDAPI.Experiment()
+            expt = FermAT.Experiment()
 
             expt.parseRawData('NV_OD', data = cleanedData) # Convert strings to floats
 

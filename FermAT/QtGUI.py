@@ -299,7 +299,7 @@ class Ui_MainWindow(object):
                 index += 1
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "fDAPI: Fermentation Data Analysis and Plotting Inventory", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "FermAT: Fermentation Data Analysis and Plotting Inventory", None))
         self.label_3.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:600;\">Data Browser</span></p></body></html>", None))
         # self.comboBox.setItemText(0, _translate("MainWindow", "Experiment #1", None))
         # self.comboBox.setItemText(1, _translate("MainWindow", "Experiment #2", None))

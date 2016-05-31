@@ -5,7 +5,7 @@ import numpy as np
 import dill as pickle
 import sqlite3 as sql
 
-from fDAPI.TrialIdentifier import *
+from FermAT.TrialIdentifier import *
 
 
 class Titer(object):
