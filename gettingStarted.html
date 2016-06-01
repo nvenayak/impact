@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Getting Started &mdash; Fermentation Data Analysis and Plotting Inventory 0.0.0 documentation</title>
+  <title>Building FermAT Objects with Data &mdash; Fermentation Data Analysis and Plotting Inventory 0.0.0 documentation</title>
   
 
   
@@ -83,21 +83,18 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Quick Start Guide</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Getting Started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Data-structure">Data structure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#RunIdentifier">RunIdentifier</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#TimePoint">TimePoint</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#TimeCourse">TimeCourse</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#SingleTrial">SingleTrial</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ReplicateTrial">ReplicateTrial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Building FermAT Objects with Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#RunIdentifier">RunIdentifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#TimePoint">TimePoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#TimeCourse">TimeCourse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#SingleTrial">SingleTrial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ReplicateTrial">ReplicateTrial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Experiment">Experiment</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="#Database">Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importingData.html">Importing Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="timeCourseTutorial.html">Importing and Working with fDAPI.TimeCourse Objects</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.html">Auto Generated Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FermAT.html">FermAT package</a></li>
 </ul>
 
             
@@ -128,7 +125,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Getting Started</li>
+    <li>Building FermAT Objects with Data</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -274,8 +271,8 @@ div.nboutput  > :nth-child(2).stderr {
 
 .ansi-bold { font-weight: bold; }
 </style>
-<div class="section" id="Getting-Started">
-<h1>Getting Started<a class="headerlink" href="#Getting-Started" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Building-FermAT-Objects-with-Data">
+<h1>Building FermAT Objects with Data<a class="headerlink" href="#Building-FermAT-Objects-with-Data" title="Permalink to this headline">¶</a></h1>
 <p>This toolbox is intended as a lightweight object oriented toolbox to
 import, store, analyze and visualize fermentation data. Data is stored
 and can be recalled from the database, and shared. Here, we overview the
@@ -286,13 +283,14 @@ key features and data structure of the toolbox</p>
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="c1"># This is just to add the package to the path,</span>
+<span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="c1"># This is just to add the package to the path,</span>
 <span class="c1"># it shouldn&#39;t be needed if installed via setup.py</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
 
 <span class="c1"># First, we import the package</span>
-<span class="kn">import</span> <span class="nn">fDAPI</span> <span class="kn">as</span> <span class="nn">fDAPI</span>
+<span class="kn">import</span> <span class="nn">FermAT</span>
 
 <span class="kn">from</span> <span class="nn">plotly.offline</span> <span class="kn">import</span> <span class="n">init_notebook_mode</span>
 <span class="n">init_notebook_mode</span><span class="p">()</span>
@@ -304,10 +302,8 @@ key features and data structure of the toolbox</p>
 </div>
 <div class="stderr container">
 <div class="highlight"><pre>
-C:\Users\Naveen\Anaconda3\lib\site-packages\IPython\html.py:14: ShimWarning:
-
-The &#96;IPython.html&#96; package has been deprecated. You should import from &#96;notebook&#96; instead. &#96;IPython.html.widgets&#96; has moved to &#96;ipywidgets&#96;.
-
+C:\Users\Naveen\Anaconda3\lib\site-packages\IPython\html.py:14: ShimWarning: The &#96;IPython.html&#96; package has been deprecated. You should import from &#96;notebook&#96; instead. &#96;IPython.html.widgets&#96; has moved to &#96;ipywidgets&#96;.
+  &quot;&#96;IPython.html.widgets&#96; has moved to &#96;ipywidgets&#96;.&quot;, ShimWarning)
 </pre></div></div>
 </div>
 <div class="nboutput nblast container">
@@ -388,12 +384,10 @@ will calculate and store statistics on the data.</li>
 </ul>
 </li>
 </ul>
-<div class="section" id="Data-structure">
-<h2>Data structure<a class="headerlink" href="#Data-structure" title="Permalink to this headline">¶</a></h2>
 <p>First, let&#8217;s review the data structure. We will do this by building up
 data from the most basal to the most inclusive data structures.</p>
 <div class="section" id="RunIdentifier">
-<h3>RunIdentifier<a class="headerlink" href="#RunIdentifier" title="Permalink to this headline">¶</a></h3>
+<h2>RunIdentifier<a class="headerlink" href="#RunIdentifier" title="Permalink to this headline">¶</a></h2>
 <p>The RunIdentifier() object stores information about the strain and gets
 passed down through the object structure. It is constructed with a few
 main elements:</p>
@@ -411,7 +405,7 @@ main elements:</p>
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="n">runIdentifier</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">RunIdentifier</span><span class="p">()</span>
+<span></span><span class="n">runIdentifier</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">RunIdentifier</span><span class="p">()</span>
 <span class="n">runIdentifier</span><span class="o">.</span><span class="n">strainID</span> <span class="o">=</span> <span class="s1">&#39;MG1655 d(lacI)&#39;</span>
 <span class="n">runIdentifier</span><span class="o">.</span><span class="n">identifier1</span> <span class="o">=</span> <span class="s1">&#39;pKDL071&#39;</span>
 <span class="n">runIdentifier</span><span class="o">.</span><span class="n">identifier2</span> <span class="o">=</span> <span class="s1">&#39;IPTG&#39;</span>
@@ -429,18 +423,18 @@ main elements:</p>
 <div class="container">
 <div class="highlight"><pre>
 Please use biomass titerType instead of:  OD
-titerName :      OD600
-strainID :       MG1655 d(lacI)
 time :   -1
+titerName :      OD600
+identifier2 :    IPTG
 _titerType :     biomass
 identifier1 :    pKDL071
-identifier2 :    IPTG
+strainID :       MG1655 d(lacI)
 replicate :      None
 </pre></div></div>
 </div>
 </div>
 <div class="section" id="TimePoint">
-<h3>TimePoint<a class="headerlink" href="#TimePoint" title="Permalink to this headline">¶</a></h3>
+<h2>TimePoint<a class="headerlink" href="#TimePoint" title="Permalink to this headline">¶</a></h2>
 <p>The most basal element is a timePoint object, this object holds a single
 time point for a single strain and titer type</p>
 <div class="nbinput container">
@@ -449,7 +443,7 @@ time point for a single strain and titer type</p>
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="n">timePoint</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">TimePoint</span><span class="p">(</span><span class="n">runID</span> <span class="o">=</span> <span class="n">runIdentifier</span><span class="p">,</span> <span class="n">titerName</span> <span class="o">=</span> <span class="s1">&#39;OD600&#39;</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">titer</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+<span></span><span class="n">timePoint</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">TimePoint</span><span class="p">(</span><span class="n">runID</span> <span class="o">=</span> <span class="n">runIdentifier</span><span class="p">,</span> <span class="n">titerName</span> <span class="o">=</span> <span class="s1">&#39;OD600&#39;</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">titer</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">timePoint</span><span class="o">.</span><span class="n">__dict__</span><span class="p">:</span>
     <span class="k">print</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span><span class="s1">&#39;:</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">timePoint</span><span class="o">.</span><span class="n">__getattribute__</span><span class="p">(</span><span class="n">attribute</span><span class="p">))</span>
@@ -461,16 +455,16 @@ time point for a single strain and titer type</p>
 </div>
 <div class="container">
 <div class="highlight"><pre>
-titer :  3
-titerName :      OD600
-units :  {&apos;t&apos;: &apos;h&apos;, &apos;titer&apos;: &apos;g&apos;}
 t :      10
-runIdentifier :  &lt;fDAPI.RunIdentifier object at 0x0000028990D69E10&gt;
+titerName :      OD600
+titer :  3
+runIdentifier :  &lt;FermAT.TrialIdentifier.RunIdentifier object at 0x0000017D36DF8828&gt;
+units :  {&apos;t&apos;: &apos;h&apos;, &apos;titer&apos;: &apos;g&apos;}
 </pre></div></div>
 </div>
 </div>
 <div class="section" id="TimeCourse">
-<h3>TimeCourse<a class="headerlink" href="#TimeCourse" title="Permalink to this headline">¶</a></h3>
+<h2>TimeCourse<a class="headerlink" href="#TimeCourse" title="Permalink to this headline">¶</a></h2>
 <p>The TimeCourse can be created in two different ways, by importing
 timePoints or by importing the time and data vectors directly. This will
 depend on how the raw data is parsed.</p>
@@ -481,16 +475,17 @@ depend on how the raw data is parsed.</p>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span><span class="c1"># Let&#39;s build some timePoint objects</span>
-<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Building and Adding TimePoints one-by-one&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">--------------------------------------------------------&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Building and Adding TimePoints one-by-one&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">--------------------------------------------------------&#39;</span><span class="p">)</span>
 <span class="n">timePointList</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">timeVec</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">26</span><span class="p">]</span>
 <span class="n">dataVec</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">1.6</span><span class="p">,</span><span class="mf">1.7</span><span class="p">,</span><span class="mf">1.72</span><span class="p">,</span><span class="mf">1.72</span><span class="p">,</span><span class="mf">1.6</span><span class="p">,</span><span class="mf">1.55</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.45</span><span class="p">,</span><span class="mf">1.4</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">timeVec</span><span class="p">,</span>
                       <span class="n">dataVec</span><span class="p">):</span>
-    <span class="n">timePoint</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">TimePoint</span><span class="p">(</span><span class="n">runID</span> <span class="o">=</span> <span class="n">runIdentifier</span><span class="p">,</span> <span class="n">titerName</span> <span class="o">=</span> <span class="s1">&#39;OD600&#39;</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">,</span> <span class="n">titer</span> <span class="o">=</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">timePoint</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">TimePoint</span><span class="p">(</span><span class="n">runID</span> <span class="o">=</span> <span class="n">runIdentifier</span><span class="p">,</span> <span class="n">titerName</span> <span class="o">=</span> <span class="s1">&#39;OD600&#39;</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">,</span> <span class="n">titer</span> <span class="o">=</span> <span class="n">data</span><span class="p">)</span>
     <span class="n">timePointList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timePoint</span><span class="p">)</span>
 
-<span class="n">timeCourse</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">()</span>
+<span class="n">timeCourse</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">timePoint</span> <span class="ow">in</span> <span class="n">timePointList</span><span class="p">:</span>
     <span class="n">timeCourse</span><span class="o">.</span><span class="n">addTimePoint</span><span class="p">(</span><span class="n">timePoint</span><span class="p">)</span>
 
@@ -505,9 +500,10 @@ depend on how the raw data is parsed.</p>
 
 
 
-<span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n\n</span><span class="s1">Adding the timeVec/dataVec directly&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">--------------------------------------------------------&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n\n</span><span class="s1">Adding the timeVec/dataVec directly&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">--------------------------------------------------------&#39;</span><span class="p">)</span>
 <span class="c1"># We can also make this more directly by adding the vectors directly</span>
-<span class="n">timeCourse</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">()</span>
+<span class="n">timeCourse</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">()</span>
 <span class="n">timeCourse</span><span class="o">.</span><span class="n">runIdentifier</span> <span class="o">=</span> <span class="n">runIdentifier</span>
 <span class="n">timeCourse</span><span class="o">.</span><span class="n">timeVec</span> <span class="o">=</span> <span class="n">timeVec</span>
 <span class="n">timeCourse</span><span class="o">.</span><span class="n">dataVec</span> <span class="o">=</span> <span class="n">dataVec</span>
@@ -525,30 +521,21 @@ depend on how the raw data is parsed.</p>
 <div class="highlight"><pre>
 Building and Adding TimePoints one-by-one
 --------------------------------------------------------
-Finished fit
-Finished fit
-Finished fit
-Finished fit
-Finished fit
-Finished fit
-Finished fit
-Finished fit
 Time:  [ 0  2  4  6  8 10 12 14 16 18 20 22 24 26]
 Data:  [ 0.02  0.1   0.2   0.4   0.8   1.6   1.7   1.72  1.72  1.6   1.55  1.5
   1.45  1.4 ]
-titerName :      OD600
-strainID :       MG1655 d(lacI)
 time :   -1
+titerName :      OD600
+identifier2 :    IPTG
 _titerType :     biomass
 identifier1 :    pKDL071
-identifier2 :    IPTG
+strainID :       MG1655 d(lacI)
 replicate :      None
 
 
 
 Adding the timeVec/dataVec directly
 --------------------------------------------------------
-Finished fit
 Time:  [ 0  2  4  6  8 10 12 14 16 18 20 22 24 26]
 Data:  [ 0.02  0.1   0.2   0.4   0.8   1.6   1.7   1.72  1.72  1.6   1.55  1.5
   1.45  1.4 ]
@@ -556,7 +543,7 @@ Data:  [ 0.02  0.1   0.2   0.4   0.8   1.6   1.7   1.72  1.72  1.6   1.55  1.5
 </div>
 </div>
 <div class="section" id="SingleTrial">
-<h3>SingleTrial<a class="headerlink" href="#SingleTrial" title="Permalink to this headline">¶</a></h3>
+<h2>SingleTrial<a class="headerlink" href="#SingleTrial" title="Permalink to this headline">¶</a></h2>
 <p>Now let&#8217;s build a variety of timeCourse objects to build into a
 singleExperimentObject</p>
 <ul class="simple">
@@ -564,23 +551,27 @@ singleExperimentObject</p>
 <li>Products: Ethanol, Acetate</li>
 <li>Biomass: OD600</li>
 </ul>
+<p>We will use cobraPy to quickly generate some data.</p>
 <div class="nbinput container">
 <div class="highlight-none"><div class="highlight"><pre>
 <span></span>In [5]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="c1"># Let&#39;s generate some data using cobraPy and dFBA</span>
-<span class="kn">import</span> <span class="nn">cobra</span>
+<span></span><span class="kn">import</span> <span class="nn">cobra</span>
 <span class="kn">import</span> <span class="nn">cobra.test</span>
 
-<span class="c1"># Let&#39;s grab the iJO1366 E. coli model</span>
+<span class="c1"># Let&#39;s grab the iJO1366 E. coli model, cobra&#39;s test module has a copy</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">cobra</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">create_test_model</span><span class="p">(</span><span class="s2">&quot;ecoli&quot;</span><span class="p">)</span>
 
-<span class="c1"># Optimize the model after simulating anaerobic conditions</span>
+<span class="c1"># Optimize the model after simulating anaerobic conditions, we don&#39;t get many products aerobically</span>
 <span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="s1">&#39;EX_o2_e&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="s1">&#39;EX_o2_e&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper_bound</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Optimize the model</span>
 <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+
+<span class="c1"># Print a summary of the fluxes</span>
 <span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -611,9 +602,9 @@ so4_e        -0.06            5drib_c      0.00
 k_e          -0.05            glyclt_e     0.00
 mg2_e        -0.00            mththf_c     0.00
 fe2_e        -0.00            4crsol_c     0.00
-fe3_e        -0.00            amob_c       0.00
-cl_e         -0.00            meoh_e       0.00
-ca2_e        -0.00
+fe3_e        -0.00            meoh_e       0.00
+ca2_e        -0.00            amob_c       0.00
+cl_e         -0.00
 cu2_e        -0.00
 mn2_e        -0.00
 zn2_e        -0.00
@@ -622,34 +613,19 @@ mobd_e       -0.00
 cobalt2_e    -0.00
 </pre></div></div>
 </div>
-<div class="nbinput container">
+<p>Now that we have a flux distribution, we can use Fermat.synthetic_data
+to generate batch profiles using dFBA.</p>
+<div class="nbinput nblast container">
 <div class="highlight-none"><div class="highlight"><pre>
 <span></span>In [6]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="c1"># Now, let&#39;s run a dFBA to generate some batch profile data</span>
-
-<span class="c1"># Let&#39;s consider one substrate and four products</span>
+<span></span><span class="c1"># Let&#39;s consider one substrate and five products</span>
 <span class="n">biomass_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Ec_biomass_iJO1366_core_53p95M&#39;</span><span class="p">]</span>
 <span class="n">substrate_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EX_glc_e&#39;</span><span class="p">]</span>
-<span class="n">product_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EX_for_e&#39;</span><span class="p">,</span><span class="s1">&#39;EX_ac_e&#39;</span><span class="p">,</span><span class="s1">&#39;EX_etoh_e&#39;</span><span class="p">]</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="n">y0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
-
-<span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="c1"># Returns a dictionary of the profiles</span>
-<span class="n">dFBA_profiles</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">generateSyntheticData</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">biomass_keys</span><span class="p">,</span> <span class="n">substrate_keys</span><span class="p">,</span> <span class="n">product_keys</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+<span class="n">product_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EX_for_e&#39;</span><span class="p">,</span><span class="s1">&#39;EX_ac_e&#39;</span><span class="p">,</span><span class="s1">&#39;EX_etoh_e&#39;</span><span class="p">,</span><span class="s1">&#39;EX_succ_e&#39;</span><span class="p">]</span>
 </pre></div>
-</div>
-</div>
-<div class="nboutput nblast container">
-<div class="container">
-</div>
-<div class="container">
-<img alt="_images/gettingStarted_12_0.png" src="_images/gettingStarted_12_0.png" />
 </div>
 </div>
 <div class="nbinput container">
@@ -658,12 +634,44 @@ cobalt2_e    -0.00
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="c1"># Now let&#39;s import this data into the toolbox</span>
+<span></span><span class="c1"># We&#39;ll use numpy to generate an arbitrary time vector</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-<span class="n">timeCourseList</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># The initial conditions (mM) [biomass, substrate, product1, product2, ..., product_n]</span>
+<span class="n">y0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Returns a dictionary of the profiles</span>
+<span class="kn">from</span> <span class="nn">FermAT.synthetic_data</span> <span class="kn">import</span> <span class="n">generate_data</span>
+<span class="n">dFBA_profiles</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">biomass_keys</span><span class="p">,</span> <span class="n">substrate_keys</span><span class="p">,</span> <span class="n">product_keys</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast container">
+<div class="container">
+</div>
+<div class="container">
+<img alt="_images/gettingStarted_14_0.png" src="_images/gettingStarted_14_0.png" />
+</div>
+</div>
+<p>Now that we have some time profiles, we can import them into FermAT</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>1. We must define a RunIdentifier which contains information about the strain, conditions and products
+2. We must build TimeCourse objects out of each of the profiles, and add them to a single trial object
+</pre></div>
+</div>
+<div class="nbinput container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [8]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="c1"># Make the object to store the data</span>
+<span class="n">singleTrial</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">SingleTrial</span><span class="p">()</span>
+
+<span class="c1"># For each exchange reaction in the profile, generate a TimeCourse</span>
 <span class="k">for</span> <span class="n">exchange</span> <span class="ow">in</span> <span class="n">dFBA_profiles</span><span class="p">:</span>
     <span class="c1"># Let&#39;s build some runIdentifier for the data</span>
-    <span class="n">runIdentifier</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">RunIdentifier</span><span class="p">()</span>
+    <span class="n">runIdentifier</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">RunIdentifier</span><span class="p">()</span>
     <span class="n">runIdentifier</span><span class="o">.</span><span class="n">strainID</span> <span class="o">=</span> <span class="s1">&#39;iJO1366&#39;</span>
     <span class="n">runIdentifier</span><span class="o">.</span><span class="n">identifier1</span> <span class="o">=</span> <span class="s1">&#39;Anaerobic&#39;</span>
 
@@ -677,13 +685,14 @@ cobalt2_e    -0.00
         <span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerName</span> <span class="o">=</span> <span class="n">exchange</span>
         <span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerType</span> <span class="o">=</span> <span class="s1">&#39;product&#39;</span>
 
-    <span class="c1"># And finally build the objects</span>
-    <span class="n">tempTimeCourse</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">()</span>
+    <span class="c1"># Build the objects</span>
+    <span class="n">tempTimeCourse</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">()</span>
     <span class="n">tempTimeCourse</span><span class="o">.</span><span class="n">runIdentifier</span> <span class="o">=</span> <span class="n">runIdentifier</span>
     <span class="n">tempTimeCourse</span><span class="o">.</span><span class="n">timeVec</span> <span class="o">=</span> <span class="n">t</span>
     <span class="n">tempTimeCourse</span><span class="o">.</span><span class="n">dataVec</span> <span class="o">=</span> <span class="n">dFBA_profiles</span><span class="p">[</span><span class="n">exchange</span><span class="p">]</span>
 
-    <span class="n">timeCourseList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tempTimeCourse</span><span class="p">)</span>
+    <span class="c1"># Finally, add the completed object to the trial</span>
+    <span class="n">singleTrial</span><span class="o">.</span><span class="n">addTiterObject</span><span class="p">(</span><span class="n">tempTimeCourse</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -692,79 +701,44 @@ cobalt2_e    -0.00
 </div>
 <div class="container">
 <div class="highlight"><pre>
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 Please use biomass titerType instead of:  OD
-Finished fit
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
 </pre></div></div>
 </div>
+<p>We have now filled a SingleTrial with all of the time courses from one
+dFBA simulation.</p>
 </div>
 <div class="section" id="ReplicateTrial">
-<h3>ReplicateTrial<a class="headerlink" href="#ReplicateTrial" title="Permalink to this headline">¶</a></h3>
-<p>Let&#8217;s build some replicates by adding random noise in generating the
+<h2>ReplicateTrial<a class="headerlink" href="#ReplicateTrial" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s build some replicates by adding random noise and generating the
 dFBA data</p>
-<div class="nbinput container">
+<div class="nbinput nblast container">
 <div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [8]:
+<span></span>In [9]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span><span class="n">replicateList</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
     <span class="c1"># Let&#39;s add some noise to the data to simulate experimental error and generate some more data</span>
-    <span class="n">dFBA_profiles</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">generateSyntheticData</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">biomass_keys</span><span class="p">,</span> <span class="n">substrate_keys</span><span class="p">,</span> <span class="n">product_keys</span><span class="p">,</span> <span class="n">noise</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="n">dFBA_profiles</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">biomass_keys</span><span class="p">,</span> <span class="n">substrate_keys</span><span class="p">,</span> <span class="n">product_keys</span><span class="p">,</span> <span class="n">noise</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
     <span class="n">replicateList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dFBA_profiles</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">exchange</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">biomass_keys</span><span class="o">+</span><span class="n">substrate_keys</span><span class="o">+</span><span class="n">product_keys</span><span class="p">):</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">replicate</span> <span class="ow">in</span> <span class="n">replicateList</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">replicate</span><span class="p">[</span><span class="n">exchange</span><span class="p">])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Replicate #&#39;</span><span class="o">+</span><span class="n">repNum</span> <span class="k">for</span> <span class="n">repNum</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;2&#39;</span><span class="p">,</span><span class="s1">&#39;3&#39;</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="p">]],</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">exchange</span><span class="p">)</span>
+<span class="c1"># # You can uncomment (ctrl+&#39;/&#39;) this code if you want to see a plot of the profiles</span>
+<span class="c1">#</span>
+<span class="c1"># import matplotlib.pyplot as plt</span>
+<span class="c1"># for i, exchange in enumerate(biomass_keys+substrate_keys+product_keys):</span>
+<span class="c1">#     plt.figure(figsize=[12,6])</span>
+<span class="c1">#     for replicate in replicateList:</span>
+<span class="c1">#         plt.plot(t,replicate[exchange])</span>
+<span class="c1">#     plt.legend([&#39;Replicate #&#39;+repNum for repNum in [&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;]],loc=2)</span>
+<span class="c1">#     plt.title(exchange)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<img alt="_images/gettingStarted_15_0.png" src="_images/gettingStarted_15_0.png" />
-</div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<img alt="_images/gettingStarted_15_1.png" src="_images/gettingStarted_15_1.png" />
-</div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<img alt="_images/gettingStarted_15_2.png" src="_images/gettingStarted_15_2.png" />
-</div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<img alt="_images/gettingStarted_15_3.png" src="_images/gettingStarted_15_3.png" />
-</div>
-</div>
-<div class="nboutput nblast container">
-<div class="container">
-</div>
-<div class="container">
-<img alt="_images/gettingStarted_15_4.png" src="_images/gettingStarted_15_4.png" />
-</div>
-</div>
-<div class="nbinput container">
+<p>Now, we can create a SingleTrial object for each replicate.</p>
+<div class="nbinput nblast container">
 <div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [9]:
+<span></span>In [10]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
@@ -773,13 +747,13 @@ dFBA data</p>
 <span class="k">for</span> <span class="n">replicate</span> <span class="ow">in</span> <span class="n">replicateList</span><span class="p">:</span>
     <span class="n">timeCourseList</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">exchange</span> <span class="ow">in</span> <span class="n">biomass_keys</span><span class="o">+</span><span class="n">substrate_keys</span><span class="o">+</span><span class="n">product_keys</span><span class="p">:</span>
-        <span class="n">runIdentifier</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">RunIdentifier</span><span class="p">()</span>
+        <span class="n">runIdentifier</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">RunIdentifier</span><span class="p">()</span>
         <span class="n">runIdentifier</span><span class="o">.</span><span class="n">strainID</span> <span class="o">=</span> <span class="s1">&#39;iJO1366&#39;</span>
         <span class="n">runIdentifier</span><span class="o">.</span><span class="n">identifier1</span> <span class="o">=</span> <span class="s1">&#39;Anaerobic&#39;</span>
         <span class="n">runIdentifier</span><span class="o">.</span><span class="n">replicate</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
         <span class="k">if</span> <span class="n">exchange</span> <span class="ow">in</span> <span class="n">biomass_keys</span><span class="p">:</span>
             <span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerName</span> <span class="o">=</span> <span class="n">exchange</span>
-            <span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerType</span> <span class="o">=</span> <span class="s1">&#39;OD&#39;</span>
+            <span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerType</span> <span class="o">=</span> <span class="s1">&#39;biomass&#39;</span>
         <span class="k">if</span> <span class="n">exchange</span> <span class="ow">in</span> <span class="n">substrate_keys</span><span class="p">:</span>
             <span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerName</span> <span class="o">=</span> <span class="n">exchange</span>
             <span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerType</span> <span class="o">=</span> <span class="s1">&#39;substrate&#39;</span>
@@ -787,65 +761,61 @@ dFBA data</p>
             <span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerName</span> <span class="o">=</span> <span class="n">exchange</span>
             <span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerType</span> <span class="o">=</span> <span class="s1">&#39;product&#39;</span>
 
-        <span class="n">tempTimeCourse</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">()</span>
+        <span class="n">tempTimeCourse</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">()</span>
         <span class="n">tempTimeCourse</span><span class="o">.</span><span class="n">runIdentifier</span> <span class="o">=</span> <span class="n">runIdentifier</span>
         <span class="n">tempTimeCourse</span><span class="o">.</span><span class="n">timeVec</span> <span class="o">=</span> <span class="n">t</span>
         <span class="n">tempTimeCourse</span><span class="o">.</span><span class="n">dataVec</span> <span class="o">=</span> <span class="n">replicate</span><span class="p">[</span><span class="n">exchange</span><span class="p">]</span>
         <span class="n">timeCourseList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tempTimeCourse</span><span class="p">)</span>
 
         <span class="c1"># Now we can build a singleTrial object and load all the data</span>
-        <span class="n">singleTrial</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">SingleTrial</span><span class="p">()</span>
+        <span class="n">singleTrial</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">SingleTrial</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">timeCourse</span> <span class="ow">in</span> <span class="n">timeCourseList</span><span class="p">:</span>
             <span class="n">singleTrial</span><span class="o">.</span><span class="n">addTiterObject</span><span class="p">(</span><span class="n">timeCourse</span><span class="p">)</span>
 
     <span class="n">singleTrialList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">singleTrial</span><span class="p">)</span>
 
-<span class="n">replicateTrial</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">ReplicateTrial</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Finally, we can add the SingleTrial objects to a ReplicateTrial</p>
+<div class="nbinput nblast container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [11]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">replicateTrial</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">ReplicateTrial</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">singleTrial</span> <span class="ow">in</span> <span class="n">singleTrialList</span><span class="p">:</span>
     <span class="n">replicateTrial</span><span class="o">.</span><span class="n">addReplicateExperiment</span><span class="p">(</span><span class="n">singleTrial</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
 </div>
-<div class="container">
-<div class="highlight"><pre>
-Please use biomass titerType instead of:  OD
-Finished fit
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Please use biomass titerType instead of:  OD
-Finished fit
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Please use biomass titerType instead of:  OD
-Finished fit
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Please use biomass titerType instead of:  OD
-Finished fit
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py
-</pre></div></div>
+<div class="section" id="Experiment">
+<h2>Experiment<a class="headerlink" href="#Experiment" title="Permalink to this headline">¶</a></h2>
+<p>This is one of the highest level objects and allows you now to analyze
+your data. All data should be built into an Experiment, for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>1x TimeCourse -&gt; 1x SingleTrial -&gt; 1x Replicate Trial -&gt; 1x Experiment
+</pre></div>
 </div>
-<div class="nbinput container">
+<p>is as valid as</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>80x TimeCourse -&gt; 40x Single Trial -&gt; 20x ReplicateTrial -&gt; 1x Experiment
+</pre></div>
+</div>
+<p>Here, we have</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>1x ReplicateTrial * 4x SingleTrial * 5x Titers (exchanges time courses) = 20 total Titer objects
+</pre></div>
+</div>
+<p>We can put all of this together in an Experiment, where we define some
+information about hte experiment and have the option to commit to the
+database.</p>
+<div class="nbinput nblast container">
 <div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [10]:
+<span></span>In [12]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="c1"># Finally, let&#39;s put this all into an experiment container</span>
-
-<span class="kn">import</span> <span class="nn">datetime</span>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;importDate&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span>
@@ -858,73 +828,88 @@ Curve fitting for titers unimplemented in restructured curve fitting. Please see
     <span class="s1">&#39;experimentTitle&#39;</span><span class="p">:</span> <span class="s1">&#39;2016.05.17 gettingStarted Tutorial&#39;</span>
 <span class="p">}</span>
 
-<span class="n">experiment</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span><span class="p">)</span>
+<span class="c1"># Create the experiment object, we add the optional info to the constructor (we can also add this later if preferred)</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span><span class="p">)</span>
 
+<span class="c1"># Add the ReplicateTrial</span>
 <span class="n">experiment</span><span class="o">.</span><span class="n">addReplicateTrial</span><span class="p">(</span><span class="n">replicateTrial</span><span class="p">)</span>
-
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">fDAPI</span><span class="o">.</span><span class="n">init_db</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
-<span class="n">experimentID</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">commitToDB</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">experimentID</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
-</div>
-<div class="container">
-<div class="highlight"><pre>
-Committed experiment # 24  to DB  ../20160518test_fDAPI_db.sqlite3
-24
-</pre></div></div>
-</div>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [11]:
-</pre></div>
-</div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="n">experiment</span><span class="o">.</span><span class="n">printGenericTimeCourse</span><span class="p">(</span><span class="n">titersToPlot</span> <span class="o">=</span> <span class="n">biomass_keys</span><span class="o">+</span><span class="n">product_keys</span><span class="p">,</span> <span class="n">plotCurveFit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">removePointFraction</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<div class="highlight"><pre>
-1
-This is the format of your plot grid:
-[ (1,1) x1,y1 ]  [ (1,2) x2,y2 ]  [ (1,3) x3,y3 ]  [ (1,4) x4,y4 ]
-
-</pre></div></div>
-</div>
-<div class="nboutput nblast container">
-<div class="container">
-</div>
-<div class="container">
-<div id="d9e7b176-3aa9-49b8-b891-e35488602c4c" style="height: 400; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("d9e7b176-3aa9-49b8-b891-e35488602c4c", [{"xaxis": "x1", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.0007396702642384835, 0.001886871179576258, 0.0036104197281457634, 0.006141445395054218, 0.009795004144027503, 0.014998909246781947, 0.022332118053003298, 0.032575780146435626, 0.04678101853924323, 0.06635882652923823, 0.093199151368727, 0.12982847493103075, 0.17961813086709827, 0.24705943458265497, 0.3381267411192012, 0.2790806212689763, 0.13933841582438491, 0.13933841582438491, 0.13933841582438491], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.05, 0.06371350373813998, 0.08119915329417103, 0.10349756364426957, 0.13193725521011498, 0.16821453604061448, 0.21449561522392008, 0.2735471447599773, 0.348903130339976, 0.4450783729430895, 0.5678414438172827, 0.7245638536703447, 0.9246667300647295, 1.180192321874549, 1.506535295752958, 1.9233786377170503, 2.3164845051078258, 2.4923016019704614, 2.4923016019704614, 2.4923016019704614], "yaxis": "y1", "showlegend": true}, {"xaxis": "x2", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.043685841968538926, 0.11191216538904408, 0.21609984562088702, 0.37190541435145696, 0.6007225906551066, 0.9316979483787347, 1.4044224916505479, 2.072517795166162, 3.008405568452772, 4.30964388329013, 6.107334109133182, 8.577263250615825, 11.954656005036219, 16.553686179760025, 22.79325837761059, 16.840963220270332, 9.154144593074985, 9.154144593074985, 9.154144593074985], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.9989988683384671, 2.2724989382880683, 3.896151117157563, 5.96651720215708, 8.60686686597981, 11.974586685254963, 16.270650277757298, 21.75172483404065, 28.74565019660275, 37.67123228448005, 49.063557480369006, 63.60637140892422, 82.1735001102744, 105.88184494194616, 136.1591951087561, 164.74539499057443, 177.95026690926312, 177.95026690926312, 177.95026690926312], "yaxis": "y2", "showlegend": false}, {"xaxis": "x3", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.027957003406385395, 0.06699575748524475, 0.12191295747892289, 0.19937353288399007, 0.30854434733929254, 0.46194061684883725, 0.6765584607890356, 0.97538886669326, 1.3894366535359917, 1.9604067426388485, 2.7442712198747023, 3.8159983526156727, 5.275814061311078, 7.257483110371232, 9.939250955654513, 9.753811976359472, 6.084597293556328, 6.084597293556328, 6.084597293556328], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.4706432838810561, 1.0705764075525894, 1.8354148583591932, 2.8106123038269204, 4.054185660357801, 5.6401971745969135, 7.663204146646475, 10.243946036301534, 13.536614029841063, 17.73814437948814, 23.100100773345176, 29.94386849561061, 38.6800863656531, 49.833501049166856, 64.07476130096363, 77.80268886869806, 83.8745962907671, 83.8745962907671, 83.8745962907671], "yaxis": "y3", "showlegend": false}, {"xaxis": "x4", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.03203652318521393, 0.06844808495989124, 0.1100491399194442, 0.1583613286752149, 0.21630386235127513, 0.2892976051342813, 0.38677089841054657, 0.5238357675883865, 0.7228339674177895, 1.014832877741325, 1.4416961894488616, 2.0594285644806294, 2.943175881043923, 4.194112856416855, 5.9486031482960025, 4.196213287076251, 7.780029956522453, 7.780029956522453, 7.780029956522453], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.45621842962573744, 1.0372475046462233, 1.77733307253968, 2.7201452306394804, 3.9213794341663055, 5.4520777505231885, 7.40287001352094, 9.889390493090593, 13.05919692412413, 17.10060959607666, 22.2540052039324, 28.82624874992169, 37.209138371744345, 47.902981691358264, 61.54673582754471, 74.83505243738729, 81.40241322840673, 81.40241322840673, 81.40241322840673], "yaxis": "y4", "showlegend": false}], {"xaxis1": {"domain": [0.0, 0.2125], "title": "Time (hours)", "anchor": "y1"}, "yaxis4": {"domain": [0.0, 1.0], "title": "EX_etoh_e ", "anchor": "x4"}, "xaxis3": {"domain": [0.525, 0.7375], "title": "Time (hours)", "anchor": "y3"}, "yaxis3": {"domain": [0.0, 1.0], "title": "EX_ac_e ", "anchor": "x3"}, "yaxis1": {"domain": [0.0, 1.0], "title": "Ec_biomass_iJO1366_core_53p95M ", "anchor": "x1"}, "yaxis2": {"domain": [0.0, 1.0], "title": "EX_for_e ", "anchor": "x2"}, "xaxis2": {"domain": [0.2625, 0.475], "title": "Time (hours)", "anchor": "y2"}, "height": 400, "xaxis4": {"domain": [0.7875000000000001, 1.0], "title": "Time (hours)", "anchor": "y4"}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
-</div>
-<div class="nbinput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [12]:
-</pre></div>
-</div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="c1"># Now let&#39;s recreate the experiment object and load the data from the db</span>
-<span class="n">experiment</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">Experiment</span><span class="p">()</span>
-<span class="n">experiment</span><span class="o">.</span><span class="n">loadFromDB</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s1">&#39;../20160518test_fDAPI_db.sqlite3&#39;</span><span class="p">,</span> <span class="n">experimentID</span> <span class="o">=</span> <span class="n">experimentID</span><span class="p">)</span>
-<span class="c1"># vars(experiment.replicateExperimentObjectDict[&#39;iJO1366Anaerobic&#39;])</span>
-</pre></div>
-</div>
-</div>
+<p>Now that we have an experiment object, we can use it to plot some data</p>
 <div class="nbinput container">
 <div class="highlight-none"><div class="highlight"><pre>
 <span></span>In [13]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">experiment</span><span class="o">.</span><span class="n">printGenericTimeCourse</span><span class="p">(</span><span class="n">titersToPlot</span> <span class="o">=</span> <span class="n">biomass_keys</span><span class="o">+</span><span class="n">product_keys</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput container">
+<div class="container">
+</div>
+<div class="container">
+<div class="highlight"><pre>
+1
+This is the format of your plot grid:
+[ (1,1) x1,y1 ]  [ (1,2) x2,y2 ]  [ (1,3) x3,y3 ]  [ (1,4) x4,y4 ]
+[ (2,1) x5,y5 ]  [ (2,2) x6,y6 ]  [ (2,3) x7,y7 ]  [ (2,4) x8,y8 ]
+
+</pre></div></div>
+</div>
+<div class="nboutput nblast container">
+<div class="container">
+</div>
+<div class="container">
+<div id="32eef065-f33f-4632-a624-dd57f47c2f95" style="height: 800; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("32eef065-f33f-4632-a624-dd57f47c2f95", [{"type": "scatter", "xaxis": "x1", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "mode": "lines+markers", "marker": {"color": "rgb(215,48,39)"}, "name": "iJO1366Anaerobic", "line": {"color": "rgb(215,48,39)"}, "legendgroup": "iJO1366\tAnaerobic\t", "error_y": {"type": "data", "array": [0.0, 0.000809092149637977, 0.00204961081547476, 0.003894656564910136, 0.006579263793538344, 0.01042123961723998, 0.01584875708996205, 0.023436827995020646, 0.033955460713677034, 0.04843315313665032, 0.0682405138084611, 0.09520027176052034, 0.1317318559497396, 0.18104123004877457, 0.24736993490893674, 0.33632153899442185, 0.4240766940887072, 0.28899784330704653, 0.26986490997211304, 0.26986490997211304], "visible": true, "color": "rgb(215,48,39)"}, "showlegend": true, "yaxis": "y1", "y": [0.05, 0.06324300006691681, 0.08000663365809288, 0.10123035625629276, 0.1281052462279037, 0.1621416476106764, 0.2052550666719092, 0.2598752623237618, 0.32908481395483347, 0.4167951668943986, 0.5279703209728246, 0.6689111057498073, 0.8476165142806605, 1.074243046418142, 1.361688751772201, 1.7263359374790945, 2.168748408217787, 2.390046357588538, 2.405703152681731, 2.405703152681731]}, {"type": "scatter", "xaxis": "x2", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "mode": "lines+markers", "marker": {"color": "rgb(215,48,39)"}, "name": "iJO1366Anaerobic", "line": {"color": "rgb(215,48,39)"}, "legendgroup": "iJO1366\tAnaerobic\t", "error_y": {"type": "data", "array": [0.0, 0.06527014062426294, 0.16013814528477965, 0.2966763538475974, 0.4912924854567915, 0.7661775483581766, 1.1512277637213604, 1.6865896492088288, 2.426024580347619, 3.441348569395923, 4.828283098182006, 6.7141562217492, 9.268027952851984, 12.71399033199296, 17.34862235457485, 23.563878612529553, 29.88377529128336, 21.540488383065245, 19.873026454796097, 19.873026454796097], "visible": true, "color": "rgb(215,48,39)"}, "showlegend": false, "yaxis": "y2", "y": [0.0, 0.9894433971705012, 2.2417984420569304, 3.8271771565129766, 5.834456153655104, 8.376316654909429, 11.595643246043299, 15.673648707052628, 20.840192007897475, 27.38688404827309, 35.68373641997925, 46.20031466200169, 59.53261921069108, 76.43724947738392, 97.87483203883619, 125.06523315673321, 158.10606222378954, 174.83238150140787, 175.96271364891703, 175.96271364891703]}, {"type": "scatter", "xaxis": "x3", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "mode": "lines+markers", "marker": {"color": "rgb(215,48,39)"}, "name": "iJO1366Anaerobic", "line": {"color": "rgb(215,48,39)"}, "legendgroup": "iJO1366\tAnaerobic\t", "error_y": {"type": "data", "array": [0.0, 0.024650049163407538, 0.050518407833725396, 0.07768510150743989, 0.10731403290703552, 0.14309846035679297, 0.19328434669388322, 0.27209981386922716, 0.39943163448089736, 0.6002384263191127, 0.9059942197796789, 1.3580058090927707, 2.0116807891653323, 2.941699163508134, 4.248562849842766, 6.067128588590301, 7.67002207398336, 1.7834129805398995, 1.8662052908269855, 1.8662052908269855], "visible": true, "color": "rgb(215,48,39)"}, "showlegend": false, "yaxis": "y3", "y": [0.0, 0.4576734707860259, 1.0362739913056138, 1.767873256336078, 2.693081010959272, 3.863326560644701, 5.343752323297687, 7.216884127036744, 9.58728742980371, 12.587475551729606, 16.385407549378854, 21.19400515051975, 27.283234589751856, 34.99544675569481, 44.76485800005109, 57.14229314364385, 72.21627631169751, 80.31533558762735, 80.94639965343265, 80.94639965343265]}, {"type": "scatter", "xaxis": "x4", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "mode": "lines+markers", "marker": {"color": "rgb(215,48,39)"}, "name": "iJO1366Anaerobic", "line": {"color": "rgb(215,48,39)"}, "legendgroup": "iJO1366\tAnaerobic\t", "error_y": {"type": "data", "array": [0.0, 0.009346284440238793, 0.02139894009879817, 0.04143320906448599, 0.07657113263988859, 0.13533515206999577, 0.22853139067272718, 0.3705856601321896, 0.5810371381734388, 0.886361657769798, 1.3223311514912925, 1.9371179836249868, 2.7953920222195827, 3.9837267066739184, 5.61772556214778, 7.851406338791448, 9.94111660288977, 4.510888821267298, 3.8133026564693666, 3.8133026564693666], "visible": true, "color": "rgb(215,48,39)"}, "showlegend": false, "yaxis": "y4", "y": [0.0, 0.4575645746725381, 1.0362982250043156, 1.76840777182462, 2.6946926387326764, 3.8668458055008106, 5.350373295254071, 7.228298971728898, 9.60586656558786, 12.616508588167157, 16.429424453617624, 21.259203362145882, 27.378045794341507, 35.131287499818725, 44.95712199955631, 57.41166095533665, 72.56323493867136, 80.50148363009988, 81.0937249672499, 81.0937249672499]}, {"type": "scatter", "xaxis": "x5", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "mode": "lines+markers", "marker": {"color": "rgb(215,48,39)"}, "name": "iJO1366Anaerobic", "line": {"color": "rgb(215,48,39)"}, "legendgroup": "iJO1366\tAnaerobic\t", "error_y": {"type": "data", "array": [0.0, 0.0003094015481954928, 0.0007207706793110976, 0.0012767385148686422, 0.002037199706489536, 0.0030850947502416765, 0.004533940036307492, 0.0065377510726969965, 0.009304208927825946, 0.013112152479979216, 0.018334780635934456, 0.0254703519113228, 0.03518270596424897, 0.048354649827559486, 0.06615819274561316, 0.09014683727893766, 0.11559704111528217, 0.08216586310381406, 0.07354128373933463, 0.07354128373933463], "visible": true, "color": "rgb(215,48,39)"}, "showlegend": false, "yaxis": "y5", "y": [0.0, 0.004557856784625839, 0.010324265270061295, 0.017620804249697558, 0.026854920524351657, 0.03854293718615795, 0.05333924938158042, 0.07207337621695013, 0.0957969891799571, 0.12584361504612013, 0.16390443821983658, 0.21212456026778526, 0.27322525749472365, 0.35065927837547206, 0.448808144358673, 0.5732328507655717, 0.7248014136881373, 0.8033954585810074, 0.8086970575143629, 0.8086970575143629]}], {"yaxis6": {"domain": [0.0, 0.425], "anchor": "x6"}, "xaxis3": {"domain": [0.525, 0.7375], "title": "Time (hours)", "anchor": "y3"}, "xaxis1": {"domain": [0.0, 0.2125], "title": "Time (hours)", "anchor": "y1"}, "xaxis7": {"domain": [0.525, 0.7375], "anchor": "y7"}, "xaxis2": {"domain": [0.2625, 0.475], "title": "Time (hours)", "anchor": "y2"}, "xaxis8": {"domain": [0.7875000000000001, 1.0], "anchor": "y8"}, "yaxis7": {"domain": [0.0, 0.425], "anchor": "x7"}, "yaxis5": {"domain": [0.0, 0.425], "title": "EX_succ_e ", "anchor": "x5"}, "yaxis3": {"domain": [0.575, 1.0], "title": "EX_ac_e ", "anchor": "x3"}, "yaxis4": {"domain": [0.575, 1.0], "title": "EX_etoh_e ", "anchor": "x4"}, "yaxis1": {"domain": [0.575, 1.0], "title": "Ec_biomass_iJO1366_core_53p95M ", "anchor": "x1"}, "yaxis2": {"domain": [0.575, 1.0], "title": "EX_for_e ", "anchor": "x2"}, "xaxis4": {"domain": [0.7875000000000001, 1.0], "title": "Time (hours)", "anchor": "y4"}, "xaxis5": {"domain": [0.0, 0.2125], "title": "Time (hours)", "anchor": "y5"}, "xaxis6": {"domain": [0.2625, 0.475], "anchor": "y6"}, "yaxis8": {"domain": [0.0, 0.425], "anchor": "x8"}, "height": 800}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
+</div>
+</div>
+</div>
+<div class="section" id="Database">
+<h1>Database<a class="headerlink" href="#Database" title="Permalink to this headline">¶</a></h1>
+<p>We can also choose to save this data to a database, as so:</p>
+<div class="nbinput container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [14]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">FermAT</span><span class="o">.</span><span class="n">init_db</span><span class="p">(</span><span class="n">db_name</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
+<span class="n">experimentID</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">commitToDB</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast container">
+<div class="container">
+</div>
+<div class="container">
+<div class="highlight"><pre>
+           INSERT INTO experimentTable
+           (mediumBase, experimentTitle, runStartDate, notes, runEndDate, mediumSupplements, importDate, principalScientistName) VALUES (?, ?, ?, ?, ?, ?, ?, ?) [&apos;NA&apos;, &apos;2016.05.17 gettingStarted Tutorial&apos;, datetime.datetime(2016, 6, 1, 12, 3, 51, 210984), &apos;This is a test experiment input&apos;, datetime.datetime(2016, 6, 1, 12, 3, 51, 210984), &apos;NA&apos;, datetime.datetime(2016, 6, 1, 12, 3, 51, 210984), &apos;Naveen Venayak&apos;]
+Committed experiment # 31  to DB  ../default_fDAPI_db.sqlite3
+</pre></div></div>
+</div>
+<div class="nbinput nblast container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [17]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="c1"># Now let&#39;s recreate the experiment object and load the data from the db</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">Experiment</span><span class="p">()</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">loadFromDB</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">,</span> <span class="n">experimentID</span> <span class="o">=</span> <span class="n">experimentID</span><span class="p">)</span>
+<span class="c1"># vars(experiment.replicateExperimentObjectDict[&#39;iJO1366Anaerobic&#39;])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [18]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span><span class="n">experiment</span><span class="o">.</span><span class="n">printGenericTimeCourse</span><span class="p">(</span><span class="n">titersToPlot</span> <span class="o">=</span> <span class="n">biomass_keys</span><span class="o">+</span><span class="n">product_keys</span><span class="p">,</span> <span class="n">plotCurveFit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">removePointFraction</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -937,6 +922,7 @@ This is the format of your plot grid:
 1
 This is the format of your plot grid:
 [ (1,1) x1,y1 ]  [ (1,2) x2,y2 ]  [ (1,3) x3,y3 ]  [ (1,4) x4,y4 ]
+[ (2,1) x5,y5 ]  [ (2,2) x6,y6 ]  [ (2,3) x7,y7 ]  [ (2,4) x8,y8 ]
 
 </pre></div></div>
 </div>
@@ -944,7 +930,7 @@ This is the format of your plot grid:
 <div class="container">
 </div>
 <div class="container">
-<div id="ec40d4c3-f946-4ca9-a41b-ae555a66e6e7" style="height: 400; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("ec40d4c3-f946-4ca9-a41b-ae555a66e6e7", [{"xaxis": "x1", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.0007396702642384835, 0.001886871179576258, 0.0036104197281457634, 0.006141445395054218, 0.009795004144027503, 0.014998909246781947, 0.022332118053003298, 0.032575780146435626, 0.04678101853924323, 0.06635882652923823, 0.093199151368727, 0.12982847493103075, 0.17961813086709827, 0.24705943458265497, 0.3381267411192012, 0.2790806212689763, 0.13933841582438491, 0.13933841582438491, 0.13933841582438491], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.05, 0.06371350373813998, 0.08119915329417103, 0.10349756364426957, 0.13193725521011498, 0.16821453604061448, 0.21449561522392008, 0.2735471447599773, 0.348903130339976, 0.4450783729430895, 0.5678414438172827, 0.7245638536703447, 0.9246667300647295, 1.180192321874549, 1.506535295752958, 1.9233786377170503, 2.3164845051078258, 2.4923016019704614, 2.4923016019704614, 2.4923016019704614], "yaxis": "y1", "showlegend": true}, {"xaxis": "x2", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.043685841968538926, 0.11191216538904408, 0.21609984562088702, 0.37190541435145696, 0.6007225906551066, 0.9316979483787347, 1.4044224916505479, 2.072517795166162, 3.008405568452772, 4.30964388329013, 6.107334109133182, 8.577263250615825, 11.954656005036219, 16.553686179760025, 22.79325837761059, 16.840963220270332, 9.154144593074985, 9.154144593074985, 9.154144593074985], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.9989988683384671, 2.2724989382880683, 3.896151117157563, 5.96651720215708, 8.60686686597981, 11.974586685254963, 16.270650277757298, 21.75172483404065, 28.74565019660275, 37.67123228448005, 49.063557480369006, 63.60637140892422, 82.1735001102744, 105.88184494194616, 136.1591951087561, 164.74539499057443, 177.95026690926312, 177.95026690926312, 177.95026690926312], "yaxis": "y2", "showlegend": false}, {"xaxis": "x3", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.027957003406385395, 0.06699575748524475, 0.12191295747892289, 0.19937353288399007, 0.30854434733929254, 0.46194061684883725, 0.6765584607890356, 0.97538886669326, 1.3894366535359917, 1.9604067426388485, 2.7442712198747023, 3.8159983526156727, 5.275814061311078, 7.257483110371232, 9.939250955654513, 9.753811976359472, 6.084597293556328, 6.084597293556328, 6.084597293556328], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.4706432838810561, 1.0705764075525894, 1.8354148583591932, 2.8106123038269204, 4.054185660357801, 5.6401971745969135, 7.663204146646475, 10.243946036301534, 13.536614029841063, 17.73814437948814, 23.100100773345176, 29.94386849561061, 38.6800863656531, 49.833501049166856, 64.07476130096363, 77.80268886869806, 83.8745962907671, 83.8745962907671, 83.8745962907671], "yaxis": "y3", "showlegend": false}, {"xaxis": "x4", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "marker": {"color": "rgb(215,48,39)"}, "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "line": {"color": "rgb(215,48,39)"}, "error_y": {"color": "rgb(215,48,39)", "array": [0.0, 0.03203652318521393, 0.06844808495989124, 0.1100491399194442, 0.1583613286752149, 0.21630386235127513, 0.2892976051342813, 0.38677089841054657, 0.5238357675883865, 0.7228339674177895, 1.014832877741325, 1.4416961894488616, 2.0594285644806294, 2.943175881043923, 4.194112856416855, 5.9486031482960025, 4.196213287076251, 7.780029956522453, 7.780029956522453, 7.780029956522453], "visible": true, "type": "data"}, "name": "iJO1366Anaerobic", "y": [0.0, 0.45621842962573744, 1.0372475046462233, 1.77733307253968, 2.7201452306394804, 3.9213794341663055, 5.4520777505231885, 7.40287001352094, 9.889390493090593, 13.05919692412413, 17.10060959607666, 22.2540052039324, 28.82624874992169, 37.209138371744345, 47.902981691358264, 61.54673582754471, 74.83505243738729, 81.40241322840673, 81.40241322840673, 81.40241322840673], "yaxis": "y4", "showlegend": false}], {"xaxis1": {"domain": [0.0, 0.2125], "title": "Time (hours)", "anchor": "y1"}, "yaxis4": {"domain": [0.0, 1.0], "title": "EX_etoh_e ", "anchor": "x4"}, "xaxis3": {"domain": [0.525, 0.7375], "title": "Time (hours)", "anchor": "y3"}, "yaxis3": {"domain": [0.0, 1.0], "title": "EX_ac_e ", "anchor": "x3"}, "yaxis1": {"domain": [0.0, 1.0], "title": "Ec_biomass_iJO1366_core_53p95M ", "anchor": "x1"}, "yaxis2": {"domain": [0.0, 1.0], "title": "EX_for_e ", "anchor": "x2"}, "xaxis2": {"domain": [0.2625, 0.475], "title": "Time (hours)", "anchor": "y2"}, "height": 400, "xaxis4": {"domain": [0.7875000000000001, 1.0], "title": "Time (hours)", "anchor": "y4"}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
+<div id="f4f41532-fec9-4825-9b2d-0dcb35df71af" style="height: 800; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("f4f41532-fec9-4825-9b2d-0dcb35df71af", [{"type": "scatter", "xaxis": "x1", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "mode": "lines+markers", "marker": {"color": "rgb(215,48,39)"}, "name": "iJO1366Anaerobic", "line": {"color": "rgb(215,48,39)"}, "legendgroup": "iJO1366\tAnaerobic\t", "error_y": {"type": "data", "array": [0.0, 0.000809092149637977, 0.00204961081547476, 0.003894656564910136, 0.006579263793538344, 0.01042123961723998, 0.01584875708996205, 0.023436827995020646, 0.033955460713677034, 0.04843315313665032, 0.0682405138084611, 0.09520027176052034, 0.1317318559497396, 0.18104123004877457, 0.24736993490893674, 0.33632153899442185, 0.4240766940887072, 0.28899784330704653, 0.26986490997211304, 0.26986490997211304], "visible": true, "color": "rgb(215,48,39)"}, "showlegend": true, "yaxis": "y1", "y": [0.05, 0.06324300006691681, 0.08000663365809288, 0.10123035625629276, 0.1281052462279037, 0.1621416476106764, 0.2052550666719092, 0.2598752623237618, 0.32908481395483347, 0.4167951668943986, 0.5279703209728246, 0.6689111057498073, 0.8476165142806605, 1.074243046418142, 1.361688751772201, 1.7263359374790945, 2.168748408217787, 2.390046357588538, 2.405703152681731, 2.405703152681731]}, {"type": "scatter", "xaxis": "x2", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "mode": "lines+markers", "marker": {"color": "rgb(215,48,39)"}, "name": "iJO1366Anaerobic", "line": {"color": "rgb(215,48,39)"}, "legendgroup": "iJO1366\tAnaerobic\t", "error_y": {"type": "data", "array": [0.0, 0.06527014062426294, 0.16013814528477965, 0.2966763538475974, 0.4912924854567915, 0.7661775483581766, 1.1512277637213604, 1.6865896492088288, 2.426024580347619, 3.441348569395923, 4.828283098182006, 6.7141562217492, 9.268027952851984, 12.71399033199296, 17.34862235457485, 23.563878612529553, 29.88377529128336, 21.540488383065245, 19.873026454796097, 19.873026454796097], "visible": true, "color": "rgb(215,48,39)"}, "showlegend": false, "yaxis": "y2", "y": [0.0, 0.9894433971705012, 2.2417984420569304, 3.8271771565129766, 5.834456153655104, 8.376316654909429, 11.595643246043299, 15.673648707052628, 20.840192007897475, 27.38688404827309, 35.68373641997925, 46.20031466200169, 59.53261921069108, 76.43724947738392, 97.87483203883619, 125.06523315673321, 158.10606222378954, 174.83238150140787, 175.96271364891703, 175.96271364891703]}, {"type": "scatter", "xaxis": "x3", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "mode": "lines+markers", "marker": {"color": "rgb(215,48,39)"}, "name": "iJO1366Anaerobic", "line": {"color": "rgb(215,48,39)"}, "legendgroup": "iJO1366\tAnaerobic\t", "error_y": {"type": "data", "array": [0.0, 0.024650049163407538, 0.050518407833725396, 0.07768510150743989, 0.10731403290703552, 0.14309846035679297, 0.19328434669388322, 0.27209981386922716, 0.39943163448089736, 0.6002384263191127, 0.9059942197796789, 1.3580058090927707, 2.0116807891653323, 2.941699163508134, 4.248562849842766, 6.067128588590301, 7.67002207398336, 1.7834129805398995, 1.8662052908269855, 1.8662052908269855], "visible": true, "color": "rgb(215,48,39)"}, "showlegend": false, "yaxis": "y3", "y": [0.0, 0.4576734707860259, 1.0362739913056138, 1.767873256336078, 2.693081010959272, 3.863326560644701, 5.343752323297687, 7.216884127036744, 9.58728742980371, 12.587475551729606, 16.385407549378854, 21.19400515051975, 27.283234589751856, 34.99544675569481, 44.76485800005109, 57.14229314364385, 72.21627631169751, 80.31533558762735, 80.94639965343265, 80.94639965343265]}, {"type": "scatter", "xaxis": "x4", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "mode": "lines+markers", "marker": {"color": "rgb(215,48,39)"}, "name": "iJO1366Anaerobic", "line": {"color": "rgb(215,48,39)"}, "legendgroup": "iJO1366\tAnaerobic\t", "error_y": {"type": "data", "array": [0.0, 0.009346284440238793, 0.02139894009879817, 0.04143320906448599, 0.07657113263988859, 0.13533515206999577, 0.22853139067272718, 0.3705856601321896, 0.5810371381734388, 0.886361657769798, 1.3223311514912925, 1.9371179836249868, 2.7953920222195827, 3.9837267066739184, 5.61772556214778, 7.851406338791448, 9.94111660288977, 4.510888821267298, 3.8133026564693666, 3.8133026564693666], "visible": true, "color": "rgb(215,48,39)"}, "showlegend": false, "yaxis": "y4", "y": [0.0, 0.4575645746725381, 1.0362982250043156, 1.76840777182462, 2.6946926387326764, 3.8668458055008106, 5.350373295254071, 7.228298971728898, 9.60586656558786, 12.616508588167157, 16.429424453617624, 21.259203362145882, 27.378045794341507, 35.131287499818725, 44.95712199955631, 57.41166095533665, 72.56323493867136, 80.50148363009988, 81.0937249672499, 81.0937249672499]}, {"type": "scatter", "xaxis": "x5", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "mode": "lines+markers", "marker": {"color": "rgb(215,48,39)"}, "name": "iJO1366Anaerobic", "line": {"color": "rgb(215,48,39)"}, "legendgroup": "iJO1366\tAnaerobic\t", "error_y": {"type": "data", "array": [0.0, 0.0003094015481954928, 0.0007207706793110976, 0.0012767385148686422, 0.002037199706489536, 0.0030850947502416765, 0.004533940036307492, 0.0065377510726969965, 0.009304208927825946, 0.013112152479979216, 0.018334780635934456, 0.0254703519113228, 0.03518270596424897, 0.048354649827559486, 0.06615819274561316, 0.09014683727893766, 0.11559704111528217, 0.08216586310381406, 0.07354128373933463, 0.07354128373933463], "visible": true, "color": "rgb(215,48,39)"}, "showlegend": false, "yaxis": "y5", "y": [0.0, 0.004557856784625839, 0.010324265270061295, 0.017620804249697558, 0.026854920524351657, 0.03854293718615795, 0.05333924938158042, 0.07207337621695013, 0.0957969891799571, 0.12584361504612013, 0.16390443821983658, 0.21212456026778526, 0.27322525749472365, 0.35065927837547206, 0.448808144358673, 0.5732328507655717, 0.7248014136881373, 0.8033954585810074, 0.8086970575143629, 0.8086970575143629]}], {"yaxis6": {"domain": [0.0, 0.425], "anchor": "x6"}, "xaxis3": {"domain": [0.525, 0.7375], "title": "Time (hours)", "anchor": "y3"}, "xaxis1": {"domain": [0.0, 0.2125], "title": "Time (hours)", "anchor": "y1"}, "xaxis7": {"domain": [0.525, 0.7375], "anchor": "y7"}, "xaxis2": {"domain": [0.2625, 0.475], "title": "Time (hours)", "anchor": "y2"}, "xaxis8": {"domain": [0.7875000000000001, 1.0], "anchor": "y8"}, "yaxis7": {"domain": [0.0, 0.425], "anchor": "x7"}, "yaxis5": {"domain": [0.0, 0.425], "title": "EX_succ_e ", "anchor": "x5"}, "yaxis3": {"domain": [0.575, 1.0], "title": "EX_ac_e ", "anchor": "x3"}, "yaxis4": {"domain": [0.575, 1.0], "title": "EX_etoh_e ", "anchor": "x4"}, "yaxis1": {"domain": [0.575, 1.0], "title": "Ec_biomass_iJO1366_core_53p95M ", "anchor": "x1"}, "yaxis2": {"domain": [0.575, 1.0], "title": "EX_for_e ", "anchor": "x2"}, "xaxis4": {"domain": [0.7875000000000001, 1.0], "title": "Time (hours)", "anchor": "y4"}, "xaxis5": {"domain": [0.0, 0.2125], "title": "Time (hours)", "anchor": "y5"}, "xaxis6": {"domain": [0.2625, 0.475], "anchor": "y6"}, "yaxis8": {"domain": [0.0, 0.425], "anchor": "x8"}, "height": 800}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
 </div>
 <div class="nbinput nblast container">
 <div class="highlight-none"><div class="highlight"><pre>
@@ -954,8 +940,6 @@ This is the format of your plot grid:
 <div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span>
 </pre></div>
-</div>
-</div>
 </div>
 </div>
 </div>

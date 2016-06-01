@@ -14,7 +14,8 @@ Contents:
    setup
    gettingStarted
    importingData
-   fDAPI
+   FermAT
+
 
 
 
