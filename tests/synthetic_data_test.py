@@ -110,7 +110,7 @@ for condition in ['Aerobic','Anaerobic']:
     experiment.addReplicateTrial(replicateTrial)
 
 
-FermAT.init_db(dbName ="../default_fDAPI_db.sqlite3")
+FermAT.init_db(db_name="../default_fDAPI_db.sqlite3")
 experimentID = experiment.commitToDB(dbName = "../default_fDAPI_db.sqlite3")
 experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'file')
 # plt.show()
@@ -118,7 +118,7 @@ experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'fi
 # import matplotlib.pyplot as plt
 # # Now let's recreate the experiment object and load the data from the db
 experiment = FermAT.Experiment()
-experiment.loadFromDB(dbName = 'default_fDAPI_db.sqlite3', experimentID = 1)
+experiment.loadFromDB(dbName = '../default_fDAPI_db.sqlite3', experimentID = 1)
 experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'file')
 
 # for key in experiment.replicateExperimentObjectDict:

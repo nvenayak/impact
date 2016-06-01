@@ -25,15 +25,23 @@ from .QtGUI import *
 
 __author__ = 'Naveen Venayak'
 
-def init_db(dbName):
+def init_db(db_name):
+    """
+    Initialize the database given a database file path.
+
+    Parameters
+    ----------
+    db_name : str
+        The path of the database, or name if it is in working directory
+    """
     """
     Initiates the standard sqlite database
 
     Args:
-        dbName (str): str database name
+        db_name (str): str database name
     """
     # Initialize database
-    conn = sql.connect(dbName)
+    conn = sql.connect(db_name)
     c = conn.cursor()
 
     c.execute("""\
@@ -106,9 +114,8 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     # https://plot.ly/ipython-notebooks/color-scales/
     colors = cl.scales['9']['div']['RdYlGn']
     if len(replicateTrialList) >= 6:
-        print(len(replicateTrialList))
         colors = cl.interp(colors, len(replicateTrialList))
-    # print(colors)
+
     # Choose the subplot layout
     if len(titersToPlot) == 1:
         rows = 1
@@ -177,7 +184,6 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
             for replicate in replicateTrialList:
                 # Determine how many points should be plotted
                 required_num_pts = replicate.t[-1] * pts_per_hour
-                # print('required_num_pts: ', required_num_pts)
                 removePointFraction = int(len(replicate.t) / required_num_pts)
 
                 if removePointFraction < 1:  removePointFraction = 1

@@ -273,8 +273,8 @@ class TimeCourse(Titer):
             self.runIdentifier = timePoint.runIdentifier
         else:
             for i in range(len(self.timePointList) - 1):
-                if self.timePointList[i].runIdentifier.get_unique_ID_singleTrial() != self.timePointList[
-                            i + 1].runIdentifier.get_unique_ID_singleTrial():
+                if self.timePointList[i].runIdentifier.get_unique_for_SingleTrial() != self.timePointList[
+                            i + 1].runIdentifier.get_unique_for_SingleTrial():
                     raise Exception("runIdentifiers don't match within the timeCourse object")
 
         self.timePointList.sort(key=lambda timePoint: timePoint.t)
@@ -286,8 +286,9 @@ class TimeCourse(Titer):
 
     def calcExponentialRate(self):
         if self.runIdentifier.titerType == 'titer' or self.runIdentifier.titerType in ['substrate', 'product']:
-            print(
-                'Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py')
+            pass
+            # print(
+            #     'Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py')
             # gmod.set_param_hint('A', value=np.min(self.dataVec))
             # gmod.set_param_hint('B',value=2)
             # gmod.set_param_hint('C', value=1, vary=False)
@@ -304,7 +305,7 @@ class TimeCourse(Titer):
             result = self.curve_fit_dict[self.fit_type].calcFit(self.timeVec[0:self.deathPhaseStart],
                                                                 self.dataVec[
                                                                 0:self.deathPhaseStart])  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
-            print('Finished fit')
+            # print('Finished fit')
             # self.rate = [0, 0, 0, 0, 0, 0]
             for key in result.best_values:
                 self.rate[key] = result.best_values[key]

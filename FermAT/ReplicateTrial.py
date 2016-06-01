@@ -8,8 +8,8 @@ class ReplicateTrial(object):
     """
 
     def __init__(self):
-        self.avg = SingleTrialDataShell()
-        self.std = SingleTrialDataShell()
+        self.avg = SingleTrial()
+        self.std = SingleTrial()
         self.t = None
         self.singleTrialList = []
         self.runIdentifier = RunIdentifier()
@@ -21,6 +21,14 @@ class ReplicateTrial(object):
         return
 
     def commitToDB(self, experimentID=None, c=None):
+        """
+        Commit to the database
+
+        Parameters
+        ----------
+        experimentID : int
+        c : database cursor
+        """
         if experimentID == None:
             print('No experiment ID selected')
         else:
@@ -40,6 +48,14 @@ class ReplicateTrial(object):
             self.std.commitToDB(replicateID, c=c, stat='std')
 
     def loadFromDB(self, c=None, replicateID='all'):
+        """
+        Load from the database.
+
+        Parameters
+        ----------
+        c : sql cursor
+        replicateID : int
+        """
         if type(replicateID) is not (int):
             raise Exception(
                 'Cannot load multiple replicates in a single call to this function, load from parent instead')
@@ -94,25 +110,25 @@ class ReplicateTrial(object):
                 #             self.singleTrialList[i + 1].products[key].dataVec):
                 #         raise (Exception("length of product vector " + str(key) + " do not match"))
 
-    def addReplicateExperiment(self, newReplicateExperiment):
+    def addReplicateExperiment(self, singleTrial):
         """
         Add a SingleTrial object to this list of replicates
 
         Parameters
         ----------
-        newReplicateExperiment : :class:`~SingleTrial`
+        singleTrial : :class:`~SingleTrial`
             Add a SingleTrial
         """
 
-        self.singleTrialList.append(newReplicateExperiment)
+        self.singleTrialList.append(singleTrial)
         if len(self.singleTrialList) == 1:
             self.t = self.singleTrialList[0].t
         self.checkReplicateUniqueIDMatch()
 
-        self.runIdentifier = newReplicateExperiment.runIdentifier
+        self.runIdentifier = singleTrial.runIdentifier
         self.runIdentifier.time = None
         self.replicateIDs.append(
-            newReplicateExperiment.runIdentifier.replicate)  # TODO remove this redundant functionality
+            singleTrial.runIdentifier.replicate)  # TODO remove this redundant functionality
         self.replicateIDs.sort()
         self.calculate_statistics()
 

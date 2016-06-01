@@ -1,5 +1,6 @@
 from scipy.integrate import odeint
 import numpy as np
+import matplotlib.pyplot as plt
 
 def generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, noise=0, plot=True):
     """

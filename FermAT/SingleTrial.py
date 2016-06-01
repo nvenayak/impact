@@ -4,10 +4,12 @@ import dill as pickle
 import sqlite3 as sql
 
 from FermAT.TrialIdentifier import RunIdentifier
+from FermAT.Titer import *
 
 class SingleTrial(object):
     """
-    Container for single experiment data. This includes all data for a single strain (OD, titers, fluorescence, etc.)
+    Container for :class:`~TiterObject` to build a whole trial out of different measurements. E.g. one flask would
+    contain data for biomass (OD), products (ethanol, acetate), substrates (glucose), fluorescence (gfpmut3, mCherry)
     """
 
     def __init__(self):
@@ -16,30 +18,21 @@ class SingleTrial(object):
         self.runIdentifier = RunIdentifier()
         self.yields = dict()
 
-        self.substrate_name = None
+        self._substrate_name = None
         self.product_names = []
         self.biomass_name = None
 
     # Setters and Getters
     @property
-    def OD(self):
-        return self._OD
+    def substrate_name(self):
+        return self._substrate_name
 
-    @OD.setter
-    def OD(self, OD):
-        self._OD = OD
-        self.checkTimeVectors()
-
-    @property
-    def substrate(self):
-        return self._substrate
-
-    @substrate.setter
-    def substrate(self, substrate):
-        self._substrate = substrate
+    @substrate_name.setter
+    def substrate_name(self, substrate_name):
+        self._substrate_name = substrate_name
         self.checkTimeVectors()
         self.calcSubstrateConsumed()
-        if self._products:
+        if len(self.product_names)>0:
             self.calcYield()
 
     @property
@@ -61,6 +54,17 @@ class SingleTrial(object):
             self.calcYield()
 
     def commitToDB(self, replicateID, c=None, stat=None):
+        """
+        Commit object to database.
+
+        Parameters
+        ----------
+        replicateID : int
+            replicateID to commit to
+        c : sql cursor
+        stat : str
+            If this is a statistic (avg, std), which statistic? None is used for raw data.
+        """
         if stat is None:
             stat_prefix = ''
         else:
@@ -77,6 +81,21 @@ class SingleTrial(object):
             self.titerObjectDict[key].commitToDB(singleTrialID, c=c, stat=stat)
 
     def loadFromDB(self, singleTrialID=None, c=None, stat=None):
+        """
+        Load object from database.
+
+        Parameters
+        ----------
+        singleTrialID : int
+            The singleTrialID to laod
+        c : SQL cursor
+        stat : str
+            If this is a statistic (avg, std), which statistic? None is used for raw data.
+
+        Returns
+        -------
+
+        """
         c.execute("""SELECT yieldsDict FROM singleTrialTable WHERE singleTrialID == ?""", (singleTrialID,))
         data = c.fetchall()[0][0]
         self.yields = pickle.loads(data)
@@ -111,6 +130,9 @@ class SingleTrial(object):
             self._t = self.titerObjectDict[product].timeVec
 
     def calculate_specific_productivity(self):
+        """
+        Calculate the specific productivity (dP/dt) given :math:`dP/dt = k_{Product} * X`
+        """
         if self.biomass_name is None:
             return 'Biomass not defined'
 
@@ -119,6 +141,9 @@ class SingleTrial(object):
                                                                   self.titerObjectDict[self.biomass_name].dataVec
 
     def calculate_ODE_fit(self):
+        """
+        WIP to fit the data to ODEs
+        """
         biomass = self.titerObjectDict[self.biomass_name].dataVec
         biomass_rate = np.gradient(self.titerObjectDict[self.biomass_name].dataVec) / np.gradient(
             self.titerObjectDict[self.biomass_name].timeVec)
@@ -175,6 +200,16 @@ class SingleTrial(object):
         dFBA_profile = {key: [row[i] for row in sol] for i, key in enumerate(exchange_keys)}
 
     def calcMassBalance(self, OD_gdw=None, calculateFBACO2=False):
+        """
+        Calculate a mass balance given the supplied substrate and products
+
+        Parameters
+        ----------
+        OD_gdw : float
+            The correlation betwen OD_gdw and OD600
+        calculateFBACO2 : bool
+            Flag to calculate the CO2 using FBA (not implemented yet)
+        """
         # if calculateFBACO2:
         #     import cobra
         #
@@ -233,6 +268,15 @@ class SingleTrial(object):
                 'massBalance'      : massBalance}
 
     def addTiterObject(self, titerObject):
+        """
+        Add a :class:`~TiterObject`
+
+        Parameters
+        ----------
+        titerObject : :class:`~TiterObject`
+            A titer object to be added
+
+        """
         # Check if this titer already exists
         if titerObject.runIdentifier.titerName in self.titerObjectDict:
             raise Exception('A duplicate titer was added to the singleTiterObject: ',
@@ -268,31 +312,24 @@ class SingleTrial(object):
         self.runIdentifier.time = None
 
     def checkTimeVectors(self):
+        """
+        Ensure that the time vectors match between :class:`~Titer` objects. Functionality to deal with missing data or
+        data with different sizes is not implemented.
+        """
         checkTimeVectorsFlag = 1
         if checkTimeVectorsFlag == 1:
             t = []
             flag = 0
 
-            # print(len(self.titerObjectDict))
             for key in self.titerObjectDict:
-                # print(self.titerObjectDict[key].timeVec)
-                # print(self.titerObjectDict[key].timeVec)
                 t.append(self.titerObjectDict[key].timeVec)
-            # print(t)
-            # print('--------')
+
             for i in range(len(t) - 1):
                 if (t[i] != t[i + 1]).all():
                     index = i
                     flag = 1
-            # print(t)
-            # print(t.count(t[0]))
-            # print(len(t))
-            # if t.count(t[0]) != len(t):
-            #     flag = 1
 
             if flag == 1:
-                # print(t[index])
-                # print(t[index+1])
                 raise (Exception(
                     "Time vectors within an experiment don't match, must implement new methods to deal with this type of data (if even possible)"))
             else:
@@ -317,23 +354,23 @@ class SingleTrial(object):
             self.yields[productKey] = np.divide(self.titerObjectDict[productKey].dataVec, self.substrateConsumed)
 
 
-class SingleTrialDataShell(SingleTrial):
-    """
-    Object which overwrites the SingleTrial objects setters and getters, acts as a shell of data with the
-    same structure as SingleTrial
-    """
-
-    def __init__(self):
-        SingleTrial.__init__(self)
-
-    @SingleTrial.substrate.setter
-    def substrate(self, substrate):
-        self._substrate = substrate
-
-    @SingleTrial.OD.setter
-    def OD(self, OD):
-        self._OD = OD
-
-    @SingleTrial.products.setter
-    def products(self, products):
-        self._products = products
+# class SingleTrialDataShell(SingleTrial):
+#     """
+#     Object which overwrites the SingleTrial objects setters and getters, acts as a shell of data with the
+#     same structure as SingleTrial
+#     """
+#
+#     def __init__(self):
+#         SingleTrial.__init__(self)
+#
+#     @SingleTrial.substrate.setter
+#     def substrate(self, substrate):
+#         self._substrate = substrate
+#
+#     @SingleTrial.OD.setter
+#     def OD(self, OD):
+#         self._OD = OD
+#
+#     @SingleTrial.products.setter
+#     def products(self, products):
+#         self._products = products

@@ -6,14 +6,14 @@ class RunIdentifier(object):
     -----------
     strainID : str
         Strain name e.g. 'MG1655 del(adh,pta)'
-    identifier1 ; str, optional
-        First identifier, plasmid e.g. 'pTrc99a')
+    identifier1 : str, optional
+        First identifier, plasmid e.g. 'pTrc99a'
     identifier2 : str, optional
-        Second identifier, inducer e.g. 'IPTG')
+        Second identifier, inducer e.g. 'IPTG'
     replicate : str
         The replicate number, e.g. '1','2','3','4'
     time : float
-        The time of the data point, only relevant in TimePoint objects
+        The time of the data point, only relevant in :class:`~TimePoint` objects
     titerName : str
         The name of the titer, e.g. 'OD600','Lactate','Ethanol','Glucose'
     titerType : str
@@ -48,8 +48,10 @@ class RunIdentifier(object):
         """
         Used to parse a CSV runIdentifier
 
-        Parameters:
-            csv_RunIdentifier: a comma-separated string containing a RunIdentifier in standard form - strainID,identifier1,identifier2,replicate
+        Parameters
+        ----------
+        csv_RunIdentifier : str 
+            a comma-separated string containing a RunIdentifier in standard form - strainID,identifier1,identifier2,replicate
         """
         if type(csv_RunIdentifier) is str:
             tempParsedIdentifier = csv_RunIdentifier.split(',')
@@ -66,12 +68,21 @@ class RunIdentifier(object):
                     self.replicate = int(tempParsedIdentifier[3])
                 except:
                     print("Couldn't parse replicate from ", tempParsedIdentifier)
+            if len(tempParsedIdentifier) > 4:
+                self.time = float(tempParsedIdentifier[4])
 
-    def get_unique_ID_singleTrial(self):
+    def get_unique_for_SingleTrial(self):
         return self.strainID + self.identifier1 + self.identifier1 + str(
             self.replicate) + self.titerName + self.titerType
 
-    def return_unique_ID(self):
+    def get_unique_id_for_ReplicateTrial(self):
+        """
+        Get the unique information for a single replicate
+        Returns
+        -------
+        unique_id : str
+            Unique id defining a replicate.
+        """
         return self.strainID + self.identifier1 + self.identifier2
 
         # def return_unique_experiment_id(self):

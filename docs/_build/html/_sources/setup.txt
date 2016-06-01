@@ -1,26 +1,20 @@
 Quick Start Guide
 **********************************
-This package is dependent on scipy, numpy, PyQt4, lmfit and pyexcel. It has only been tested on python 3.4.
+Download a `Python 3 installation <https://www.python.org/downloads/>`_ for your platform, 
+or you can use `Anaconda <https://www.continuum.io/downloads>`_. Anaconda has many of the dependencies pre-installed, and is probably 
+the easier option.
 
-An anaconda3 base installation is recommended and available here: https://www.continuum.io/downloads
+It has the following dependencies:
+::
 
-Following a successful Anaconda installation, the following commands should be executed in the console:
+    install_requires=['pyexcel_xlsx','lmfit==0.8.3','dill','numpy','scipy',
+                      'datetime','plotly','matplotlib','colorlover','cobra','django']
 
-Curve fitting toolbox used in placed of scipy.optimize:
+You can install the package in two ways:
 
-- pip install lmfit
+1.	'python setup.py install' which will install into your site-packages directory, 
+2.	'python setup.py develop' which will install into your current directory.
 
-Package to allow easy import of xls files (which is more convenient than using csv)
-
-- pip install pyexcel_xlsx
-
-Package to allow serialization of functions which are not explicitely declared
-
-- pip install dill
-
-
-The following should be executed in the root fDAPI directory (which contains setup.py), and should install the above packages if not already installed.
-
-- setup.py install
-
-To verify the installation was successful, run the testProjectDB.py file, you should get an output indicating 96 titer objects are parsed and a GUI should load.
+I would install in develop mode if you plan on updating frequently. If you install it in the local directory, when you update the package contents (e.g. via git), python will use the
+updated package automatically. If you install it in site-packages, you will need to run `pip setup.py install` before 
+python will use the updated version.

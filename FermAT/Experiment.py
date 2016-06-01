@@ -1,5 +1,15 @@
-from FermAT.TrialIdentifier import RunIdentifier
+from .TimePoint import *
+from .Titer import *
+from .TrialIdentifier import *
+from .SingleTrial import *
+from .ReplicateTrial import *
+
 import sqlite3 as sql
+
+import time
+import copy
+from pyexcel_xlsx import get_data
+import matplotlib.pyplot as plt
 
 class Experiment(object):
     colorMap = 'Set2'
@@ -239,6 +249,51 @@ class Experiment(object):
                                       data['titers'][i][titerNameColumn[key]]))
 
 
+                    else:
+                        skippedLines += 1
+                else:
+                    skippedLines += 1
+
+            tf = time.time()
+            print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timePointList), tf - t0))
+            print("Number of lines skipped: ", skippedLines)
+            self.parseTimePointCollection(self.timePointList)
+
+        if dataFormat == 'KN_titers':
+            # Parameters
+            row_with_titer_names = 0
+            first_data_row = 1
+
+            substrateName = 'Glucose'
+            titerDataSheetName = "titers"
+
+            if 'titers' not in data.keys():
+                raise Exception("No sheet named 'titers' found")
+
+            # Initialize variables
+            titerNameColumn = dict()
+            for i in range(1, len(data[titerDataSheetName][row_with_titer_names])):
+                titerNameColumn[data[titerDataSheetName][2][i]] = i
+
+            tempTimePointCollection = dict()
+            for names in titerNameColumn:
+                tempTimePointCollection[names] = []
+
+            timePointCollection = []
+            skippedLines = 0
+
+
+            for i in range(first_data_row, len(data['titers'])):
+                if type(data['titers'][i][0]) is str:
+                    temp_run_identifier_object = RunIdentifier()
+                    temp_run_identifier_object.parse_RunIdentifier_from_csv(data['titers'][i][0])
+
+                    for key in tempTimePointCollection:
+                        temp_run_identifier_object.titerName = key
+
+                        self.timePointList.append(
+                            TimePoint(copy.copy(temp_run_identifier_object), key, temp_run_identifier_object.t,
+                                      data['titers'][i][titerNameColumn[key]]))
                     else:
                         skippedLines += 1
                 else:
@@ -818,5 +873,5 @@ class Experiment(object):
             strainToPlot = self.getAllStrains()[0]
         for singleExperiment in self.replicateExperimentObjectDict[strainToPlot[0]].singleTrialList:
             plt.plot(singleExperiment.OD.timeVec, singleExperiment.OD.dataVec)
-        plt.ylabel(singleExperiment.runIdentifier.return_unique_ID())
+        plt.ylabel(singleExperiment.runIdentifier.get_unique_id_for_ReplicateTrial())
         # plt.tight_layout()
