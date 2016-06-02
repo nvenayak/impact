@@ -10,6 +10,12 @@ class TimePoint(object):
         self.units = {'t'    : 'h',
                       'titer': 'g'}
 
-    def getUniqueTimePointID(self):
+    def get_unique_timepoint_id(self):
+        runID = self.runIdentifier
+        # print(runID.strainID)
+        # print(runID.identifier1)
+        # print(runID.identifier2)
+        # print(str(runID.replicate))
+        # print(runID.titerName)
         return self.runIdentifier.strainID + self.runIdentifier.identifier1 + self.runIdentifier.identifier2 + str(
             self.runIdentifier.replicate) + self.runIdentifier.titerName

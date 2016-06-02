@@ -27,6 +27,10 @@ class Experiment(object):
         else:
             self.info = dict()
 
+    def __iadd__(self, experiment):
+        combined_experiment = Experiment()
+
+
     def commitToDB(self, dbName):
         conn = sql.connect(dbName)
         c = conn.cursor()
@@ -39,7 +43,7 @@ class Experiment(object):
         c.execute("SELECT MAX(experimentID) FROM experimentTable")
         experimentID = c.fetchall()[0][0]
         for key in self.replicateExperimentObjectDict:
-            self.replicateExperimentObjectDict[key].commitToDB(experimentID, c=c)
+            self.replicateExperimentObjectDict[key].db_commit(experimentID, c=c)
 
         conn.commit()
         c.close()
@@ -62,7 +66,7 @@ class Experiment(object):
             self.replicateExperimentObjectDict[row[0] + row[1] + row[2]].runIdentifier.identifier1 = row[1]
             self.replicateExperimentObjectDict[row[0] + row[1] + row[2]].runIdentifier.identifier2 = row[2]
             self.replicateExperimentObjectDict[row[0] + row[1] + row[2]].runIdentifier.identifier3 = row[3]
-            self.replicateExperimentObjectDict[row[0] + row[1] + row[2]].loadFromDB(c=c, replicateID=row[4])
+            self.replicateExperimentObjectDict[row[0] + row[1] + row[2]].db_load(c=c, replicateID=row[4])
 
     def getAllStrains_django(self, dbName, experimentID):
         """
@@ -109,7 +113,7 @@ class Experiment(object):
 
         return titersToPlot
 
-    def parseRawData(self, dataFormat, fileName=None, data=None):
+    def parseRawData(self, dataFormat, fileName=None, data=None, stage_indices = None):
         t0 = time.time()
 
         if data == None:
@@ -264,7 +268,7 @@ class Experiment(object):
             row_with_titer_names = 0
             first_data_row = 1
 
-            substrateName = 'Glucose'
+            substrateName = 'glucose'
             titerDataSheetName = "titers"
 
             if 'titers' not in data.keys():
@@ -273,7 +277,7 @@ class Experiment(object):
             # Initialize variables
             titerNameColumn = dict()
             for i in range(1, len(data[titerDataSheetName][row_with_titer_names])):
-                titerNameColumn[data[titerDataSheetName][2][i]] = i
+                titerNameColumn[data[titerDataSheetName][row_with_titer_names][i]] = i
 
             tempTimePointCollection = dict()
             for names in titerNameColumn:
@@ -284,50 +288,59 @@ class Experiment(object):
 
 
             for i in range(first_data_row, len(data['titers'])):
+                # print(data['titers'][i])
                 if type(data['titers'][i][0]) is str:
                     temp_run_identifier_object = RunIdentifier()
                     temp_run_identifier_object.parse_RunIdentifier_from_csv(data['titers'][i][0])
 
+
                     for key in tempTimePointCollection:
                         temp_run_identifier_object.titerName = key
+                        if key == substrateName:
+                            temp_run_identifier_object.titerType = 'substrate'
+                        else:
+                            temp_run_identifier_object.titerType = 'product'
+
+
 
                         self.timePointList.append(
-                            TimePoint(copy.copy(temp_run_identifier_object), key, temp_run_identifier_object.t,
+                            TimePoint(copy.copy(temp_run_identifier_object), key, temp_run_identifier_object.time,
                                       data['titers'][i][titerNameColumn[key]]))
-                    else:
-                        skippedLines += 1
+
                 else:
                     skippedLines += 1
 
             tf = time.time()
             print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timePointList), tf - t0))
             print("Number of lines skipped: ", skippedLines)
-            self.parseTimePointCollection(self.timePointList)
+            self.parseTimePointCollection(self.timePointList, stage_indices = stage_indices)
 
-    def parseTimePointCollection(self, timePointList):
+    def parseTimePointCollection(self, timePointList, stage_indices = None):
         print('Parsing time point list...')
         t0 = time.time()
         for timePoint in timePointList:
             flag = 0
-            if timePoint.getUniqueTimePointID() in self.titerObjectDict:
-                self.titerObjectDict[timePoint.getUniqueTimePointID()].addTimePoint(timePoint)
+            if timePoint.get_unique_timepoint_id() in self.titerObjectDict:
+                self.titerObjectDict[timePoint.get_unique_timepoint_id()].addTimePoint(timePoint)
             else:
-                self.titerObjectDict[timePoint.getUniqueTimePointID()] = TimeCourse()
-                self.titerObjectDict[timePoint.getUniqueTimePointID()].addTimePoint(timePoint)
+                self.titerObjectDict[timePoint.get_unique_timepoint_id()] = TimeCourse()
+                self.titerObjectDict[timePoint.get_unique_timepoint_id()].addTimePoint(timePoint)
         tf = time.time()
         print("Parsed %i titer objects in %0.1fs\n" % (len(self.titerObjectDict), (tf - t0)))
-        self.parseTiterObjectCollection(self.titerObjectDict)
+        self.parseTiterObjectCollection(self.titerObjectDict, stage_indices = stage_indices)
 
-    def parseTiterObjectCollection(self, titerObjectDict):
+    def parseTiterObjectCollection(self, titerObjectDict, stage_indices = None):
         print('Parsing titer object list...')
         t0 = time.time()
         for titerObjectDictKey in titerObjectDict:
             if titerObjectDict[titerObjectDictKey].getTimeCourseID() in self.singleExperimentObjectDict:
-                self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].addTiterObject(
+                self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].add_titer(
                     titerObjectDict[titerObjectDictKey])
             else:
                 self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()] = SingleTrial()
-                self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].addTiterObject(
+                if stage_indices is not None:
+                    self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].stages = stages
+                self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].add_titer(
                     titerObjectDict[titerObjectDictKey])
         tf = time.time()
         print("Parsed %i titer objects in %0.1fms\n" % (len(self.singleExperimentObjectDict), (tf - t0) * 1000))
@@ -339,21 +352,21 @@ class Experiment(object):
         for key in singleExperimentObjectList:
             flag = 0
             for key2 in self.replicateExperimentObjectDict:
-                if key2 == singleExperimentObjectList[key].getUniqueReplicateID():
-                    self.replicateExperimentObjectDict[key2].addReplicateExperiment(singleExperimentObjectList[key])
+                if key2 == singleExperimentObjectList[key].get_unique_replicate_id():
+                    self.replicateExperimentObjectDict[key2].add_replicate(singleExperimentObjectList[key])
                     flag = 1
                     break
             if flag == 0:
                 self.replicateExperimentObjectDict[
-                    singleExperimentObjectList[key].getUniqueReplicateID()] = ReplicateTrial()
+                    singleExperimentObjectList[key].get_unique_replicate_id()] = ReplicateTrial()
                 self.replicateExperimentObjectDict[
-                    singleExperimentObjectList[key].getUniqueReplicateID()].addReplicateExperiment(
+                    singleExperimentObjectList[key].get_unique_replicate_id()].add_replicate(
                     singleExperimentObjectList[key])
         tf = time.time()
         print("Parsed %i titer objects in %0.1fs\n" % (len(self.replicateExperimentObjectDict), (tf - t0)))
 
     def addReplicateTrial(self, replicateTrial):
-        self.replicateExperimentObjectDict[replicateTrial.singleTrialList[0].getUniqueReplicateID()] = replicateTrial
+        self.replicateExperimentObjectDict[replicateTrial.singleTrialList[0].get_unique_replicate_id()] = replicateTrial
 
     def pickle(self, fileName):
         pickle.dump([self.timePointList, self.titerObjectDict, self.singleExperimentObjectDict,
@@ -464,7 +477,7 @@ class Experiment(object):
         #             # if showGrowthRates==True:
         #             #     plt.text(scaledTime[-1]+0.5,
         #             #              self.replicateExperimentObjectDict[key].avg.OD.returnCurveFitPoints(np.linspace(min(self.replicateExperimentObjectDict[key].t),max(self.replicateExperimentObjectDict[key].t),50))[-1],
-        #             #              '$\mu$ = '+'{:.2f}'.format(self.replicateExperimentObjectDict[key].avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(self.replicateExperimentObjectDict[key].std.OD.rate[1])+', n='+str(len(self.replicateExperimentObjectDict[key].replicateIDs)-len(self.replicateExperimentObjectDict[key].badReplicates)),
+        #             #              '$\mu$ = '+'{:.2f}'.format(self.replicateExperimentObjectDict[key].avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(self.replicateExperimentObjectDict[key].std.OD.rate[1])+', n='+str(len(self.replicateExperimentObjectDict[key].replicate_ids)-len(self.replicateExperimentObjectDict[key].bad_replicates)),
         #             #              verticalalignment='center')
         #             # ylabel = 'OD$_{600}$'
         #         else:

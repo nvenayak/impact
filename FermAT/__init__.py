@@ -78,7 +78,7 @@ def init_db(db_name):
 
 def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[],
                                   shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True, dataType='raw',
-                                  output_type='html'):
+                                  output_type='html', stage_indices = None):
     # Load plotly - will eventually move this to head
     from plotly import tools
     from plotly.offline import plot
@@ -103,16 +103,22 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         replicateTrialList = []
         for strain in strainsToPlot:
             tempReplicateTrial = ReplicateTrial()
-            tempReplicateTrial.loadFromDB(c=c, replicateID=strain)
+            tempReplicateTrial.db_load(c=c, replicateID=strain)
             replicateTrialList.append(tempReplicateTrial)
         conn.close()
+
+    newReplicateTrialList = []
+    for replicateTrial in replicateTrialList:
+        replicateTrial.calculate_stages(stage_indices=[[0, 4], [5, 8]])
+        newReplicateTrialList.append(replicateTrial.stages[1])
+    replicateTrialList = newReplicateTrialList
 
     # Plot all product titers if none specified
     if titersToPlot == []:
         raise Exception('No titers defined to plot')
     print(len(replicateTrialList))
     # https://plot.ly/ipython-notebooks/color-scales/
-    colors = cl.scales['9']['div']['RdYlGn']
+    colors = cl.scales['8']['qual']['Dark2']
     if len(replicateTrialList) >= 6:
         colors = cl.interp(colors, len(replicateTrialList))
 
@@ -138,39 +144,59 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         pltNum += 1
 
         # Plotting yield, titer or productivity?
-        yieldFlag = False
+        yieldFlag = True
         titerFlag = True
         productivityFlag = False
-        endpoint_flag = False
-        sortBy = 'identifier1'
+        endpoint_flag = True
+        sortBy = 'strainID'
 
         trace = []
         colorIndex = 0
 
         if endpoint_flag:
-            uniques = list(
-                set([getattr(replicate.runIdentifier, sortBy) for replicate in replicateTrialList]))
+            uniques = list(set(
+                [getattr(replicate.runIdentifier, sortBy) for replicate in replicateTrialList]
+            ))
             uniques.sort()
             print(uniques)
-            for unique in uniques:
-                trace = go.Bar(x=[unique for unique in uniques],
-                               y=[replicate.avg.titerObjectDict[product].dataVec[-1] for replicate in replicateTrialList
-                                  if getattr(replicate.runIdentifier, sortBy) == unique],
+            print(colors)
+            colors = cl.scales['8']['qual']['Dark2']
+            if len(replicateTrialList) >= 6:
+                colors = cl.interp(colors, len(uniques))
+
+            for i, unique in enumerate(uniques):
+                x = unique
+                if yieldFlag:
+                    y_avg = [replicate.avg.yields[product] for replicate in
+                             replicateTrialList
+                             if getattr(replicate.runIdentifier, sortBy) == unique]
+                    print(y_avg)
+                    y_std = [replicate.std.yields[product] for replicate in
+                             replicateTrialList
+                             if getattr(replicate.runIdentifier, sortBy) == unique]
+                else:
+                    y_avg = [replicate.avg.titerObjectDict[product].dataVec for replicate in replicateTrialList
+                             if getattr(replicate.runIdentifier, sortBy) == unique]
+                    y_std = [replicate.std.titerObjectDict[product].dataVec for replicate in replicateTrialList
+                             if getattr(replicate.runIdentifier, sortBy) == unique]
+
+                print('x:',x)
+                print('y[-1]',[y[-1] for y in y_avg])
+                trace = go.Bar(x= x,
+                               y = [y[-1] for y in y_avg],
                                error_y={
                                    'type'   : 'data',
-                                   'array'  : [replicate.std.titerObjectDict[product].dataVec[-1] for replicate in
-                                               replicateTrialList
-                                               if getattr(replicate.runIdentifier, sortBy) == unique],
+                                   'array'  : [y[-1] for y in y_std],
                                    'visible': True,
-                                   'color'  : colors},
-                               marker={'color': colors},
+                                   'color'  : colors[i]},
+                               marker={'color': colors[i]},
                                showlegend=showlegend_flag,
                                legendgroup=[replicate.runIdentifier.strainID + '\t' +
                                             replicate.runIdentifier.identifier1 + '\t' +
-                                            replicate.runIdentifier.identifier2 for replicate in replicateTrialList],
+                                            replicate.runIdentifier.identifier2 for replicate in replicateTrialList if getattr(replicate.runIdentifier, sortBy) == unique],
                                name=[
                                    replicate.runIdentifier.strainID + replicate.runIdentifier.identifier1 + replicate.runIdentifier.identifier2
-                                   for replicate in replicateTrialList]
+                                   for replicate in replicateTrialList if getattr(replicate.runIdentifier, sortBy) == unique]
                                )
                 if pltNum > 4:
                     row = 2
@@ -179,7 +205,11 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     row = 1
                     col = pltNum
                 fig.append_trace(trace, row, col)
+            fig['layout'].update(barmode='group')
+            fig['layout']['xaxis' + str(pltNum)].update(title='Time (hours)')
+            fig['layout']['yaxis' + str(pltNum)].update(title=product)
             showlegend_flag = False
+
         else:
             for replicate in replicateTrialList:
                 # Determine how many points should be plotted
@@ -293,7 +323,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     #                                    replicate.runIdentifier.identifier1 + '\t' +
                     #                                    replicate.runIdentifier.identifier2,
                     #                        name=replicate.runIdentifier.strainID + replicate.runIdentifier.identifier1 + replicate.runIdentifier.identifier2)  # ,
-                    #     #                    label = '$\mu$ = '+'{:.2f}'.format(replicate.avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicate.std.OD.rate[1])+', n='+str(len(replicate.replicateIDs)-len(replicate.badReplicates)))
+                    #     #                    label = '$\mu$ = '+'{:.2f}'.format(replicate.avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicate.std.OD.rate[1])+', n='+str(len(replicate.replicate_ids)-len(replicate.bad_replicates)))
                     #     dataLabel = 'Titer g/L'
                     # Append the plot if it was created
                     if pltNum > 4:
@@ -314,7 +344,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     if output_type == 'html':
         return plot(fig, show_link=False, output_type='div')
     elif output_type == 'file':
-        plot(fig, show_link=False)
+        plot(fig, show_link=True)
     elif output_type == 'iPython':
         from plotly.offline import iplot
         iplot(fig, show_link=False)

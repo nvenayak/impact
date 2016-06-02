@@ -180,7 +180,7 @@ class Project(object):
         # Determine number of selected strains and create a string of ?s for DB query
         replicateIDs = [selectedStrain['replicateID'] for selectedStrain in selectedStrainsInfo]
         # c.execute("""SELECT singleTrialID_avg FROM singleTrialTable_avg
-        # WHERE replicateID IN ("""+'?,'*len(replicateIDs)-1+"""?))""",tuple(replicateIDs))
+        # WHERE replicateID IN ("""+'?,'*len(replicate_ids)-1+"""?))""",tuple(replicate_ids))
         # for row in c.fetchall():
 
 

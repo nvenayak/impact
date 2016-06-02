@@ -13,14 +13,34 @@ class ReplicateTrial(object):
         self.t = None
         self.singleTrialList = []
         self.runIdentifier = RunIdentifier()
-        self.badReplicates = []
-        self.replicateIDs = []
+        self.bad_replicates = []
+        self.replicate_ids = []
         # self.checkReplicateUniqueIDMatch()
+
+        self.stages = []
+
+    def calculate_stages(self, stage_indices = None):
+        if stage_indices is None:
+            raise Exception('No stage_indices provided')
+
+        self.stages = []
+        self.stage_indices = stage_indices
+
+        for stage_bounds in stage_indices:
+            self.stages.append(self.create_stage(stage_bounds))
+
+
+    def create_stage(self, stage_bounds):
+        stage = ReplicateTrial()
+        for singleTrial in self.singleTrialList:
+            stage.add_replicate(singleTrial.create_stage(stage_bounds))
+
+        return stage
 
     def summary(self):
         return
 
-    def commitToDB(self, experimentID=None, c=None):
+    def db_commit(self, experimentID=None, c=None):
         """
         Commit to the database
 
@@ -43,11 +63,11 @@ class ReplicateTrial(object):
             replicateID = c.fetchall()[0][0]
 
             for singleExperiment in self.singleTrialList:
-                singleExperiment.commitToDB(replicateID, c=c)
-            self.avg.commitToDB(replicateID, c=c, stat='avg')
-            self.std.commitToDB(replicateID, c=c, stat='std')
+                singleExperiment.db_commit(replicateID, c=c)
+            self.avg.db_commit(replicateID, c=c, stat='avg')
+            self.std.db_commit(replicateID, c=c, stat='std')
 
-    def loadFromDB(self, c=None, replicateID='all'):
+    def db_load(self, c=None, replicateID='all'):
         """
         Load from the database.
 
@@ -73,23 +93,23 @@ class ReplicateTrial(object):
             self.singleTrialList.append(SingleTrial())
             self.singleTrialList[-1].yields = pickle.loads(row[3])
             self.singleTrialList[-1].runIdentifier.replicate = row[2]
-            self.singleTrialList[-1].loadFromDB(c=c, singleTrialID=row[0])
+            self.singleTrialList[-1].db_load(c=c, singleTrialID=row[0])
 
         for stat in ['_avg', '_std']:
             c.execute(
                 """SELECT singleTrialID""" + stat + """, replicateID, replicate, yieldsDict FROM singleTrialTable""" + stat + """ WHERE replicateID = ?""",
                 (replicateID,))
             row = c.fetchall()[0]
-            getattr(self, stat.replace('_', '')).loadFromDB(c=c, singleTrialID=row[0], stat=stat.replace('_', ''))
+            getattr(self, stat.replace('_', '')).db_load(c=c, singleTrialID=row[0], stat=stat.replace('_', ''))
 
         self.t = self.singleTrialList[0].t
 
-    def checkReplicateUniqueIDMatch(self):
+    def check_replicate_unique_id_match(self):
         """
         Ensures that the uniqueIDs match for all te replicate experiments
         """
         for i in range(len(self.singleTrialList) - 1):
-            if self.singleTrialList[i].getUniqueReplicateID() != self.singleTrialList[i + 1].getUniqueReplicateID():
+            if self.singleTrialList[i].get_unique_replicate_id() != self.singleTrialList[i + 1].get_unique_replicate_id():
                 raise Exception(
                     "the replicates do not have the same uniqueID, either the uniqueID includes too much information or the strains don't match")
 
@@ -110,7 +130,7 @@ class ReplicateTrial(object):
                 #             self.singleTrialList[i + 1].products[key].dataVec):
                 #         raise (Exception("length of product vector " + str(key) + " do not match"))
 
-    def addReplicateExperiment(self, singleTrial):
+    def add_replicate(self, singleTrial):
         """
         Add a SingleTrial object to this list of replicates
 
@@ -123,13 +143,23 @@ class ReplicateTrial(object):
         self.singleTrialList.append(singleTrial)
         if len(self.singleTrialList) == 1:
             self.t = self.singleTrialList[0].t
-        self.checkReplicateUniqueIDMatch()
+            self.stage_indices = self.singleTrialList[0].stage_indices
+
+
+            for stat in ['avg', 'std']:
+                print(self.singleTrialList[0].product_names)
+                getattr(self, stat)._substrate_name = self.singleTrialList[0].substrate_name
+                getattr(self, stat).product_names = self.singleTrialList[0].product_names
+                getattr(self, stat).biomass_name = self.singleTrialList[0].biomass_name
+                # getattr(self, stat).stages = self.singleTrialList[0].stages
+
+        self.check_replicate_unique_id_match()
 
         self.runIdentifier = singleTrial.runIdentifier
         self.runIdentifier.time = None
-        self.replicateIDs.append(
+        self.replicate_ids.append(
             singleTrial.runIdentifier.replicate)  # TODO remove this redundant functionality
-        self.replicateIDs.sort()
+        self.replicate_ids.sort()
         self.calculate_statistics()
 
     def calculate_statistics(self):
@@ -144,7 +174,7 @@ class ReplicateTrial(object):
                 getattr(self, stat).titerObjectDict[key].dataVec = calc(
                     [singleExperimentObject.titerObjectDict[key].dataVec for singleExperimentObject in
                      self.singleTrialList if
-                     singleExperimentObject.runIdentifier.replicate not in self.badReplicates], axis=0)
+                     singleExperimentObject.runIdentifier.replicate not in self.bad_replicates], axis=0)
                 if None not in [singleExperimentObject.titerObjectDict[key].rate for singleExperimentObject in
                                 self.singleTrialList]:
                     temp = dict()
@@ -152,7 +182,7 @@ class ReplicateTrial(object):
                         temp[param] = calc(
                             [singleExperimentObject.titerObjectDict[key].rate[param] for singleExperimentObject in
                              self.singleTrialList if
-                             singleExperimentObject.runIdentifier.replicate not in self.badReplicates])
+                             singleExperimentObject.runIdentifier.replicate not in self.bad_replicates])
                     getattr(self, stat).titerObjectDict[key].rate = temp
                 getattr(self, stat).titerObjectDict[key].runIdentifier = self.singleTrialList[0].titerObjectDict[
                     key].runIdentifier

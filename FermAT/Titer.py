@@ -130,6 +130,9 @@ class TimeCourse(Titer):
         # Declare some standard curve fitting objects here
         self.curve_fit_dict = dict()
 
+        self.stages = []
+        self._stage_indices = None
+
         keys = ['name', 'guess', 'min', 'max', 'vary']
 
         def growthEquation_generalized_logistic(t, A, k, C, Q, K, nu): return A + (
@@ -181,6 +184,15 @@ class TimeCourse(Titer):
         )
         # Declare the default curve fit
         self.fit_type = 'growthEquation_generalized_logistic'
+    @property
+    def stage_indices(self):
+        return self._stage_indices
+
+    @stage_indices.setter
+    def stage_indices(self, stage_indices):
+        self._stage_indices = stage_indices
+        for stage_bounds in stage_indices:
+            self.stages.append(self.create_stage(stage_bounds))
 
     @property
     def runIdentifier(self):
@@ -253,7 +265,7 @@ class TimeCourse(Titer):
         if len(self.dataVec) > 5:
             self.calcExponentialRate()
 
-    def commitToDB(self, singleTrialID, c=None, stat=None):
+    def db_commit(self, singleTrialID, c=None, stat=None):
         if stat is None:
             stat_prefix = ''
         else:
@@ -263,6 +275,18 @@ class TimeCourse(Titer):
             (singleTrialID, self.runIdentifier.titerType, self.runIdentifier.titerName, self.timeVec.dumps(),
              self.dataVec.dumps(), pickle.dumps(self.rate))
         )
+
+    def create_stage(self, stage_bounds):
+        stage = TimeCourse()
+        stage.runIdentifier = self.runIdentifier
+        stage.timeVec = self.timeVec[stage_bounds[0]:stage_bounds[1]]
+        stage._dataVec = self.dataVec[stage_bounds[0]:stage_bounds[1]]
+        if len(self.gradient) > 0:
+            stage.gradient = self.gradient[stage_bounds[0]:stage_bounds[1]]
+        if len(self.specific_productivity) > 0:
+            stage.specific_productivity = self.specific_productivity[stage_bounds[0]:stage_bounds[1]]
+
+        return stage
 
     def returnCurveFitPoints(self, t):
         return self.curve_fit_dict[self.fit_type].growthEquation(np.array(t), **self.rate)
@@ -317,6 +341,10 @@ class TimeCourse(Titer):
         return [[param['name'], self.rate[i]] for i, param in
                 enumerate(self.curve_fit_dict[self.fit_type].paramList)]
 
+
+class TimeCourseStage(TimeCourse):
+    def __init__(self):
+        TimeCourse.__init__()
 
 class TimeCourseShell(TimeCourse):
     """

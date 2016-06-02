@@ -22,7 +22,22 @@ class SingleTrial(object):
         self.product_names = []
         self.biomass_name = None
 
+        self.stage_indices = None
+        self.stage_list = None
+
     # Setters and Getters
+    @property
+    def stages(self):
+        return self._stages
+
+    @stages.setter
+    def stages(self, stages):
+        self._stages = stages
+
+        for stage in stages:
+            stage = self.create_stage(stage)
+            self.stage_list.append(stage)
+
     @property
     def substrate_name(self):
         return self._substrate_name
@@ -30,10 +45,10 @@ class SingleTrial(object):
     @substrate_name.setter
     def substrate_name(self, substrate_name):
         self._substrate_name = substrate_name
-        self.checkTimeVectors()
-        self.calcSubstrateConsumed()
+        self.check_time_vectors_match()
+        self.calculate_substrate_consumed()
         if len(self.product_names)>0:
-            self.calcYield()
+            self.calculate_yield()
 
     @property
     def t(self):
@@ -51,9 +66,18 @@ class SingleTrial(object):
     def products(self, products):
         self._products = products
         if self._substrate:
-            self.calcYield()
+            self.calculate_yield()
 
-    def commitToDB(self, replicateID, c=None, stat=None):
+    def create_stage(self, stage_bounds):
+        stage = SingleTrial()
+        for titer in self.titerObjectDict:
+            stage.add_titer(self.titerObjectDict[titer].create_stage(stage_bounds))
+        stage.calculate_yield()
+
+        return stage
+
+
+    def db_commit(self, replicateID, c=None, stat=None):
         """
         Commit object to database.
 
@@ -78,9 +102,9 @@ class SingleTrial(object):
         singleTrialID = c.fetchall()[0][0]
 
         for key in self.titerObjectDict:
-            self.titerObjectDict[key].commitToDB(singleTrialID, c=c, stat=stat)
+            self.titerObjectDict[key].db_commit(singleTrialID, c=c, stat=stat)
 
-    def loadFromDB(self, singleTrialID=None, c=None, stat=None):
+    def db_load(self, singleTrialID=None, c=None, stat=None):
         """
         Load object from database.
 
@@ -199,7 +223,7 @@ class SingleTrial(object):
 
         dFBA_profile = {key: [row[i] for row in sol] for i, key in enumerate(exchange_keys)}
 
-    def calcMassBalance(self, OD_gdw=None, calculateFBACO2=False):
+    def calculate_mass_balance(self, OD_gdw=None, calculateFBACO2=False):
         """
         Calculate a mass balance given the supplied substrate and products
 
@@ -267,7 +291,7 @@ class SingleTrial(object):
                 'biomass_gdw'      : biomass_gdw,
                 'massBalance'      : massBalance}
 
-    def addTiterObject(self, titerObject):
+    def add_titer(self, titerObject):
         """
         Add a :class:`~TiterObject`
 
@@ -277,6 +301,7 @@ class SingleTrial(object):
             A titer object to be added
 
         """
+
         # Check if this titer already exists
         if titerObject.runIdentifier.titerName in self.titerObjectDict:
             raise Exception('A duplicate titer was added to the singleTiterObject: ',
@@ -290,7 +315,7 @@ class SingleTrial(object):
             else:
                 raise Exception('No support for Multiple substrates: ', self.substrate_name, ' ',
                                 titerObject.runIdentifier.titerName)
-            self.calcSubstrateConsumed()
+            self.calculate_substrate_consumed()
 
         if titerObject.runIdentifier.titerType == 'biomass' or titerObject.runIdentifier.titerType == 'OD':
             if self.biomass_name is None:
@@ -302,16 +327,19 @@ class SingleTrial(object):
         if titerObject.runIdentifier.titerType == 'product':
             self.product_names.append(titerObject.runIdentifier.titerName)
 
-        if 'substrate' in [self.titerObjectDict[key].runIdentifier.titerType for key in self.titerObjectDict] and \
-                        'product' in [self.titerObjectDict[key].runIdentifier.titerType for key in
-                                      self.titerObjectDict]:
-            self.calcYield()
+            if self.substrate_name is not None:
+                self.calculate_yield()
 
-        self.checkTimeVectors()
+        # if 'substrate' in [self.titerObjectDict[key].runIdentifier.titerType for key in self.titerObjectDict] and \
+        #                 'product' in [self.titerObjectDict[key].runIdentifier.titerType for key in
+        #                               self.titerObjectDict]:
+        #     self.calcYield()
+
+        self.check_time_vectors_match()
         self.runIdentifier = titerObject.runIdentifier
         self.runIdentifier.time = None
 
-    def checkTimeVectors(self):
+    def check_time_vectors_match(self):
         """
         Ensure that the time vectors match between :class:`~Titer` objects. Functionality to deal with missing data or
         data with different sizes is not implemented.
@@ -335,24 +363,72 @@ class SingleTrial(object):
             else:
                 self._t = t[0]
 
-    def getUniqueTimePointID(self):
+    def get_unique_timepoint_id(self):
         return self.substrate.runIdentifier.strainID + self.substrate.runIdentifier.identifier1 + self.substrate.runIdentifier.identifier2 + str(
             self.substrate.runIdentifier.replicate)
 
-    def getUniqueReplicateID(self):
+    def get_unique_replicate_id(self):
         return self.titerObjectDict[list(self.titerObjectDict.keys())[0]].getReplicateID()
 
-    def calcSubstrateConsumed(self):
-        self.substrateConsumed = np.array(
-            [(self.titerObjectDict[self.substrate_name].dataVec[0] - dataPoint) for dataPoint in
-             self.titerObjectDict[self.substrate_name].dataVec])
+    def get_time(self, stage = None):
+        if stage is not None:
+            return self.t[self.stages[stage][0]:self.stages[stage][1]]
+        else:
+            return self.t
 
-    def calcYield(self):
-        self.yields = dict()
-        for productKey in [key for key in self.titerObjectDict if
-                           self.titerObjectDict[key].runIdentifier.titerType == 'product']:
-            self.yields[productKey] = np.divide(self.titerObjectDict[productKey].dataVec, self.substrateConsumed)
+    def get_yields(self, stage = None):
+        if stage is not None:
+            self.calculate_substrate_consumed(stage = stage)
+            self.calculate_yield(stage = stage)
+            # print(stage)
+            # print(self.yields)
+            return self.yields
+        else:
+            return self.yields
 
+
+    def calculate_substrate_consumed(self, stage = None):
+        stage = None
+        if stage is None:
+            self.substrateConsumed = np.array(
+                [(self.titerObjectDict[self.substrate_name].dataVec[0] - dataPoint) for dataPoint in
+                 self.titerObjectDict[self.substrate_name].dataVec])
+        else:
+            # print(self.substrate_name)
+            # print(stage)
+            # print(self.stages)
+            self.substrateConsumed = np.array(
+                [(self.titerObjectDict[self.substrate_name].dataVec[self.stages[stage][0]] - dataPoint) for dataPoint in
+                 self.titerObjectDict[self.substrate_name].dataVec[self.stages[stage][0]:self.stages[stage][1]]])
+            # print(self.substrateConsumed)
+            # print(np.array(
+            #     [(self.titerObjectDict[self.substrate_name].dataVec[0] - dataPoint) for dataPoint in
+            #      self.titerObjectDict[self.substrate_name].dataVec]))
+
+    def calculate_yield(self, stage = None):
+        if stage is None:
+            self.yields = dict()
+            for productKey in [key for key in self.titerObjectDict if
+                               self.titerObjectDict[key].runIdentifier.titerType == 'product']:
+                self.yields[productKey] = np.divide(self.titerObjectDict[productKey].dataVec, self.substrateConsumed)
+        else:
+            self.yields = dict()
+            for productKey in [key for key in self.titerObjectDict if
+                               self.titerObjectDict[key].runIdentifier.titerType == 'product']:
+                # print(self.stages)
+                # print(stage)
+                self.yields[productKey] = np.divide(self.titerObjectDict[productKey].dataVec[self.stages[stage][0]:self.stages[stage][1]]-self.titerObjectDict[productKey].dataVec[self.stages[stage][0]],
+                                                    self.substrateConsumed
+                                                    )
+
+
+
+class TimeCourseStage(TimeCourse):
+    def __init__(self):
+        TimeCourse().__init__()
+    #
+    # @TimeCourse.stage_indices.setter
+    # def
 
 # class SingleTrialDataShell(SingleTrial):
 #     """
