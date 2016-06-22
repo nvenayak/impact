@@ -25,6 +25,9 @@ class SingleTrial(object):
         self.stage_indices = None
         self.stage_list = None
 
+        self.normalized_data = dict()
+
+
     # Setters and Getters
     @property
     def stages(self):
@@ -32,6 +35,14 @@ class SingleTrial(object):
 
     @stages.setter
     def stages(self, stages):
+        """
+        Creates stages when they are defined
+
+        Parameters
+        ----------
+        stages : list of stage start and end lists [start_index, end_index]
+
+        """
         self._stages = stages
 
         for stage in stages:
@@ -67,6 +78,10 @@ class SingleTrial(object):
         self._products = products
         if self._substrate:
             self.calculate_yield()
+
+    def normalize_data(self, normalize_to):
+        for product in self.product_names:
+            self.normalized_data[product] = self.titerObjectDict[product]/self.titerObjectDict[normalize_to]
 
     def create_stage(self, stage_bounds):
         stage = SingleTrial()
@@ -387,13 +402,14 @@ class SingleTrial(object):
             return self.yields
 
 
-    def calculate_substrate_consumed(self, stage = None):
+    def calculate_substrate_consumed(self):
         stage = None
         if stage is None:
             self.substrateConsumed = np.array(
                 [(self.titerObjectDict[self.substrate_name].dataVec[0] - dataPoint) for dataPoint in
                  self.titerObjectDict[self.substrate_name].dataVec])
         else:
+            raise Exception('Unimplemented functionality')
             # print(self.substrate_name)
             # print(stage)
             # print(self.stages)
@@ -410,8 +426,10 @@ class SingleTrial(object):
             self.yields = dict()
             for productKey in [key for key in self.titerObjectDict if
                                self.titerObjectDict[key].runIdentifier.titerType == 'product']:
-                self.yields[productKey] = np.divide(self.titerObjectDict[productKey].dataVec, self.substrateConsumed)
+                self.yields[productKey] = np.divide([(dataPoint - self.titerObjectDict[productKey].dataVec[0]) for dataPoint in self.titerObjectDict[productKey].dataVec],
+                                                    self.substrateConsumed)
         else:
+            raise Exception('Unimplemented functionality')
             self.yields = dict()
             for productKey in [key for key in self.titerObjectDict if
                                self.titerObjectDict[key].runIdentifier.titerType == 'product']:

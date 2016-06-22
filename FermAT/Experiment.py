@@ -1,8 +1,8 @@
-from .TimePoint import *
-from .Titer import *
-from .TrialIdentifier import *
-from .SingleTrial import *
-from .ReplicateTrial import *
+from FermAT.TimePoint import *
+from FermAT.Titer import *
+from FermAT.TrialIdentifier import *
+from FermAT.SingleTrial import *
+from FermAT.ReplicateTrial import *
 
 import sqlite3 as sql
 
@@ -11,7 +11,11 @@ import copy
 from pyexcel_xlsx import get_data
 import matplotlib.pyplot as plt
 
+
 class Experiment(object):
+    """
+
+    """
     colorMap = 'Set2'
 
     def __init__(self, info=None):
@@ -22,16 +26,38 @@ class Experiment(object):
         self.replicateExperimentObjectDict = dict()
         self.infoKeys = ['importDate', 'runStartDate', 'runEndDate', 'experimentTitle', 'principalScientistName',
                          'secondaryScientistName', 'mediumBase', 'mediumSupplements', 'notes']
-        if info != None:
+        if info is not None:
             self.info = {key: info[key] for key in self.infoKeys if key in info}
         else:
             self.info = dict()
 
-    def __iadd__(self, experiment):
+    def __add__(self, experiment):
+        # Break the experiment into its titer components
+        titer_list = []
+        for replicateExperiment in self.replicateExperimentObjectDict:
+            for singleTrial in self.replicateExperimentObjectDict[replicateExperiment].singleTrialList:
+                for titer in singleTrial.titerObjectDict:
+                    titer_list.append(singleTrial.titerObjectDict[titer])
+
+        for replicateExperiment in experiment.replicateExperimentObjectDict:
+            for singleTrial in experiment.replicateExperimentObjectDict[replicateExperiment].singleTrialList:
+                for titer in singleTrial.titerObjectDict:
+                    titer_list.append(singleTrial.titerObjectDict[titer])
+
         combined_experiment = Experiment()
+        combined_experiment.parse_titers(titer_list)
 
+        return combined_experiment
 
-    def commitToDB(self, dbName):
+    def db_commit(self, dbName):
+        """
+        Commit the experiment to the database
+
+        Parameters
+        ----------
+        dbName : str
+            Path to the database, must be initialized prior (FermAT.init_db())
+        """
         conn = sql.connect(dbName)
         c = conn.cursor()
         preppedCols = list(self.info.keys())
@@ -51,7 +77,17 @@ class Experiment(object):
         print('Committed experiment #', experimentID, ' to DB ', dbName)
         return experimentID
 
-    def loadFromDB(self, dbName, experimentID):
+    def db_load(self, dbName, experimentID):
+        """
+        Load an experiment from the database.
+
+        Parameters
+        ----------
+        dbName : str
+            Path to the database, must be initialized prior (FermAT.init_db())
+        experimentID : int
+            id of experiment to load
+        """
         conn = sql.connect(dbName)
         c = conn.cursor()
         c.execute("""SELECT * FROM experimentTable WHERE (experimentID == ?)""", (experimentID,))
@@ -68,11 +104,21 @@ class Experiment(object):
             self.replicateExperimentObjectDict[row[0] + row[1] + row[2]].runIdentifier.identifier3 = row[3]
             self.replicateExperimentObjectDict[row[0] + row[1] + row[2]].db_load(c=c, replicateID=row[4])
 
-    def getAllStrains_django(self, dbName, experimentID):
+    def get_strains_django(self, dbName, experimentID):
         """
-        :param dbName:
-        :param experimentID:
-        :return:
+        Get info for all the strains in the database, used by django front end
+
+        Parameters
+        ----------
+        dbName : str
+            Path to the database, must be initialized prior (FermAT.init_db())
+        experimentID : int
+            id of experiment to load
+
+        Returns
+        -------
+        strainDescriptions : list
+            List of strain info for each strain
         """
         conn = sql.connect(dbName)
         c = conn.cursor()
@@ -96,13 +142,13 @@ class Experiment(object):
 
         sys.exit(app.exec_())
 
-    def getAllStrains(self):
+    def get_strains(self):
         temp = [key for key in self.replicateExperimentObjectDict if
                 self.replicateExperimentObjectDict[key].runIdentifier.identifier1 != '']
         temp.sort()
         return temp
 
-    def getAllTiters(self):
+    def get_titers(self):
         titersToPlot = [[[titer for titer in singleExperiment.titerObjectDict] for singleExperiment in
                          self.replicateExperimentObjectDict[key].singleTrialList] for key in
                         self.replicateExperimentObjectDict]
@@ -283,9 +329,7 @@ class Experiment(object):
             for names in titerNameColumn:
                 tempTimePointCollection[names] = []
 
-            timePointCollection = []
             skippedLines = 0
-
 
             for i in range(first_data_row, len(data['titers'])):
                 # print(data['titers'][i])
@@ -293,6 +337,7 @@ class Experiment(object):
                     temp_run_identifier_object = RunIdentifier()
                     temp_run_identifier_object.parse_RunIdentifier_from_csv(data['titers'][i][0])
 
+                    # temp_run_identifier_object.strainID = strain_rename_dict[temp_run_identifier_object.strainID]
 
                     for key in tempTimePointCollection:
                         temp_run_identifier_object.titerName = key
@@ -303,9 +348,11 @@ class Experiment(object):
 
 
 
-                        self.timePointList.append(
-                            TimePoint(copy.copy(temp_run_identifier_object), key, temp_run_identifier_object.time,
-                                      data['titers'][i][titerNameColumn[key]]))
+                        # Remove these time points
+                        if temp_run_identifier_object.time not in [12, 72, 84]:
+                            self.timePointList.append(
+                                TimePoint(copy.copy(temp_run_identifier_object), key, temp_run_identifier_object.time,
+                                          data['titers'][i][titerNameColumn[key]]))
 
                 else:
                     skippedLines += 1
@@ -321,13 +368,46 @@ class Experiment(object):
         for timePoint in timePointList:
             flag = 0
             if timePoint.get_unique_timepoint_id() in self.titerObjectDict:
-                self.titerObjectDict[timePoint.get_unique_timepoint_id()].addTimePoint(timePoint)
+                self.titerObjectDict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
             else:
                 self.titerObjectDict[timePoint.get_unique_timepoint_id()] = TimeCourse()
-                self.titerObjectDict[timePoint.get_unique_timepoint_id()].addTimePoint(timePoint)
+                self.titerObjectDict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
         tf = time.time()
         print("Parsed %i titer objects in %0.1fs\n" % (len(self.titerObjectDict), (tf - t0)))
         self.parseTiterObjectCollection(self.titerObjectDict, stage_indices = stage_indices)
+
+    def parse_titers(self, titer_list):
+        print('Parsing titer object list...')
+        t0 = time.time()
+        uniques = list(set([titer.getTimeCourseID() for titer in titer_list]))
+
+        single_trial_list = []
+        for unique in uniques:
+            single_trial = SingleTrial()
+            for titer in titer_list:
+                if titer.getTimeCourseID() == unique:
+                    single_trial.add_titer(titer)
+            single_trial_list.append(single_trial)
+
+        tf = time.time()
+        print("Parsed %i titer objects in %0.1fms\n" % (len(single_trial_list), (tf - t0) * 1000))
+
+        self.parse_single_trial_list(single_trial_list)
+
+    def parse_single_trial_list(self, single_trial_list):
+        uniques = list(set([single_trial.get_unique_replicate_id() for single_trial in single_trial_list]))
+
+        replicate_trial_list = []
+        for unique in uniques:
+            replicate_trial = ReplicateTrial()
+            for single_trial in single_trial_list:
+                if single_trial.get_unique_replicate_id() == unique:
+                    replicate_trial.add_replicate(single_trial)
+                    replicate_trial_list.append(replicate_trial)
+
+        self.replicateExperimentObjectDict = dict()
+        for replicate_trial in replicate_trial_list:
+            self.add_replicate_trial(replicate_trial)
 
     def parseTiterObjectCollection(self, titerObjectDict, stage_indices = None):
         print('Parsing titer object list...')
@@ -338,8 +418,6 @@ class Experiment(object):
                     titerObjectDict[titerObjectDictKey])
             else:
                 self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()] = SingleTrial()
-                if stage_indices is not None:
-                    self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].stages = stages
                 self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].add_titer(
                     titerObjectDict[titerObjectDictKey])
         tf = time.time()
@@ -365,14 +443,27 @@ class Experiment(object):
         tf = time.time()
         print("Parsed %i titer objects in %0.1fs\n" % (len(self.replicateExperimentObjectDict), (tf - t0)))
 
-    def addReplicateTrial(self, replicateTrial):
+    def add_replicate_trial(self, replicateTrial):
+        """
+        Add a :class:`~ReplicateTrial` to the experiment.
+
+        Parameters
+        ----------
+        replicateTrial : :class:`~ReplicateTrial`
+        """
         self.replicateExperimentObjectDict[replicateTrial.singleTrialList[0].get_unique_replicate_id()] = replicateTrial
 
     def pickle(self, fileName):
+        """
+        Pickle experiment. Not commonly used since 2016/06/14
+        """
         pickle.dump([self.timePointList, self.titerObjectDict, self.singleExperimentObjectDict,
                      self.replicateExperimentObjectDict], open(fileName, 'wb'))
 
     def unpickle(self, fileName):
+        """
+        Unpickle pickled experiments. Not commonly used since 2016/06/14
+        """
         t0 = time.time()
         with open(fileName, 'rb') as data:
             self.timePointList, self.titerObjectDict, self.singleExperimentObjectDict, self.replicateExperimentObjectDict = pickle.load(
@@ -380,19 +471,22 @@ class Experiment(object):
         print('Read data from %s in %0.3fs' % (fileName, time.time() - t0))
 
     def printGenericTimeCourse(self, figHandle=[], strainsToPlot=[], titersToPlot=[], removePointFraction=1,
-                               shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True, output_type='iPython'):
-
+                               shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True, output_type='iPython', **kwargs):
+        """
+        Wrapper for FermAT.printGenericTimeCourse_plotly
+        """
         if strainsToPlot == []:
-            strainsToPlot = self.getAllStrains()
+            strainsToPlot = self.get_strains()
+
         # Plot all product titers if none specified TODO: Add an option to plot OD as well
         if titersToPlot == []:
-            titersToPlot = self.getAllTiters()
+            titersToPlot = self.get_titers()
 
         replicateTrialList = [self.replicateExperimentObjectDict[key] for key in strainsToPlot]
 
         from FermAT import printGenericTimeCourse_plotly
         printGenericTimeCourse_plotly(replicateTrialList=replicateTrialList, titersToPlot=titersToPlot,
-                                      output_type=output_type)
+                                      output_type=output_type, **kwargs)
 
 
 
@@ -527,6 +621,9 @@ class Experiment(object):
         #     # plt.show()
 
     def printGrowthRateBarChart(self, figHandle=[], strainsToPlot=[], sortBy='identifier1'):
+        """
+        MPL plotting function, deprecated since 2016/06/14 due to switch to plotly
+        """
         if figHandle == []:
             figHandle = plt.figure(figsize=(9, 5))
 
@@ -610,15 +707,17 @@ class Experiment(object):
         return figHandle
 
     def printEndPointYield(self, figHandle=[], strainsToPlot=[], titersToPlot=[], sortBy='identifier2', withLegend=2):
-
+        """
+        MPL plotting function, deprecated since 2016/06/14 due to switch to plotly
+        """
         if figHandle == []:
             figHandle = plt.figure(figsize=(9, 5))
 
         if strainsToPlot == []:
-            strainsToPlot = self.getAllStrains()
+            strainsToPlot = self.get_strains()
 
         if titersToPlot == []:
-            titersToPlot = self.getAllTiters()
+            titersToPlot = self.get_titers()
 
         # Clear the plot and set some aesthetics
         plt.cla()
@@ -835,6 +934,9 @@ class Experiment(object):
             plt.legend(barList, strainsToPlot, bbox_to_anchor=(1.15, 0.5), loc=6, borderaxespad=0)
 
     def printYieldTimeCourse(self, strainsToPlot):
+        """
+        MPL plotting function, deprecated since 2016/06/14 due to switch to plotly
+        """
         replicateExperimentObjectList = self.replicateExperimentObjectDict
         # You typically want your plot to be ~1.33x wider than tall. This plot is a rare
         # exception because of the number of lines being plotted on it.
@@ -883,7 +985,7 @@ class Experiment(object):
 
         plt.clf()
         if len(strainToPlot) > 1:
-            strainToPlot = self.getAllStrains()[0]
+            strainToPlot = self.get_strains()[0]
         for singleExperiment in self.replicateExperimentObjectDict[strainToPlot[0]].singleTrialList:
             plt.plot(singleExperiment.OD.timeVec, singleExperiment.OD.dataVec)
         plt.ylabel(singleExperiment.runIdentifier.get_unique_id_for_ReplicateTrial())

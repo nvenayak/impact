@@ -21,7 +21,7 @@ class Titer(object):
     def runIdentifier(self, runIdentifier):
         self._runIdentifier = runIdentifier
 
-    def addTimePoint(self, timePoint):
+    def add_timepoint(self, timePoint):
         raise (Exception("No addTimePoint method defined in the child"))
 
     def getTimeCourseID(self):
@@ -279,19 +279,19 @@ class TimeCourse(Titer):
     def create_stage(self, stage_bounds):
         stage = TimeCourse()
         stage.runIdentifier = self.runIdentifier
-        stage.timeVec = self.timeVec[stage_bounds[0]:stage_bounds[1]]
-        stage._dataVec = self.dataVec[stage_bounds[0]:stage_bounds[1]]
+        stage.timeVec = self.timeVec[stage_bounds[0]:stage_bounds[1]+1]
+        stage._dataVec = self.dataVec[stage_bounds[0]:stage_bounds[1]+1]
         if len(self.gradient) > 0:
-            stage.gradient = self.gradient[stage_bounds[0]:stage_bounds[1]]
+            stage.gradient = self.gradient[stage_bounds[0]:stage_bounds[1]+1]
         if len(self.specific_productivity) > 0:
-            stage.specific_productivity = self.specific_productivity[stage_bounds[0]:stage_bounds[1]]
+            stage.specific_productivity = self.specific_productivity[stage_bounds[0]:stage_bounds[1]+1]
 
         return stage
 
     def returnCurveFitPoints(self, t):
         return self.curve_fit_dict[self.fit_type].growthEquation(np.array(t), **self.rate)
 
-    def addTimePoint(self, timePoint):
+    def add_timepoint(self, timePoint):
         self.timePointList.append(timePoint)
         if len(self.timePointList) == 1:
             self.runIdentifier = timePoint.runIdentifier
@@ -364,7 +364,7 @@ class EndPoint(Titer):
     def __init__(self, runID, t, data):
         Titer.__init__(self, runID, t, data)
 
-    def addTimePoint(self, timePoint):
+    def add_timepoint(self, timePoint):
         if len(self.timePointList) < 2:
             self.timePointList.append(timePoint)
         else:

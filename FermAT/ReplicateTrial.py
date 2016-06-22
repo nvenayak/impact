@@ -27,6 +27,7 @@ class ReplicateTrial(object):
         self.stage_indices = stage_indices
 
         for stage_bounds in stage_indices:
+            print(stage_bounds)
             self.stages.append(self.create_stage(stage_bounds))
 
 
@@ -39,6 +40,13 @@ class ReplicateTrial(object):
 
     def summary(self):
         return
+
+    def get_normalize_data(self, normalize_to):
+        new_replicate = ReplicateTrial()
+        for trial in self.singleTrialList:
+            trial.normalize_data(normalize_to)
+            new_replicate.add_replicate(trial)
+        self = new_replicate
 
     def db_commit(self, experimentID=None, c=None):
         """
@@ -147,7 +155,6 @@ class ReplicateTrial(object):
 
 
             for stat in ['avg', 'std']:
-                print(self.singleTrialList[0].product_names)
                 getattr(self, stat)._substrate_name = self.singleTrialList[0].substrate_name
                 getattr(self, stat).product_names = self.singleTrialList[0].product_names
                 getattr(self, stat).biomass_name = self.singleTrialList[0].biomass_name

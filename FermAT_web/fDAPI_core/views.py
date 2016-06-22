@@ -59,7 +59,7 @@ def core(request):
 
 # @login_required
 def experimentSelect(request, experimentID):
-    strainInfo = FermAT.Experiment().getAllStrains_django(dbName, experimentID)
+    strainInfo = FermAT.Experiment().get_strains_django(dbName, experimentID)
     request.session['strainInfo'] = strainInfo
 
     # Determine the unique identifiers for use in the sorting dropdown
@@ -146,7 +146,7 @@ def selectMainWindow(request, mainWindowSelection):
     if mainWindowSelection == 'plot':
         request.session['mainWindow'] = mainWindowSelection
         experiment = FermAT.Experiment()
-        experiment.loadFromDB(dbName,1)
+        experiment.db_load(dbName, 1)
         updateFigure(request)
         data = modifyMainPageSessionData(request)
     elif mainWindowSelection == 'rawData':
@@ -164,7 +164,7 @@ def updateFigure(request):
             data = modifyMainPageSessionData(request, plotlyCode = FermAT.printGenericTimeCourse_plotly(dbName = dbName,
                                                                                                         strainsToPlot = [strain['replicateID'] for strain in request.session['selectedStrainsInfo']],
                                                                                                         titersToPlot = request.session['selectedTiters'],
-                                                                                                        dataType = 'raw'
+                                                                                                        number_of_columns = 3
                                                                                                         ))
         else:
              data = modifyMainPageSessionData(request)

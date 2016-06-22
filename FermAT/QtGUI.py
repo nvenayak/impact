@@ -423,7 +423,7 @@ class mainWindow(QtGui.QDialog):
         self.newProjectContainer = [experiment[2] for experiment in self.Project.experimentList if experiment[0] == exptName][0]
 
         # Populate the list of strains and add to layout
-        self.strainsToPlot = self.newProjectContainer.getAllStrains()
+        self.strainsToPlot = self.newProjectContainer.get_strains()
         # self.strainsToPlot = []
         for strain in self.strainsToPlot:
             self.checkBox[strain] = (QtGui.QCheckBox(strain,self))
@@ -436,7 +436,7 @@ class mainWindow(QtGui.QDialog):
 
 
         # Populate list of titers and add to layout
-        self.titersToPlot = self.newProjectContainer.getAllTiters()
+        self.titersToPlot = self.newProjectContainer.get_titers()
         #
         #
         #
@@ -502,8 +502,8 @@ class Window(QtGui.QDialog):
 
         # a figure instance to plot on
         self.figure = plt.figure()
-        self.strainsToPlot = self.newProjectContainer.getAllStrains()
-        self.titersToPlot = self.newProjectContainer.getAllTiters()
+        self.strainsToPlot = self.newProjectContainer.get_strains()
+        self.titersToPlot = self.newProjectContainer.get_titers()
         self.sortBy = 'identifier1'
         self.plotType = 'printGenericTimeCourse'
         self.showGrowthRates = True
