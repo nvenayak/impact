@@ -35,12 +35,12 @@ class Experiment(object):
         # Break the experiment into its titer components
         titer_list = []
         for replicateExperiment in self.replicateExperimentObjectDict:
-            for singleTrial in self.replicateExperimentObjectDict[replicateExperiment].singleTrialList:
+            for singleTrial in self.replicateExperimentObjectDict[replicateExperiment].single_trial_list:
                 for titer in singleTrial.titerObjectDict:
                     titer_list.append(singleTrial.titerObjectDict[titer])
 
         for replicateExperiment in experiment.replicateExperimentObjectDict:
-            for singleTrial in experiment.replicateExperimentObjectDict[replicateExperiment].singleTrialList:
+            for singleTrial in experiment.replicateExperimentObjectDict[replicateExperiment].single_trial_list:
                 for titer in singleTrial.titerObjectDict:
                     titer_list.append(singleTrial.titerObjectDict[titer])
 
@@ -60,9 +60,17 @@ class Experiment(object):
         """
         conn = sql.connect(dbName)
         c = conn.cursor()
+
+        # Ensure the experiment_id is not explicitely defined (may have been defined in a form via django)
+        if 'experimentID' in self.info.keys():
+            del self.info['experimentID']
+
         preppedCols = list(self.info.keys())
         preppedColQuery = ', '.join(col for col in preppedCols)
         preppedColData = [self.info[key] for key in preppedCols]
+
+
+        # c.execute("SELECT MAX(experimentID) FROM experimentTable")
         c.execute("""\
            INSERT INTO experimentTable
            (""" + preppedColQuery + """) VALUES (""" + ', '.join('?' for a in preppedColData) + """)""", preppedColData)
@@ -91,7 +99,7 @@ class Experiment(object):
         conn = sql.connect(dbName)
         c = conn.cursor()
         c.execute("""SELECT * FROM experimentTable WHERE (experimentID == ?)""", (experimentID,))
-        self.exptDescription = {key: data for data, key in zip(c.fetchall()[0], [elem[0] for elem in c.description])}
+        self.info = {key: data for data, key in zip(c.fetchall()[0], [elem[0] for elem in c.description])}
 
         # Build the replicate experiment objects
         c.execute("""SELECT  strainID, identifier1, identifier2, identifier3, replicateID FROM replicateTable
@@ -103,6 +111,37 @@ class Experiment(object):
             self.replicateExperimentObjectDict[row[0] + row[1] + row[2]].runIdentifier.identifier2 = row[2]
             self.replicateExperimentObjectDict[row[0] + row[1] + row[2]].runIdentifier.identifier3 = row[3]
             self.replicateExperimentObjectDict[row[0] + row[1] + row[2]].db_load(c=c, replicateID=row[4])
+
+    def data(self):
+        data = []
+        for replicate_key in self.replicateExperimentObjectDict:
+            data.append([replicate_key])
+            single_trial = self.replicateExperimentObjectDict[replicate_key].single_trial_list[0]
+            for titer_key in [single_trial.biomass_name] + \
+                    [single_trial.substrate_name] + \
+                    single_trial.product_names:
+                data.append([titer_key])
+                for i, single_trial in enumerate(self.replicateExperimentObjectDict[replicate_key].single_trial_list):
+                    # data.append([single_trial.runIdentifier.replicate])
+                    if titer_key is not None:
+                        if i == 0:
+                            data.append(['Time (hours)']+list(single_trial.titerObjectDict[titer_key].timeVec))
+                        data.append(['rep #'+str(single_trial.runIdentifier.replicate)]+list(single_trial.titerObjectDict[titer_key].dataVec))
+                if titer_key is not None:
+                    data.append(['Average']+list(self.replicateExperimentObjectDict[replicate_key].avg.titerObjectDict[titer_key].dataVec))
+                    data.append(['Std']+list(self.replicateExperimentObjectDict[replicate_key].std.titerObjectDict[titer_key].dataVec))
+                    # Add spacing between the titers
+                    data.append([])
+            # Add spacing between the replicates
+            data.append([])
+            data.append([])
+
+        # Remove the last three rows which will be excess if it is the last row to be written
+        del data[-1]
+        del data[-1]
+        del data[-1]
+
+        return data
 
     def get_strains_django(self, dbName, experimentID):
         """
@@ -134,6 +173,11 @@ class Experiment(object):
         c.close()
         return strainDescriptions
 
+    def summary(self, level = None):
+        for replicate_key in self.replicateExperimentObjectDict:
+            self.replicateExperimentObjectDict[replicate_key].summary()
+
+
     def plottingGUI(self):
         app = QtGui.QApplication(sys.argv)
 
@@ -150,7 +194,7 @@ class Experiment(object):
 
     def get_titers(self):
         titersToPlot = [[[titer for titer in singleExperiment.titerObjectDict] for singleExperiment in
-                         self.replicateExperimentObjectDict[key].singleTrialList] for key in
+                         self.replicateExperimentObjectDict[key].single_trial_list] for key in
                         self.replicateExperimentObjectDict]
 
         # Flatten list and find the uniques
@@ -159,7 +203,7 @@ class Experiment(object):
 
         return titersToPlot
 
-    def parseRawData(self, dataFormat, fileName=None, data=None, stage_indices = None):
+    def parseRawData(self, dataFormat, fileName=None, data=None, stage_indices = None, substrate_name = None):
         t0 = time.time()
 
         if data == None:
@@ -205,7 +249,7 @@ class Experiment(object):
             self.parseTiterObjectCollection(self.titerObjectDict)
 
         if dataFormat == 'NV_titers':
-            substrateName = 'Glucose'
+            substrate_name = 'Glucose'
             titerDataSheetName = "titers"
 
             if 'titers' not in data.keys():
@@ -256,7 +300,7 @@ class Experiment(object):
                     skippedLines += 1
 
         if dataFormat == 'NV_titers0.2':
-            substrateName = 'Glucose'
+            substrate_name = 'Glucose'
             titerDataSheetName = "titers"
 
             if 'titers' not in data.keys():
@@ -314,11 +358,18 @@ class Experiment(object):
             row_with_titer_names = 0
             first_data_row = 1
 
-            substrateName = 'glucose'
+            substrate_name = 'glucose'
             titerDataSheetName = "titers"
 
-            if 'titers' not in data.keys():
-                raise Exception("No sheet named 'titers' found")
+
+            if fileName is not None:
+                if 'titers' not in data.keys():
+                    raise Exception("No sheet named 'titers' found")
+            elif data is not None:
+                data = {titerDataSheetName:data}
+            else:
+                raise Exception('No fileName or data')
+
 
             # Initialize variables
             titerNameColumn = dict()
@@ -330,7 +381,6 @@ class Experiment(object):
                 tempTimePointCollection[names] = []
 
             skippedLines = 0
-
             for i in range(first_data_row, len(data['titers'])):
                 # print(data['titers'][i])
                 if type(data['titers'][i][0]) is str:
@@ -341,7 +391,7 @@ class Experiment(object):
 
                     for key in tempTimePointCollection:
                         temp_run_identifier_object.titerName = key
-                        if key == substrateName:
+                        if key == substrate_name:
                             temp_run_identifier_object.titerType = 'substrate'
                         else:
                             temp_run_identifier_object.titerType = 'product'
@@ -357,10 +407,71 @@ class Experiment(object):
                 else:
                     skippedLines += 1
 
-            tf = time.time()
-            print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timePointList), tf - t0))
-            print("Number of lines skipped: ", skippedLines)
-            self.parseTimePointCollection(self.timePointList, stage_indices = stage_indices)
+        if dataFormat == 'default_titers':
+            # Parameters
+            row_with_titer_names = 0
+            row_with_titer_types = 1
+            first_data_row = 2
+
+            titerDataSheetName = "titers"
+
+            if fileName is not None:
+                if type(data) is dict:
+                    if 'titers' not in data.keys(): # TODO data has no keys if there is only one sheet
+                        raise Exception("No sheet named 'titers' found")
+                else:
+                    data = {titerDataSheetName: data}
+
+            elif data is not None:
+                data = {titerDataSheetName: data}
+            else:
+                raise Exception('No fileName or data')
+
+            # Initialize variables
+            titerNameColumn = dict()
+            titer_type = dict()
+            for i in range(1, len(data[titerDataSheetName][row_with_titer_names])):
+                titerNameColumn[data[titerDataSheetName][row_with_titer_names][i]] = i
+                titer_type[data[titerDataSheetName][row_with_titer_names][i]] = \
+                    data[titerDataSheetName][row_with_titer_types][i]
+            # print(titer_type)
+            # Initialize a timepoint_collection for each titer type (column)
+            tempTimePointCollection = dict()
+            for names in titerNameColumn:
+                tempTimePointCollection[names] = []
+
+            skippedLines = 0
+            for i in range(first_data_row, len(data['titers'])):
+                # print(data['titers'][i])
+                if type(data['titers'][i][0]) is str:
+                    temp_run_identifier_object = RunIdentifier()
+                    temp_run_identifier_object.parse_RunIdentifier_from_csv(data['titers'][i][0])
+
+                    # temp_run_identifier_object.strainID = strain_rename_dict[temp_run_identifier_object.strainID]
+
+                    for key in tempTimePointCollection:
+                        temp_run_identifier_object.titerName = key
+                        temp_run_identifier_object.titerType = titer_type[key]
+                        # if key == substrate_name:
+                        #     temp_run_identifier_object.titerType = 'substrate'
+                        # else:
+                        #     temp_run_identifier_object.titerType = 'product'
+
+                        # Remove these time points
+                        if temp_run_identifier_object.time not in [12, 72, 84]:
+                            # print(temp_run_identifier_object.time,' ',data['titers'][i][titerNameColumn[key]])
+                            self.timePointList.append(
+                                TimePoint(copy.copy(temp_run_identifier_object), key,
+                                          temp_run_identifier_object.time,
+                                          data['titers'][i][titerNameColumn[key]]))
+
+                else:
+                    skippedLines += 1
+
+        tf = time.time()
+        print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timePointList), tf - t0))
+        print("Number of lines skipped: ", skippedLines)
+        self.parseTimePointCollection(self.timePointList, stage_indices = stage_indices)
 
     def parseTimePointCollection(self, timePointList, stage_indices = None):
         print('Parsing time point list...')
@@ -421,7 +532,7 @@ class Experiment(object):
                 self.singleExperimentObjectDict[titerObjectDict[titerObjectDictKey].getTimeCourseID()].add_titer(
                     titerObjectDict[titerObjectDictKey])
         tf = time.time()
-        print("Parsed %i titer objects in %0.1fms\n" % (len(self.singleExperimentObjectDict), (tf - t0) * 1000))
+        print("Parsed %i single trials in %0.1fms\n" % (len(self.singleExperimentObjectDict), (tf - t0) * 1000))
         self.parseSingleExperimentObjectList(self.singleExperimentObjectDict)
 
     def parseSingleExperimentObjectList(self, singleExperimentObjectList):
@@ -441,7 +552,7 @@ class Experiment(object):
                     singleExperimentObjectList[key].get_unique_replicate_id()].add_replicate(
                     singleExperimentObjectList[key])
         tf = time.time()
-        print("Parsed %i titer objects in %0.1fs\n" % (len(self.replicateExperimentObjectDict), (tf - t0)))
+        print("Parsed %i replicates in %0.1fs\n" % (len(self.replicateExperimentObjectDict), (tf - t0)))
 
     def add_replicate_trial(self, replicateTrial):
         """
@@ -451,7 +562,7 @@ class Experiment(object):
         ----------
         replicateTrial : :class:`~ReplicateTrial`
         """
-        self.replicateExperimentObjectDict[replicateTrial.singleTrialList[0].get_unique_replicate_id()] = replicateTrial
+        self.replicateExperimentObjectDict[replicateTrial.single_trial_list[0].get_unique_replicate_id()] = replicateTrial
 
     def pickle(self, fileName):
         """
@@ -986,7 +1097,7 @@ class Experiment(object):
         plt.clf()
         if len(strainToPlot) > 1:
             strainToPlot = self.get_strains()[0]
-        for singleExperiment in self.replicateExperimentObjectDict[strainToPlot[0]].singleTrialList:
+        for singleExperiment in self.replicateExperimentObjectDict[strainToPlot[0]].single_trial_list:
             plt.plot(singleExperiment.OD.timeVec, singleExperiment.OD.dataVec)
         plt.ylabel(singleExperiment.runIdentifier.get_unique_id_for_ReplicateTrial())
         # plt.tight_layout()

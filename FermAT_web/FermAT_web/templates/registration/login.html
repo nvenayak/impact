@@ -1,7 +1,11 @@
+{% load bootstrap %}
+{% load staticfiles %}
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
-      {% include "fDAPI_core/includes/header.html" %}
+      {% include "FermAT_web/includes/header.html" %}
   </head>
 
   <body style="background-color:#f6f6f6">
@@ -21,23 +25,26 @@
                 <p>Please login to see this page.</p>
                 {% endif %}
             {% endif %}
+
+              <div class="text-center"><img class="image-responsive text-center" width="50%" align="center" src="{% static 'FermAT_logo.svg' %}"></div>
+            <h4 class="form-signin-heading">Please sign in or
+                <a href="/registration/createAccount">create an account</a></h4>
+
           <form method="post" action="{% url 'login' %}">
               {% csrf_token %}
-            <h4 class="form-signin-heading">Welcome to fDAPI, please sign in</h4>
-              <h4><a href="/registration/createAccount">or create an account</a></h4>
-
-            <table>
-            <tr>
-                <td>{{ form.username.label_tag }}</td>
-                <td>{{ form.username }}</td>
-            </tr>
-            <tr>
-                <td>{{ form.password.label_tag }}</td>
-                <td>{{ form.password }}</td>
-            </tr>
-            </table>
+            <!--<table>-->
+            <!--<tr>-->
+                <!--<td>{{ form.username.label_tag }}</td>-->
+                <!--<td>{{ form.username }}</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+                <!--<td>{{ form.password.label_tag }}</td>-->
+                <!--<td>{{ form.password }}</td>-->
+            <!--</tr>-->
+            <!--</table>-->
+            {{ form|bootstrap}}
               <br>
-            <button class="btn btn-primary" type="submit">Sign in</button>
+            <button class="btn btn-primary pull-right" type="submit">Sign in</button>
 
             <!--<input type="submit" value="login" />-->
             <input type="hidden" name="next" value="{{ next }}" />

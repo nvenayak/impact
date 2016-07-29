@@ -153,20 +153,46 @@ class SingleTrial(object):
 
         self.yields = pickle.loads(data)
 
+
         c.execute("""SELECT timeCourseID, singleTrial""" + stat_prefix + """ID, titerType, titerName, timeVec, dataVec, rate FROM
                 timeCourseTable""" + stat_prefix + """ WHERE singleTrial""" + stat_prefix + """ID == ? """,
                   (singleTrialID,))
         for row in c.fetchall():
-            product = row[3]
-            self.titerObjectDict[product] = TimeCourse()
-            self.titerObjectDict[product].runIdentifier.titerType = row[2]
-            self.titerObjectDict[product].runIdentifier.titerName = row[3]
-            if stat_prefix == '':
-                self.titerObjectDict[product]._timeVec = np.loads(row[4])
-            self.titerObjectDict[product]._dataVec = np.loads(row[5])
-            self.titerObjectDict[product].rate = pickle.loads(row[6])
+            # product = row[3]
+            temp_titer_object = TimeCourse()
+            for attribute in ['strainID','identifier1','identifier2']:
+                setattr(temp_titer_object.runIdentifier,attribute,getattr(self.runIdentifier,attribute))
+            temp_titer_object.runIdentifier.identifier1 = self.runIdentifier.identifier1
+            temp_titer_object.runIdentifier.identifier2 = self.runIdentifier.identifier2
+            temp_titer_object.runIdentifier.titerType = row[2]
+            temp_titer_object.runIdentifier.titerName = row[3]
 
-            self._t = self.titerObjectDict[product].timeVec
+            if stat_prefix == '':
+                temp_titer_object.runIdentifier.replicate = self.runIdentifier.replicate
+                temp_titer_object._timeVec = np.loads(row[4])
+            temp_titer_object._dataVec = np.loads(row[5])
+            temp_titer_object.rate = pickle.loads(row[6])
+
+            # self._t = self.titerObjectDict[product].timeVec
+            self.add_titer(temp_titer_object)
+
+        # The yields get recalculated when the titers are added, when in reality. A quick solution is to set the yield
+        # to the correct values after adding all the titer objects (the std of the yield is not the ratio of the stds)
+        self.yields = pickle.loads(data)
+
+    def summary(self, print = False):
+        summary = dict()
+        summary['substrate'] = self._substrate_name
+        summary['products'] = self.product_names
+        summary['biomass'] = self.biomass_name
+        summary['number_of_data_points'] = len(self._t)
+        summary['run_identifier'] = self.runIdentifier.summary(['strainID', 'identifier1', 'identifier2',
+                                                                'replicate'])
+
+        if print:
+            print(summary)
+
+        return summary
 
     def calculate_specific_productivity(self):
         """
@@ -319,6 +345,10 @@ class SingleTrial(object):
 
         # Check if this titer already exists
         if titerObject.runIdentifier.titerName in self.titerObjectDict:
+            # print(self.biomass_name)
+            # print(self.substrate_name)
+            # print(self.product_names)
+            # print(self.titerObjectDict.keys())
             raise Exception('A duplicate titer was added to the singleTiterObject: ',
                             titerObject.runIdentifier.titerName)
 
@@ -426,8 +456,13 @@ class SingleTrial(object):
             self.yields = dict()
             for productKey in [key for key in self.titerObjectDict if
                                self.titerObjectDict[key].runIdentifier.titerType == 'product']:
-                self.yields[productKey] = np.divide([(dataPoint - self.titerObjectDict[productKey].dataVec[0]) for dataPoint in self.titerObjectDict[productKey].dataVec],
+                try:
+                    self.yields[productKey] = np.divide([(dataPoint - self.titerObjectDict[productKey].dataVec[0]) for dataPoint in self.titerObjectDict[productKey].dataVec],
                                                     self.substrateConsumed)
+                except Exception as e:
+                    print(productKey)
+                    print(self.titerObjectDict[productKey].dataVec)
+                    print(e)
         else:
             raise Exception('Unimplemented functionality')
             self.yields = dict()

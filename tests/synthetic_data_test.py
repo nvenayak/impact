@@ -58,7 +58,8 @@ for condition in ['Aerobic','Anaerobic']:
     replicateList = []
     for i in range(n_replicates):
         # Let's add some noise to the data to simulate experimental error and generate some more data
-        dFBA_profiles = FermAT.synthetic_data.generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, noise = 0.1, plot = False)
+        dFBA_profiles = FermAT.synthetic_data.generate_data(y0, t, model, biomass_keys, substrate_keys,
+                                                            product_keys, noise = 0.1, plot = False)
         replicateList.append(dFBA_profiles)
 
     import matplotlib.pyplot as plt
@@ -97,32 +98,35 @@ for condition in ['Aerobic','Anaerobic']:
             # Now we can build a singleTrial object and load all the data
             singleTrial = SingleTrial.SingleTrial()
             for timeCourse in timeCourseList:
-                singleTrial.addTiterObject(timeCourse)
+                singleTrial.add_titer(timeCourse)
 
         singleTrialList.append(singleTrial)
 
     replicateTrial = ReplicateTrial.ReplicateTrial()
     for singleTrial in singleTrialList:
-        replicateTrial.addReplicateExperiment(singleTrial)
+        replicateTrial.add_replicate(singleTrial)
 
 
     # Finally, let's put this all into an experiment container
-    experiment.addReplicateTrial(replicateTrial)
+    experiment.add_replicate_trial(replicateTrial)
 
 
 FermAT.init_db(db_name="../default_fDAPI_db.sqlite3")
-experimentID = experiment.commitToDB(dbName = "../default_fDAPI_db.sqlite3")
+# experimentID = experiment.commitToDB(dbName = "../default_fDAPI_db.sqlite3")
 experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'file')
+
+
+
 # plt.show()
 #
 # import matplotlib.pyplot as plt
 # # Now let's recreate the experiment object and load the data from the db
-experiment = FermAT.Experiment()
-experiment.loadFromDB(dbName = '../default_fDAPI_db.sqlite3', experimentID = 1)
-experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'file')
+# experiment = FermAT.Experiment()
+# experiment.loadFromDB(dbName = '../default_fDAPI_db.sqlite3', experimentID = 1)
+# experiment.printGenericTimeCourse(titersToPlot = product_keys, output_type = 'file')
 
 # for key in experiment.replicateExperimentObjectDict:
-#     print(vars(experiment.replicateExperimentObjectDict[key].singleTrialList[0]))
+#     print(vars(experiment.replicateExperimentObjectDict[key].single_trial_list[0]))
 # for titersToPlot in [['OD'],product_keys]:
 #     experiment.printGenericTimeCourse(titersToPlot = titersToPlot, plotCurveFit=False, removePointFraction=50)
 # plt.show()

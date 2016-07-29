@@ -1,6 +1,8 @@
-{% extends "fDAPI_core/input.html" %}
+{% extends "FermAT_web/home.html" %}
 
-{% block content %}
+{% load bootstrap %}
+
+{% block main_window %}
 <div class="container">
     <div class="panel panel-default">
       <div class="panel-body">
@@ -8,14 +10,12 @@
           for this experiment.
       </div>
     </div>
-
-    <form action="/your-name/" method="post">
+    <form class="form-horizontal" action="/plot_options/" method="post">
         {% csrf_token %}
-        <table class="table">
-            {{ newExperimentForm.as_table }}
-        </table>
 
-        <input type="submit" value="Submit" />
+        {{ plot_options_form|bootstrap_horizontal }}
+
+        <input class="btn btn-default pull-right" type="submit" value="Submit" />
     </form>
 </div>
-{% endblock %}
+{% endblock %}}

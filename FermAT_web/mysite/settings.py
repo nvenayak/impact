@@ -25,19 +25,20 @@ SECRET_KEY = '-*g18l4vof6teb&d9mo8zy9_mky%0l#eqo2g_&d587^=!a+&c#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'fDAPI_core',
+    'FermAT_web',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrapform'
 ]
 
 MIDDLEWARE_CLASSES = [

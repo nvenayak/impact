@@ -31,7 +31,7 @@
 
   
     <link rel="top" title="FermAT 0.0.0 documentation" href="index.html"/>
-        <link rel="next" title="Importing Data" href="importingData.html"/>
+        <link rel="next" title="Importing Raw Experimental Data" href="import_experiment_data.html"/>
         <link rel="prev" title="Quick Start Guide" href="setup.html"/> 
 
   
@@ -93,7 +93,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#Database">Database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importingData.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#Exporting-Data">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="import_experiment_data.html">Importing Raw Experimental Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FermAT.html">FermAT package</a></li>
 </ul>
 
@@ -423,13 +424,13 @@ main elements:</p>
 <div class="container">
 <div class="highlight"><pre>
 Please use biomass titerType instead of:  OD
-identifier2 :    IPTG
-strainID :       MG1655 d(lacI)
 identifier1 :    pKDL071
+strainID :       MG1655 d(lacI)
+identifier2 :    IPTG
 replicate :      None
-_titerType :     biomass
-time :   -1
 titerName :      OD600
+time :   -1
+_titerType :     biomass
 </pre></div></div>
 </div>
 </div>
@@ -456,10 +457,10 @@ time point for a single strain and titer type</p>
 <div class="container">
 <div class="highlight"><pre>
 t :      10
-titerName :      OD600
-units :  {&apos;t&apos;: &apos;h&apos;, &apos;titer&apos;: &apos;g&apos;}
+units :  {&apos;titer&apos;: &apos;g&apos;, &apos;t&apos;: &apos;h&apos;}
 titer :  3
-runIdentifier :  &lt;FermAT.TrialIdentifier.RunIdentifier object at 0x000002756BACE390&gt;
+runIdentifier :  &lt;FermAT.TrialIdentifier.RunIdentifier object at 0x000001C525DB4BE0&gt;
+titerName :      OD600
 </pre></div></div>
 </div>
 </div>
@@ -487,7 +488,7 @@ depend on how the raw data is parsed.</p>
 
 <span class="n">timeCourse</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">timePoint</span> <span class="ow">in</span> <span class="n">timePointList</span><span class="p">:</span>
-    <span class="n">timeCourse</span><span class="o">.</span><span class="n">addTimePoint</span><span class="p">(</span><span class="n">timePoint</span><span class="p">)</span>
+    <span class="n">timeCourse</span><span class="o">.</span><span class="n">add_timepoint</span><span class="p">(</span><span class="n">timePoint</span><span class="p">)</span>
 
 <span class="c1"># This data will be sorted and put into .timeVec and .dataVec</span>
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Time: &#39;</span><span class="p">,</span><span class="n">timeCourse</span><span class="o">.</span><span class="n">timeVec</span><span class="p">)</span>
@@ -510,7 +511,6 @@ depend on how the raw data is parsed.</p>
 
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Time: &#39;</span><span class="p">,</span><span class="n">timeCourse</span><span class="o">.</span><span class="n">timeVec</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Data: &#39;</span><span class="p">,</span><span class="n">timeCourse</span><span class="o">.</span><span class="n">dataVec</span><span class="p">)</span>
-
 </pre></div>
 </div>
 </div>
@@ -524,13 +524,13 @@ Building and Adding TimePoints one-by-one
 Time:  [ 0  2  4  6  8 10 12 14 16 18 20 22 24 26]
 Data:  [ 0.02  0.1   0.2   0.4   0.8   1.6   1.7   1.72  1.72  1.6   1.55  1.5
   1.45  1.4 ]
-identifier2 :    IPTG
-strainID :       MG1655 d(lacI)
 identifier1 :    pKDL071
+strainID :       MG1655 d(lacI)
+identifier2 :    IPTG
 replicate :      None
-_titerType :     biomass
-time :   -1
 titerName :      OD600
+time :   -1
+_titerType :     biomass
 
 
 
@@ -602,9 +602,9 @@ so4_e        -0.06            5drib_c      0.00
 k_e          -0.05            glyclt_e     0.00
 mg2_e        -0.00            mththf_c     0.00
 fe2_e        -0.00            4crsol_c     0.00
-fe3_e        -0.00            meoh_e       0.00
-ca2_e        -0.00            amob_c       0.00
-cl_e         -0.00
+fe3_e        -0.00            amob_c       0.00
+cl_e         -0.00            meoh_e       0.00
+ca2_e        -0.00
 cu2_e        -0.00
 mn2_e        -0.00
 zn2_e        -0.00
@@ -773,7 +773,6 @@ dFBA data</p>
             <span class="n">singleTrial</span><span class="o">.</span><span class="n">add_titer</span><span class="p">(</span><span class="n">timeCourse</span><span class="p">)</span>
 
     <span class="n">singleTrialList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">singleTrial</span><span class="p">)</span>
-
 </pre></div>
 </div>
 </div>
@@ -832,7 +831,7 @@ database.</p>
 <span class="n">experiment</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span><span class="p">)</span>
 
 <span class="c1"># Add the ReplicateTrial</span>
-<span class="n">experiment</span><span class="o">.</span><span class="n">addReplicateTrial</span><span class="p">(</span><span class="n">replicateTrial</span><span class="p">)</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">add_replicate_trial</span><span class="p">(</span><span class="n">replicateTrial</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -844,6 +843,11 @@ database.</p>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span><span class="n">experiment</span><span class="o">.</span><span class="n">printGenericTimeCourse</span><span class="p">(</span><span class="n">titersToPlot</span> <span class="o">=</span> <span class="n">biomass_keys</span><span class="o">+</span><span class="n">product_keys</span><span class="p">)</span>
+<span class="n">replicate_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">experiment</span><span class="o">.</span><span class="n">replicateExperimentObjectDict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">replicateExperimentObjectDict</span><span class="p">]</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">printGenericTimeCourse_plotly</span><span class="p">(</span><span class="n">replicateTrialList</span><span class="o">=</span><span class="n">replicate_list</span><span class="p">,</span> <span class="n">dbName</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">strainsToPlot</span><span class="o">=</span><span class="p">[],</span>
+                                     <span class="n">titersToPlot</span><span class="o">=</span><span class="n">product_keys</span><span class="p">,</span>
+                                     <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;iPython&#39;</span><span class="p">,</span>
+                                     <span class="n">yieldFlag</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">titerFlag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">endpointFlag</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sortBy</span><span class="o">=</span><span class="s1">&#39;strainID&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -858,11 +862,32 @@ This is the format of your plot grid:
 
 </pre></div></div>
 </div>
+<div class="nboutput container">
+<div class="container">
+</div>
+<div class="container">
+<div id="8de4d343-d4dc-47ad-924a-720531427662" style="height: 600; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("8de4d343-d4dc-47ad-924a-720531427662", [{"mode": "lines+markers", "error_y": {"visible": true, "array": [0.0, 0.000488739598805292, 0.0012363340341351799, 0.0023456882949385144, 0.003956098615551366, 0.006255326509172439, 0.009495523007680647, 0.014014192281307656, 0.020261757200179916, 0.02883775041953196, 0.0405382712819885, 0.05641814987529873, 0.07787227422197104, 0.10674189573199602, 0.1454534362101683, 0.1971995875277609, 0.26617537743215974, 0.1974632542973218, 0.1974632542973218, 0.1974632542973218], "color": "rgb(166,206,227)", "type": "data"}, "type": "scatter", "y": [0.05, 0.06300394851797302, 0.07939472782770758, 0.10005571140221549, 0.12610102599386763, 0.15893591998541987, 0.20033295190200645, 0.252528150944351, 0.3183423872115768, 0.40133458198525496, 0.5059951130975369, 0.6379899899568668, 0.8044691350039845, 1.01445564204692, 1.2793373047197067, 1.613487340177788, 2.035048316711859, 2.389385772908177, 2.389385772908177, 2.389385772908177], "xaxis": "x1", "marker": {"color": "rgb(166,206,227)"}, "legendgroup": "iJO1366+Anaerobic", "showlegend": true, "yaxis": "y1", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "line": {"color": "rgb(166,206,227)"}, "name": "iJO1366+Anaerobic"}, {"mode": "lines+markers", "error_y": {"visible": true, "array": [0.0, 0.06149955389764098, 0.14828236607787268, 0.26958523684619207, 0.4377731831594347, 0.6693481812519064, 0.98627380723369, 1.4177121815820881, 2.002299479385895, 2.7911232641720485, 3.8516141342458283, 5.27262807884674, 7.171076908977578, 9.700572113635994, 13.062683476694948, 17.52159353495077, 23.423157746183115, 17.940988645365856, 17.940988645365856, 17.940988645365856], "color": "rgb(166,206,227)", "type": "data"}, "type": "scatter", "y": [0.0, 0.9518038577189757, 2.1517113218272788, 3.664491239026195, 5.571846711633373, 7.976849523039985, 11.009537783350147, 14.833982368606875, 19.657207746549368, 25.74045538728698, 33.41340509657147, 43.092133241676585, 55.30179051595198, 70.70524253702821, 90.13924284463212, 114.66012344617573, 145.60151086398818, 171.29036103099247, 171.29036103099247, 171.29036103099247], "xaxis": "x2", "marker": {"color": "rgb(166,206,227)"}, "legendgroup": "iJO1366+Anaerobic", "showlegend": false, "yaxis": "y2", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "line": {"color": "rgb(166,206,227)"}, "name": "iJO1366+Anaerobic"}, {"mode": "lines+markers", "error_y": {"visible": true, "array": [0.0, 0.027133219576679437, 0.05910557176222008, 0.09704388762942215, 0.1425834187184181, 0.1981700376121144, 0.2675079266124543, 0.3561830135186109, 0.47247532199776093, 0.6283583417891261, 0.8406951583233044, 1.1326961922960725, 1.5357843856114475, 2.092080338974429, 2.8577566947447703, 3.907538803243689, 5.3406819607876015, 4.101507185071511, 4.101507185071511, 4.101507185071511], "color": "rgb(166,206,227)", "type": "data"}, "type": "scatter", "y": [0.0, 0.4368635004457151, 0.9872123287437782, 1.680568500177557, 2.5541450978491023, 3.654852910113904, 5.041831484207135, 6.789641852583602, 8.992293956910565, 11.76832771005731, 15.267223402221461, 19.67749019063432, 25.23687229158903, 32.2452285788075, 41.08078665709026, 52.220657282943826, 66.266727523672, 78.33893604196507, 78.33893604196507, 78.33893604196507], "xaxis": "x3", "marker": {"color": "rgb(166,206,227)"}, "legendgroup": "iJO1366+Anaerobic", "showlegend": false, "yaxis": "y3", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "line": {"color": "rgb(166,206,227)"}, "name": "iJO1366+Anaerobic"}, {"mode": "lines+markers", "error_y": {"visible": true, "array": [0.0, 0.019877521759226455, 0.04664420440937138, 0.08317396139694447, 0.13345830696736005, 0.20296980727072772, 0.29913768444795724, 0.4319752316364689, 0.6149099990177823, 0.8658812238766843, 1.20878706493522, 1.6753885337525605, 2.307808488977172, 3.161806593278977, 4.311064816490203, 5.8527895094348334, 7.915026735003249, 7.035742666469989, 7.035742666469989, 7.035742666469989], "color": "rgb(166,206,227)", "type": "data"}, "type": "scatter", "y": [0.0, 0.44222360410027683, 0.9995322395807306, 1.701918411248136, 2.5872025052488934, 3.7030788530081606, 5.109697493181262, 6.882922090925813, 9.118441160931136, 11.936956811111674, 15.49073347871721, 19.971864098055523, 25.622704418092642, 32.749045482105586, 41.73674357304772, 53.07271698224861, 67.37145795415692, 79.5676556397868, 79.5676556397868, 79.5676556397868], "xaxis": "x4", "marker": {"color": "rgb(166,206,227)"}, "legendgroup": "iJO1366+Anaerobic", "showlegend": false, "yaxis": "y4", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "line": {"color": "rgb(166,206,227)"}, "name": "iJO1366+Anaerobic"}, {"mode": "lines+markers", "error_y": {"visible": true, "array": [0.0, 0.00032038193881102486, 0.000754084376982603, 0.0013414709290851924, 0.0021367309301781536, 0.0032123471173672088, 0.004664954156381809, 0.006623017085436878, 0.009256891733737586, 0.012791994949627275, 0.01752603119706983, 0.023851506750050704, 0.03228512320838379, 0.04350612384871048, 0.05840627226189449, 0.07815494642766846, 0.10428385213025827, 0.07788538876031612, 0.07788538876031612, 0.07788538876031612], "color": "rgb(166,206,227)", "type": "data"}, "type": "scatter", "y": [0.0, 0.004449549870958668, 0.01005840679354595, 0.017129064511984454, 0.02604306454708898, 0.037281684421946494, 0.051452049631379226, 0.06932009333110883, 0.09185216032228122, 0.12026752975137348, 0.15610472283732596, 0.20130522371333442, 0.2583191894722201, 0.3302389386150509, 0.42096752525141123, 0.5354316401309915, 0.6798505115494805, 0.7998742516043544, 0.7998742516043544, 0.7998742516043544], "xaxis": "x5", "marker": {"color": "rgb(166,206,227)"}, "legendgroup": "iJO1366+Anaerobic", "showlegend": false, "yaxis": "y5", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "line": {"color": "rgb(166,206,227)"}, "name": "iJO1366+Anaerobic"}], {"yaxis5": {"rangemode": "tozero", "anchor": "x5", "domain": [0.0, 0.4], "title": "EX_succ_e <br>titer (g/L)"}, "yaxis3": {"rangemode": "tozero", "anchor": "x3", "domain": [0.6000000000000001, 1.0], "title": "EX_ac_e <br>titer (g/L)"}, "xaxis1": {"rangemode": "tozero", "anchor": "y1", "domain": [0.0, 0.2888888888888889], "title": "Time (hours)"}, "xaxis3": {"rangemode": "tozero", "anchor": "y3", "domain": [0.7111111111111111, 1.0], "title": "Time (hours)"}, "xaxis5": {"rangemode": "tozero", "anchor": "y5", "domain": [0.35555555555555557, 0.6444444444444445], "title": "Time (hours)"}, "yaxis4": {"rangemode": "tozero", "anchor": "x4", "domain": [0.0, 0.4], "title": "EX_etoh_e <br>titer (g/L)"}, "xaxis6": {"showline": false, "showticklabels": false, "domain": [0.7111111111111111, 1.0], "ticks": "", "autotick": true, "showgrid": false, "anchor": "y6", "zeroline": false}, "legend": {}, "xaxis2": {"rangemode": "tozero", "anchor": "y2", "domain": [0.35555555555555557, 0.6444444444444445], "title": "Time (hours)"}, "yaxis6": {"showline": false, "showticklabels": false, "domain": [0.0, 0.4], "ticks": "", "autotick": true, "showgrid": false, "anchor": "x6", "zeroline": false}, "height": 600, "yaxis1": {"rangemode": "tozero", "anchor": "x1", "domain": [0.6000000000000001, 1.0], "title": "Ec_biomass_iJO1366_core_53p95M <br>titer (g/L)"}, "yaxis2": {"rangemode": "tozero", "anchor": "x2", "domain": [0.6000000000000001, 1.0], "title": "EX_for_e <br>titer (g/L)"}, "xaxis4": {"rangemode": "tozero", "anchor": "y4", "domain": [0.0, 0.2888888888888889], "title": "Time (hours)"}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
+</div>
+<div class="nboutput container">
+<div class="container">
+</div>
+<div class="container">
+<div class="highlight"><pre>
+This is the format of your plot grid:
+[ (1,1) x1,y1 ]  [ (1,2) x2,y2 ]  [ (1,3) x3,y3 ]
+[ (2,1) x4,y4 ]  [ (2,2) x5,y5 ]  [ (2,3) x6,y6 ]
+
+1   1
+1   2
+1   3
+2   1
+</pre></div></div>
+</div>
 <div class="nboutput nblast container">
 <div class="container">
 </div>
 <div class="container">
-<div id="b9415a35-b42e-41c5-8c4d-2631ae5eb651" style="height: 800; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("b9415a35-b42e-41c5-8c4d-2631ae5eb651", [{"error_y": {"array": [0.0, 0.0011762637203818378, 0.0030033818212304893, 0.0057522664723080544, 0.00979436558730693, 0.015636743987488478, 0.023968954623899925, 0.03572555178361058, 0.05216936382783707, 0.07500225535913872, 0.10651228617369735, 0.149769001188012, 0.20888232467761486, 0.2893454458227225, 0.3984885363555642, 0.5460786305547758, 0.42239984820869264, 0.2392788739403497, 0.19684815435961464, 0.19684815435961464], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": true, "yaxis": "y1", "xaxis": "x1", "line": {"color": "rgb(228,26,28)"}, "y": [0.05, 0.06380616343220248, 0.08145220163316778, 0.10401370444354498, 0.13286962879852712, 0.16978842694395987, 0.21703878462736625, 0.27753203318195907, 0.35500535409941003, 0.45425752413021825, 0.5814523533484246, 0.7445093608914166, 0.9536069027227977, 1.2218302918704054, 1.5660069093027433, 2.0077825353323777, 2.2663463102670702, 2.445852347364035, 2.5135451203522248, 2.5135451203522248], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.047659638016331725, 0.12465524218606606, 0.24791671167096246, 0.44037429197476813, 0.7332132109063123, 1.1689772163482992, 1.805708177523022, 2.722448056523529, 4.026558080291111, 5.863461532528088, 8.429608599146967, 11.989715474970248, 16.899665309754038, 23.63689960249129, 32.84071103192486, 23.265618033718532, 8.900647854775498, 3.145433004680485, 3.145433004680485], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y2", "xaxis": "x2", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 1.0369437810623763, 2.3609220543566938, 4.051958943928069, 6.212545841420474, 8.973991933517231, 12.504581702932354, 17.020056057004965, 22.79708339044846, 30.19057844188918, 39.65597442016962, 51.7778732963393, 67.30691103025605, 87.20720645897177, 112.71744870970923, 145.42956495857393, 165.51903841914242, 179.72982120496226, 184.91485491246044, 184.91485491246044], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.02087610873760567, 0.044771112583011946, 0.07633288635656833, 0.12426279355077746, 0.20149766393767793, 0.3251051942572877, 0.5173075957873317, 0.8077548860767372, 1.2366472894698184, 1.8587203679651219, 2.7484225934131676, 4.006750889202834, 5.770328768293836, 8.223476454353113, 11.61425210584048, 7.281166419858904, 2.353861259560655, 2.99872548077011, 2.99872548077011], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y3", "xaxis": "x3", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 0.45118262180196517, 1.026783640689764, 1.7613611044593034, 2.6991402978136687, 3.896736763756838, 5.4266515826164685, 7.381759046750043, 9.881070424329641, 13.077138874965408, 17.165575629583046, 22.397283044588676, 29.09418472214456, 37.66945826747403, 48.65356679908773, 62.72776072086884, 71.66782329396952, 78.14247534814369, 80.50578622384865, 80.50578622384865], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.022461884085903997, 0.05415348941627017, 0.1018614030652925, 0.17523060611200295, 0.28742054382472226, 0.45624176406064687, 0.7058570300138308, 1.069115068619799, 1.5906645693652213, 2.3310910796267974, 3.372415322947704, 4.82540359567879, 6.839284699253223, 9.614656186268608, 13.42061181252131, 9.025695046216429, 3.343993133852462, 1.6638785965512333, 1.6638785965512333], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y4", "xaxis": "x4", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 0.45282722662022945, 1.0308058053879645, 1.7687748540543913, 2.711340723116203, 3.915634046418831, 5.4548503020032335, 7.422797658518553, 9.939740620757169, 13.15991086827301, 17.281163762036922, 22.557397131744377, 29.314527020342915, 37.971045017562304, 49.064478360227845, 63.28545725897108, 72.11819797023347, 78.4494123610332, 80.74513054654273, 80.74513054654273], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.00020331966467986324, 0.000442417160386072, 0.0007666833438366977, 0.0012632787131788969, 0.002058235552517526, 0.0033177266917375895, 0.005259874263377683, 0.008176995579047615, 0.012465687276572384, 0.018665574042841727, 0.02750993409051995, 0.03999264179777692, 0.05745707617780528, 0.08171429374141599, 0.1152000149448563, 0.06737768907144025, 0.03958502305434096, 0.07746143718382291, 0.07746143718382291], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y5", "xaxis": "x5", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 0.004292658663948274, 0.00976930687561698, 0.016758917957217782, 0.025682534318471846, 0.03707921557889514, 0.05163935038359194, 0.07024743244352782, 0.09403700823789352, 0.12446128092818895, 0.16338385854726606, 0.21319542888698687, 0.27696381206623644, 0.3586269951922436, 0.46324153155596404, 0.5973022747285766, 0.6814452237333005, 0.7441457698616049, 0.7691042266519047, 0.7691042266519047], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}], {"yaxis4": {"domain": [0.0, 0.425], "title": "EX_etoh_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x4"}, "yaxis5": {"domain": [0.0, 0.425], "title": "EX_succ_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x5"}, "xaxis5": {"domain": [0.35555555555555557, 0.6444444444444445], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y5"}, "yaxis3": {"domain": [0.575, 1.0], "title": "EX_ac_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x3"}, "xaxis3": {"domain": [0.7111111111111111, 1.0], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y3"}, "yaxis2": {"domain": [0.575, 1.0], "title": "EX_for_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x2"}, "xaxis6": {"domain": [0.7111111111111111, 1.0], "showticklabels": false, "ticks": "", "anchor": "y6", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "xaxis4": {"domain": [0.0, 0.2888888888888889], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y4"}, "yaxis6": {"domain": [0.0, 0.425], "showticklabels": false, "ticks": "", "anchor": "x6", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "xaxis2": {"domain": [0.35555555555555557, 0.6444444444444445], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y2"}, "height": 800, "yaxis1": {"domain": [0.575, 1.0], "title": "Ec_biomass_iJO1366_core_53p95M ", "rangemode": "tozero", "showgrid": false, "anchor": "x1"}, "xaxis1": {"domain": [0.0, 0.2888888888888889], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y1"}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
+<div id="631e00a2-8a4d-48b2-a1a8-ec80375e0695" style="height: 600; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("631e00a2-8a4d-48b2-a1a8-ec80375e0695", [{"legendgroup": "iJO1366", "showlegend": false, "yaxis": "y1", "error_y": {"visible": true, "array": [0.17940988645195402], "color": "rgb(166,206,227)", "type": "data"}, "type": "bar", "y": [1.712903610162232], "x": ["Anaerobic,"], "xaxis": "x1", "marker": {"color": "rgb(166,206,227)"}, "name": "iJO1366"}, {"legendgroup": "iJO1366", "showlegend": false, "yaxis": "y2", "error_y": {"visible": true, "array": [0.04101507183911745], "color": "rgb(166,206,227)", "type": "data"}, "type": "bar", "y": [0.7833893603510306], "x": ["Anaerobic,"], "xaxis": "x2", "marker": {"color": "rgb(166,206,227)"}, "name": "iJO1366"}, {"legendgroup": "iJO1366", "showlegend": false, "yaxis": "y3", "error_y": {"visible": true, "array": [0.07035742667088966], "color": "rgb(166,206,227)", "type": "data"}, "type": "bar", "y": [0.795676556329657], "x": ["Anaerobic,"], "xaxis": "x3", "marker": {"color": "rgb(166,206,227)"}, "name": "iJO1366"}, {"legendgroup": "iJO1366", "showlegend": false, "yaxis": "y4", "error_y": {"visible": true, "array": [0.0007788538876048285], "color": "rgb(166,206,227)", "type": "data"}, "type": "bar", "y": [0.007998742515354167], "x": ["Anaerobic,"], "xaxis": "x4", "marker": {"color": "rgb(166,206,227)"}, "name": "iJO1366"}], {"yaxis5": {"showline": false, "showticklabels": false, "domain": [0.0, 0.4], "ticks": "", "autotick": true, "showgrid": false, "anchor": "x5", "zeroline": false}, "yaxis3": {"rangemode": "nonnegative", "anchor": "x3", "domain": [0.6000000000000001, 1.0], "title": "EX_etoh_e yield (g/g)"}, "xaxis1": {"anchor": "y1", "domain": [0.0, 0.2888888888888889]}, "xaxis5": {"showline": false, "showticklabels": false, "domain": [0.35555555555555557, 0.6444444444444445], "ticks": "", "autotick": true, "showgrid": false, "anchor": "y5", "zeroline": false}, "xaxis3": {"anchor": "y3", "domain": [0.7111111111111111, 1.0]}, "yaxis4": {"rangemode": "nonnegative", "anchor": "x4", "domain": [0.0, 0.4], "title": "EX_succ_e yield (g/g)"}, "barmode": "group", "xaxis6": {"showline": false, "showticklabels": false, "domain": [0.7111111111111111, 1.0], "ticks": "", "autotick": true, "showgrid": false, "anchor": "y6", "zeroline": false}, "showlegend": false, "yaxis6": {"showline": false, "showticklabels": false, "domain": [0.0, 0.4], "ticks": "", "autotick": true, "showgrid": false, "anchor": "x6", "zeroline": false}, "height": 600, "yaxis1": {"rangemode": "nonnegative", "anchor": "x1", "domain": [0.6000000000000001, 1.0], "title": "EX_for_e yield (g/g)"}, "yaxis2": {"rangemode": "nonnegative", "anchor": "x2", "domain": [0.6000000000000001, 1.0], "title": "EX_ac_e yield (g/g)"}, "xaxis2": {"anchor": "y2", "domain": [0.35555555555555557, 0.6444444444444445]}, "margin": {}, "xaxis4": {"anchor": "y4", "domain": [0.0, 0.2888888888888889]}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
 </div>
 </div>
 </div>
@@ -876,7 +901,7 @@ This is the format of your plot grid:
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span><span class="n">FermAT</span><span class="o">.</span><span class="n">init_db</span><span class="p">(</span><span class="n">db_name</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
-<span class="n">experimentID</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">commitToDB</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
+<span class="n">experimentID</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">db_commit</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -885,7 +910,7 @@ This is the format of your plot grid:
 </div>
 <div class="container">
 <div class="highlight"><pre>
-Committed experiment # 14  to DB  ../default_fDAPI_db.sqlite3
+Committed experiment # 13  to DB  ../default_fDAPI_db.sqlite3
 </pre></div></div>
 </div>
 <div class="nbinput nblast container">
@@ -896,7 +921,7 @@ Committed experiment # 14  to DB  ../default_fDAPI_db.sqlite3
 <div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span><span class="c1"># Now let&#39;s recreate the experiment object and load the data from the db</span>
 <span class="n">experiment</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">Experiment</span><span class="p">()</span>
-<span class="n">experiment</span><span class="o">.</span><span class="n">loadFromDB</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">,</span> <span class="n">experimentID</span> <span class="o">=</span> <span class="n">experimentID</span><span class="p">)</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">db_load</span><span class="p">(</span><span class="n">dbName</span> <span class="o">=</span> <span class="s2">&quot;../default_fDAPI_db.sqlite3&quot;</span><span class="p">,</span> <span class="n">experimentID</span> <span class="o">=</span> <span class="n">experimentID</span><span class="p">)</span>
 <span class="c1"># vars(experiment.replicateExperimentObjectDict[&#39;iJO1366Anaerobic&#39;])</span>
 </pre></div>
 </div>
@@ -907,47 +932,14 @@ Committed experiment # 14  to DB  ../default_fDAPI_db.sqlite3
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="n">experiment</span><span class="o">.</span><span class="n">printGenericTimeCourse</span><span class="p">(</span><span class="n">titersToPlot</span> <span class="o">=</span> <span class="n">biomass_keys</span><span class="o">+</span><span class="n">product_keys</span><span class="p">,</span> <span class="n">plotCurveFit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">removePointFraction</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<div class="highlight"><pre>
-This is the format of your plot grid:
-[ (1,1) x1,y1 ]  [ (1,2) x2,y2 ]  [ (1,3) x3,y3 ]
-[ (2,1) x4,y4 ]  [ (2,2) x5,y5 ]  [ (2,3) x6,y6 ]
+<span></span><span class="n">experiment</span><span class="o">.</span><span class="n">printGenericTimeCourse</span><span class="p">(</span><span class="n">titersToPlot</span> <span class="o">=</span> <span class="n">biomass_keys</span><span class="o">+</span><span class="n">product_keys</span><span class="p">)</span>
+<span class="n">replicate_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">experiment</span><span class="o">.</span><span class="n">replicateExperimentObjectDict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">replicateExperimentObjectDict</span><span class="p">]</span>
 
-</pre></div></div>
-</div>
-<div class="nboutput nblast container">
-<div class="container">
-</div>
-<div class="container">
-<div id="29fd2c5f-3579-4f49-9218-8e59168cef90" style="height: 800; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("29fd2c5f-3579-4f49-9218-8e59168cef90", [{"error_y": {"array": [0.0, 0.0011762637203818378, 0.0030033818212304893, 0.0057522664723080544, 0.00979436558730693, 0.015636743987488478, 0.023968954623899925, 0.03572555178361058, 0.05216936382783707, 0.07500225535913872, 0.10651228617369735, 0.149769001188012, 0.20888232467761486, 0.2893454458227225, 0.3984885363555642, 0.5460786305547758, 0.42239984820869264, 0.2392788739403497, 0.19684815435961464, 0.19684815435961464], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": true, "yaxis": "y1", "xaxis": "x1", "line": {"color": "rgb(228,26,28)"}, "y": [0.05, 0.06380616343220248, 0.08145220163316778, 0.10401370444354498, 0.13286962879852712, 0.16978842694395987, 0.21703878462736625, 0.27753203318195907, 0.35500535409941003, 0.45425752413021825, 0.5814523533484246, 0.7445093608914166, 0.9536069027227977, 1.2218302918704054, 1.5660069093027433, 2.0077825353323777, 2.2663463102670702, 2.445852347364035, 2.5135451203522248, 2.5135451203522248], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.047659638016331725, 0.12465524218606606, 0.24791671167096246, 0.44037429197476813, 0.7332132109063123, 1.1689772163482992, 1.805708177523022, 2.722448056523529, 4.026558080291111, 5.863461532528088, 8.429608599146967, 11.989715474970248, 16.899665309754038, 23.63689960249129, 32.84071103192486, 23.265618033718532, 8.900647854775498, 3.145433004680485, 3.145433004680485], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y2", "xaxis": "x2", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 1.0369437810623763, 2.3609220543566938, 4.051958943928069, 6.212545841420474, 8.973991933517231, 12.504581702932354, 17.020056057004965, 22.79708339044846, 30.19057844188918, 39.65597442016962, 51.7778732963393, 67.30691103025605, 87.20720645897177, 112.71744870970923, 145.42956495857393, 165.51903841914242, 179.72982120496226, 184.91485491246044, 184.91485491246044], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.02087610873760567, 0.044771112583011946, 0.07633288635656833, 0.12426279355077746, 0.20149766393767793, 0.3251051942572877, 0.5173075957873317, 0.8077548860767372, 1.2366472894698184, 1.8587203679651219, 2.7484225934131676, 4.006750889202834, 5.770328768293836, 8.223476454353113, 11.61425210584048, 7.281166419858904, 2.353861259560655, 2.99872548077011, 2.99872548077011], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y3", "xaxis": "x3", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 0.45118262180196517, 1.026783640689764, 1.7613611044593034, 2.6991402978136687, 3.896736763756838, 5.4266515826164685, 7.381759046750043, 9.881070424329641, 13.077138874965408, 17.165575629583046, 22.397283044588676, 29.09418472214456, 37.66945826747403, 48.65356679908773, 62.72776072086884, 71.66782329396952, 78.14247534814369, 80.50578622384865, 80.50578622384865], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.022461884085903997, 0.05415348941627017, 0.1018614030652925, 0.17523060611200295, 0.28742054382472226, 0.45624176406064687, 0.7058570300138308, 1.069115068619799, 1.5906645693652213, 2.3310910796267974, 3.372415322947704, 4.82540359567879, 6.839284699253223, 9.614656186268608, 13.42061181252131, 9.025695046216429, 3.343993133852462, 1.6638785965512333, 1.6638785965512333], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y4", "xaxis": "x4", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 0.45282722662022945, 1.0308058053879645, 1.7687748540543913, 2.711340723116203, 3.915634046418831, 5.4548503020032335, 7.422797658518553, 9.939740620757169, 13.15991086827301, 17.281163762036922, 22.557397131744377, 29.314527020342915, 37.971045017562304, 49.064478360227845, 63.28545725897108, 72.11819797023347, 78.4494123610332, 80.74513054654273, 80.74513054654273], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.00020331966467986324, 0.000442417160386072, 0.0007666833438366977, 0.0012632787131788969, 0.002058235552517526, 0.0033177266917375895, 0.005259874263377683, 0.008176995579047615, 0.012465687276572384, 0.018665574042841727, 0.02750993409051995, 0.03999264179777692, 0.05745707617780528, 0.08171429374141599, 0.1152000149448563, 0.06737768907144025, 0.03958502305434096, 0.07746143718382291, 0.07746143718382291], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y5", "xaxis": "x5", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 0.004292658663948274, 0.00976930687561698, 0.016758917957217782, 0.025682534318471846, 0.03707921557889514, 0.05163935038359194, 0.07024743244352782, 0.09403700823789352, 0.12446128092818895, 0.16338385854726606, 0.21319542888698687, 0.27696381206623644, 0.3586269951922436, 0.46324153155596404, 0.5973022747285766, 0.6814452237333005, 0.7441457698616049, 0.7691042266519047, 0.7691042266519047], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}], {"yaxis4": {"domain": [0.0, 0.425], "title": "EX_etoh_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x4"}, "yaxis5": {"domain": [0.0, 0.425], "title": "EX_succ_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x5"}, "xaxis5": {"domain": [0.35555555555555557, 0.6444444444444445], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y5"}, "yaxis3": {"domain": [0.575, 1.0], "title": "EX_ac_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x3"}, "xaxis3": {"domain": [0.7111111111111111, 1.0], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y3"}, "yaxis2": {"domain": [0.575, 1.0], "title": "EX_for_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x2"}, "xaxis6": {"domain": [0.7111111111111111, 1.0], "showticklabels": false, "ticks": "", "anchor": "y6", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "xaxis4": {"domain": [0.0, 0.2888888888888889], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y4"}, "yaxis6": {"domain": [0.0, 0.425], "showticklabels": false, "ticks": "", "anchor": "x6", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "xaxis2": {"domain": [0.35555555555555557, 0.6444444444444445], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y2"}, "height": 800, "yaxis1": {"domain": [0.575, 1.0], "title": "Ec_biomass_iJO1366_core_53p95M ", "rangemode": "tozero", "showgrid": false, "anchor": "x1"}, "xaxis1": {"domain": [0.0, 0.2888888888888889], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y1"}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
-</div>
-<div class="nbinput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [17]:
-</pre></div>
-</div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="n">replicate_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">experiment</span><span class="o">.</span><span class="n">replicateExperimentObjectDict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">replicateExperimentObjectDict</span><span class="p">]</span>
-<span class="n">cl_scale</span> <span class="o">=</span> <span class="s1">&#39;Set1&#39;</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [18]:
-</pre></div>
-</div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="n">filename</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">printGenericTimeCourse_plotly</span><span class="p">(</span><span class="n">replicateTrialList</span><span class="o">=</span><span class="n">replicate_list</span><span class="p">,</span> <span class="n">dbName</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">strainsToPlot</span><span class="o">=</span><span class="p">[],</span>
+<span class="c1"># Note this is only done to improve rendering of documentations</span>
+<span class="c1"># An interactive plot can be generated by setting output_type=&#39;iPython&#39;</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">printGenericTimeCourse_plotly</span><span class="p">(</span><span class="n">replicateTrialList</span><span class="o">=</span><span class="n">replicate_list</span><span class="p">,</span> <span class="n">dbName</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">strainsToPlot</span><span class="o">=</span><span class="p">[],</span>
                                      <span class="n">titersToPlot</span><span class="o">=</span><span class="n">product_keys</span><span class="p">,</span>
-                                     <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">,</span> <span class="n">cl_scale</span><span class="o">=</span><span class="n">cl_scale</span><span class="p">,</span>
+                                     <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;image&#39;</span><span class="p">,</span>
                                      <span class="n">yieldFlag</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">titerFlag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">endpointFlag</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sortBy</span><span class="o">=</span><span class="s1">&#39;strainID&#39;</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Image</span>
@@ -966,27 +958,11 @@ This is the format of your plot grid:
 
 </pre></div></div>
 </div>
-<div class="nboutput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
-<span></span>Out[18]:
-</pre></div>
+<div class="nboutput container">
+<div class="container">
 </div>
 <div class="container">
-<img alt="_images/gettingStarted_33_1.png" src="_images/gettingStarted_33_1.png" />
-</div>
-</div>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [19]:
-</pre></div>
-</div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">printGenericTimeCourse_plotly</span><span class="p">(</span><span class="n">replicateTrialList</span><span class="o">=</span><span class="n">replicate_list</span><span class="p">,</span> <span class="n">dbName</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">strainsToPlot</span><span class="o">=</span><span class="p">[],</span>
-                                     <span class="n">titersToPlot</span><span class="o">=</span><span class="n">product_keys</span><span class="p">,</span>
-                                     <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;iPython&#39;</span><span class="p">,</span> <span class="n">cl_scale</span><span class="o">=</span><span class="n">cl_scale</span><span class="p">,</span>
-                                     <span class="n">yieldFlag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">titerFlag</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">endpointFlag</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sortBy</span><span class="o">=</span><span class="s1">&#39;strainID&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div id="56471153-7d95-4aeb-945a-881531dc0a1c" style="height: 600; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("56471153-7d95-4aeb-945a-881531dc0a1c", [{"mode": "lines+markers", "error_y": {"visible": true, "array": [0.0, 0.000488739598805292, 0.0012363340341351799, 0.0023456882949385144, 0.003956098615551366, 0.006255326509172439, 0.009495523007680647, 0.014014192281307656, 0.020261757200179916, 0.02883775041953196, 0.0405382712819885, 0.05641814987529873, 0.07787227422197104, 0.10674189573199602, 0.1454534362101683, 0.1971995875277609, 0.26617537743215974, 0.1974632542973218, 0.1974632542973218, 0.1974632542973218], "color": "rgb(166,206,227)", "type": "data"}, "type": "scatter", "y": [0.05, 0.06300394851797302, 0.07939472782770758, 0.10005571140221549, 0.12610102599386763, 0.15893591998541987, 0.20033295190200645, 0.252528150944351, 0.3183423872115768, 0.40133458198525496, 0.5059951130975369, 0.6379899899568668, 0.8044691350039845, 1.01445564204692, 1.2793373047197067, 1.613487340177788, 2.035048316711859, 2.389385772908177, 2.389385772908177, 2.389385772908177], "xaxis": "x1", "marker": {"color": "rgb(166,206,227)"}, "legendgroup": "iJO1366+Anaerobic", "showlegend": true, "yaxis": "y1", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "line": {"color": "rgb(166,206,227)"}, "name": "iJO1366+Anaerobic"}, {"mode": "lines+markers", "error_y": {"visible": true, "array": [0.0, 0.06149955389764098, 0.14828236607787268, 0.26958523684619207, 0.4377731831594347, 0.6693481812519064, 0.98627380723369, 1.4177121815820881, 2.002299479385895, 2.7911232641720485, 3.8516141342458283, 5.27262807884674, 7.171076908977578, 9.700572113635994, 13.062683476694948, 17.52159353495077, 23.423157746183115, 17.940988645365856, 17.940988645365856, 17.940988645365856], "color": "rgb(166,206,227)", "type": "data"}, "type": "scatter", "y": [0.0, 0.9518038577189757, 2.1517113218272788, 3.664491239026195, 5.571846711633373, 7.976849523039985, 11.009537783350147, 14.833982368606875, 19.657207746549368, 25.74045538728698, 33.41340509657147, 43.092133241676585, 55.30179051595198, 70.70524253702821, 90.13924284463212, 114.66012344617573, 145.60151086398818, 171.29036103099247, 171.29036103099247, 171.29036103099247], "xaxis": "x2", "marker": {"color": "rgb(166,206,227)"}, "legendgroup": "iJO1366+Anaerobic", "showlegend": false, "yaxis": "y2", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "line": {"color": "rgb(166,206,227)"}, "name": "iJO1366+Anaerobic"}, {"mode": "lines+markers", "error_y": {"visible": true, "array": [0.0, 0.027133219576679437, 0.05910557176222008, 0.09704388762942215, 0.1425834187184181, 0.1981700376121144, 0.2675079266124543, 0.3561830135186109, 0.47247532199776093, 0.6283583417891261, 0.8406951583233044, 1.1326961922960725, 1.5357843856114475, 2.092080338974429, 2.8577566947447703, 3.907538803243689, 5.3406819607876015, 4.101507185071511, 4.101507185071511, 4.101507185071511], "color": "rgb(166,206,227)", "type": "data"}, "type": "scatter", "y": [0.0, 0.4368635004457151, 0.9872123287437782, 1.680568500177557, 2.5541450978491023, 3.654852910113904, 5.041831484207135, 6.789641852583602, 8.992293956910565, 11.76832771005731, 15.267223402221461, 19.67749019063432, 25.23687229158903, 32.2452285788075, 41.08078665709026, 52.220657282943826, 66.266727523672, 78.33893604196507, 78.33893604196507, 78.33893604196507], "xaxis": "x3", "marker": {"color": "rgb(166,206,227)"}, "legendgroup": "iJO1366+Anaerobic", "showlegend": false, "yaxis": "y3", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "line": {"color": "rgb(166,206,227)"}, "name": "iJO1366+Anaerobic"}, {"mode": "lines+markers", "error_y": {"visible": true, "array": [0.0, 0.019877521759226455, 0.04664420440937138, 0.08317396139694447, 0.13345830696736005, 0.20296980727072772, 0.29913768444795724, 0.4319752316364689, 0.6149099990177823, 0.8658812238766843, 1.20878706493522, 1.6753885337525605, 2.307808488977172, 3.161806593278977, 4.311064816490203, 5.8527895094348334, 7.915026735003249, 7.035742666469989, 7.035742666469989, 7.035742666469989], "color": "rgb(166,206,227)", "type": "data"}, "type": "scatter", "y": [0.0, 0.44222360410027683, 0.9995322395807306, 1.701918411248136, 2.5872025052488934, 3.7030788530081606, 5.109697493181262, 6.882922090925813, 9.118441160931136, 11.936956811111674, 15.49073347871721, 19.971864098055523, 25.622704418092642, 32.749045482105586, 41.73674357304772, 53.07271698224861, 67.37145795415692, 79.5676556397868, 79.5676556397868, 79.5676556397868], "xaxis": "x4", "marker": {"color": "rgb(166,206,227)"}, "legendgroup": "iJO1366+Anaerobic", "showlegend": false, "yaxis": "y4", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "line": {"color": "rgb(166,206,227)"}, "name": "iJO1366+Anaerobic"}, {"mode": "lines+markers", "error_y": {"visible": true, "array": [0.0, 0.00032038193881102486, 0.000754084376982603, 0.0013414709290851924, 0.0021367309301781536, 0.0032123471173672088, 0.004664954156381809, 0.006623017085436878, 0.009256891733737586, 0.012791994949627275, 0.01752603119706983, 0.023851506750050704, 0.03228512320838379, 0.04350612384871048, 0.05840627226189449, 0.07815494642766846, 0.10428385213025827, 0.07788538876031612, 0.07788538876031612, 0.07788538876031612], "color": "rgb(166,206,227)", "type": "data"}, "type": "scatter", "y": [0.0, 0.004449549870958668, 0.01005840679354595, 0.017129064511984454, 0.02604306454708898, 0.037281684421946494, 0.051452049631379226, 0.06932009333110883, 0.09185216032228122, 0.12026752975137348, 0.15610472283732596, 0.20130522371333442, 0.2583191894722201, 0.3302389386150509, 0.42096752525141123, 0.5354316401309915, 0.6798505115494805, 0.7998742516043544, 0.7998742516043544, 0.7998742516043544], "xaxis": "x5", "marker": {"color": "rgb(166,206,227)"}, "legendgroup": "iJO1366+Anaerobic", "showlegend": false, "yaxis": "y5", "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "line": {"color": "rgb(166,206,227)"}, "name": "iJO1366+Anaerobic"}], {"yaxis5": {"rangemode": "tozero", "anchor": "x5", "domain": [0.0, 0.4], "title": "EX_succ_e <br>titer (g/L)"}, "yaxis3": {"rangemode": "tozero", "anchor": "x3", "domain": [0.6000000000000001, 1.0], "title": "EX_ac_e <br>titer (g/L)"}, "xaxis1": {"rangemode": "tozero", "anchor": "y1", "domain": [0.0, 0.2888888888888889], "title": "Time (hours)"}, "xaxis3": {"rangemode": "tozero", "anchor": "y3", "domain": [0.7111111111111111, 1.0], "title": "Time (hours)"}, "xaxis5": {"rangemode": "tozero", "anchor": "y5", "domain": [0.35555555555555557, 0.6444444444444445], "title": "Time (hours)"}, "yaxis4": {"rangemode": "tozero", "anchor": "x4", "domain": [0.0, 0.4], "title": "EX_etoh_e <br>titer (g/L)"}, "xaxis6": {"showline": false, "showticklabels": false, "domain": [0.7111111111111111, 1.0], "ticks": "", "autotick": true, "showgrid": false, "anchor": "y6", "zeroline": false}, "legend": {}, "xaxis2": {"rangemode": "tozero", "anchor": "y2", "domain": [0.35555555555555557, 0.6444444444444445], "title": "Time (hours)"}, "yaxis6": {"showline": false, "showticklabels": false, "domain": [0.0, 0.4], "ticks": "", "autotick": true, "showgrid": false, "anchor": "x6", "zeroline": false}, "height": 600, "yaxis1": {"rangemode": "tozero", "anchor": "x1", "domain": [0.6000000000000001, 1.0], "title": "Ec_biomass_iJO1366_core_53p95M <br>titer (g/L)"}, "yaxis2": {"rangemode": "tozero", "anchor": "x2", "domain": [0.6000000000000001, 1.0], "title": "EX_for_e <br>titer (g/L)"}, "xaxis4": {"rangemode": "tozero", "anchor": "y4", "domain": [0.0, 0.2888888888888889], "title": "Time (hours)"}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
 </div>
 <div class="nboutput container">
 <div class="container">
@@ -997,53 +973,107 @@ This is the format of your plot grid:
 [ (1,1) x1,y1 ]  [ (1,2) x2,y2 ]  [ (1,3) x3,y3 ]
 [ (2,1) x4,y4 ]  [ (2,2) x5,y5 ]  [ (2,3) x6,y6 ]
 
+1   1
+1   2
+1   3
+2   1
 </pre></div></div>
 </div>
 <div class="nboutput nblast container">
-<div class="container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>Out[16]:
+</pre></div>
 </div>
 <div class="container">
-<div id="f18403c7-e294-40ff-bf70-6bf575ed2eee" style="height: 800; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("f18403c7-e294-40ff-bf70-6bf575ed2eee", [{"error_y": {"array": [3.145433004680485], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "type": "bar", "legendgroup": ["iJO1366\tAnaerobic\t"], "marker": {"color": "rgb(228,26,28)"}, "x": ["iJO1366Anaerobic"], "yaxis": "y1", "xaxis": "x1", "name": ["iJO1366Anaerobic"], "y": [184.91485491246044], "showlegend": true}, {"error_y": {"array": [2.99872548077011], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "type": "bar", "legendgroup": ["iJO1366\tAnaerobic\t"], "marker": {"color": "rgb(228,26,28)"}, "x": ["iJO1366Anaerobic"], "yaxis": "y2", "xaxis": "x2", "name": ["iJO1366Anaerobic"], "y": [80.50578622384865], "showlegend": false}, {"error_y": {"array": [1.6638785965512333], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "type": "bar", "legendgroup": ["iJO1366\tAnaerobic\t"], "marker": {"color": "rgb(228,26,28)"}, "x": ["iJO1366Anaerobic"], "yaxis": "y3", "xaxis": "x3", "name": ["iJO1366Anaerobic"], "y": [80.74513054654273], "showlegend": false}, {"error_y": {"array": [0.07746143718382291], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "type": "bar", "legendgroup": ["iJO1366\tAnaerobic\t"], "marker": {"color": "rgb(228,26,28)"}, "x": ["iJO1366Anaerobic"], "yaxis": "y4", "xaxis": "x4", "name": ["iJO1366Anaerobic"], "y": [0.7691042266519047], "showlegend": false}], {"yaxis4": {"domain": [0.0, 0.425], "title": "EX_succ_e", "showgrid": false, "anchor": "x4"}, "yaxis5": {"domain": [0.0, 0.425], "showticklabels": false, "ticks": "", "anchor": "x5", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "xaxis5": {"domain": [0.35555555555555557, 0.6444444444444445], "showticklabels": false, "ticks": "", "anchor": "y5", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "yaxis3": {"domain": [0.575, 1.0], "title": "EX_etoh_e", "showgrid": false, "anchor": "x3"}, "xaxis3": {"domain": [0.7111111111111111, 1.0], "title": "Time (hours)", "showgrid": false, "anchor": "y3"}, "yaxis2": {"domain": [0.575, 1.0], "title": "EX_ac_e", "showgrid": false, "anchor": "x2"}, "xaxis6": {"domain": [0.7111111111111111, 1.0], "showticklabels": false, "ticks": "", "anchor": "y6", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "xaxis4": {"domain": [0.0, 0.2888888888888889], "title": "Time (hours)", "showgrid": false, "anchor": "y4"}, "yaxis6": {"domain": [0.0, 0.425], "showticklabels": false, "ticks": "", "anchor": "x6", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "xaxis2": {"domain": [0.35555555555555557, 0.6444444444444445], "title": "Time (hours)", "showgrid": false, "anchor": "y2"}, "barmode": "group", "height": 800, "yaxis1": {"domain": [0.575, 1.0], "title": "EX_for_e", "showgrid": false, "anchor": "x1"}, "xaxis1": {"domain": [0.0, 0.2888888888888889], "title": "Time (hours)", "showgrid": false, "anchor": "y1"}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
+<img alt="_images/gettingStarted_31_3.png" src="_images/gettingStarted_31_3.png" />
 </div>
+</div>
+</div>
+<div class="section" id="Exporting-Data">
+<h1>Exporting Data<a class="headerlink" href="#Exporting-Data" title="Permalink to this headline">¶</a></h1>
+<p>The data can be exported by calling the data function from any of the
+modules, it will output the data from all of its indiviudal trials and
+time courses, as well as the means and standard deviations.</p>
 <div class="nbinput container">
 <div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [20]:
+<span></span>In [17]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">printGenericTimeCourse_plotly</span><span class="p">(</span><span class="n">replicateTrialList</span><span class="o">=</span><span class="n">replicate_list</span><span class="p">,</span> <span class="n">dbName</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">strainsToPlot</span><span class="o">=</span><span class="p">[],</span>
-                                     <span class="n">titersToPlot</span><span class="o">=</span><span class="n">product_keys</span><span class="p">,</span>
-                                     <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;iPython&#39;</span><span class="p">,</span> <span class="n">cl_scale</span><span class="o">=</span><span class="n">cl_scale</span><span class="p">,</span>
-                                     <span class="n">yieldFlag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">titerFlag</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">endpointFlag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sortBy</span><span class="o">=</span><span class="s1">&#39;strainID&#39;</span><span class="p">)</span>
+<span></span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span>
+
+<span class="c1"># Alternatively, this can be saved to a csv - here is some sample code using the csv package to do that</span>
+<span class="c1"># with open(&#39;file_name.csv&#39;,&#39;w&#39;, newline=&#39;&#39;) as csvfile:</span>
+<span class="c1">#     writer = csv.writer(csvfile, delimiter=&#39;,&#39;)</span>
+<span class="c1">#     for row in experiment.data():</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             writer.writerow(row)</span>
+<span class="c1">#         except Exception:</span>
+<span class="c1">#             print(row)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
+<div class="nboutput nblast container">
 <div class="container">
 </div>
 <div class="container">
 <div class="highlight"><pre>
-This is the format of your plot grid:
-[ (1,1) x1,y1 ]  [ (1,2) x2,y2 ]  [ (1,3) x3,y3 ]
-[ (2,1) x4,y4 ]  [ (2,2) x5,y5 ]  [ (2,3) x6,y6 ]
-
+[&apos;iJO1366Anaerobic&apos;]
+[&apos;Ec_biomass_iJO1366_core_53p95M&apos;]
+[&apos;Time (hours)&apos;, 0.0, 0.02002002002002002, 0.04004004004004004, 0.06006006006006006]
+[&apos;rep #4&apos;, 0.050000000000000003, 0.050229188959251034, 0.05045942840644236, 0.050690723138870318]
+[&apos;rep #4&apos;, 0.050000000000000003, 0.050228323129080113, 0.050457688820918035, 0.050688101831439424]
+[&apos;rep #4&apos;, 0.050000000000000003, 0.050244768031783536, 0.050490734208223087, 0.050737904420754064]
+[&apos;rep #4&apos;, 0.050000000000000003, 0.050224441037270397, 0.050449889491978615, 0.050676349863531249]
+[&apos;Average&apos;, 0.050000000000000003, 0.05023168028934627, 0.05046443523189053, 0.050698269813648764]
+[&apos;Std&apos;, 0.0, 7.7648732027372769e-06, 1.5602860857898001e-05, 2.3514497953214573e-05]
+[]
+[&apos;EX_glc_e&apos;]
+[&apos;Time (hours)&apos;, 0.0, 0.02002002002002002, 0.04004004004004004, 0.06006006006006006]
+[&apos;rep #4&apos;, 100.0, 99.990326739574257, 99.98060914174475, 99.970847004034482]
+[&apos;rep #4&apos;, 100.0, 99.989589763475166, 99.979131992016192, 99.968626468779917]
+[&apos;rep #4&apos;, 100.0, 99.990761550304015, 99.981477878202753, 99.972148761331681]
+[&apos;rep #4&apos;, 100.0, 99.989539151796151, 99.979031349429974, 99.968476383191131]
+[&apos;Average&apos;, 100.0, 99.990054301287387, 99.98006259034841, 99.97002465433431]
+[&apos;Std&apos;, 0.0, 0.00051371153602412334, 0.001028497596895091, 0.0015443571431965077]
+[]
+[&apos;EX_succ_e&apos;]
+[&apos;Time (hours)&apos;, 0.0, 0.02002002002002002, 0.04004004004004004, 0.06006006006006006]
+[&apos;rep #4&apos;, 0.0, 7.318903466499919e-05, 0.00014671353138073621, 0.00022057502211232066]
+[&apos;rep #4&apos;, 0.0, 8.4555509224965247e-05, 0.00016949711347780274, 0.0002548265740330561]
+[&apos;rep #4&apos;, 0.0, 8.496038940955278e-05, 0.00017033666170954107, 0.0002561308618510246]
+[&apos;rep #4&apos;, 0.0, 7.437787012498523e-05, 0.000149089589907161, 0.00022413665041198696]
+[&apos;Average&apos;, 0.0, 7.9270700856125622e-05, 0.00015890922411881025, 0.00023891727710209708]
+[&apos;Std&apos;, 0.0, 5.5051841829824242e-06, 1.1043661851718597e-05, 1.6615643774830888e-05]
+[]
+[&apos;EX_etoh_e&apos;]
+[&apos;Time (hours)&apos;, 0.0, 0.02002002002002002, 0.04004004004004004, 0.06006006006006006]
+[&apos;rep #4&apos;, 0.0, 0.0083771295238400795, 0.016792655633483301, 0.02524675367582702]
+[&apos;rep #4&apos;, 0.0, 0.0074620235586083774, 0.014958120002830613, 0.02248844476514247]
+[&apos;rep #4&apos;, 0.0, 0.007995946934166609, 0.016031034196500964, 0.024105454245162351]
+[&apos;rep #4&apos;, 0.0, 0.0076823753784817572, 0.015399233572647874, 0.023150728592347732]
+[&apos;Average&apos;, 0.0, 0.0078793688487742049, 0.015795260851365688, 0.023747845319619893]
+[&apos;Std&apos;, 0.0, 0.00034436160434826865, 0.00069065690242087316, 0.0010388994834127888]
+[]
+[&apos;EX_for_e&apos;]
+[&apos;Time (hours)&apos;, 0.0, 0.02002002002002002, 0.04004004004004004, 0.06006006006006006]
+[&apos;rep #4&apos;, 0.0, 0.015976668629151033, 0.032026566343052607, 0.048150027559271766]
+[&apos;rep #4&apos;, 0.0, 0.016908557600100342, 0.033894322588314471, 0.05095764716655498]
+[&apos;rep #4&apos;, 0.0, 0.018642985255193631, 0.037377228314737707, 0.0562031779053003]
+[&apos;rep #4&apos;, 0.0, 0.016295704164526251, 0.032664552602206104, 0.049106871995715222]
+[&apos;Average&apos;, 0.0, 0.016955978912242813, 0.033990667462077725, 0.051104431156710567]
+[&apos;Std&apos;, 0.0, 0.0010299575907583621, 0.0020672657407066475, 0.0031119731346950976]
+[]
+[&apos;EX_ac_e&apos;]
+[&apos;Time (hours)&apos;, 0.0, 0.02002002002002002, 0.04004004004004004, 0.06006006006006006]
+[&apos;rep #4&apos;, 0.0, 0.0075103782835149258, 0.015055180397216121, 0.022634563545492772]
+[&apos;rep #4&apos;, 0.0, 0.0074931417624190212, 0.015020498501533579, 0.022582226298005471]
+[&apos;rep #4&apos;, 0.0, 0.0074850934093265396, 0.015006826508088164, 0.022565379458473478]
+[&apos;rep #4&apos;, 0.0, 0.0086527370607158843, 0.017344312465372321, 0.026074899676819772]
+[&apos;Average&apos;, 0.0, 0.0077853376289940927, 0.015606704468052547, 0.023464267244697877]
+[&apos;Std&apos;, 0.0, 0.00050087658951705706, 0.0010033632636158112, 0.0015074652075576034]
 </pre></div></div>
-</div>
-<div class="nboutput nblast container">
-<div class="container">
-</div>
-<div class="container">
-<div id="bf8de86c-6f36-41d0-8cff-48ce4ad2046f" style="height: 800; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("bf8de86c-6f36-41d0-8cff-48ce4ad2046f", [{"error_y": {"array": [0.0, 0.047659638016331725, 0.12465524218606606, 0.24791671167096246, 0.44037429197476813, 0.7332132109063123, 1.1689772163482992, 1.805708177523022, 2.722448056523529, 4.026558080291111, 5.863461532528088, 8.429608599146967, 11.989715474970248, 16.899665309754038, 23.63689960249129, 32.84071103192486, 23.265618033718532, 8.900647854775498, 3.145433004680485, 3.145433004680485], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": true, "yaxis": "y1", "xaxis": "x1", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 1.0369437810623763, 2.3609220543566938, 4.051958943928069, 6.212545841420474, 8.973991933517231, 12.504581702932354, 17.020056057004965, 22.79708339044846, 30.19057844188918, 39.65597442016962, 51.7778732963393, 67.30691103025605, 87.20720645897177, 112.71744870970923, 145.42956495857393, 165.51903841914242, 179.72982120496226, 184.91485491246044, 184.91485491246044], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.02087610873760567, 0.044771112583011946, 0.07633288635656833, 0.12426279355077746, 0.20149766393767793, 0.3251051942572877, 0.5173075957873317, 0.8077548860767372, 1.2366472894698184, 1.8587203679651219, 2.7484225934131676, 4.006750889202834, 5.770328768293836, 8.223476454353113, 11.61425210584048, 7.281166419858904, 2.353861259560655, 2.99872548077011, 2.99872548077011], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y2", "xaxis": "x2", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 0.45118262180196517, 1.026783640689764, 1.7613611044593034, 2.6991402978136687, 3.896736763756838, 5.4266515826164685, 7.381759046750043, 9.881070424329641, 13.077138874965408, 17.165575629583046, 22.397283044588676, 29.09418472214456, 37.66945826747403, 48.65356679908773, 62.72776072086884, 71.66782329396952, 78.14247534814369, 80.50578622384865, 80.50578622384865], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.022461884085903997, 0.05415348941627017, 0.1018614030652925, 0.17523060611200295, 0.28742054382472226, 0.45624176406064687, 0.7058570300138308, 1.069115068619799, 1.5906645693652213, 2.3310910796267974, 3.372415322947704, 4.82540359567879, 6.839284699253223, 9.614656186268608, 13.42061181252131, 9.025695046216429, 3.343993133852462, 1.6638785965512333, 1.6638785965512333], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y3", "xaxis": "x3", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 0.45282722662022945, 1.0308058053879645, 1.7687748540543913, 2.711340723116203, 3.915634046418831, 5.4548503020032335, 7.422797658518553, 9.939740620757169, 13.15991086827301, 17.281163762036922, 22.557397131744377, 29.314527020342915, 37.971045017562304, 49.064478360227845, 63.28545725897108, 72.11819797023347, 78.4494123610332, 80.74513054654273, 80.74513054654273], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}, {"error_y": {"array": [0.0, 0.00020331966467986324, 0.000442417160386072, 0.0007666833438366977, 0.0012632787131788969, 0.002058235552517526, 0.0033177266917375895, 0.005259874263377683, 0.008176995579047615, 0.012465687276572384, 0.018665574042841727, 0.02750993409051995, 0.03999264179777692, 0.05745707617780528, 0.08171429374141599, 0.1152000149448563, 0.06737768907144025, 0.03958502305434096, 0.07746143718382291, 0.07746143718382291], "type": "data", "visible": true, "color": "rgb(228,26,28)"}, "showlegend": false, "yaxis": "y4", "xaxis": "x4", "line": {"color": "rgb(228,26,28)"}, "y": [0.0, 0.004292658663948274, 0.00976930687561698, 0.016758917957217782, 0.025682534318471846, 0.03707921557889514, 0.05163935038359194, 0.07024743244352782, 0.09403700823789352, 0.12446128092818895, 0.16338385854726606, 0.21319542888698687, 0.27696381206623644, 0.3586269951922436, 0.46324153155596404, 0.5973022747285766, 0.6814452237333005, 0.7441457698616049, 0.7691042266519047, 0.7691042266519047], "mode": "lines+markers", "type": "scatter", "legendgroup": "iJO1366\tAnaerobic\t", "marker": {"color": "rgb(228,26,28)"}, "x": [0.0, 1.001001001001001, 2.002002002002002, 3.003003003003003, 4.004004004004004, 5.005005005005005, 6.006006006006006, 7.007007007007007, 8.008008008008009, 9.00900900900901, 10.01001001001001, 11.01101101101101, 12.012012012012011, 13.013013013013014, 14.014014014014014, 15.015015015015015, 16.016016016016017, 17.017017017017018, 18.01801801801802, 19.01901901901902], "name": "iJO1366Anaerobic"}], {"yaxis4": {"domain": [0.0, 0.425], "title": "EX_succ_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x4"}, "yaxis5": {"domain": [0.0, 0.425], "showticklabels": false, "ticks": "", "anchor": "x5", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "xaxis5": {"domain": [0.35555555555555557, 0.6444444444444445], "showticklabels": false, "ticks": "", "anchor": "y5", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "yaxis3": {"domain": [0.575, 1.0], "title": "EX_etoh_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x3"}, "xaxis3": {"domain": [0.7111111111111111, 1.0], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y3"}, "yaxis2": {"domain": [0.575, 1.0], "title": "EX_ac_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x2"}, "xaxis6": {"domain": [0.7111111111111111, 1.0], "showticklabels": false, "ticks": "", "anchor": "y6", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "xaxis4": {"domain": [0.0, 0.2888888888888889], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y4"}, "yaxis6": {"domain": [0.0, 0.425], "showticklabels": false, "ticks": "", "anchor": "x6", "showline": false, "showgrid": false, "zeroline": false, "autotick": true}, "xaxis2": {"domain": [0.35555555555555557, 0.6444444444444445], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y2"}, "height": 800, "yaxis1": {"domain": [0.575, 1.0], "title": "EX_for_e ", "rangemode": "tozero", "showgrid": false, "anchor": "x1"}, "xaxis1": {"domain": [0.0, 0.2888888888888889], "title": "Time (hours)", "rangemode": "tozero", "showgrid": false, "anchor": "y1"}}, {"showLink": false, "linkText": "Export to plot.ly"})});</script></div>
-</div>
-<div class="nbinput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [ ]:
-</pre></div>
-</div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span>
-</pre></div>
-</div>
 </div>
 </div>
 
@@ -1054,7 +1084,7 @@ This is the format of your plot grid:
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="importingData.html" class="btn btn-neutral float-right" title="Importing Data" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="import_experiment_data.html" class="btn btn-neutral float-right" title="Importing Raw Experimental Data" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="setup.html" class="btn btn-neutral" title="Quick Start Guide" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

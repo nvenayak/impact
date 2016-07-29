@@ -13,13 +13,13 @@ import matplotlib.pyplot as plt
 
 import dill as pickle
 
-from .TimePoint import *
+from .TimePoint import TimePoint
 from .Titer import *
 from .TrialIdentifier import *
-from .SingleTrial import *
-from .ReplicateTrial import *
-from .Experiment import *
-from .Project import *
+from .SingleTrial import SingleTrial
+from .ReplicateTrial import ReplicateTrial
+from .Experiment import Experiment
+from .Project import Project
 
 from .QtGUI import *
 
@@ -176,7 +176,9 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
         # https://plot.ly/ipython-notebooks/color-scales/
         if len(replicateTrialList) > int(cl_scales[0]):
-            colors = cl.interp(color_scale, len(replicateTrialList))
+            colors = cl.interp(color_scale, 500)
+            # Index the list
+            colors = [colors[int(x)] for x in np.arange(0,500,500/round(len(replicateTrialList)))]
         else:
             colors = color_scale
     # color_scale = cl.interp(color_scale, len(replicateTrialList))
@@ -187,7 +189,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         height = row_height * rows
     else:
         height = fig_height
-
+    np.linspace
     # Set default axes
     for titer in titersToPlot:
         if secondary_y_axis_titers is None:
@@ -349,15 +351,15 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     if sort_by_product_in_legend_flag:
                         x = [product for _ in replicateTrialList]
                         legendgroup = [replicate.runIdentifier.strainID + '+' +
-                         replicate.runIdentifier.identifier1 + ',' +
-                         replicate.runIdentifier.identifier2 for replicate in replicateTrialList]
+                                       replicate.runIdentifier.identifier1 + ',' +
+                                       replicate.runIdentifier.identifier2 for replicate in replicateTrialList]
                     else:
                         legendgroup = None
                         x = [(replicate.runIdentifier.strainID + '+' +
                              replicate.runIdentifier.identifier1 +
                              replicate.runIdentifier.identifier2).split('LMSE')[-1]
                              for replicate in replicateTrialList
-                             if getattr(replicate.runIdentifier, sortBy) == unique or sort_by_flag is False]
+                             if getattr(replicate.runIdentifier, sortBy) == unique or sort_by_flag is False]    # TODO remove the LMSE removal
 
                 if sort_by_product_in_legend_flag:
                     showlegend_flag = True
@@ -397,7 +399,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     fig['layout'].update(height=height, margin = layout_margin, showlegend = False)
                     showlegend_flag = False
 
-        else:
+        else:   #time course (not end point)
             for replicate in replicateTrialList:
                 # Determine how many points should be plotted
                 required_num_pts = replicate.t[-1] * pts_per_hour
@@ -571,6 +573,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
             fig['layout']['xaxis' + str(pltNum)].update(showgrid=False, zeroline=False, showline =False, autotick=True, ticks='', showticklabels=False)
             fig['layout']['yaxis' + str(pltNum)].update(showgrid=False, zeroline=False, showline =False, autotick=True, ticks='', showticklabels=False)
 
+    # Set the output type parameters, import the appropriate packages, and export
     if output_type == 'html':
         return plot(fig, show_link=False, output_type='div')
     elif output_type == 'file':
@@ -584,7 +587,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         import string
         import plotly
 
-        plotly.tools.set_credentials_file(username='DemoAccount', api_key='lr1c37zw81')
+        plotly.tools.set_credentials_file(username='nvenayak', api_key='j89v5k576t')
         fig['layout'].update(width=number_of_columns*column_width_multiplier)
         random_file_name = ''.join(random.choice(string.ascii_letters) for _ in range(10))+'.png'
         py.image.save_as(fig, random_file_name, scale=img_scale)

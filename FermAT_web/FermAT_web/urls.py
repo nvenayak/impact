@@ -22,7 +22,7 @@ from . import views
 import include
 
 urlpatterns = [
-    url(r'^$',views.core),
+    url(r'^$',views.welcome),
 
     url(r'^registration/register$',views.register),
     url(r'^createAccount/$',views.index),
@@ -33,6 +33,11 @@ urlpatterns = [
     url(r'^logout',views.logout),
 
     url(r'^experimentSelect/(?P<experimentID>[0-9]+)$',views.experimentSelect),
+    url(r'^experimentSelect_analyze/(?P<experimentID>[0-9]+)$', views.experimentSelect_analyze),
+    url(r'^experimentSelect_input/(?P<experimentID>[0-9]+)$', views.experimentSelect_input),
+    url(r'^experimentSelect_export/(?P<experimentID>[0-9]+)$', views.experimentSelect_export),
+    url(r'^export_data/$', views.export_data),
+
     url(r'^selectStrains/(P<identifier>[a-z|A-Z]+)/(P<identifierName>[a-z|A-Z]+)$', views.selectStrains),
     url(r'^selectStrains/$',views.selectStrains),
     url(r'^selectStrainSubset/$',views.selectStrainSubset),
@@ -40,11 +45,22 @@ urlpatterns = [
     url(r'^selectTiters/$',views.selectTiters),
     url(r'^clearData/$',views.clearData),
 
+    url(r'^select_input_format/(?P<input_format>[a-z|A-Z|_]+)$', views.select_input_format),
 
     url(r'^mainWindow/(?P<mainWindowSelection>[a-z|A-Z]+)$',views.selectMainWindow),
 
-    url(r'^input/inputData$',views.inputData),
+    url(r'^input/inputData$',views.process_input_data),
     url(r'^input/$',views.input),
 
-    url(r'^newExperiment/$',views.newExperiment),
+    url(r'^new_experiment/$',views.new_experiment),
+
+    url(r'^plot_options/$', views.plot_options),
+
+    url(r'^analyze/$', views.analyze),
+
+    url(r'^export/$', views.export),
+
+    url(r'^welcome/$', views.welcome),
+
+    url(r'^iPython/$', views.iPython),
 ]

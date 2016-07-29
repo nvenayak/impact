@@ -44,6 +44,12 @@ class RunIdentifier(object):
         else:
             raise Exception('Titer type is not supported: ', titerType)
 
+    def summary(self, items):
+        summary = dict()
+        for item in items:
+            summary[item] = getattr(self,item)
+        return summary
+
     def parse_RunIdentifier_from_csv(self, csv_RunIdentifier):
         """
         Used to parse a CSV runIdentifier

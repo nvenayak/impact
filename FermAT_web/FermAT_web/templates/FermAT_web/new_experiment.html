@@ -1,0 +1,21 @@
+{% extends "FermAT_web/input.html" %}
+{% load bootstrap %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                If the experiment details are not in the database, please detail them here. Then, you will be able to add the data
+                for this experiment.
+            </div>
+        </div>
+
+        <form class="form-horizontal" action="" method="post">
+            {% csrf_token %}
+            {{ newExperimentForm|bootstrap_horizontal }}
+            <input type="submit" value="Submit" class="btn btn-default pull-right">
+        </form>
+    </div>
+</div>
+{% endblock %}

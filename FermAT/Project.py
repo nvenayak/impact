@@ -165,7 +165,7 @@ class Project(object):
         titerNames = []
         for experiment in self.experimentList:
             for key in experiment[2].replicateExperimentObjectDict:
-                for singleExperiment in experiment[2].replicateExperimentObjectDict[key].singleTrialList:
+                for singleExperiment in experiment[2].replicateExperimentObjectDict[key].single_trial_list:
                     for product in singleExperiment.products:
                         titerNames.append(product)
 
@@ -254,7 +254,7 @@ class Project(object):
             for row in strainsToPlot:
                 temp = []
                 for i, product in enumerate(titersToPlot):
-                    if product in row[5].singleTrialList[0].products:
+                    if product in row[5].single_trial_list[0].products:
                         temp.append(True)
                     else:
                         temp.append(False)
@@ -262,7 +262,7 @@ class Project(object):
         titerNames = []
         for experiment in self.experimentList:
             for key in experiment[2].replicateExperimentObjectDict:
-                for singleExperiment in experiment[2].replicateExperimentObjectDict[key].singleTrialList:
+                for singleExperiment in experiment[2].replicateExperimentObjectDict[key].single_trial_list:
                     for product in singleExperiment.products:
                         titerNames.append(product)
 
@@ -361,8 +361,8 @@ class Project(object):
 
             for i, row in enumerate(strainsToPlot):
                 replicateToPlot = row[5]
-                if product in replicateToPlot.singleTrialList[0].products or (
-                                product == 'OD' and replicateToPlot.singleTrialList[0].OD != None):
+                if product in replicateToPlot.single_trial_list[0].products or (
+                                product == 'OD' and replicateToPlot.single_trial_list[0].OD != None):
                     # print(row)
 
                     lineLabelsArray[i] = (str(row[0]) + '\t' + row[1] + '\t' + row[2] + '\t' + row[3]).expandtabs()

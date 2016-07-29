@@ -1,0 +1,41 @@
+{% extends "FermAT_web/twoColBase.html" %}
+{% load staticfiles %}
+{% block content %}
+<div class="container-fluid">
+    <!--<div class="col-md-8"></div>-->
+    <div class="col-md-8 col-md-offset-2">
+        <div class="jumbotron">
+            <!--<img class="image-responsive pull-right" height="10px" align="center" src="{% static 'FermAT_logo.svg' %}">-->
+            <h1>Welcome to FermAT:</h1>
+            <h2>The Fermentation Analysis Toolbox</h2>
+            <h3>
+                FermAT is designed to help scientists rapidly parse, analyze, visualize and store fermentation data.
+                FermAT is open-source and available on <a href="http://github.com/nvenayak/FermAT">GitHub</a> to promote active development and collaboration.
+            </h3>
+            <br><br>
+            <p>
+                First login, or ask for an account by email. Then, you can begin inputting data and following the navbar.
+            </p>
+            <br><br>
+            <p>
+                <a class="btn btn-primary btn-lg left" href="#" role="button">Quickstart</a>
+                <a class="btn btn-primary btn-lg pull-right" href="http://github.com/nvenayak/FermAT" role="button">Source</a>
+                <a class="btn btn-primary btn-lg pull-right" href="http://FermAT.readthedocs.org" role="button">Docs</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<footer>
+    <div class="container-fluid">
+        <!--<div class="col-md-8"></div>-->
+        <div class="col-md-8 col-md-offset-2">
+            <!--<div class="navbar navbar-fixed-bottom">-->
+            <img class="image-responsive pull-right" height="30px" src="{% static 'FermAT_logo.svg' %}">
+            <p align="right">FermAT: Fermentation Analysis Toolbox &nbsp&nbsp&nbsp<br> © Naveen Venayak 2016 &nbsp&nbsp&nbsp</p>
+        </div>
+        <!--</div>-->
+</footer>
+{% endblock %}

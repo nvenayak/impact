@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% load staticfiles %}
+
+<head>
+    {% include "FermAT_web/includes/header.html" %}
+    {% include "FermAT_web/includes/navbar.html" %}
+</head>
+
+<body class="body">
+<!--style="background-color:#f6f6f6">-->
+<div>
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+{% block footer %}
+<footer>
+    <!--<div class="navbar navbar-fixed-bottom">-->
+    <img class="image-responsive pull-right" height="30px" src="{% static 'FermAT_logo.svg' %}">
+    <p align="right">FermAT: Fermentation Analysis Toolbox &nbsp&nbsp&nbsp<br> © Naveen Venayak 2016 &nbsp&nbsp&nbsp</p>
+    <!--</div>-->
+</footer>
+{% endblock %}
+</html>

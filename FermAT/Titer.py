@@ -276,6 +276,19 @@ class TimeCourse(Titer):
              self.dataVec.dumps(), pickle.dumps(self.rate))
         )
 
+    def summary(self, print = False):
+        summary = dict()
+        summary['time_vector'] = self.timeVec
+        summary['data_vector'] = self.dataVec
+        summary['number_of_data_points'] = len(self.timeVec)
+        summary['run_identifier'] = self.runIdentifier.summary(['strainID', 'identifier1', 'identifier2',
+                                                                'titerName', 'titerType', 'replicate'])
+
+        if print:
+            print(summary)
+
+        return summary
+
     def create_stage(self, stage_bounds):
         stage = TimeCourse()
         stage.runIdentifier = self.runIdentifier
@@ -306,7 +319,9 @@ class TimeCourse(Titer):
         self._dataVec = np.array([timePoint.titer for timePoint in self.timePointList])
 
         if len(self.timePointList) > 6:
-            self.calcExponentialRate()
+            pass
+            # print('Skipping exponential rate calculation')
+            # self.calcExponentialRate()
 
     def calcExponentialRate(self):
         if self.runIdentifier.titerType == 'titer' or self.runIdentifier.titerType in ['substrate', 'product']:
