@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>FermAT.Project module &mdash; FermAT 0.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="FermAT 0.0.0 documentation" href="index.html"/>
+        <link rel="up" title="FermAT package" href="FermAT.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> FermAT
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Building FermAT Objects with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html#Database">Database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html#Exporting-Data">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importingData.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="import_experiment_data.html">Importing Raw Experimental Data</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="FermAT.html">FermAT package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="FermAT.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="FermAT.Experiment.html">FermAT.Experiment module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">FermAT.Project module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="FermAT.ReplicateTrial.html">FermAT.ReplicateTrial module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FermAT.SingleTrial.html">FermAT.SingleTrial module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FermAT.TimePoint.html">FermAT.TimePoint module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FermAT.Titer.html">FermAT.Titer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FermAT.TrialIdentifier.html">FermAT.TrialIdentifier module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FermAT.synthetic_data.html">FermAT.synthetic_data module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="FermAT.html#module-FermAT">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">FermAT</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="FermAT.html">FermAT package</a> &raquo;</li>
+      
+    <li>FermAT.Project module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/FermAT.Project.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput,
+div.nbinput > div,
+div.nbinput div[class^=highlight],
+div.nbinput div[class^=highlight] pre,
+div.nboutput,
+div.nboutput > div,
+div.nboutput div[class^=highlight],
+div.nboutput div[class^=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput div[class^=highlight] pre {
+    line-height: unset;
+}
+
+/* input/output containers */
+div.nbinput,
+div.nboutput {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+}
+
+/* input container */
+div.nbinput {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput > :first-child pre {
+    color: #303F9F;
+}
+
+/* output prompt */
+div.nboutput > :first-child pre {
+    color: #D84315;
+}
+
+/* all prompts */
+div.nbinput > :first-child[class^=highlight],
+div.nboutput > :first-child[class^=highlight],
+div.nboutput > :first-child {
+    min-width: 11ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+
+/* input/output area */
+div.nbinput > :nth-child(2)[class^=highlight],
+div.nboutput > :nth-child(2),
+div.nboutput > :nth-child(2)[class^=highlight] {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+}
+
+/* input area */
+div.nbinput > :nth-child(2)[class^=highlight] {
+    border: 1px solid #cfcfcf;
+    border-radius: 2px;
+    background: #f7f7f7;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.pngmath center alignment in output cells */
+div.nboutput div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput  > :nth-child(2).stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-bold { font-weight: bold; }
+</style>
+<div class="section" id="module-FermAT.Project">
+<span id="fermat-project-module"></span><h1>FermAT.Project module<a class="headerlink" href="#module-FermAT.Project" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="FermAT.Project.Project">
+<em class="property">class </em><code class="descclassname">FermAT.Project.</code><code class="descname">Project</code><a class="headerlink" href="#FermAT.Project.Project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Project.Project.getAllExperimentInfo_django" title="FermAT.Project.Project.getAllExperimentInfo_django"><code class="xref py py-obj docutils literal"><span class="pre">getAllExperimentInfo_django</span></code></a>(dbName)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Project.Project.getAllStrainsByIDSQL" title="FermAT.Project.Project.getAllStrainsByIDSQL"><code class="xref py py-obj docutils literal"><span class="pre">getAllStrainsByIDSQL</span></code></a>(experiment_id)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Project.Project.getAllTiterNames" title="FermAT.Project.Project.getAllTiterNames"><code class="xref py py-obj docutils literal"><span class="pre">getAllTiterNames</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Project.Project.getExperiments" title="FermAT.Project.Project.getExperiments"><code class="xref py py-obj docutils literal"><span class="pre">getExperiments</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Project.Project.getReplicateExperimentFromID" title="FermAT.Project.Project.getReplicateExperimentFromID"><code class="xref py py-obj docutils literal"><span class="pre">getReplicateExperimentFromID</span></code></a>(id)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Project.Project.getStrainInfo_django" title="FermAT.Project.Project.getStrainInfo_django"><code class="xref py py-obj docutils literal"><span class="pre">getStrainInfo_django</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Project.Project.getTitersSelectedStrains_django" title="FermAT.Project.Project.getTitersSelectedStrains_django"><code class="xref py py-obj docutils literal"><span class="pre">getTitersSelectedStrains_django</span></code></a>(dbName,&nbsp;...)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Project.Project.newExperiment" title="FermAT.Project.Project.newExperiment"><code class="xref py py-obj docutils literal"><span class="pre">newExperiment</span></code></a>(dateStamp,&nbsp;description,&nbsp;rawData)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Project.Project.plottingGUI" title="FermAT.Project.Project.plottingGUI"><code class="xref py py-obj docutils literal"><span class="pre">plottingGUI</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Project.Project.plottingGUI2" title="FermAT.Project.Project.plottingGUI2"><code class="xref py py-obj docutils literal"><span class="pre">plottingGUI2</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Project.Project.printGenericTimeCourse" title="FermAT.Project.Project.printGenericTimeCourse"><code class="xref py py-obj docutils literal"><span class="pre">printGenericTimeCourse</span></code></a>([figHandle,&nbsp;...])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="FermAT.Project.Project.colorMap">
+<code class="descname">colorMap</code><em class="property"> = 'Set3'</em><a class="headerlink" href="#FermAT.Project.Project.colorMap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.getAllExperimentInfo_django">
+<code class="descname">getAllExperimentInfo_django</code><span class="sig-paren">(</span><em>dbName</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.getAllExperimentInfo_django" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.getAllStrainsByIDSQL">
+<code class="descname">getAllStrainsByIDSQL</code><span class="sig-paren">(</span><em>experiment_id</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.getAllStrainsByIDSQL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.getAllTiterNames">
+<code class="descname">getAllTiterNames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.getAllTiterNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.getExperiments">
+<code class="descname">getExperiments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.getExperiments" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.getReplicateExperimentFromID">
+<code class="descname">getReplicateExperimentFromID</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.getReplicateExperimentFromID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.getStrainInfo_django">
+<code class="descname">getStrainInfo_django</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.getStrainInfo_django" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.getTitersSelectedStrains_django">
+<code class="descname">getTitersSelectedStrains_django</code><span class="sig-paren">(</span><em>dbName</em>, <em>selectedStrainsInfo</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.getTitersSelectedStrains_django" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.newExperiment">
+<code class="descname">newExperiment</code><span class="sig-paren">(</span><em>dateStamp</em>, <em>description</em>, <em>rawData</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.newExperiment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.plottingGUI">
+<code class="descname">plottingGUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.plottingGUI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.plottingGUI2">
+<code class="descname">plottingGUI2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.plottingGUI2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Project.Project.printGenericTimeCourse">
+<code class="descname">printGenericTimeCourse</code><span class="sig-paren">(</span><em>figHandle=[]</em>, <em>strainsToPlot=[]</em>, <em>titersToPlot=[]</em>, <em>removePointFraction=6</em>, <em>shadeErrorRegion=False</em>, <em>showGrowthRates=True</em>, <em>plotCurveFit=True</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Project.Project.printGenericTimeCourse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Naveen Venayak.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
