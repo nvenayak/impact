@@ -13,10 +13,8 @@ Contents:
 
    setup
    gettingStarted
-   importingData
+   import_experiment_data
    FermAT
-
-
 
 
 Indices and tables
