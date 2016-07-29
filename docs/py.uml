@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>Python</ID>
+  <OriginalElement>#C:/Users/Naveen/Documents/University/Grad School/University of Toronto/Research/python/dataImportandPlottingToolbox/fDAPI/__init__.py</OriginalElement>
+  <nodes>
+    <node x="862.6538461538461" y="102.0">object</node>
+    <node x="1131.6538461538462" y="324.0">fDAPI.RunIdentifier</node>
+    <node x="378.1538461538461" y="602.0">fDAPI.TimeCourse</node>
+    <node x="859.1538461538461" y="745.0">fDAPI.SingleTrialDataShell</node>
+    <node x="872.6538461538461" y="0.0">_collections_abc.Hashable</node>
+    <node x="1669.6538461538462" y="346.0">fDAPI.TimePoint</node>
+    <node x="0.0" y="357.0">fDAPI.CurveFitObject</node>
+    <node x="180.0" y="324.0">fDAPI.ReplicateTrial</node>
+    <node x="243.15384615384608" y="778.0">fDAPI.EndPoint</node>
+    <node x="394.0" y="379.0">fDAPI.Titer</node>
+    <node x="531.1538461538461" y="1034.0">fDAPI.TimeCourseShell</node>
+    <node x="776.6538461538461" y="280.0">fDAPI.SingleTrial</node>
+    <node x="1374.6538461538462" y="313.0">fDAPI.Experiment</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="object" target="_collections_abc.Hashable">
+      <point x="0.0" y="-59.0" />
+      <point x="0.0" y="26.0" />
+    </edge>
+    <edge source="fDAPI.TimeCourseShell" target="fDAPI.TimeCourse">
+      <point x="0.0" y="-26.0" />
+      <point x="0.0" y="191.0" />
+    </edge>
+    <edge source="fDAPI.EndPoint" target="fDAPI.Titer">
+      <point x="0.0" y="-15.0" />
+      <point x="300.6538461538461" y="577.0" />
+      <point x="431.0" y="577.0" />
+      <point x="-37.0" y="37.0" />
+    </edge>
+    <edge source="fDAPI.SingleTrialDataShell" target="fDAPI.SingleTrial">
+      <point x="0.0" y="-48.0" />
+      <point x="0.0" y="136.0" />
+    </edge>
+    <edge source="fDAPI.CurveFitObject" target="object">
+      <point x="0.0" y="-59.0" />
+      <point x="80.0" y="240.0" />
+      <point x="874.2967032967032" y="240.0" />
+      <point x="-69.85714285714289" y="59.0" />
+    </edge>
+    <edge source="fDAPI.TimePoint" target="object">
+      <point x="0.0" y="-70.0" />
+      <point x="1765.1538461538462" y="240.0" />
+      <point x="1014.010989010989" y="240.0" />
+      <point x="69.85714285714289" y="59.0" />
+    </edge>
+    <edge source="fDAPI.RunIdentifier" target="object">
+      <point x="0.0" y="-92.0" />
+      <point x="1243.1538461538462" y="260.0" />
+      <point x="967.4395604395604" y="260.0" />
+      <point x="23.285714285714334" y="59.0" />
+    </edge>
+    <edge source="fDAPI.Experiment" target="object">
+      <point x="1.1368683772161603E-13" y="-103.0" />
+      <point x="1512.1538461538462" y="250.0" />
+      <point x="990.7252747252746" y="250.0" />
+      <point x="46.571428571428555" y="59.0" />
+    </edge>
+    <edge source="fDAPI.TimeCourse" target="fDAPI.Titer">
+      <point x="0.0" y="-191.0" />
+      <point x="608.6538461538461" y="577.0" />
+      <point x="505.0" y="577.0" />
+      <point x="37.0" y="37.0" />
+    </edge>
+    <edge source="fDAPI.SingleTrial" target="object">
+      <point x="0.0" y="-136.0" />
+      <point x="0.0" y="59.0" />
+    </edge>
+    <edge source="fDAPI.ReplicateTrial" target="object">
+      <point x="0.0" y="-92.0" />
+      <point x="277.0" y="250.0" />
+      <point x="897.5824175824175" y="250.0" />
+      <point x="-46.571428571428555" y="59.0" />
+    </edge>
+    <edge source="fDAPI.Titer" target="object">
+      <point x="0.0" y="-37.0" />
+      <point x="468.0" y="260.0" />
+      <point x="920.8681318681317" y="260.0" />
+      <point x="-23.285714285714334" y="59.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.8094032549728752" x="1028.0701519213585" y="487.35612153708666" />
+  <SelectedNodes>
+    <node>fDAPI.TimePoint</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Inner Classes</Category>
+    <Category>Fields</Category>
+  </Categories>
+</Diagram>
+
