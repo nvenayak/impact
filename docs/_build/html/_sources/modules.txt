@@ -1,7 +1,7 @@
-fDAPI
-=====
+FermAT
+======
 
 .. toctree::
    :maxdepth: 4
 
-   fDAPI
+   FermAT

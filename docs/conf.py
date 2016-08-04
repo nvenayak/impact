@@ -205,7 +205,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'FermentationDataAnalysisandPlottingInventorydoc'
+htmlhelp_basename = 'FermAT'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -227,7 +227,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'FermentationDataAnalysisandPlottingInventory.tex', 'Fermentation Data Analysis and Plotting Inventory Documentation',
+  (master_doc, 'FermAT.tex', 'FermAT: Fermentation Analysis Toolbox',
    'Naveen Venayak', 'manual'),
 ]
 
