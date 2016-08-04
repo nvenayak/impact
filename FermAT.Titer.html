@@ -84,12 +84,12 @@
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Building FermAT Objects with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html#Database">Database</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importingData.html">Importing Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html#Exporting-Data">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="import_experiment_data.html">Importing Raw Experimental Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="FermAT.html">FermAT package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="FermAT.html#submodules">Submodules</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="FermAT.Experiment.html">FermAT.Experiment module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.Project.html">FermAT.Project module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.QtGUI.html">FermAT.QtGUI module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.ReplicateTrial.html">FermAT.ReplicateTrial module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.SingleTrial.html">FermAT.SingleTrial module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.TimePoint.html">FermAT.TimePoint module</a></li>
@@ -414,19 +414,22 @@ div.nboutput  > :nth-child(2).stderr {
 <tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.db_commit" title="FermAT.Titer.TimeCourse.db_commit"><code class="xref py py-obj docutils literal"><span class="pre">db_commit</span></code></a>(singleTrialID[,&nbsp;c,&nbsp;stat])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.getFitParameters" title="FermAT.Titer.TimeCourse.getFitParameters"><code class="xref py py-obj docutils literal"><span class="pre">getFitParameters</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.find_death_phase" title="FermAT.Titer.TimeCourse.find_death_phase"><code class="xref py py-obj docutils literal"><span class="pre">find_death_phase</span></code></a>(dataVec)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">getReplicateID</span></code>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.getFitParameters" title="FermAT.Titer.TimeCourse.getFitParameters"><code class="xref py py-obj docutils literal"><span class="pre">getFitParameters</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">getTimeCourseID</span></code>()</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">getReplicateID</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.returnCurveFitPoints" title="FermAT.Titer.TimeCourse.returnCurveFitPoints"><code class="xref py py-obj docutils literal"><span class="pre">returnCurveFitPoints</span></code></a>(t)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">getTimeCourseID</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.summary" title="FermAT.Titer.TimeCourse.summary"><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code></a>([print])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.returnCurveFitPoints" title="FermAT.Titer.TimeCourse.returnCurveFitPoints"><code class="xref py py-obj docutils literal"><span class="pre">returnCurveFitPoints</span></code></a>(t)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.summary" title="FermAT.Titer.TimeCourse.summary"><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code></a>([print])</td>
 <td></td>
 </tr>
 </tbody>
@@ -454,6 +457,11 @@ div.nboutput  > :nth-child(2).stderr {
 <dl class="method">
 <dt id="FermAT.Titer.TimeCourse.db_commit">
 <code class="descname">db_commit</code><span class="sig-paren">(</span><em>singleTrialID</em>, <em>c=None</em>, <em>stat=None</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse.db_commit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Titer.TimeCourse.find_death_phase">
+<code class="descname">find_death_phase</code><span class="sig-paren">(</span><em>dataVec</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse.find_death_phase" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -533,19 +541,22 @@ div.nboutput  > :nth-child(2).stderr {
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">db_commit</span></code>(singleTrialID[,&nbsp;c,&nbsp;stat])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">getFitParameters</span></code>()</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">find_death_phase</span></code>(dataVec)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">getReplicateID</span></code>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">getFitParameters</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">getTimeCourseID</span></code>()</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">getReplicateID</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">returnCurveFitPoints</span></code>(t)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">getTimeCourseID</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code>([print])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">returnCurveFitPoints</span></code>(t)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code>([print])</td>
 <td></td>
 </tr>
 </tbody>
@@ -555,69 +566,6 @@ div.nboutput  > :nth-child(2).stderr {
 <code class="descname">dataVec</code><a class="headerlink" href="#FermAT.Titer.TimeCourseShell.dataVec" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
-
-<dl class="class">
-<dt id="FermAT.Titer.TimeCourseStage">
-<em class="property">class </em><code class="descclassname">FermAT.Titer.</code><code class="descname">TimeCourseStage</code><a class="headerlink" href="#FermAT.Titer.TimeCourseStage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#FermAT.Titer.TimeCourse" title="FermAT.Titer.TimeCourse"><code class="xref py py-class docutils literal"><span class="pre">FermAT.Titer.TimeCourse</span></code></a></p>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">dataVec</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">runIdentifier</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">stage_indices</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">timeVec</span></code></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">add_timepoint</span></code>(timePoint)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">calcExponentialRate</span></code>()</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">create_stage</span></code>(stage_bounds)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">db_commit</span></code>(singleTrialID[,&nbsp;c,&nbsp;stat])</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">getFitParameters</span></code>()</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">getReplicateID</span></code>()</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">getTimeCourseID</span></code>()</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">returnCurveFitPoints</span></code>(t)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code>([print])</td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="class">

@@ -272,11 +272,15 @@ that the data is in a coherent form accepted by the standard parser.</p>
 lines of code if a custom entry format is desired.</p>
 <div class="nbinput container">
 <div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [1]:
+<span></span>In [2]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">FermAT</span>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">FermAT</span>
+
 <span class="kn">from</span> <span class="nn">plotly.offline</span> <span class="kn">import</span> <span class="n">init_notebook_mode</span>
 <span class="n">init_notebook_mode</span><span class="p">()</span>
 </pre></div>
@@ -359,17 +363,17 @@ calling parseRawData with the data format and file name/location:</p>
 <div class="container">
 <div class="highlight"><pre>
 Imported data from ../tests/sample_input_data.xlsx
-Parsed 3640 timeCourseObjects in 0.142s
+Parsed 2520 timeCourseObjects in 0.170s
 
 Number of lines skipped:  0
 Parsing time point list...
-Parsed 364 titer objects in 0.2s
+Parsed 252 titer objects in 0.3s
 
 Parsing titer object list...
-Parsed 26 titer objects in 43.3ms
+Parsed 18 single trials in 37.0ms
 
 Parsing single experiment object list...
-Parsed 10 titer objects in 0.3s
+Parsed 7 replicates in 0.2s
 
 </pre></div></div>
 </div>
@@ -379,12 +383,12 @@ number instances of each level of data is correct, here we can see</p>
 replicates</p>
 <div class="nbinput container">
 <div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [18]:
+<span></span>In [7]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span><span class="c1"># Let&#39;s get all the replicates out of the experiment and send them for plotting</span>
-<span class="n">replicate_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">experiment</span><span class="o">.</span><span class="n">replicateExperimentObjectDict</span><span class="p">[</span><span class="n">replicate_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">replicate_key</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">replicateExperimentObjectDict</span><span class="p">]</span>
+<span class="n">replicate_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">experiment</span><span class="o">.</span><span class="n">replicate_experiment_dict</span><span class="p">[</span><span class="n">replicate_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">replicate_key</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">replicate_experiment_dict</span><span class="p">]</span>
 <span class="n">filename</span> <span class="o">=</span> <span class="n">FermAT</span><span class="o">.</span><span class="n">printGenericTimeCourse_plotly</span><span class="p">(</span><span class="n">replicateTrialList</span><span class="o">=</span><span class="n">replicate_list</span><span class="p">,</span> <span class="n">dbName</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">strainsToPlot</span><span class="o">=</span><span class="p">[],</span>
                                      <span class="n">titersToPlot</span><span class="o">=</span><span class="n">experiment</span><span class="o">.</span><span class="n">get_titers</span><span class="p">(),</span>
                                      <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;image&#39;</span><span class="p">,</span>
@@ -410,21 +414,11 @@ This is the format of your plot grid:
 </div>
 <div class="nboutput nblast container">
 <div class="highlight-none"><div class="highlight"><pre>
-<span></span>Out[18]:
+<span></span>Out[7]:
 </pre></div>
 </div>
 <div class="container">
 <img alt="_images/import_experiment_data_5_1.png" src="_images/import_experiment_data_5_1.png" />
-</div>
-</div>
-<div class="nbinput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [ ]:
-</pre></div>
-</div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span>
-</pre></div>
 </div>
 </div>
 </div>
