@@ -364,7 +364,7 @@ and data (0.5 g/L) with relative meta data (strain info,
 experiment info).</li>
 </ul>
 </li>
-<li>Titer:<ul>
+<li>AnalyteData:<ul>
 <li>This is the parent for all titer objects, usually you would not
 use this directly, but rather its children TimeCourse or EndPoint.</li>
 <li>This can be built directly from data and time vectore or as a
@@ -802,7 +802,7 @@ your data. All data should be built into an Experiment, for example:</p>
 </pre></div>
 </div>
 <p>Here, we have</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>1x ReplicateTrial * 4x SingleTrial * 5x Titers (exchanges time courses) = 20 total Titer objects
+<div class="highlight-python"><div class="highlight"><pre><span></span>1x ReplicateTrial * 4x SingleTrial * 5x Titers (exchanges time courses) = 20 total AnalyteData objects
 </pre></div>
 </div>
 <p>We can put all of this together in an Experiment, where we define some

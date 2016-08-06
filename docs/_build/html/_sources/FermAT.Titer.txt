@@ -1,7 +1,7 @@
-FermAT.Titer module
+FermAT.AnalyteData module
 ===================
 
-.. automodule:: FermAT.Titer
+.. automodule:: FermAT.AnalyteData
     :members:
     :undoc-members:
     :show-inheritance:

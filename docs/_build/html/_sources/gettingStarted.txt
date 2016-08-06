@@ -103,7 +103,7 @@
     "  - TimePoint: \n",
     "    - This is the most basal level of data, it is a set of a time (10h) and data (0.5 g/L) with relative meta data (strain info, experiment info).\n",
     "  \n",
-    "  - Titer: \n",
+    "  - AnalyteData: \n",
     "    - This is the parent for all titer objects, usually you would not use this directly, but rather its children TimeCourse or EndPoint.\n",
     "    - This can be built directly from data and time vectore or as a collection of timePoints\n",
     "  \n",
@@ -595,7 +595,7 @@
     "    \n",
     "Here, we have\n",
     "    \n",
-    "    1x ReplicateTrial * 4x SingleTrial * 5x Titers (exchanges time courses) = 20 total Titer objects\n",
+    "    1x ReplicateTrial * 4x SingleTrial * 5x Titers (exchanges time courses) = 20 total AnalyteData objects\n",
     "\n",
     "We can put all of this together in an Experiment, where we define some information about hte experiment and have the option to commit to the database.\n"
    ]
