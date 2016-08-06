@@ -1,0 +1,7 @@
+FermAT.settings module
+======================
+
+.. automodule:: FermAT.settings
+    :members:
+    :undoc-members:
+    :show-inheritance:

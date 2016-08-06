@@ -7,7 +7,7 @@ Importing data is highly reliant on the import format, there are currently two s
     - Top row with [ '' t1  t2  t3 .. ]
     - Rows for each trial, [ 'identifier'   data1   data2   data3 ]
 
-- Titer format which is a list of data exported from Chromeleon HPLC software:
+- AnalyteData format which is a list of data exported from Chromeleon HPLC software:
     - 2 blank rows
     - Row indicating titers: [ ''   Glucose Lactate Acetate Ethanol .. ]
     - Blank row
