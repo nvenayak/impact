@@ -1,4 +1,3 @@
-
 import ast  # Used to convert string literals to variables safely
 import sys
 import os
@@ -17,17 +16,22 @@ from sqlite3 import OperationalError
 # Add the toolbox path
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../'))
 import FermAT
+import FermAT.settings
 
-# Set the default dbName, stored in the root directory
-dbName = os.path.join(os.path.dirname(__file__),"../../default_FermAT_db.sqlite3")
+# Set the default db_name, stored in the root directory
+db_name = FermAT.settings.db_name   # os.path.join(os.path.dirname(__file__),"../../default_FermAT_db.sqlite3")
 default_input_format = 'default_OD'
+
+FermAT.init_db(db_name=db_name)
 
 # No login required
 def welcome(request):
     return render(request,'FermAT_web/welcome.html')
 
+
 def index(request):
     return render(request,'FermAT_web/login.html')
+
 
 # Input views
 @login_required
@@ -40,11 +44,11 @@ def new_experiment(request):
         if form.is_valid():
             # process the data in form.cleaned_data as required
             expt = FermAT.Experiment(info=form.cleaned_data)
-            expt_id = expt.db_commit(dbName)
+            expt_id = expt.db_commit(db_name)
             # redirect to a new URL:
 
             # Select a default input format and return the input data view
-            return select_input_format(request, default_input_format, experiment_id = expt_id)
+            return select_input_format(request, default_input_format, experiment_id=expt_id)
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -52,21 +56,25 @@ def new_experiment(request):
 
     request.session['selected_input_window'] = 'new_experiment'
 
-    return render(request, 'FermAT_web/new_experiment.html', {'newExperimentForm': form,
-                                                             'selected_input_window': request.session['selected_input_window']})
+    return render(request, 'FermAT_web/new_experiment.html',
+                  {'newExperimentForm': form,
+                   'selected_input_window': request.session['selected_input_window']})
+
 
 @login_required
 def input(request):
     return select_input_format(request, default_input_format)
 
-@login_required
-def experimentSelect_input(request, experimentID):
-    experimentID = int(experimentID)
-    request.session['experiment_id'] = experimentID
-    return select_input_format(request, request.session['input_format'], experiment_id = experimentID)
 
 @login_required
-def select_input_format(request, input_format, experiment_id = None):
+def experiment_select_input(request, experiment_id):
+    experiment_id = int(experiment_id)
+    request.session['experiment_id'] = experiment_id
+    return select_input_format(request, request.session['input_format'], experiment_id = experiment_id)
+
+
+@login_required
+def select_input_format(request, input_format, experiment_id=None):
     request.session['input_format'] = input_format
     request.session['selected_input_window'] = 'bulk_input'
     # request.session['experiment_id'] = int(experiment_id)
@@ -79,24 +87,23 @@ def select_input_format(request, input_format, experiment_id = None):
         column_labels = ['StrainID (CSV)'] + ['timepoint_'+str(n) for n in range(1,1000)]
         row_labels = ['Time (hours)'] + ['strain_'+str(n) for n in range(1,1000)]
     elif input_format == 'default_titers':
-        row_labels = ['Titer name (BiGG)','Titer Type'] + ['titer_'+str(n) for n in range(1,20)]
+        row_labels = ['AnalyteData name (BiGG)','AnalyteData Type'] + ['titer_'+str(n) for n in range(1,20)]
         column_labels = ['Strain ID (CSV)'] + ['strain_'+str(n) for n in range(1,1000)]
     else:
         return HttpResponse('Invalid input_format')
 
-    return render(request, 'FermAT_web/input.html', {'row_labels'     : row_labels,
-                                                     'column_labels'  : column_labels,
+    return render(request, 'FermAT_web/input.html', {'row_labels': row_labels,
+                                                     'column_labels': column_labels,
                                                      'selected_layout': input_format,
-                                                     'selected_input_window':request.session['selected_input_window'],
+                                                     'selected_input_window': request.session['selected_input_window'],
                                                      'mainWindow': 'input',
-                                                     'experiment_id':experiment_id,
-                                                     'exptInfo': FermAT.Project().getAllExperimentInfo_django(dbName)})
+                                                     'experiment_id': experiment_id,
+                                                     'exptInfo': FermAT.Project().getAllExperimentInfo_django(db_name)})
 
 
 @login_required
 def process_input_data(request):
     if request.method == 'POST':
-        # print(request.POST)
         import json
         data = json.loads(request.body.decode('utf-8'))['data']
 
@@ -104,23 +111,23 @@ def process_input_data(request):
         print('Rows: ',len(data),'Columns: ',len(data[0]),'\n')
 
         # Remove empty rows
-        emptyRows = 0
-        emptyRowFound = False
-        firstEmptyRowIndex = len(data)
+        empty_rows = 0
+        empty_row_found = False
+        first_empty_row_index = len(data)
         for i, row in enumerate(data):
             if row.count(None) == len(row) or row.count('') == len(row):
-                emptyRows += 1
-                if emptyRows == 1:
-                    firstEmptyRowIndex = i
-                    emptyRowFound = True
-        if emptyRowFound:
-            print('Empty rows: ',emptyRows)
-            truncRowData = data[0:firstEmptyRowIndex]
-        else: truncRowData = data
+                empty_rows += 1
+                if empty_rows == 1:
+                    first_empty_row_index = i
+                    empty_row_found = True
+        if empty_row_found:
+            print('Empty rows: ',empty_rows)
+            truncated_row_data = data[0:first_empty_row_index]
+        else: truncated_row_data = data
 
         # Remove empty columns
         truncData = []
-        for i, truncRow in enumerate(truncRowData):
+        for i, truncRow in enumerate(truncated_row_data):
             firstEmptyElem = len(truncRow)
             for j, elem in enumerate(row):
                 if elem == '':
@@ -158,7 +165,7 @@ def process_input_data(request):
 
             # Load the data into the model
             expt = FermAT.Experiment()
-            expt.db_load(dbName, experimentID = request.session['experiment_id'])
+            expt.db_load(db_name, experiment_id = request.session['experiment_id'])
 
             if request.session['input_format'] == 'default_OD':
                 input_format = 'NV_OD'
@@ -168,12 +175,12 @@ def process_input_data(request):
                 raise Exception('Unknown data format selected')
 
             expt.parseRawData(input_format, data = converted_data) # Convert strings to floats
-            experimentID = expt.db_commit(dbName)
-            request.session['experiment_id'] = int(experimentID)
+            experiment_id = expt.db_commit(db_name)
+            request.session['experiment_id'] = int(experiment_id)
 
             update_experiments_from_db(request)
 
-            return HttpResponse(json.dumps({'redirect': '/experimentSelect_analyze/'+str(experimentID)}), content_type="application/json")
+            return HttpResponse(json.dumps({'redirect': '/experimentSelect_analyze/'+str(experiment_id)}), content_type="application/json")
     else:
         print('EXPECTED POST')
 
@@ -202,16 +209,16 @@ def analyze(request):
 
 # Plot views
 @login_required
-def experimentSelect_analyze(request, experimentID):
-    strainInfo = FermAT.Experiment().get_strains_django(dbName, experimentID)
+def experimentSelect_analyze(request, experiment_id):
+    strainInfo = FermAT.Experiment().get_strains_django(db_name, experiment_id)
     selectedExpt = FermAT.Experiment()
-    selectedExpt.db_load(dbName,experimentID)
+    selectedExpt.db_load(db_name, experiment_id)
     exptInfo = selectedExpt.info
     request.session['strainInfo'] = strainInfo
 
     # Determine the unique identifiers for use in the sorting dropdown
     uniqueIDs = dict()
-    for key in ['strainID','identifier1','identifier2']:
+    for key in ['strain_id','id_1','id_2']:
         uniqueIDs[key] = sorted(set([strain[key] for strain in strainInfo]))
 
     data = modifyMainPageSessionData(request, uniqueIDs = uniqueIDs)
@@ -223,7 +230,7 @@ def experimentSelect_analyze(request, experimentID):
     #     getattr(form,field).initial = exptInfo[field]
 
     data['newExperimentForm'] = form
-    data['experiment_id'] = int(experimentID)
+    data['experiment_id'] = int(experiment_id)
     # selectedExpt.summary()
     return render(request, 'FermAT_web/analyze.html', data)
 
@@ -290,10 +297,10 @@ def register(request):
 def update_experiments_from_db(request):
     # Extract the info from the db, or create the db if an error is thrown
     try:
-        exptInfo = FermAT.Project().getAllExperimentInfo_django(dbName)
+        exptInfo = FermAT.Project().getAllExperimentInfo_django(db_name)
     except OperationalError:
-        FermAT.init_db(dbName)
-        exptInfo = FermAT.Project().getAllExperimentInfo_django(dbName)
+        FermAT.init_db(db_name)
+        exptInfo = FermAT.Project().getAllExperimentInfo_django(db_name)
 
     data = modifyMainPageSessionData(request, exptInfo = exptInfo)
 
@@ -301,18 +308,18 @@ def update_experiments_from_db(request):
 
 # @login_required
 @login_required
-def experimentSelect(request, experimentID):
-    strainInfo = FermAT.Experiment().get_strains_django(dbName, experimentID)
+def experimentSelect(request, experiment_id):
+    strainInfo = FermAT.Experiment().get_strains_django(db_name, experiment_id)
     request.session['strainInfo'] = strainInfo
-    request.session['experiment_id'] = int(experimentID)
+    request.session['experiment_id'] = int(experiment_id)
 
     # Determine the unique identifiers for use in the sorting dropdown
     uniqueIDs = dict()
-    for key in ['strainID','identifier1','identifier2']:
+    for key in ['strain_id','id_1','id_2']:
         uniqueIDs[key] = sorted(set([strain[key] for strain in strainInfo]))
 
     data = modifyMainPageSessionData(request, uniqueIDs = uniqueIDs)
-    data['experiment_id'] = int(experimentID)
+    data['experiment_id'] = int(experiment_id)
     return render(request, 'FermAT_web/home.html', data)
 
 
@@ -340,7 +347,7 @@ def selectStrains(request):
                                          selectedStrainsInfo = request.session['selectedStrainsInfo'])
         updateFigure(request)
         # Determine the set of titers available for all selected strains
-        data = modifyMainPageSessionData(request, titerNames = FermAT.Project().getTitersSelectedStrains_django(dbName, data['selectedStrainsInfo']))
+        data = modifyMainPageSessionData(request, analyte_names = FermAT.Project().getTitersSelectedStrains_django(db_name, data['selectedStrainsInfo']))
     else:
         return HttpResponse('Expected POST for selectStrains')
     return render(request, 'FermAT_web/home.html',data)
@@ -364,7 +371,7 @@ def clearData(request):
 @login_required
 def selectTiters(request):
     if request.method == 'POST':
-        modifyMainPageSessionData(request, selectedTiters = [titer for titer in request.session['titerNames'] if titer in request.POST.keys()])
+        modifyMainPageSessionData(request, selectedTiters = [titer for titer in request.session['analyte_names'] if titer in request.POST.keys()])
         data = updateFigure(request)
         return render(request, 'FermAT_web/home.html', data)
     else:
@@ -380,12 +387,12 @@ def selectStrainSubset(request):
         modifyMainPageSessionData(request)
 
         for strain in request.session['strainInfo']:
-            if (strain['strainID'] == request.POST['strainID'] or request.POST['strainID'] == 'All')\
-                    and (strain['identifier1'] == request.POST['identifier1'] or request.POST['identifier1'] == 'All') \
-                    and (strain['identifier2'] == request.POST['identifier2'] or request.POST['identifier2'] == 'All') \
+            if (strain['strain_id'] == request.POST['strain_id'] or request.POST['strain_id'] == 'All')\
+                    and (strain['id_1'] == request.POST['id_1'] or request.POST['id_1'] == 'All') \
+                    and (strain['id_2'] == request.POST['id_2'] or request.POST['id_2'] == 'All') \
                     and strain['replicateID'] not in [selectedStrain['replicateID'] for selectedStrain in request.session['selectedStrainsInfo']]:
                 request.session['selectedStrainsInfo'].append(strain)
-        modifyMainPageSessionData(request, titerNames = FermAT.Project().getTitersSelectedStrains_django(dbName, request.session['selectedStrainsInfo']))
+        modifyMainPageSessionData(request, analyte_names = FermAT.Project().getTitersSelectedStrains_django(db_name, request.session['selectedStrainsInfo']))
         data = updateFigure(request)
         return render(request, 'FermAT_web/home.html',data)
     else:
@@ -397,7 +404,7 @@ def selectMainWindow(request, mainWindowSelection):
     if mainWindowSelection == 'plot':
         request.session['mainWindow'] = mainWindowSelection
         experiment = FermAT.Experiment()
-        experiment.db_load(dbName, 1)
+        experiment.db_load(db_name, 1)
         updateFigure(request)
         data = modifyMainPageSessionData(request)
     elif mainWindowSelection == 'rawData':
@@ -416,11 +423,11 @@ def updateFigure(request):
             print('in here')
 
 
-            data = modifyMainPageSessionData(request, plotlyCode = FermAT.printGenericTimeCourse_plotly(dbName = dbName,
-                                                                                                            strainsToPlot = [strain['replicateID'] for strain in request.session['selectedStrainsInfo']],
-                                                                                                            titersToPlot = request.session['selectedTiters'],
-                                                                                                            **request.session['prepared_plot_options']
-                                                                                                            ))
+            data = modifyMainPageSessionData(request, plotlyCode = FermAT.printGenericTimeCourse_plotly(dbName = db_name,
+                                                                                                        strainsToPlot = [strain['replicateID'] for strain in request.session['selectedStrainsInfo']],
+                                                                                                        titersToPlot = request.session['selectedTiters'],
+                                                                                                        **request.session['prepared_plot_options']
+                                                                                                        ))
         else:
              data = modifyMainPageSessionData(request)
     else:
@@ -431,7 +438,7 @@ def updateFigure(request):
 def modifyMainPageSessionData(request, **kwargs):
     data = dict()
     for key in ['strainInfo','exptInfo','selectedStrainsInfo','mainWindow', 'plotlyCode',
-                'titerNames','strainsToPlot','uniqueIDs','selectedTiters','plot_options','prepared_plot_options']:
+                'analyte_names','strainsToPlot','uniqueIDs','selectedTiters','plot_options','prepared_plot_options']:
         if key in kwargs:
             data[key] = kwargs[key]
             request.session[key] = kwargs[key]
@@ -453,9 +460,9 @@ def export_data(request):
     return render(request, 'FermAT_web/export.html', {'data':[1,2,3,4]})
 
 @login_required
-def experimentSelect_export(request, experimentID):
+def experimentSelect_export(request, experiment_id):
     expt = FermAT.Experiment()
-    expt.db_load(dbName, int(experimentID))
+    expt.db_load(db_name, int(experiment_id))
     raw_data = expt.data()
     max_columns = max([len(row) for row in raw_data])
     squared_data = []

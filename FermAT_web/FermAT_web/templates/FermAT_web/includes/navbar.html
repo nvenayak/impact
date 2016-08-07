@@ -18,7 +18,7 @@
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
                 <li {% if mainWindow == 'input' %} class="active" {% endif %}><a href="/new_experiment/">Input&nbsp&nbsp<span class="glyphicon glyphicon-open" aria-hidden="true"></span></a></li>
-                <li {% if mainWindow == 'analyze' %} class="active" {% endif %}><a href="/analyze">Analyze&nbsp&nbsp<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span></a></li>
+                <!--<li {% if mainWindow == 'analyze' %} class="active" {% endif %}><a href="/analyze">Analyze&nbsp&nbsp<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span></a></li>-->
                 <li {% if mainWindow == 'plot' %} class="active" {% endif %}><a href="/mainWindow/plot">Plot&nbsp&nbsp<span class="glyphicon glyphicon-signal" aria-hidden="true"></span></a></li>
                 <li {% if mainWindow == 'export' %} class="active" {% endif %}><a href="/export">Export&nbsp&nbsp<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span></a></li>
                 <li {% if mainWindow == 'iPython' %} class="active" {% endif %}><a href="/iPython">iPython&nbsp&nbsp<span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span></a></li>

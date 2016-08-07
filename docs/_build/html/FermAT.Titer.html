@@ -30,8 +30,7 @@
   
 
   
-    <link rel="top" title="FermAT 0.0.0 documentation" href="index.html"/>
-        <link rel="up" title="FermAT package" href="FermAT.html"/> 
+    <link rel="top" title="FermAT 0.0.0 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -80,29 +79,13 @@
           
             
             
-                <ul class="current">
+                <ul>
 <li class="toctree-l1"><a class="reference internal" href="setup.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Building FermAT Objects with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html#Database">Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html#Exporting-Data">Exporting Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="import_experiment_data.html">Importing Raw Experimental Data</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="FermAT.html">FermAT package</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="FermAT.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="FermAT.Experiment.html">FermAT.Experiment module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.Project.html">FermAT.Project module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.ReplicateTrial.html">FermAT.ReplicateTrial module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.SingleTrial.html">FermAT.SingleTrial module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.TimePoint.html">FermAT.TimePoint module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">FermAT.AnalyteData module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.TrialIdentifier.html">FermAT.TrialIdentifier module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.synthetic_data.html">FermAT.synthetic_data module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="FermAT.html#module-FermAT">Module contents</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="FermAT.html">FermAT package</a></li>
 </ul>
 
             
@@ -132,8 +115,6 @@
 <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
-      
-          <li><a href="FermAT.html">FermAT package</a> &raquo;</li>
       
     <li>FermAT.AnalyteData module</li>
       <li class="wy-breadcrumbs-aside">
@@ -281,11 +262,67 @@ div.nboutput  > :nth-child(2).stderr {
 
 .ansi-bold { font-weight: bold; }
 </style>
-<div class="section" id="module-FermAT.Titer">
-<span id="fermat-titer-module"></span><h1>FermAT.AnalyteData module<a class="headerlink" href="#module-FermAT.Titer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="fermat-analytedata-module">
+<h1>FermAT.AnalyteData module<a class="headerlink" href="#fermat-analytedata-module" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-FermAT.AnalyteData"></span><dl class="class">
+<dt id="FermAT.AnalyteData.AnalyteData">
+<em class="property">class </em><code class="descclassname">FermAT.AnalyteData.</code><code class="descname">AnalyteData</code><a class="headerlink" href="#FermAT.AnalyteData.AnalyteData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.AnalyteData.runIdentifier" title="FermAT.AnalyteData.AnalyteData.runIdentifier"><code class="xref py py-obj docutils literal"><span class="pre">runIdentifier</span></code></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.AnalyteData.add_timepoint" title="FermAT.AnalyteData.AnalyteData.add_timepoint"><code class="xref py py-obj docutils literal"><span class="pre">add_timepoint</span></code></a>(timePoint)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.AnalyteData.AnalyteData.getReplicateID" title="FermAT.AnalyteData.AnalyteData.getReplicateID"><code class="xref py py-obj docutils literal"><span class="pre">getReplicateID</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.AnalyteData.getTimeCourseID" title="FermAT.AnalyteData.AnalyteData.getTimeCourseID"><code class="xref py py-obj docutils literal"><span class="pre">getTimeCourseID</span></code></a>()</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="FermAT.AnalyteData.AnalyteData.add_timepoint">
+<code class="descname">add_timepoint</code><span class="sig-paren">(</span><em>timePoint</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.AnalyteData.add_timepoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.AnalyteData.AnalyteData.getReplicateID">
+<code class="descname">getReplicateID</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.AnalyteData.getReplicateID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="FermAT.AnalyteData.AnalyteData.getTimeCourseID">
+<code class="descname">getTimeCourseID</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.AnalyteData.getTimeCourseID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="FermAT.AnalyteData.AnalyteData.runIdentifier">
+<code class="descname">runIdentifier</code><a class="headerlink" href="#FermAT.AnalyteData.AnalyteData.runIdentifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="class">
-<dt id="FermAT.Titer.CurveFitObject">
-<em class="property">class </em><code class="descclassname">FermAT.AnalyteData.</code><code class="descname">CurveFitObject</code><span class="sig-paren">(</span><em>paramList</em>, <em>growthEquation</em>, <em>method='slsqp'</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.CurveFitObject" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.CurveFitObject">
+<em class="property">class </em><code class="descclassname">FermAT.AnalyteData.</code><code class="descname">CurveFitObject</code><span class="sig-paren">(</span><em>paramList</em>, <em>growthEquation</em>, <em>method='slsqp'</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.CurveFitObject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Wrapper for curve fitting objects</p>
 <dl class="docutils">
@@ -315,23 +352,23 @@ div.nboutput  > :nth-child(2).stderr {
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.CurveFitObject.calcFit" title="FermAT.AnalyteData.CurveFitObject.calcFit"><code class="xref py py-obj docutils literal"><span class="pre">calcFit</span></code></a>(t,&nbsp;data[,&nbsp;method])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.CurveFitObject.calcFit" title="FermAT.AnalyteData.CurveFitObject.calcFit"><code class="xref py py-obj docutils literal"><span class="pre">calcFit</span></code></a>(t,&nbsp;data[,&nbsp;method])</td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="FermAT.Titer.CurveFitObject.calcFit">
-<code class="descname">calcFit</code><span class="sig-paren">(</span><em>t</em>, <em>data</em>, <em>method=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.CurveFitObject.calcFit" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.CurveFitObject.calcFit">
+<code class="descname">calcFit</code><span class="sig-paren">(</span><em>t</em>, <em>data</em>, <em>method=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.CurveFitObject.calcFit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="FermAT.Titer.EndPoint">
-<em class="property">class </em><code class="descclassname">FermAT.AnalyteData.</code><code class="descname">EndPoint</code><span class="sig-paren">(</span><em>runID</em>, <em>t</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.EndPoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#FermAT.Titer.Titer" title="FermAT.AnalyteData.AnalyteData"><code class="xref py py-class docutils literal"><span class="pre">FermAT.AnalyteData.AnalyteData</span></code></a></p>
-<p>This is a child of <a class="reference internal" href="#FermAT.Titer.Titer" title="FermAT.AnalyteData.AnalyteData"><code class="xref py py-class docutils literal"><span class="pre">AnalyteData</span></code></a> which does not calcualte any time-based data</p>
+<dt id="FermAT.AnalyteData.EndPoint">
+<em class="property">class </em><code class="descclassname">FermAT.AnalyteData.</code><code class="descname">EndPoint</code><span class="sig-paren">(</span><em>runID</em>, <em>t</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.EndPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#FermAT.AnalyteData.AnalyteData" title="FermAT.AnalyteData.AnalyteData"><code class="xref py py-class docutils literal"><span class="pre">FermAT.AnalyteData.AnalyteData</span></code></a></p>
+<p>This is a child of <a class="reference internal" href="#FermAT.AnalyteData.AnalyteData" title="FermAT.AnalyteData.AnalyteData"><code class="xref py py-class docutils literal"><span class="pre">AnalyteData</span></code></a> which does not calcualte any time-based data</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -351,7 +388,7 @@ div.nboutput  > :nth-child(2).stderr {
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.EndPoint.add_timepoint" title="FermAT.AnalyteData.EndPoint.add_timepoint"><code class="xref py py-obj docutils literal"><span class="pre">add_timepoint</span></code></a>(timePoint)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.EndPoint.add_timepoint" title="FermAT.AnalyteData.EndPoint.add_timepoint"><code class="xref py py-obj docutils literal"><span class="pre">add_timepoint</span></code></a>(timePoint)</td>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">getReplicateID</span></code>()</td>
@@ -363,17 +400,17 @@ div.nboutput  > :nth-child(2).stderr {
 </tbody>
 </table>
 <dl class="method">
-<dt id="FermAT.Titer.EndPoint.add_timepoint">
-<code class="descname">add_timepoint</code><span class="sig-paren">(</span><em>timePoint</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.EndPoint.add_timepoint" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.EndPoint.add_timepoint">
+<code class="descname">add_timepoint</code><span class="sig-paren">(</span><em>timePoint</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.EndPoint.add_timepoint" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="FermAT.Titer.TimeCourse">
-<em class="property">class </em><code class="descclassname">FermAT.AnalyteData.</code><code class="descname">TimeCourse</code><span class="sig-paren">(</span><em>removeDeathPhaseFlag=False</em>, <em>useFilteredData=False</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#FermAT.Titer.Titer" title="FermAT.AnalyteData.AnalyteData"><code class="xref py py-class docutils literal"><span class="pre">FermAT.AnalyteData.AnalyteData</span></code></a></p>
-<p>Child of <a class="reference internal" href="#FermAT.Titer.Titer" title="FermAT.AnalyteData.AnalyteData"><code class="xref py py-class docutils literal"><span class="pre">AnalyteData</span></code></a> which contains curve fitting relevant to time course data</p>
+<dt id="FermAT.AnalyteData.TimeCourse">
+<em class="property">class </em><code class="descclassname">FermAT.AnalyteData.</code><code class="descname">TimeCourse</code><span class="sig-paren">(</span><em>removeDeathPhaseFlag=False</em>, <em>useFilteredData=False</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#FermAT.AnalyteData.AnalyteData" title="FermAT.AnalyteData.AnalyteData"><code class="xref py py-class docutils literal"><span class="pre">FermAT.AnalyteData.AnalyteData</span></code></a></p>
+<p>Child of <a class="reference internal" href="#FermAT.AnalyteData.AnalyteData" title="FermAT.AnalyteData.AnalyteData"><code class="xref py py-class docutils literal"><span class="pre">AnalyteData</span></code></a> which contains curve fitting relevant to time course data</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -381,16 +418,16 @@ div.nboutput  > :nth-child(2).stderr {
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.dataVec" title="FermAT.AnalyteData.TimeCourse.dataVec"><code class="xref py py-obj docutils literal"><span class="pre">dataVec</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.dataVec" title="FermAT.AnalyteData.TimeCourse.dataVec"><code class="xref py py-obj docutils literal"><span class="pre">dataVec</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.runIdentifier" title="FermAT.AnalyteData.TimeCourse.runIdentifier"><code class="xref py py-obj docutils literal"><span class="pre">runIdentifier</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.runIdentifier" title="FermAT.AnalyteData.TimeCourse.runIdentifier"><code class="xref py py-obj docutils literal"><span class="pre">runIdentifier</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.stage_indices" title="FermAT.AnalyteData.TimeCourse.stage_indices"><code class="xref py py-obj docutils literal"><span class="pre">stage_indices</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.stage_indices" title="FermAT.AnalyteData.TimeCourse.stage_indices"><code class="xref py py-obj docutils literal"><span class="pre">stage_indices</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.timeVec" title="FermAT.AnalyteData.TimeCourse.timeVec"><code class="xref py py-obj docutils literal"><span class="pre">timeVec</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.timeVec" title="FermAT.AnalyteData.TimeCourse.timeVec"><code class="xref py py-obj docutils literal"><span class="pre">timeVec</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -402,22 +439,22 @@ div.nboutput  > :nth-child(2).stderr {
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.add_timepoint" title="FermAT.AnalyteData.TimeCourse.add_timepoint"><code class="xref py py-obj docutils literal"><span class="pre">add_timepoint</span></code></a>(timePoint)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.add_timepoint" title="FermAT.AnalyteData.TimeCourse.add_timepoint"><code class="xref py py-obj docutils literal"><span class="pre">add_timepoint</span></code></a>(timePoint)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.calcExponentialRate" title="FermAT.AnalyteData.TimeCourse.calcExponentialRate"><code class="xref py py-obj docutils literal"><span class="pre">calcExponentialRate</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.calcExponentialRate" title="FermAT.AnalyteData.TimeCourse.calcExponentialRate"><code class="xref py py-obj docutils literal"><span class="pre">calcExponentialRate</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.create_stage" title="FermAT.AnalyteData.TimeCourse.create_stage"><code class="xref py py-obj docutils literal"><span class="pre">create_stage</span></code></a>(stage_bounds)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.create_stage" title="FermAT.AnalyteData.TimeCourse.create_stage"><code class="xref py py-obj docutils literal"><span class="pre">create_stage</span></code></a>(stage_bounds)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.db_commit" title="FermAT.AnalyteData.TimeCourse.db_commit"><code class="xref py py-obj docutils literal"><span class="pre">db_commit</span></code></a>(singleTrialID[,&nbsp;c,&nbsp;stat])</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.db_commit" title="FermAT.AnalyteData.TimeCourse.db_commit"><code class="xref py py-obj docutils literal"><span class="pre">db_commit</span></code></a>(singleTrialID[,&nbsp;c,&nbsp;stat])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.find_death_phase" title="FermAT.AnalyteData.TimeCourse.find_death_phase"><code class="xref py py-obj docutils literal"><span class="pre">find_death_phase</span></code></a>(dataVec)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.find_death_phase" title="FermAT.AnalyteData.TimeCourse.find_death_phase"><code class="xref py py-obj docutils literal"><span class="pre">find_death_phase</span></code></a>(dataVec)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.getFitParameters" title="FermAT.AnalyteData.TimeCourse.getFitParameters"><code class="xref py py-obj docutils literal"><span class="pre">getFitParameters</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.getFitParameters" title="FermAT.AnalyteData.TimeCourse.getFitParameters"><code class="xref py py-obj docutils literal"><span class="pre">getFitParameters</span></code></a>()</td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">getReplicateID</span></code>()</td>
@@ -426,81 +463,81 @@ div.nboutput  > :nth-child(2).stderr {
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">getTimeCourseID</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.returnCurveFitPoints" title="FermAT.AnalyteData.TimeCourse.returnCurveFitPoints"><code class="xref py py-obj docutils literal"><span class="pre">returnCurveFitPoints</span></code></a>(t)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.returnCurveFitPoints" title="FermAT.AnalyteData.TimeCourse.returnCurveFitPoints"><code class="xref py py-obj docutils literal"><span class="pre">returnCurveFitPoints</span></code></a>(t)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.TimeCourse.summary" title="FermAT.AnalyteData.TimeCourse.summary"><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code></a>([print])</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourse.summary" title="FermAT.AnalyteData.TimeCourse.summary"><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code></a>([print])</td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="FermAT.Titer.TimeCourse.add_timepoint">
-<code class="descname">add_timepoint</code><span class="sig-paren">(</span><em>timePoint</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse.add_timepoint" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.add_timepoint">
+<code class="descname">add_timepoint</code><span class="sig-paren">(</span><em>timePoint</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.add_timepoint" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="FermAT.Titer.TimeCourse.calcExponentialRate">
-<code class="descname">calcExponentialRate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse.calcExponentialRate" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.calcExponentialRate">
+<code class="descname">calcExponentialRate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.calcExponentialRate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="FermAT.Titer.TimeCourse.create_stage">
-<code class="descname">create_stage</code><span class="sig-paren">(</span><em>stage_bounds</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse.create_stage" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.create_stage">
+<code class="descname">create_stage</code><span class="sig-paren">(</span><em>stage_bounds</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.create_stage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="FermAT.Titer.TimeCourse.dataVec">
-<code class="descname">dataVec</code><a class="headerlink" href="#FermAT.Titer.TimeCourse.dataVec" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.dataVec">
+<code class="descname">dataVec</code><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.dataVec" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="FermAT.Titer.TimeCourse.db_commit">
-<code class="descname">db_commit</code><span class="sig-paren">(</span><em>singleTrialID</em>, <em>c=None</em>, <em>stat=None</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse.db_commit" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.db_commit">
+<code class="descname">db_commit</code><span class="sig-paren">(</span><em>singleTrialID</em>, <em>c=None</em>, <em>stat=None</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.db_commit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="FermAT.Titer.TimeCourse.find_death_phase">
-<code class="descname">find_death_phase</code><span class="sig-paren">(</span><em>dataVec</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse.find_death_phase" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.find_death_phase">
+<code class="descname">find_death_phase</code><span class="sig-paren">(</span><em>dataVec</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.find_death_phase" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="FermAT.Titer.TimeCourse.getFitParameters">
-<code class="descname">getFitParameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse.getFitParameters" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.getFitParameters">
+<code class="descname">getFitParameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.getFitParameters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="FermAT.Titer.TimeCourse.returnCurveFitPoints">
-<code class="descname">returnCurveFitPoints</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse.returnCurveFitPoints" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.returnCurveFitPoints">
+<code class="descname">returnCurveFitPoints</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.returnCurveFitPoints" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="FermAT.Titer.TimeCourse.runIdentifier">
-<code class="descname">runIdentifier</code><a class="headerlink" href="#FermAT.Titer.TimeCourse.runIdentifier" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.runIdentifier">
+<code class="descname">runIdentifier</code><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.runIdentifier" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="FermAT.Titer.TimeCourse.stage_indices">
-<code class="descname">stage_indices</code><a class="headerlink" href="#FermAT.Titer.TimeCourse.stage_indices" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.stage_indices">
+<code class="descname">stage_indices</code><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.stage_indices" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="FermAT.Titer.TimeCourse.summary">
-<code class="descname">summary</code><span class="sig-paren">(</span><em>print=False</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourse.summary" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.summary">
+<code class="descname">summary</code><span class="sig-paren">(</span><em>print=False</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.summary" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="FermAT.Titer.TimeCourse.timeVec">
-<code class="descname">timeVec</code><a class="headerlink" href="#FermAT.Titer.TimeCourse.timeVec" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourse.timeVec">
+<code class="descname">timeVec</code><a class="headerlink" href="#FermAT.AnalyteData.TimeCourse.timeVec" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="FermAT.Titer.TimeCourseShell">
-<em class="property">class </em><code class="descclassname">FermAT.AnalyteData.</code><code class="descname">TimeCourseShell</code><span class="sig-paren">(</span><em>removeDeathPhaseFlag=False</em>, <em>useFilteredData=False</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.TimeCourseShell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#FermAT.Titer.TimeCourse" title="FermAT.AnalyteData.TimeCourse"><code class="xref py py-class docutils literal"><span class="pre">FermAT.AnalyteData.TimeCourse</span></code></a></p>
-<p>This is a shell of <a class="reference internal" href="#FermAT.Titer.Titer" title="FermAT.AnalyteData.AnalyteData"><code class="xref py py-class docutils literal"><span class="pre">AnalyteData</span></code></a> with an overidden setter to be used as a container</p>
+<dt id="FermAT.AnalyteData.TimeCourseShell">
+<em class="property">class </em><code class="descclassname">FermAT.AnalyteData.</code><code class="descname">TimeCourseShell</code><span class="sig-paren">(</span><em>removeDeathPhaseFlag=False</em>, <em>useFilteredData=False</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.AnalyteData.TimeCourseShell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#FermAT.AnalyteData.TimeCourse" title="FermAT.AnalyteData.TimeCourse"><code class="xref py py-class docutils literal"><span class="pre">FermAT.AnalyteData.TimeCourse</span></code></a></p>
+<p>This is a shell of <a class="reference internal" href="#FermAT.AnalyteData.AnalyteData" title="FermAT.AnalyteData.AnalyteData"><code class="xref py py-class docutils literal"><span class="pre">AnalyteData</span></code></a> with an overidden setter to be used as a container</p>
 <p class="rubric">Attributes</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -508,7 +545,7 @@ div.nboutput  > :nth-child(2).stderr {
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.TimeCourseShell.dataVec" title="FermAT.AnalyteData.TimeCourseShell.dataVec"><code class="xref py py-obj docutils literal"><span class="pre">dataVec</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.AnalyteData.TimeCourseShell.dataVec" title="FermAT.AnalyteData.TimeCourseShell.dataVec"><code class="xref py py-obj docutils literal"><span class="pre">dataVec</span></code></a></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">runIdentifier</span></code></td>
@@ -562,64 +599,8 @@ div.nboutput  > :nth-child(2).stderr {
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="FermAT.Titer.TimeCourseShell.dataVec">
-<code class="descname">dataVec</code><a class="headerlink" href="#FermAT.Titer.TimeCourseShell.dataVec" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="FermAT.Titer.Titer">
-<em class="property">class </em><code class="descclassname">FermAT.AnalyteData.</code><code class="descname">AnalyteData</code><a class="headerlink" href="#FermAT.Titer.Titer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p class="rubric">Attributes</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.Titer.runIdentifier" title="FermAT.AnalyteData.AnalyteData.runIdentifier"><code class="xref py py-obj docutils literal"><span class="pre">runIdentifier</span></code></a></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.Titer.add_timepoint" title="FermAT.AnalyteData.AnalyteData.add_timepoint"><code class="xref py py-obj docutils literal"><span class="pre">add_timepoint</span></code></a>(timePoint)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Titer.Titer.getReplicateID" title="FermAT.AnalyteData.AnalyteData.getReplicateID"><code class="xref py py-obj docutils literal"><span class="pre">getReplicateID</span></code></a>()</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Titer.Titer.getTimeCourseID" title="FermAT.AnalyteData.AnalyteData.getTimeCourseID"><code class="xref py py-obj docutils literal"><span class="pre">getTimeCourseID</span></code></a>()</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="FermAT.Titer.Titer.add_timepoint">
-<code class="descname">add_timepoint</code><span class="sig-paren">(</span><em>timePoint</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.Titer.add_timepoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="FermAT.Titer.Titer.getReplicateID">
-<code class="descname">getReplicateID</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.Titer.getReplicateID" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="FermAT.Titer.Titer.getTimeCourseID">
-<code class="descname">getTimeCourseID</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Titer.Titer.getTimeCourseID" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="FermAT.Titer.Titer.runIdentifier">
-<code class="descname">runIdentifier</code><a class="headerlink" href="#FermAT.Titer.Titer.runIdentifier" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.AnalyteData.TimeCourseShell.dataVec">
+<code class="descname">dataVec</code><a class="headerlink" href="#FermAT.AnalyteData.TimeCourseShell.dataVec" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

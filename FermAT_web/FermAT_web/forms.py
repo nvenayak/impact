@@ -3,14 +3,14 @@ from django.forms.widgets import SelectDateWidget
 import datetime
 
 class newExperimentForm(forms.Form):
-    experimentTitle = forms.CharField(label='Experiment Title', initial='Toggle Switch Characterization Run 3 2016.05.13')
-    principalScientistName = forms.CharField(label='Principal Scientist Name', initial='John Doe')
+    experiment_title = forms.CharField(label='Experiment Title', initial='Toggle Switch Characterization Run 3 2016.05.13')
+    primary_scientist_name = forms.CharField(label='Principal Scientist Name', initial='John Doe')
     notes = forms.CharField(label='notes', required=False)
-    importDate = forms.DateTimeField(label='Import Date', initial=datetime.datetime.today(), disabled=True)#widget=SelectDateWidget)
-    runStartDate = forms.DateField(label='Experiment Start Date', widget=SelectDateWidget, initial=datetime.date.today())
-    runEndDate = forms.DateField(label='Experiment End Date', widget=SelectDateWidget, initial=datetime.date.today())
-    mediumBase = forms.CharField(label='Base Medium Formulation', initial='M9')
-    mediumSupplements = forms.CharField(label='Medium Supplements', initial='0.02% cAA')
+    import_date = forms.DateTimeField(label='Import Date', initial=datetime.datetime.today(), disabled=True)#widget=SelectDateWidget)
+    experiment_start_date = forms.DateField(label='Experiment Start Date', widget=SelectDateWidget, initial=datetime.date.today())
+    experiment_end_date = forms.DateField(label='Experiment End Date', widget=SelectDateWidget, initial=datetime.date.today())
+    medium_base = forms.CharField(label='Base Medium Formulation', initial='M9')
+    medium_supplements = forms.CharField(label='Medium Supplements', initial='0.02% cAA')
 
 class plot_options_form(forms.Form):
     use_stage_indices = forms.BooleanField(label='Use stage indices?', initial=False,required=False)
@@ -18,11 +18,11 @@ class plot_options_form(forms.Form):
     stage = forms.IntegerField(label='Stage of Interest', required=False)
     cl_scales = forms.CharField(label='Colors', initial = "['10','qual','Paired']")
     yieldFlag = forms.BooleanField(label='Yield Flag', initial = False, required=False)
-    titerFlag = forms.BooleanField(label='Titer Flag', initial = True, required=False)
+    titerFlag = forms.BooleanField(label='AnalyteData Flag', initial = True, required=False)
     endpointFlag = forms.BooleanField(label='Endpoint Flag', initial = False, required=False)
-    sortBy = forms.ChoiceField(label = 'Sort By', choices = [('strainID','strainID'),
-                                                             ('identifier1','identifier1'),
-                                                             ('identifier2','identifier2'),
+    sortBy = forms.ChoiceField(label = 'Sort By', choices = [('strain_id','strain_id'),
+                                                             ('id_1','id_1'),
+                                                             ('id_2','id_2'),
                                                              ('None','None')])
     row_height = forms.FloatField(label = 'Row Height', initial = 300)
     column_width_multiplier = forms.FloatField(label = 'Single Panel Width', initial = 300)

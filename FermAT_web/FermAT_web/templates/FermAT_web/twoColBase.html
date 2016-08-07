@@ -4,23 +4,29 @@
 {% load staticfiles %}
 
 <head>
-    {% include "FermAT_web/includes/header.html" %}
-    {% include "FermAT_web/includes/navbar.html" %}
+  {% include "FermAT_web/includes/header.html" %}
+  {% include "FermAT_web/includes/navbar.html" %}
 </head>
 
 <body class="body">
 <!--style="background-color:#f6f6f6">-->
 <div>
-    {% block content %}
-    {% endblock %}
+  {% block content %}
+  {% endblock %}
 </div>
 </body>
 {% block footer %}
-<footer>
-    <!--<div class="navbar navbar-fixed-bottom">-->
-    <img class="image-responsive pull-right" height="30px" src="{% static 'FermAT_logo.svg' %}">
-    <p align="right">FermAT: Fermentation Analysis Toolbox &nbsp&nbsp&nbsp<br> © Naveen Venayak 2016 &nbsp&nbsp&nbsp</p>
-    <!--</div>-->
-</footer>
+  <footer>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-3 col-md-4">
+          <!--<div class="navbar navbar-fixed-bottom">-->
+          <img class="image-responsive pull-right" height="30px" src="{% static 'FermAT_logo.svg' %}">
+          <p align="right">FermAT: Fermentation Analysis Toolbox &nbsp&nbsp&nbsp<br> © Naveen Venayak 2016 &nbsp&nbsp&nbsp</p>
+          <!--</div>-->
+        </div>
+      </div>
+    </div>
+  </footer>
 {% endblock %}
 </html>

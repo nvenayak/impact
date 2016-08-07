@@ -8,14 +8,14 @@
                 <div class="btn-group btn-group-justified" role="group">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         {% for row in exptInfo %}
-                        {% if row.experimentID == experiment_id %} {{row.experimentID}} - {{row.experimentTitle}} {% endif %}
+                        {% if row.experiment_id == experiment_id %} {{row.experiment_id}} - {{row.experiment_title}} {% endif %}
                         {% endfor %}
                         &nbsp
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu text-center">
                         {% for row in exptInfo %}
-                        <li><a href="/experimentSelect_analyze/{{row.experimentID}}">{{row.experimentID}} - {{row.experimentTitle}}</a></li>
+                        <li><a href="/experimentSelect_analyze/{{row.experiment_id}}">{{row.experiment_id}} - {{row.experiment_title}}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -102,7 +102,7 @@
 <!--</button>-->
 <!--<ul class="dropdown-menu text-center">-->
 <!--{% for row in exptInfo %}-->
-<!--<li><a href="/experimentSelect/{{row.experimentID}}">{{row.experimentID}} - {{row.experimentTitle}}</a></li>-->
+<!--<li><a href="/experimentSelect/{{row.experiment_id}}">{{row.experiment_id}} - {{row.experiment_title}}</a></li>-->
 <!--{% endfor %}-->
 <!--</ul>-->
 <!--</div>-->
@@ -113,7 +113,7 @@
 <!--<div class="panel panel-primary">-->
 <!--<div class="panel-heading">-->
 <!--<h3 class="panel-title">Experiment Data</h3> <br>-->
-<!--{{ selectedExperimentTitle }}-->
+<!--{{ selectedexperiment_title }}-->
 <!--</div>-->
 
 <!--<div class="panel-body">-->
@@ -126,27 +126,27 @@
 <!--<form action="/selectStrainSubset/" method="post">{% csrf_token %}-->
 <!--<tr>-->
 <!--<td>-->
-<!--<select name="strainID" class="form-control">-->
+<!--<select name="strain_id" class="form-control">-->
 <!--<option value="All">All</option>-->
-<!--{% for row in uniqueIDs.strainID %}-->
+<!--{% for row in uniqueIDs.strain_id %}-->
 
 <!--<option value="{{row}}">{{row}}</option>-->
 <!--{% endfor %}-->
 <!--</select>-->
 <!--</td>-->
 <!--<td>-->
-<!--<select name="identifier1"class="form-control">-->
+<!--<select name="id_1"class="form-control">-->
 <!--<option value="All">All</option>-->
-<!--{% for row in uniqueIDs.identifier1 %}-->
+<!--{% for row in uniqueIDs.id_1 %}-->
 
 <!--<option value="{{row}}">{{row}}</option>-->
 <!--{% endfor %}-->
 <!--</select>-->
 <!--</td>-->
 <!--<td>-->
-<!--<select name="identifier2" class="form-control">-->
+<!--<select name="id_2" class="form-control">-->
 <!--<option value="All">All</option>-->
-<!--{% for row in uniqueIDs.identifier2 %}-->
+<!--{% for row in uniqueIDs.id_2 %}-->
 <!--<option value="{{row}}">{{row}}</option>-->
 <!--{% endfor %}-->
 <!--</select>-->
@@ -163,9 +163,9 @@
 <!--<form action="/selectStrains/" method="post">{% csrf_token %}-->
 <!--{% for row in strainInfo %}-->
 <!--<tr>-->
-<!--<td>{{row.strainID}}</td>-->
-<!--<td>{{row.identifier1}}</td>-->
-<!--<td>{{row.identifier2}}</td>-->
+<!--<td>{{row.strain_id}}</td>-->
+<!--<td>{{row.id_1}}</td>-->
+<!--<td>{{row.id_2}}</td>-->
 <!--<td><div><input type="checkbox" name="{{row.replicateID}}" {% for selectedStrain in selectedStrainsInfo %}-->
 <!--{% if row.replicateID == selectedStrain.replicateID %} checked {% endif %}-->
 <!--{% endfor %}></div></td>-->
@@ -194,9 +194,9 @@
 <!--</tr>-->
 <!--{% for row in selectedStrainsInfo %}-->
 <!--<tr>-->
-<!--<td>{{row.strainID}}</td>-->
-<!--<td>{{row.identifier1}}</td>-->
-<!--<td>{{row.identifier2}}</td>-->
+<!--<td>{{row.strain_id}}</td>-->
+<!--<td>{{row.id_1}}</td>-->
+<!--<td>{{row.id_2}}</td>-->
 <!--<td><div><input type="checkbox" name="{{row.replicateID}}"></div></td>-->
 <!--</tr>-->
 <!--{% endfor %}-->
@@ -225,7 +225,7 @@
 <!--<th>Name</th>-->
 <!--<th>Type</th>-->
 <!--</tr>-->
-<!--{% for titer in titerNames %}-->
+<!--{% for titer in analyte_names %}-->
 <!--<tr>-->
 <!--<td>{{titer}}</td>-->
 

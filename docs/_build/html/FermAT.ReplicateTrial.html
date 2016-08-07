@@ -95,7 +95,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.SingleTrial.html">FermAT.SingleTrial module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.TimePoint.html">FermAT.TimePoint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.Titer.html">FermAT.AnalyteData module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FermAT.AnalyteData.html">FermAT.AnalyteData module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.TrialIdentifier.html">FermAT.TrialIdentifier module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.synthetic_data.html">FermAT.synthetic_data module</a></li>
 </ul>
@@ -306,12 +306,12 @@ titers which are stored within it</p>
 <td>Calculates the statistics on the SingleTrial objects</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#FermAT.ReplicateTrial.ReplicateTrial.check_replicate_unique_id_match" title="FermAT.ReplicateTrial.ReplicateTrial.check_replicate_unique_id_match"><code class="xref py py-obj docutils literal"><span class="pre">check_replicate_unique_id_match</span></code></a>()</td>
-<td>Ensures that the uniqueIDs match for all te replicate experiments</td>
+<td>Ensures that the uniqueIDs match for all te replicate_id experiments</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#FermAT.ReplicateTrial.ReplicateTrial.create_stage" title="FermAT.ReplicateTrial.ReplicateTrial.create_stage"><code class="xref py py-obj docutils literal"><span class="pre">create_stage</span></code></a>(stage_bounds)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.ReplicateTrial.ReplicateTrial.db_commit" title="FermAT.ReplicateTrial.ReplicateTrial.db_commit"><code class="xref py py-obj docutils literal"><span class="pre">db_commit</span></code></a>([experimentID,&nbsp;c])</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.ReplicateTrial.ReplicateTrial.db_commit" title="FermAT.ReplicateTrial.ReplicateTrial.db_commit"><code class="xref py py-obj docutils literal"><span class="pre">db_commit</span></code></a>([experiment_id,&nbsp;c])</td>
 <td>Commit to the database</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#FermAT.ReplicateTrial.ReplicateTrial.db_load" title="FermAT.ReplicateTrial.ReplicateTrial.db_load"><code class="xref py py-obj docutils literal"><span class="pre">db_load</span></code></a>([c,&nbsp;replicateID])</td>
@@ -357,7 +357,7 @@ titers which are stored within it</p>
 <dl class="method">
 <dt id="FermAT.ReplicateTrial.ReplicateTrial.check_replicate_unique_id_match">
 <code class="descname">check_replicate_unique_id_match</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.ReplicateTrial.ReplicateTrial.check_replicate_unique_id_match" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ensures that the uniqueIDs match for all te replicate experiments</p>
+<dd><p>Ensures that the uniqueIDs match for all te replicate_id experiments</p>
 </dd></dl>
 
 <dl class="method">
@@ -367,13 +367,13 @@ titers which are stored within it</p>
 
 <dl class="method">
 <dt id="FermAT.ReplicateTrial.ReplicateTrial.db_commit">
-<code class="descname">db_commit</code><span class="sig-paren">(</span><em>experimentID=None</em>, <em>c=None</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.ReplicateTrial.ReplicateTrial.db_commit" title="Permalink to this definition">¶</a></dt>
+<code class="descname">db_commit</code><span class="sig-paren">(</span><em>experiment_id=None</em>, <em>c=None</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.ReplicateTrial.ReplicateTrial.db_commit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Commit to the database</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>experimentID</strong> : int</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>experiment_id</strong> : int</p>
 <p class="last"><strong>c</strong> : database cursor</p>
 </td>
 </tr>

@@ -2,6 +2,7 @@ from scipy.integrate import odeint
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, noise=0, plot=True):
     """
     Generates synthetic data
@@ -68,7 +69,7 @@ def generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, nois
         plt.figure(figsize=[12, 6])
         for key in exchange_keys:
             plt.plot(t, dFBA_profile[key])
-        plt.ylim([0, 250])
+        # plt.ylim([0, 250])
         plt.legend(exchange_keys, loc=2)
 
     return dFBA_profile

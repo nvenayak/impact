@@ -32,10 +32,10 @@ urlpatterns = [
 
     url(r'^logout',views.logout),
 
-    url(r'^experimentSelect/(?P<experimentID>[0-9]+)$',views.experimentSelect),
-    url(r'^experimentSelect_analyze/(?P<experimentID>[0-9]+)$', views.experimentSelect_analyze),
-    url(r'^experimentSelect_input/(?P<experimentID>[0-9]+)$', views.experimentSelect_input),
-    url(r'^experimentSelect_export/(?P<experimentID>[0-9]+)$', views.experimentSelect_export),
+    url(r'^experimentSelect/(?P<experiment_id>[0-9]+)$',views.experimentSelect),
+    url(r'^experimentSelect_analyze/(?P<experiment_id>[0-9]+)$', views.experimentSelect_analyze),
+    url(r'^experimentSelect_input/(?P<experiment_id>[0-9]+)$', views.experiment_select_input),
+    url(r'^experimentSelect_export/(?P<experiment_id>[0-9]+)$', views.experimentSelect_export),
     url(r'^export_data/$', views.export_data),
 
     url(r'^selectStrains/(P<identifier>[a-z|A-Z]+)/(P<identifierName>[a-z|A-Z]+)$', views.selectStrains),

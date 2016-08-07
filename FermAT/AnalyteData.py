@@ -26,10 +26,10 @@ class AnalyteData(object):
 
     def getTimeCourseID(self):
         if len(self.timePointList) > 0:
-            return self.timePointList[0].runIdentifier.strainID + \
-                   self.timePointList[0].runIdentifier.identifier1 + \
-                   self.timePointList[0].runIdentifier.identifier2 + \
-                   str(self.timePointList[0].runIdentifier.replicate)
+            return self.timePointList[0].runIdentifier.strain_id + \
+                   self.timePointList[0].runIdentifier.id_1 + \
+                   self.timePointList[0].runIdentifier.id_2 + \
+                   str(self.timePointList[0].runIdentifier.replicate_id)
         elif self.runIdentifier.strain_id != '':
             return self.runIdentifier.strain_id + \
                    self.runIdentifier.id_1 + \

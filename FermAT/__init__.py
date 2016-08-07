@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import dill as pickle
 
 from .TimePoint import TimePoint
-from .Titer import *
+from .AnalyteData import *
 from .TrialIdentifier import *
 from .SingleTrial import SingleTrial
 from .ReplicateTrial import ReplicateTrial
@@ -24,6 +24,15 @@ from .Project import Project
 from .QtGUI import *
 
 __author__ = 'Naveen Venayak'
+
+# If in the iPython environment, initialize notebook mode
+try:
+    temp = __IPYTHON__
+except NameError:
+    pass
+else:
+    import plotly
+    plotly.offline.init_notebook_mode()
 
 def init_db(db_name):
     """
@@ -41,29 +50,29 @@ def init_db(db_name):
 
     c.execute("""\
        CREATE TABLE IF NOT EXISTS experimentTable
-       (experimentID INTEGER PRIMARY KEY, importDate TEXT, experimentTitle TEXT,
-       runStartDate TEXT, runEndDate TEXT, principalScientistName TEXT,
-       secondaryScientistName TEXT, mediumBase TEXT, mediumSupplements TEXT, notes TEXT)
+       (experiment_id INTEGER PRIMARY KEY, import_date TEXT, experiment_title TEXT,
+       experiment_start_date TEXT, experiment_end_date TEXT, primary_scientist_name TEXT,
+       secondary_scientist_name TEXT, medium_base TEXT, medium_supplements TEXT, notes TEXT)
     """)
 
     c.execute("""\
        CREATE TABLE IF NOT EXISTS replicateTable
-         (replicateID INTEGER PRIMARY KEY, experimentID INT,
-          strainID TEXT, identifier1 TEXT, identifier2 TEXT, identifier3 TEXT,
-          FOREIGN KEY(experimentID) REFERENCES experimentTable(experimentID))
+         (replicateID INTEGER PRIMARY KEY, experiment_id INT,
+          strain_id TEXT, id_1 TEXT, id_2 TEXT, id_3 TEXT,
+          FOREIGN KEY(experiment_id) REFERENCES experimentTable(experiment_id))
     """)
 
     for suffix in ['', '_avg', '_std']:
         c.execute("""\
            CREATE TABLE IF NOT EXISTS singleTrialTable""" + suffix + """
-           (singleTrialID""" + suffix + """ INTEGER PRIMARY KEY, replicateID INT, replicate INT, yieldsDict BLOB,
+           (singleTrialID""" + suffix + """ INTEGER PRIMARY KEY, replicateID INT, replicate_id INT, yieldsDict BLOB,
            FOREIGN KEY(replicateID) REFERENCES replicateTable(replicateTable))
         """)
 
         c.execute("""\
            CREATE TABLE IF NOT EXISTS timeCourseTable""" + suffix + """
            (timeCourseID INTEGER PRIMARY KEY, singleTrial""" + suffix + """ID INTEGER,
-           titerType TEXT, titerName TEXT, timeVec BLOB, dataVec BLOB, rate BLOB,
+           titerType TEXT, analyte_name TEXT, timeVec BLOB, dataVec BLOB, rate BLOB,
            FOREIGN KEY(singleTrial""" + suffix + """ID) REFERENCES singleTrialID(singleTrialTable""" + suffix + """))
         """)
 
@@ -71,22 +80,25 @@ def init_db(db_name):
     c.close()
     conn.close()
 
-def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[], secondary_y_axis_titers = None,
-                                  output_type='html', stage_indices = None, stage = None, cl_scales = ['10','qual','Paired'], colors = None,
-                                  yieldFlag = False, titerFlag = True, endpointFlag=False, sortBy = 'strainID',
-                                  img_scale = 1, fig_height = None, column_width_multiplier = 400, number_of_columns = 3,
-                                  horizontal_spacing = 0.2, vertical_spacing = 0.4, row_height = 300,
-                                  format = 'web', single_subplot = False):
+
+def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[],
+                                  secondary_y_axis_titers=None,
+                                  output_type='html', stage_indices=None, stage=None,
+                                  cl_scales=['10', 'qual', 'Paired'], colors=None,
+                                  yieldFlag=False, titerFlag=True, endpointFlag=False, sortBy='strain_id',
+                                  img_scale=1, fig_height=None, column_width_multiplier=400, number_of_columns=3,
+                                  horizontal_spacing=0.2, vertical_spacing=0.4, row_height=300,
+                                  format='web', single_subplot=False):
     """
 
     Parameters
     ----------
     replicateTrialList: ~class`titer`
-        A list of replicate trials to be plotted
+        A list of replicate_id trials to be plotted
     dbName : str
         The name/path of the db if you will be loading data
     strainsToPlot : list
-        A list of the strain identifiers, a concatenation of the strainID+identifier1+identifier2
+        A list of the strain identifiers, a concatenation of the strain_id+id_1+id_2
     titersToPlot : list
         A list of the titers to plot
     output_type : str
@@ -104,7 +116,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     endpointFlag : bool
         True to plot endpoint, otherwise plot timecourse
     sortBy : str
-        Identifier to plot by (strainID, identifier1, identifier2, None)
+        Identifier to plot by (strain_id, id_1, id_2, None)
     img_scale : int
         The output scale of the image
     fig_height : float
@@ -123,7 +135,6 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         The format settings to use, the only option is poster
     """
 
-
     # Load plotly - will eventually move this to head
     from plotly import tools
     from plotly.offline import plot
@@ -138,11 +149,11 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
 
     # Check for correct inputs
     if replicateTrialList is None and dbName is None:
-        print('No replicate list or dbName')
-        return 'No replicate list or dbName'
+        print('No replicate_id list or db_name')
+        return 'No replicate_id list or db_name'
     if replicateTrialList is not None and dbName is not None:
-        print('Supplied both a replicateTrialList and dbName')
-        return 'Supplied both a replicateTrialList and dbName'
+        print('Supplied both a replicateTrialList and db_name')
+        return 'Supplied both a replicateTrialList and db_name'
 
     # Load the data if a db was provided
     if dbName is not None:
@@ -156,7 +167,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
             replicateTrialList.append(tempReplicateTrial)
         conn.close()
 
-    # Switch the the replicate stages if we're looking at data for a specific stage
+    # Switch the the replicate_id stages if we're looking at data for a specific stage
     if stage_indices is not None and stage is not None:
         newReplicateTrialList = []
         for replicateTrial in replicateTrialList:
@@ -178,18 +189,18 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         if len(replicateTrialList) > int(cl_scales[0]):
             colors = cl.interp(color_scale, 500)
             # Index the list
-            colors = [colors[int(x)] for x in np.arange(0,500,500/round(len(replicateTrialList)))]
+            colors = [colors[int(x)] for x in np.arange(0, 500, 500 / round(len(replicateTrialList)))]
         else:
             colors = color_scale
     # color_scale = cl.interp(color_scale, len(replicateTrialList))
     # Choose the subplot layout
-    rows = math.ceil(len(titersToPlot)/number_of_columns)
+    rows = math.ceil(len(titersToPlot) / number_of_columns)
 
     if fig_height is None:
         height = row_height * rows
     else:
         height = fig_height
-    np.linspace
+
     # Set default axes
     for titer in titersToPlot:
         if secondary_y_axis_titers is None:
@@ -198,19 +209,17 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         if titer not in secondary_y_axis_titers.keys():
             secondary_y_axis_titers[titer] = 'primary'
 
-
-
     supported_formats = ['poster', 'web']
     if format in supported_formats:
         if format == 'poster':
             chart_fonts = {'titlefont': {'size': 18, 'color': '#000000'},
-                               'tickfont': {'size': 18},
-                               'color': '#000000'}
-            layout_margin = {'b':160,'r':100}
-            axis_params = dict(linewidth = 1.5, showline = True, ticks = 'outside',
-                               showgrid = False, zeroline = False)
-            bar_xaxis_params = dict(tickangle = -45, )
-            legend_params = {'orientation':'h', 'font':{'size':10, 'color':'#000000'}}
+                           'tickfont' : {'size': 18},
+                           'color'    : '#000000'}
+            layout_margin = {'b': 160, 'r': 100}
+            axis_params = dict(linewidth=1.5, showline=True, ticks='outside',
+                               showgrid=False, zeroline=False)
+            bar_xaxis_params = dict(tickangle=-45, )
+            legend_params = {'orientation': 'h', 'font': {'size': 10, 'color': '#000000'}}
         else:
             chart_fonts = {}
             layout_margin = {}
@@ -218,16 +227,15 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
             bar_xaxis_params = {}
             legend_params = {}
     else:
-        raise Exception(format,' is not a valid format, try one of ',supported_formats)
-
+        raise Exception(format, ' is not a valid format, try one of ', supported_formats)
 
     # fig['layout'].update(height=height, legend={'orientation': 'h', 'font': {'size': 10, 'color': '#000000'}})
 
 
-    if not(sortBy == 'product_in_legend' or single_subplot):
-        fig = tools.make_subplots(rows=rows,cols=number_of_columns,
-                                  horizontal_spacing=horizontal_spacing/number_of_columns,
-                                  vertical_spacing=vertical_spacing/rows
+    if not (sortBy == 'product_in_legend' or single_subplot):
+        fig = tools.make_subplots(rows=rows, cols=number_of_columns,
+                                  horizontal_spacing=horizontal_spacing / number_of_columns,
+                                  vertical_spacing=vertical_spacing / rows
                                   )
     else:
         fig = tools.make_subplots(rows=1, cols=2,
@@ -235,15 +243,11 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                                   vertical_spacing=vertical_spacing / rows
                                   )
 
-
     # Only show the legend entry for the first time a strain is plotted, prevents duplicate entries
     if endpointFlag and sortBy:
         showlegend_flag = False
     else:
         showlegend_flag = True
-
-
-
 
     # An efficient sorting function that preserves order
     def f5(seq, idfun=None):
@@ -271,9 +275,9 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     prepped_y_avg = dict()
     prepped_y_std = dict()
     prepped_legendgroup = dict()
-    for name in [replicate.runIdentifier.strainID + '+' +
-                         replicate.runIdentifier.identifier1 + ',' +
-                         replicate.runIdentifier.identifier2 for replicate in replicateTrialList]:
+    for name in [replicate.runIdentifier.strain_id + '+' +
+                         replicate.runIdentifier.id_1 + ',' +
+                         replicate.runIdentifier.id_2 for replicate in replicateTrialList]:
         prepped_x[name] = []
         prepped_y_avg[name] = []
         prepped_y_std[name] = []
@@ -295,12 +299,9 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     sort_by_product_in_legend_flag = True
 
                 uniques = ['']
-                sortBy = 'strainID' # This is just a placeholder, it can be any attribute of RunIdentifier
-                                    # just so the function call doesn't return an error
+                sortBy = 'strain_id'  # This is just a placeholder, it can be any attribute of RunIdentifier
+                # just so the function call doesn't return an error
                 sort_by_flag = False
-
-
-
 
             # if len(replicateTrialList) >= 6:
             #     colors = cl.interp(color_scale, len(uniques))
@@ -323,43 +324,44 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     label = ' titer (g/L)'
 
                 legendgroup = ''
-                for attribute in ['strainID', 'identifier1', 'identifier2']:
+                for attribute in ['strain_id', 'id_1', 'id_2']:
                     if attribute != sortBy:
-                        legendgroup += getattr(replicateTrialList[0].runIdentifier,attribute)
+                        legendgroup += getattr(replicateTrialList[0].runIdentifier, attribute)
 
                 if sort_by_flag:
 
                     legendgroup = unique
 
-                    if sortBy == 'strainID':
-                        x = [replicate.runIdentifier.identifier1 + ',' +
-                             replicate.runIdentifier.identifier2
+                    if sortBy == 'strain_id':
+                        x = [replicate.runIdentifier.id_1 + ',' +
+                             replicate.runIdentifier.id_2
                              for replicate in replicateTrialList
                              if getattr(replicate.runIdentifier, sortBy) == unique or sort_by_flag is False]
-                    if sortBy == 'identifier1':
-                        x = [replicate.runIdentifier.strainID + ',' +
-                             replicate.runIdentifier.identifier2
+                    if sortBy == 'id_1':
+                        x = [replicate.runIdentifier.strain_id + ',' +
+                             replicate.runIdentifier.id_2
                              for replicate in replicateTrialList
                              if getattr(replicate.runIdentifier, sortBy) == unique or sort_by_flag is False]
-                    if sortBy == 'identifier2':
-                        x = [replicate.runIdentifier.strainID + '+' +
-                             replicate.runIdentifier.identifier1
+                    if sortBy == 'id_2':
+                        x = [replicate.runIdentifier.strain_id + '+' +
+                             replicate.runIdentifier.id_1
                              for replicate in replicateTrialList
                              if getattr(replicate.runIdentifier, sortBy) == unique or sort_by_flag is False]
 
                 else:
                     if sort_by_product_in_legend_flag:
                         x = [product for _ in replicateTrialList]
-                        legendgroup = [replicate.runIdentifier.strainID + '+' +
-                                       replicate.runIdentifier.identifier1 + ',' +
-                                       replicate.runIdentifier.identifier2 for replicate in replicateTrialList]
+                        legendgroup = [replicate.runIdentifier.strain_id + '+' +
+                                       replicate.runIdentifier.id_1 + ',' +
+                                       replicate.runIdentifier.id_2 for replicate in replicateTrialList]
                     else:
                         legendgroup = None
-                        x = [(replicate.runIdentifier.strainID + '+' +
-                             replicate.runIdentifier.identifier1 +
-                             replicate.runIdentifier.identifier2).split('LMSE')[-1]
+                        x = [(replicate.runIdentifier.strain_id + '+' +
+                              replicate.runIdentifier.id_1 +
+                              replicate.runIdentifier.id_2).split('LMSE')[-1]
                              for replicate in replicateTrialList
-                             if getattr(replicate.runIdentifier, sortBy) == unique or sort_by_flag is False]    # TODO remove the LMSE removal
+                             if getattr(replicate.runIdentifier,
+                                        sortBy) == unique or sort_by_flag is False]  # TODO remove the LMSE removal
 
                 if sort_by_product_in_legend_flag:
                     showlegend_flag = True
@@ -370,7 +372,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                         prepped_legendgroup[name].append(legendgroup[i])
                 else:
                     trace = go.Bar(x=x,
-                                   y = [y[-1] for y in y_avg],
+                                   y=[y[-1] for y in y_avg],
                                    error_y={
                                        'type'   : 'data',
                                        'array'  : [y[-1] for y in y_std],
@@ -378,28 +380,28 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                                        'color'  : colors[i]},
                                    marker={'color': colors[i]},
                                    showlegend=showlegend_flag,
-                                   legendgroup = legendgroup,
-                                   name = legendgroup)
+                                   legendgroup=legendgroup,
+                                   name=legendgroup)
 
                     if sort_by_product_in_legend_flag:
                         row = 1
                         col = 1
                     else:
                         row = math.ceil(pltNum / number_of_columns)
-                        col = pltNum - (row-1) * number_of_columns
+                        col = pltNum - (row - 1) * number_of_columns
                     if sort_by_flag:
                         fig['layout'].update(barmode='group')
-                    print(row,' ',col)
+                    print(row, ' ', col)
                     fig.append_trace(trace, row, col)
                     final_plot_number = pltNum
 
-                    fig['layout']['xaxis' + str(pltNum)].update(**axis_params,**bar_xaxis_params,**chart_fonts)
-                    fig['layout']['yaxis' + str(pltNum)].update(title=product + label, rangemode = 'nonnegative',
+                    fig['layout']['xaxis' + str(pltNum)].update(**axis_params, **bar_xaxis_params, **chart_fonts)
+                    fig['layout']['yaxis' + str(pltNum)].update(title=product + label, rangemode='nonnegative',
                                                                 **axis_params, **chart_fonts)
-                    fig['layout'].update(height=height, margin = layout_margin, showlegend = False)
+                    fig['layout'].update(height=height, margin=layout_margin, showlegend=False)
                     showlegend_flag = False
 
-        else:   #time course (not end point)
+        else:  # time course (not end point)
             for replicate in replicateTrialList:
                 # Determine how many points should be plotted
                 required_num_pts = replicate.t[-1] * pts_per_hour
@@ -422,8 +424,10 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     y_avg = replicate.avg.titerObjectDict[product].dataVec[::removePointFraction]
                     y_std = replicate.std.titerObjectDict[product].dataVec[::removePointFraction]
                 elif normalize_to is not None:
-                    y_avg = replicate.avg.titerObjectDict[product].get_normalized_data(normalize_to)[::removePointFraction]
-                    y_std = replicate.std.titerObjectDict[product].get_normalized_data(normalize_to)[::removePointFraction]
+                    y_avg = replicate.avg.titerObjectDict[product].get_normalized_data(normalize_to)[
+                            ::removePointFraction]
+                    y_std = replicate.std.titerObjectDict[product].get_normalized_data(normalize_to)[
+                            ::removePointFraction]
 
                 # dataLabel = ''
                 t = replicate.t[::removePointFraction]
@@ -441,28 +445,28 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                                            'color': colors[colorIndex]},
                                        line={'color': colors[colorIndex]},
                                        showlegend=showlegend_flag,
-                                       legendgroup=(replicate.runIdentifier.strainID + '+' +
-                                                   replicate.runIdentifier.identifier1 +
-                                                   replicate.runIdentifier.identifier2).split('LMSE')[-1],
-                                       name=(replicate.runIdentifier.strainID + '+' +
-                                                   replicate.runIdentifier.identifier1 +
-                                                   replicate.runIdentifier.identifier2).split('LMSE')[-1])  # ,
+                                       legendgroup=(replicate.runIdentifier.strain_id + '+' +
+                                                    replicate.runIdentifier.id_1 +
+                                                    replicate.runIdentifier.id_2).split('LMSE')[-1],
+                                       name=(replicate.runIdentifier.strain_id + '+' +
+                                             replicate.runIdentifier.id_1 +
+                                             replicate.runIdentifier.id_2).split('LMSE')[-1])  # ,
                     #
                     # # Plot the fit curve
                     # if plotCurveFit and False \
-                    #         and replicate.avg.titerObjectDict[product].runIdentifier.titerType in ['biomass', 'product'] \
-                    #         and len(replicate.avg.titerObjectDict[product].rate.keys()) > 0:
-                    #     # print(replicate.avg.titerObjectDict[product].rate)
+                    #         and replicate_id.avg.titer_dict[product].runIdentifier.titerType in ['biomass', 'product'] \
+                    #         and len(replicate_id.avg.titer_dict[product].rate.keys()) > 0:
+                    #     # print(replicate_id.avg.titer_dict[product].rate)
                     #     trace = go.Scatter(x=np.linspace(min(t), max(t), 50),
-                    #                        y=replicate.avg.titerObjectDict[product].returnCurveFitPoints(
-                    #                            np.linspace(min(replicate.t), max(replicate.t), 50)),
+                    #                        y=replicate_id.avg.titer_dict[product].returnCurveFitPoints(
+                    #                            np.linspace(min(replicate_id.t), max(replicate_id.t), 50)),
                     #                        mode='line',
-                    #                        name=replicate.runIdentifier.strainID + '\t' +
-                    #                             replicate.runIdentifier.identifier1 + '\t' +
-                    #                             replicate.runIdentifier.identifier2,
-                    #                        legendgroup=replicate.runIdentifier.strainID + '\t' +
-                    #                                    replicate.runIdentifier.identifier1 + '\t' +
-                    #                                    replicate.runIdentifier.identifier2,
+                    #                        name=replicate_id.runIdentifier.strain_id + '\t' +
+                    #                             replicate_id.runIdentifier.id_1 + '\t' +
+                    #                             replicate_id.runIdentifier.id_2,
+                    #                        legendgroup=replicate_id.runIdentifier.strain_id + '\t' +
+                    #                                    replicate_id.runIdentifier.id_1 + '\t' +
+                    #                                    replicate_id.runIdentifier.id_2,
                     #                        line={'color': colors[colorIndex]})
                     #
                     #     if pltNum > 4:
@@ -473,45 +477,45 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     #         col = pltNum
                     #     fig.append_trace(trace, row, col)
                     #     trace = go.Scatter(x=t[::removePointFraction],
-                    #                        y=replicate.avg.titerObjectDict[product].dataVec[::removePointFraction],
+                    #                        y=replicate_id.avg.titer_dict[product].dataVec[::removePointFraction],
                     #                        error_y={
                     #                            'type'   : 'data',
-                    #                            'array'  : replicate.std.titerObjectDict[product].dataVec[
+                    #                            'array'  : replicate_id.std.titer_dict[product].dataVec[
                     #                                       ::removePointFraction],
                     #                            'visible': True,
                     #                            'color'  : colors[colorIndex]},
                     #                        mode='markers',
                     #                        marker={
                     #                            'color': colors[colorIndex]},
-                    #                        legendgroup=replicate.runIdentifier.strainID + '\t' +
-                    #                                    replicate.runIdentifier.identifier1 + '\t' +
-                    #                                    replicate.runIdentifier.identifier2,
-                    #                        name=replicate.runIdentifier.strainID + replicate.runIdentifier.identifier1 + replicate.runIdentifier.identifier2)
-                    #     dataLabel = 'Titer g/L'
-                    # elif replicate.avg.titerObjectDict[
+                    #                        legendgroup=replicate_id.runIdentifier.strain_id + '\t' +
+                    #                                    replicate_id.runIdentifier.id_1 + '\t' +
+                    #                                    replicate_id.runIdentifier.id_2,
+                    #                        name=replicate_id.runIdentifier.strain_id + replicate_id.runIdentifier.id_1 + replicate_id.runIdentifier.id_2)
+                    #     dataLabel = 'AnalyteData g/L'
+                    # elif replicate_id.avg.titer_dict[
                     #     product].runIdentifier.titerType == 'product' and dataType == 'yields':
                     #     # Plot the data
                     #     trace = go.Scatter(x=t[::removePointFraction],
-                    #                        y=replicate.avg.yields[product][::removePointFraction],
+                    #                        y=replicate_id.avg.yields[product][::removePointFraction],
                     #                        error_y={
                     #                            'type'   : 'data',
-                    #                            'array'  : replicate.std.yields[product][::removePointFraction],
+                    #                            'array'  : replicate_id.std.yields[product][::removePointFraction],
                     #                            'visible': True,
                     #                            'color'  : colors[colorIndex]},
                     #                        mode='markers',
                     #                        marker={
                     #                            'color': colors[colorIndex]},
-                    #                        legendgroup=replicate.runIdentifier.strainID + '\t' +
-                    #                                    replicate.runIdentifier.identifier1 + '\t' +
-                    #                                    replicate.runIdentifier.identifier2,
-                    #                        name=replicate.runIdentifier.strainID + replicate.runIdentifier.identifier1 + replicate.runIdentifier.identifier2)
+                    #                        legendgroup=replicate_id.runIdentifier.strain_id + '\t' +
+                    #                                    replicate_id.runIdentifier.id_1 + '\t' +
+                    #                                    replicate_id.runIdentifier.id_2,
+                    #                        name=replicate_id.runIdentifier.strain_id + replicate_id.runIdentifier.id_1 + replicate_id.runIdentifier.id_2)
                     #     dataLabel = 'Yield mmol/mmol'
                     # else:
                     #     trace = go.Scatter(x=t[::removePointFraction],
-                    #                        y=replicate.avg.titerObjectDict[product].dataVec[::removePointFraction],
+                    #                        y=replicate_id.avg.titer_dict[product].dataVec[::removePointFraction],
                     #                        error_y={
                     #                            'type'   : 'data',
-                    #                            'array'  : replicate.std.titerObjectDict[product].dataVec[
+                    #                            'array'  : replicate_id.std.titer_dict[product].dataVec[
                     #                                       ::removePointFraction],
                     #                            'visible': True,
                     #                            'color'  : colors[colorIndex]},
@@ -520,12 +524,12 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     #                            'color': colors[colorIndex]},
                     #                        line={'color': colors[colorIndex]},
                     #                        showlegend=showlegend_flag,
-                    #                        legendgroup=replicate.runIdentifier.strainID + '\t' +
-                    #                                    replicate.runIdentifier.identifier1 + '\t' +
-                    #                                    replicate.runIdentifier.identifier2,
-                    #                        name=replicate.runIdentifier.strainID + replicate.runIdentifier.identifier1 + replicate.runIdentifier.identifier2)  # ,
-                    #     #                    label = '$\mu$ = '+'{:.2f}'.format(replicate.avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicate.std.OD.rate[1])+', n='+str(len(replicate.replicate_ids)-len(replicate.bad_replicates)))
-                    #     dataLabel = 'Titer g/L'
+                    #                        legendgroup=replicate_id.runIdentifier.strain_id + '\t' +
+                    #                                    replicate_id.runIdentifier.id_1 + '\t' +
+                    #                                    replicate_id.runIdentifier.id_2,
+                    #                        name=replicate_id.runIdentifier.strain_id + replicate_id.runIdentifier.id_1 + replicate_id.runIdentifier.id_2)  # ,
+                    #     #                    label = '$\mu$ = '+'{:.2f}'.format(replicate_id.avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(replicate_id.std.OD.rate[1])+', n='+str(len(replicate_id.replicate_ids)-len(replicate_id.bad_replicates)))
+                    #     dataLabel = 'AnalyteData g/L'
 
                     # Append the plot if it was created
                     if sortBy == 'product_in_legend' or single_subplot:
@@ -540,13 +544,15 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                 final_plot_number = pltNum
 
             # Set some plot aesthetics
-            fig['layout']['xaxis' + str(pltNum)].update(title='Time (hours)',rangemode = 'tozero',**axis_params,**chart_fonts)
-            fig['layout']['yaxis' + str(pltNum)].update(title=product + ' ' + dataLabel,rangemode = 'tozero',**axis_params,**chart_fonts)
+            fig['layout']['xaxis' + str(pltNum)].update(title='Time (hours)', rangemode='tozero', **axis_params,
+                                                        **chart_fonts)
+            fig['layout']['yaxis' + str(pltNum)].update(title=product + ' ' + dataLabel, rangemode='tozero',
+                                                        **axis_params, **chart_fonts)
             fig['layout'].update(height=height, legend=legend_params)
             showlegend_flag = False
 
-        # else:
-        #     raise Exception('No plot type selection (endpointFlag or yieldFlag must be True)')
+            # else:
+            #     raise Exception('No plot type selection (endpointFlag or yieldFlag must be True)')
     if sort_by_product_in_legend_flag:
         for name in prepped_x:
             trace = go.Bar(x=prepped_x[name],
@@ -564,14 +570,16 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
 
         fig['layout']['xaxis1'].update(**axis_params, **bar_xaxis_params, **chart_fonts)
         fig['layout']['yaxis1'].update(title=label, rangemode='nonnegative',
-                                                    **axis_params, **chart_fonts)
+                                       **axis_params, **chart_fonts)
         fig['layout'].update(height=height, margin=layout_margin)
 
     # Clear the empty plots
     if not sort_by_product_in_legend_flag:
-        for pltNum in range(final_plot_number+1,number_of_columns*rows+1):
-            fig['layout']['xaxis' + str(pltNum)].update(showgrid=False, zeroline=False, showline =False, autotick=True, ticks='', showticklabels=False)
-            fig['layout']['yaxis' + str(pltNum)].update(showgrid=False, zeroline=False, showline =False, autotick=True, ticks='', showticklabels=False)
+        for pltNum in range(final_plot_number + 1, number_of_columns * rows + 1):
+            fig['layout']['xaxis' + str(pltNum)].update(showgrid=False, zeroline=False, showline=False, autotick=True,
+                                                        ticks='', showticklabels=False)
+            fig['layout']['yaxis' + str(pltNum)].update(showgrid=False, zeroline=False, showline=False, autotick=True,
+                                                        ticks='', showticklabels=False)
 
     # Set the output type parameters, import the appropriate packages, and export
     if output_type == 'html':
@@ -587,8 +595,8 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         import string
         import plotly
 
-        plotly.tools.set_credentials_file(username='nvenayak', api_key='j89v5k576t')
-        fig['layout'].update(width=number_of_columns*column_width_multiplier)
-        random_file_name = ''.join(random.choice(string.ascii_letters) for _ in range(10))+'.png'
+        plotly.tools.set_credentials_file(username='nvenayak', api_key='8g4rh19bqj')
+        fig['layout'].update(width=number_of_columns * column_width_multiplier)
+        random_file_name = ''.join(random.choice(string.ascii_letters) for _ in range(10)) + '.png'
         py.image.save_as(fig, random_file_name, scale=img_scale)
         return random_file_name

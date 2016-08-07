@@ -11,7 +11,7 @@ Submodules
    FermAT.ReplicateTrial
    FermAT.SingleTrial
    FermAT.TimePoint
-   FermAT.Titer
+   FermAT.AnalyteData
    FermAT.TrialIdentifier
    FermAT.synthetic_data
 

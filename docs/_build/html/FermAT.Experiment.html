@@ -96,7 +96,7 @@
 <li class="toctree-l3"><a class="reference internal" href="FermAT.ReplicateTrial.html">FermAT.ReplicateTrial module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.SingleTrial.html">FermAT.SingleTrial module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.TimePoint.html">FermAT.TimePoint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.Titer.html">FermAT.AnalyteData module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FermAT.AnalyteData.html">FermAT.AnalyteData module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.TrialIdentifier.html">FermAT.TrialIdentifier module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.synthetic_data.html">FermAT.synthetic_data module</a></li>
 </ul>
@@ -301,16 +301,16 @@ div.nboutput  > :nth-child(2).stderr {
 <tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.data" title="FermAT.Experiment.Experiment.data"><code class="xref py py-obj docutils literal"><span class="pre">data</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.db_commit" title="FermAT.Experiment.Experiment.db_commit"><code class="xref py py-obj docutils literal"><span class="pre">db_commit</span></code></a>(dbName)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.db_commit" title="FermAT.Experiment.Experiment.db_commit"><code class="xref py py-obj docutils literal"><span class="pre">db_commit</span></code></a>(db_name)</td>
 <td>Commit the experiment to the database</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.db_load" title="FermAT.Experiment.Experiment.db_load"><code class="xref py py-obj docutils literal"><span class="pre">db_load</span></code></a>(dbName,&nbsp;experimentID)</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.db_load" title="FermAT.Experiment.Experiment.db_load"><code class="xref py py-obj docutils literal"><span class="pre">db_load</span></code></a>(db_name,&nbsp;experiment_id)</td>
 <td>Load an experiment from the database.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.get_strains" title="FermAT.Experiment.Experiment.get_strains"><code class="xref py py-obj docutils literal"><span class="pre">get_strains</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.get_strains_django" title="FermAT.Experiment.Experiment.get_strains_django"><code class="xref py py-obj docutils literal"><span class="pre">get_strains_django</span></code></a>(dbName,&nbsp;experimentID)</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.get_strains_django" title="FermAT.Experiment.Experiment.get_strains_django"><code class="xref py py-obj docutils literal"><span class="pre">get_strains_django</span></code></a>(dbName,&nbsp;experiment_id)</td>
 <td>Get info for all the strains in the database, used by django front end</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.get_titers" title="FermAT.Experiment.Experiment.get_titers"><code class="xref py py-obj docutils literal"><span class="pre">get_titers</span></code></a>()</td>
@@ -384,13 +384,13 @@ div.nboutput  > :nth-child(2).stderr {
 
 <dl class="method">
 <dt id="FermAT.Experiment.Experiment.db_commit">
-<code class="descname">db_commit</code><span class="sig-paren">(</span><em>dbName</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.db_commit" title="Permalink to this definition">¶</a></dt>
+<code class="descname">db_commit</code><span class="sig-paren">(</span><em>db_name</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.db_commit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Commit the experiment to the database</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dbName</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>db_name</strong> : str</p>
 <blockquote class="last">
 <div><p>Path to the database, must be initialized prior (FermAT.init_db())</p>
 </div></blockquote>
@@ -402,17 +402,17 @@ div.nboutput  > :nth-child(2).stderr {
 
 <dl class="method">
 <dt id="FermAT.Experiment.Experiment.db_load">
-<code class="descname">db_load</code><span class="sig-paren">(</span><em>dbName</em>, <em>experimentID</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.db_load" title="Permalink to this definition">¶</a></dt>
+<code class="descname">db_load</code><span class="sig-paren">(</span><em>db_name</em>, <em>experiment_id</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.db_load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load an experiment from the database.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dbName</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>db_name</strong> : str</p>
 <blockquote>
 <div><p>Path to the database, must be initialized prior (FermAT.init_db())</p>
 </div></blockquote>
-<p><strong>experimentID</strong> : int</p>
+<p><strong>experiment_id</strong> : int</p>
 <blockquote class="last">
 <div><p>id of experiment to load</p>
 </div></blockquote>
@@ -429,7 +429,7 @@ div.nboutput  > :nth-child(2).stderr {
 
 <dl class="method">
 <dt id="FermAT.Experiment.Experiment.get_strains_django">
-<code class="descname">get_strains_django</code><span class="sig-paren">(</span><em>dbName</em>, <em>experimentID</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.get_strains_django" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_strains_django</code><span class="sig-paren">(</span><em>dbName</em>, <em>experiment_id</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.get_strains_django" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get info for all the strains in the database, used by django front end</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -439,7 +439,7 @@ div.nboutput  > :nth-child(2).stderr {
 <blockquote>
 <div><p>Path to the database, must be initialized prior (FermAT.init_db())</p>
 </div></blockquote>
-<p><strong>experimentID</strong> : int</p>
+<p><strong>experiment_id</strong> : int</p>
 <blockquote>
 <div><p>id of experiment to load</p>
 </div></blockquote>
@@ -508,7 +508,7 @@ div.nboutput  > :nth-child(2).stderr {
 
 <dl class="method">
 <dt id="FermAT.Experiment.Experiment.printEndPointYield">
-<code class="descname">printEndPointYield</code><span class="sig-paren">(</span><em>figHandle=[]</em>, <em>strainsToPlot=[]</em>, <em>titersToPlot=[]</em>, <em>sortBy='identifier2'</em>, <em>withLegend=2</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.printEndPointYield" title="Permalink to this definition">¶</a></dt>
+<code class="descname">printEndPointYield</code><span class="sig-paren">(</span><em>figHandle=[]</em>, <em>strainsToPlot=[]</em>, <em>titersToPlot=[]</em>, <em>sortBy='id_2'</em>, <em>withLegend=2</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.printEndPointYield" title="Permalink to this definition">¶</a></dt>
 <dd><p>MPL plotting function, deprecated since 2016/06/14 due to switch to plotly</p>
 </dd></dl>
 
@@ -520,7 +520,7 @@ div.nboutput  > :nth-child(2).stderr {
 
 <dl class="method">
 <dt id="FermAT.Experiment.Experiment.printGrowthRateBarChart">
-<code class="descname">printGrowthRateBarChart</code><span class="sig-paren">(</span><em>figHandle=[]</em>, <em>strainsToPlot=[]</em>, <em>sortBy='identifier1'</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.printGrowthRateBarChart" title="Permalink to this definition">¶</a></dt>
+<code class="descname">printGrowthRateBarChart</code><span class="sig-paren">(</span><em>figHandle=[]</em>, <em>strainsToPlot=[]</em>, <em>sortBy='id_1'</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.printGrowthRateBarChart" title="Permalink to this definition">¶</a></dt>
 <dd><p>MPL plotting function, deprecated since 2016/06/14 due to switch to plotly</p>
 </dd></dl>
 

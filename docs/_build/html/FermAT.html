@@ -94,7 +94,7 @@
 <li class="toctree-l3"><a class="reference internal" href="FermAT.ReplicateTrial.html">FermAT.ReplicateTrial module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.SingleTrial.html">FermAT.SingleTrial module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.TimePoint.html">FermAT.TimePoint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.Titer.html">FermAT.AnalyteData module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FermAT.AnalyteData.html">FermAT.AnalyteData module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.TrialIdentifier.html">FermAT.TrialIdentifier module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.synthetic_data.html">FermAT.synthetic_data module</a></li>
 </ul>
@@ -299,7 +299,7 @@ div.nboutput  > :nth-child(2).stderr {
 <li class="toctree-l1"><a class="reference internal" href="FermAT.TimePoint.html">FermAT.TimePoint module</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="FermAT.Titer.html">FermAT.AnalyteData module</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="FermAT.AnalyteData.html">FermAT.AnalyteData module</a><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="FermAT.TrialIdentifier.html">FermAT.TrialIdentifier module</a><ul class="simple">
@@ -331,14 +331,14 @@ div.nboutput  > :nth-child(2).stderr {
 
 <dl class="function">
 <dt id="FermAT.printGenericTimeCourse_plotly">
-<code class="descclassname">FermAT.</code><code class="descname">printGenericTimeCourse_plotly</code><span class="sig-paren">(</span><em>replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[], secondary_y_axis_titers=None, output_type='html', stage_indices=None, stage=None, cl_scales=['10', 'qual', 'Paired'], colors=None, yieldFlag=False, titerFlag=True, endpointFlag=False, sortBy='strainID', img_scale=1, fig_height=None, column_width_multiplier=400, number_of_columns=3, horizontal_spacing=0.2, vertical_spacing=0.4, row_height=300, format='web', single_subplot=False</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.printGenericTimeCourse_plotly" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">FermAT.</code><code class="descname">printGenericTimeCourse_plotly</code><span class="sig-paren">(</span><em>replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[], secondary_y_axis_titers=None, output_type='html', stage_indices=None, stage=None, cl_scales=['10', 'qual', 'Paired'], colors=None, yieldFlag=False, titerFlag=True, endpointFlag=False, sortBy='strain_id', img_scale=1, fig_height=None, column_width_multiplier=400, number_of_columns=3, horizontal_spacing=0.2, vertical_spacing=0.4, row_height=300, format='web', single_subplot=False</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.printGenericTimeCourse_plotly" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>replicateTrialList: ~class`titer`</strong></p>
 <blockquote>
-<div><p>A list of replicate trials to be plotted</p>
+<div><p>A list of replicate_id trials to be plotted</p>
 </div></blockquote>
 <p><strong>dbName</strong> : str</p>
 <blockquote>
@@ -346,7 +346,7 @@ div.nboutput  > :nth-child(2).stderr {
 </div></blockquote>
 <p><strong>strainsToPlot</strong> : list</p>
 <blockquote>
-<div><p>A list of the strain identifiers, a concatenation of the strainID+identifier1+identifier2</p>
+<div><p>A list of the strain identifiers, a concatenation of the strain_id+id_1+id_2</p>
 </div></blockquote>
 <p><strong>titersToPlot</strong> : list</p>
 <blockquote>
@@ -380,7 +380,7 @@ div.nboutput  > :nth-child(2).stderr {
 </div></blockquote>
 <p><strong>sortBy</strong> : str</p>
 <blockquote>
-<div><p>Identifier to plot by (strainID, identifier1, identifier2, None)</p>
+<div><p>Identifier to plot by (strain_id, id_1, id_2, None)</p>
 </div></blockquote>
 <p><strong>img_scale</strong> : int</p>
 <blockquote>

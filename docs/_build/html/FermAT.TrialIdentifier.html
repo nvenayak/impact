@@ -93,7 +93,7 @@
 <li class="toctree-l3"><a class="reference internal" href="FermAT.ReplicateTrial.html">FermAT.ReplicateTrial module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.SingleTrial.html">FermAT.SingleTrial module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FermAT.TimePoint.html">FermAT.TimePoint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.Titer.html">FermAT.AnalyteData module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FermAT.AnalyteData.html">FermAT.AnalyteData module</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="">FermAT.TrialIdentifier module</a><ul class="simple">
 </ul>
 </li>
@@ -295,16 +295,16 @@ div.nboutput  > :nth-child(2).stderr {
 <col width="88%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>strainID</td>
+<tr class="row-odd"><td>strain_id</td>
 <td>(str) Strain name e.g. &#8216;MG1655 del(adh,pta)&#8217;</td>
 </tr>
-<tr class="row-even"><td>identifier1</td>
+<tr class="row-even"><td>id_1</td>
 <td>(str, optional) First identifier, plasmid e.g. &#8216;pTrc99a&#8217;</td>
 </tr>
-<tr class="row-odd"><td>identifier2</td>
+<tr class="row-odd"><td>id_2</td>
 <td>(str, optional) Second identifier, inducer e.g. &#8216;IPTG&#8217;</td>
 </tr>
-<tr class="row-even"><td>replicate</td>
+<tr class="row-even"><td>replicate_id</td>
 <td>(str) The replicate number, e.g. &#8216;1&#8217;,&#8216;2&#8217;,&#8216;3&#8217;,&#8216;4&#8217;</td>
 </tr>
 <tr class="row-odd"><td>time</td>
@@ -329,7 +329,7 @@ div.nboutput  > :nth-child(2).stderr {
 <td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#FermAT.TrialIdentifier.RunIdentifier.get_unique_id_for_ReplicateTrial" title="FermAT.TrialIdentifier.RunIdentifier.get_unique_id_for_ReplicateTrial"><code class="xref py py-obj docutils literal"><span class="pre">get_unique_id_for_ReplicateTrial</span></code></a>()</td>
-<td>Get the unique information for a single replicate Returns &#8212;&#8212;- unique_id : str     Unique id defining a replicate.</td>
+<td>Get the unique information for a single replicate_id Returns &#8212;&#8212;- unique_id : str     Unique id defining a replicate_id.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#FermAT.TrialIdentifier.RunIdentifier.parse_RunIdentifier_from_csv" title="FermAT.TrialIdentifier.RunIdentifier.parse_RunIdentifier_from_csv"><code class="xref py py-obj docutils literal"><span class="pre">parse_RunIdentifier_from_csv</span></code></a>(csv_RunIdentifier)</td>
 <td>Used to parse a CSV runIdentifier</td>
@@ -339,6 +339,11 @@ div.nboutput  > :nth-child(2).stderr {
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="FermAT.TrialIdentifier.RunIdentifier.analyte_type">
+<code class="descname">analyte_type</code><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier.analyte_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="FermAT.TrialIdentifier.RunIdentifier.get_unique_for_SingleTrial">
 <code class="descname">get_unique_for_SingleTrial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier.get_unique_for_SingleTrial" title="Permalink to this definition">¶</a></dt>
@@ -347,12 +352,12 @@ div.nboutput  > :nth-child(2).stderr {
 <dl class="method">
 <dt id="FermAT.TrialIdentifier.RunIdentifier.get_unique_id_for_ReplicateTrial">
 <code class="descname">get_unique_id_for_ReplicateTrial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier.get_unique_id_for_ReplicateTrial" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the unique information for a single replicate
+<dd><p>Get the unique information for a single replicate_id
 Returns
 &#8212;&#8212;-
 unique_id : str</p>
 <blockquote>
-<div>Unique id defining a replicate.</div></blockquote>
+<div>Unique id defining a replicate_id.</div></blockquote>
 </dd></dl>
 
 <dl class="method">
@@ -365,7 +370,7 @@ unique_id : str</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>csv_RunIdentifier</strong> : str</p>
 <blockquote class="last">
-<div><p>a comma-separated string containing a RunIdentifier in standard form - strainID,identifier1,identifier2,replicate</p>
+<div><p>a comma-separated string containing a RunIdentifier in standard form - strain_id,id_1,id_2,replicate_id</p>
 </div></blockquote>
 </td>
 </tr>
@@ -376,11 +381,6 @@ unique_id : str</p>
 <dl class="method">
 <dt id="FermAT.TrialIdentifier.RunIdentifier.summary">
 <code class="descname">summary</code><span class="sig-paren">(</span><em>items</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier.summary" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="FermAT.TrialIdentifier.RunIdentifier.titerType">
-<code class="descname">titerType</code><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier.titerType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

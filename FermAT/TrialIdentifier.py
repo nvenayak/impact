@@ -4,50 +4,51 @@ class RunIdentifier(object):
 
     Attributes
     -----------
-    strainID : str
+    strain_id : str
         Strain name e.g. 'MG1655 del(adh,pta)'
-    identifier1 : str, optional
+    id_1 : str, optional
         First identifier, plasmid e.g. 'pTrc99a'
-    identifier2 : str, optional
+    id_2 : str, optional
         Second identifier, inducer e.g. 'IPTG'
-    replicate : str
+    replicate_id : str
         The replicate number, e.g. '1','2','3','4'
     time : float
         The time of the data point, only relevant in :class:`~TimePoint` objects
-    titerName : str
+    analyte_name : str
         The name of the titer, e.g. 'OD600','Lactate','Ethanol','Glucose'
     titerType : str
         The type of titer, three acceptable values e.g. 'biomass','substrate','product'
     """
 
     def __init__(self):
-        self.strainID = ''  # e.g. MG1655 dlacI
-        self.identifier1 = ''  # e.g. pTOG009
-        self.identifier2 = ''  # e.g. IPTG
-        self.replicate = None  # e.g. 1
+        self.strain_id = ''  # e.g. MG1655 dlacI
+        self.id_1 = ''  # e.g. pTOG009
+        self.id_2 = ''  # e.g. IPTG
+        self.id_3 = ''  # e.g. 37C
+        self.replicate_id = None  # e.g. 1
         self.time = -1  # e.g. 0
-        self.titerName = 'None'  # e.g. Lactate
-        self._titerType = 'None'  # e.g. titer or OD
+        self.analyte_name = 'None'  # e.g. Lactate
+        self._analyte_type = 'None'  # e.g. titer or OD
 
     @property
-    def titerType(self):
-        return self._titerType
+    def analyte_type(self):
+        return self._analyte_type
 
-    @titerType.setter
-    def titerType(self, titerType):
+    @analyte_type.setter
+    def analyte_type(self, titerType):
         if titerType in ['biomass', 'OD', 'OD600']:
-            self._titerType = 'biomass'
+            self._analyte_type = 'biomass'
             if titerType in ['OD', 'OD600']:
                 print('Please use biomass titerType instead of: ', titerType)
         elif titerType in ['product', 'substrate']:
-            self._titerType = titerType
+            self._analyte_type = titerType
         else:
-            raise Exception('Titer type is not supported: ', titerType)
+            raise Exception('AnalyteData type is not supported: ', titerType)
 
     def summary(self, items):
         summary = dict()
         for item in items:
-            summary[item] = getattr(self,item)
+            summary[item] = getattr(self, item)
         return summary
 
     def parse_RunIdentifier_from_csv(self, csv_RunIdentifier):
@@ -57,39 +58,39 @@ class RunIdentifier(object):
         Parameters
         ----------
         csv_RunIdentifier : str 
-            a comma-separated string containing a RunIdentifier in standard form - strainID,identifier1,identifier2,replicate
+            a comma-separated string containing a RunIdentifier in standard form - strain_id,id_1,id_2,replicate_id
         """
         if type(csv_RunIdentifier) is str:
             tempParsedIdentifier = csv_RunIdentifier.split(',')
             if len(tempParsedIdentifier) == 0:
                 print(tempParsedIdentifier, " <-- not processed")
             if len(tempParsedIdentifier) > 0:
-                self.strainID = tempParsedIdentifier[0]
+                self.strain_id = tempParsedIdentifier[0]
             if len(tempParsedIdentifier) > 1:
-                self.identifier1 = tempParsedIdentifier[1]
+                self.id_1 = tempParsedIdentifier[1]
             if len(tempParsedIdentifier) > 2:
-                self.identifier2 = tempParsedIdentifier[2]
+                self.id_2 = tempParsedIdentifier[2]
             if len(tempParsedIdentifier) > 3:
                 try:
-                    self.replicate = int(tempParsedIdentifier[3])
+                    self.replicate_id = int(tempParsedIdentifier[3])
                 except:
-                    print("Couldn't parse replicate from ", tempParsedIdentifier)
+                    print("Couldn't parse replicate_id from ", tempParsedIdentifier)
             if len(tempParsedIdentifier) > 4:
                 self.time = float(tempParsedIdentifier[4])
 
     def get_unique_for_SingleTrial(self):
-        return self.strainID + self.identifier1 + self.identifier1 + str(
-            self.replicate) + self.titerName + self.titerType
+        return self.strain_id + self.id_1 + self.id_1 + str(
+            self.replicate_id) + self.analyte_name + self.analyte_type
 
     def get_unique_id_for_ReplicateTrial(self):
         """
-        Get the unique information for a single replicate
+        Get the unique information for a single replicate_id
         Returns
         -------
         unique_id : str
-            Unique id defining a replicate.
+            Unique id defining a replicate_id.
         """
-        return self.strainID + self.identifier1 + self.identifier2
+        return self.strain_id + self.id_1 + self.id_2
 
         # def return_unique_experiment_id(self):
-        #     return self.strainID + self.identifier1 + self.identifier2 + str(self.replicate)
+        #     return self.strain_id + self.id_1 + self.id_2 + str(self.replicate_id)

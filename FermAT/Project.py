@@ -1,6 +1,7 @@
 from FermAT.TrialIdentifier import RunIdentifier
 import sqlite3 as sql
 
+
 class Project(object):
     """
     """
@@ -9,7 +10,7 @@ class Project(object):
 
     def __init__(self):
         pass
-        # self.dbName = 'defaultProjectDatabase.db'
+        # self.db_name = 'defaultProjectDatabase.db'
         # try:
         #     print('tried it')
         #     self.experimentList = pickle.load(open('testpickle.p','rb'))
@@ -19,9 +20,9 @@ class Project(object):
         #
         # print('length of experimentList on fileOpen/Create: ',self.experimentList)
 
-        # conn = sql.connect(self.dbName)
+        # conn = sql.connect(self.db_name)
         # c = conn.cursor()
-        # c.execute("CREATE TABLE IF NOT EXISTS replicateExperiment (experimentID INT, strainID TEXT, identifier1 TEXT, identifier2 TEXT)")
+        # c.execute("CREATE TABLE IF NOT EXISTS replicateExperiment (experiment_id INT, strain_id TEXT, id_1 TEXT, id_2 TEXT)")
         # c.execute("CREATE TABLE IF NOT EXISTS experiments (dateAdded TEXT, experimentDate TEXT, experimentDescription TEXT)")
         # conn.commit()
         # c.close()
@@ -56,22 +57,22 @@ class Project(object):
                   (datetime.datetime.now().strftime("%Y%m%d %H:%M"), dateStamp, description))
 
         for attrName, tableName in zip(
-                ['timePointList', 'titerObjectDict', 'singleExperimentObjectDict', 'replicateExperimentObjectDict'],
-                ['TimePoint', 'Titer', 'singleExperiment', 'replicateExperiment']):
-            if attrName == 'replicateExperimentObjectDict':
+                ['timepoint_list', 'titer_dict', 'single_experiment_dict', 'replicate_experiment_dict'],
+                ['TimePoint', 'AnalyteData', 'singleExperiment', 'replicateExperiment']):
+            if attrName == 'replicate_experiment_dict':
                 for key in getattr(experiment, attrName):
                     c.execute(
-                        "INSERT INTO replicateExperiment (experimentID, strainID, identifier1, identifier2) VALUES (?, ?,?,?)",
+                        "INSERT INTO replicateExperiment (experiment_id, strain_id, id_1, id_2) VALUES (?, ?,?,?)",
                         (len(self.experimentList),
-                         getattr(experiment, attrName)[key].runIdentifier.strainID,
-                         getattr(experiment, attrName)[key].runIdentifier.identifier1,
-                         getattr(experiment, attrName)[key].runIdentifier.identifier2)
+                         getattr(experiment, attrName)[key].runIdentifier.strain_id,
+                         getattr(experiment, attrName)[key].runIdentifier.id_1,
+                         getattr(experiment, attrName)[key].runIdentifier.id_2)
                     )
 
 
                     # if attrName == 'singleExperimentObject'
 
-                    # if attrName == 'timePointList':
+                    # if attrName == 'timepoint_list':
                     #     for TimePoint in getattr(experiment,attrName):
                     #         c.execute("INSERT INTO ? ( VALUES (?,?,?,?)")
                     # for key in getattr(experiment,attrName):
@@ -80,10 +81,10 @@ class Project(object):
         c.close()
         conn.commit()
         conn.close()
-        # self.timePointList = []#dict()
-        # self.titerObjectDict = dict()
-        # self.singleExperimentObjectDict = dict()
-        # self.replicateExperimentObjectDict = dict()
+        # self.timepoint_list = []#dict()
+        # self.titer_dict = dict()
+        # self.single_experiment_dict = dict()
+        # self.replicate_experiment_dict = dict()
 
         # SQLite stuff
         # Initialize database
@@ -91,12 +92,12 @@ class Project(object):
         # c = conn.cursor()
         # c.execute("""INSERT INTO timeCourseTable VALUES (?,?,?,?,?,?,?,?,?)""" ,
         #           (datetime.datetime.now().strftime("%Y%m%d %H:%M"),
-        #           self.RunIdentifier.strainID,
-        #           self.RunIdentifier.identifier1,
-        #           self.RunIdentifier.identifier2,
-        #           self.RunIdentifier.replicate,
+        #           self.RunIdentifier.strain_id,
+        #           self.RunIdentifier.id_1,
+        #           self.RunIdentifier.id_2,
+        #           self.runIdentifier.replicate_id,
         #           self.RunIdentifier.time,
-        #           self.RunIdentifier.titerName,
+        #           self.RunIdentifier.analyte_name,
         #           self.RunIdentifier.titerType))
         # conn.commit()
         # c.close()
@@ -147,7 +148,7 @@ class Project(object):
         conn = sql.connect(dbName)
         c = conn.cursor()
         c.execute(
-            "SELECT experimentID, strainID, identifier1, identifier2 FROM replicateExperiment order by experimentID ASC, strainID ASC, identifier1 ASC, identifier2 ASC")
+            "SELECT experiment_id, strain_id, id_1, id_2 FROM replicateExperiment order by experiment_id ASC, strain_id ASC, id_1 ASC, id_2 ASC")
         data = list(c.fetchall())
         dataList = []
         for row in data:
@@ -161,18 +162,18 @@ class Project(object):
         # print(dataList)
         return dataList
 
-    def getAllTiterNames(self):
-        titerNames = []
+    def getAllanalyte_names(self):
+        analyte_names = []
         for experiment in self.experimentList:
             for key in experiment[2].replicateExperimentObjectDict:
                 for singleExperiment in experiment[2].replicateExperimentObjectDict[key].single_trial_list:
                     for product in singleExperiment.products:
-                        titerNames.append(product)
+                        analyte_names.append(product)
 
                     if singleExperiment.OD != None:
-                        titerNames.append('OD')
-        uniqueTiterNames = set(titerNames)
-        return uniqueTiterNames
+                        analyte_names.append('OD')
+        uniqueanalyte_names = set(analyte_names)
+        return uniqueanalyte_names
 
     def getTitersSelectedStrains_django(self, dbName, selectedStrainsInfo):
         conn = sql.connect(dbName)
@@ -184,7 +185,7 @@ class Project(object):
         # for row in c.fetchall():
 
 
-        c.execute("""SELECT titerName FROM timeCourseTable_avg WHERE singleTrial_avgID IN  (""" + '?, ' * (
+        c.execute("""SELECT analyte_name FROM timeCourseTable_avg WHERE singleTrial_avgID IN  (""" + '?, ' * (
             len(replicateIDs) - 1) + """ ?)"""
                   , tuple(replicateIDs))
         titerList = [row[0] for row in c.fetchall()]
@@ -198,7 +199,7 @@ class Project(object):
         conn = sql.connect(self.dbName)
         c = conn.cursor()
         experiment_id += 1
-        c.execute("SELECT strainID, identifier1, identifier2 FROM replicateExperiment  WHERE (experimentID = ?)",
+        c.execute("SELECT strain_id, id_1, id_2 FROM replicateExperiment  WHERE (experiment_id = ?)",
                   (experiment_id,))
         data = c.fetchall()
         c.close()
@@ -208,7 +209,7 @@ class Project(object):
     def getReplicateExperimentFromID(self, id):
         conn = sql.connect(self.dbName)
         c = conn.cursor()
-        c.execute("SELECT experimentID, strainID, identifier1, identifier2 FROM replicateExperiment WHERE (rowid = ?)",
+        c.execute("SELECT experiment_id, strain_id, id_1, id_2 FROM replicateExperiment WHERE (rowid = ?)",
                   (id,))
         data = c.fetchall()
         c.close()
@@ -259,16 +260,16 @@ class Project(object):
                     else:
                         temp.append(False)
                 titersToPlotPerStrain.append(temp)
-        titerNames = []
+        analyte_names = []
         for experiment in self.experimentList:
             for key in experiment[2].replicateExperimentObjectDict:
                 for singleExperiment in experiment[2].replicateExperimentObjectDict[key].single_trial_list:
                     for product in singleExperiment.products:
-                        titerNames.append(product)
+                        analyte_names.append(product)
 
                     if singleExperiment.OD != None:
-                        titerNames.append('OD')
-        uniqueTiterNames = set(titerNames)
+                        analyte_names.append('OD')
+        uniqueanalyte_names = set(analyte_names)
 
         # print(strainsToPlot,titersToPlot)
 
@@ -296,18 +297,18 @@ class Project(object):
             # Gather some information about the data
             uniques = dict()
             numUniques = dict()
-            for identifier, col in zip(['experiment', 'strainID', 'identifier1', 'identifier2'], [0, 1, 2, 3]):
+            for identifier, col in zip(['experiment', 'strain_id', 'id_1', 'id_2'], [0, 1, 2, 3]):
                 uniques[identifier] = set(row[col] for row in strainsToPlot)
                 numUniques[identifier] = len(uniques[identifier])
 
-            # Check number of unique identifier1s for each of the two identifier2s
-            for identifier, col in zip(['experiment', 'strainID', 'identifier1', 'identifier2'], [0, 1, 2, 3]):
-                if identifier == 'identifier1':
+            # Check number of unique id_1s for each of the two id_2s
+            for identifier, col in zip(['experiment', 'strain_id', 'id_1', 'id_2'], [0, 1, 2, 3]):
+                if identifier == 'id_1':
                     uniques[identifier]
 
             # print(row[3] for row in strainsToPlot)
             lenEachUniqueID = []
-            for id in uniques['identifier2']:
+            for id in uniques['id_2']:
                 lenEachUniqueID.append(len([0 for row in strainsToPlot if row[3] == id]))
 
             # Test coloring by
@@ -322,10 +323,10 @@ class Project(object):
             i = 0
             j = 0
             for row in strainsToPlot:
-                if row[3] == list(uniques['identifier2'])[0]:
+                if row[3] == list(uniques['id_2'])[0]:
                     colorList.append(colors_test[0][i])
                     i += 1
-                if row[3] == list(uniques['identifier2'])[1]:
+                if row[3] == list(uniques['id_2'])[1]:
                     colorList.append(colors_test[1][j])
                     j += 1
 
@@ -419,7 +420,7 @@ class Project(object):
                             plt.errorbar(replicateToPlot.t, replicateToPlot.avg.products[product].dataVec,
                                          replicateToPlot.std.products[product].dataVec, lw=2.5, elinewidth=1, capsize=2,
                                          fmt='o-', color=colors[colorIndex]))
-                        ylabel = product + " Titer (g/L)"
+                        ylabel = product + " AnalyteData (g/L)"
                     minOneLinePlotted = True
                 colorIndex += 1
             if minOneLinePlotted == True:

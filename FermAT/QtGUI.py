@@ -12,11 +12,14 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow, Project):
@@ -45,7 +48,7 @@ class Ui_MainWindow(object):
         self.comboBox.setEditable(False)
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         for i, row in enumerate(self.Project.getExperiments()):
-            self.comboBox.addItem(_fromUtf8(row[1]+' - '+row[2]))
+            self.comboBox.addItem(_fromUtf8(row[1] + ' - ' + row[2]))
 
         self.verticalLayout.addWidget(self.comboBox)
         self.verticalLayout_3 = QtGui.QVBoxLayout()
@@ -96,8 +99,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.label_2)
 
         self.titerCheckBoxList = []
-        for titer in self.Project.getAllTiterNames():
-            self.titerCheckBoxList.append([QtGui.QCheckBox(self.centralwidget),titer])
+        for titer in self.Project.getAllanalyte_names():
+            self.titerCheckBoxList.append([QtGui.QCheckBox(self.centralwidget), titer])
             self.titerCheckBoxList[-1][0].setObjectName(_fromUtf8(titer))
             self.titerCheckBoxList[-1][0].setText(_translate("MainWindow", titer, None))
             self.titerCheckBoxList[-1][0].stateChanged.connect(self.updateTitersToPlot)
@@ -165,11 +168,9 @@ class Ui_MainWindow(object):
         self.actionIdentifier_1.setObjectName(_fromUtf8("actionIdentifier_1"))
         self.actionIdentifier_1.triggered.connect(self.updateSortById1)
 
-
         self.actionIdentifier_2 = QtGui.QAction(MainWindow)
         self.actionIdentifier_2.setObjectName(_fromUtf8("actionIdentifier_2"))
         self.actionIdentifier_2.triggered.connect(self.updateSortById2)
-
 
         self.menuFile.addAction(self.actionExit)
         self.menuData.addAction(self.actionImport_data_from_file)
@@ -195,7 +196,7 @@ class Ui_MainWindow(object):
             item.setFlags(QtCore.Qt.ItemIsUserCheckable |
                           QtCore.Qt.ItemIsEnabled)
             item.setCheckState(QtCore.Qt.Unchecked)
-            self.strainCheckBoxList.append([row[0],row[1],row[2],row[3],item,row[4]])
+            self.strainCheckBoxList.append([row[0], row[1], row[2], row[3], item, row[4]])
 
         self.comboBox.activated.connect(self.experimentSelect)
 
@@ -210,14 +211,15 @@ class Ui_MainWindow(object):
 
     def updateSortByStrain(self):
         self.sortByCol = 1
-        self.experimentSelect(self.selectedId-1)
+        self.experimentSelect(self.selectedId - 1)
+
     def updateSortById1(self):
         self.sortByCol = 2
-        self.experimentSelect(self.selectedId-1)
+        self.experimentSelect(self.selectedId - 1)
+
     def updateSortById2(self):
         self.sortByCol = 3
-        self.experimentSelect(self.selectedId-1)
-
+        self.experimentSelect(self.selectedId - 1)
 
     def updateTitersToPlot(self):
         print('in here')
@@ -226,28 +228,35 @@ class Ui_MainWindow(object):
             if row[0].checkState() == QtCore.Qt.Checked:
                 self.titersToPlot.append(row[1])
 
-
     def updateStrainsToPlot(self):
         self.strainsToPlot = []
         for row in self.strainCheckBoxList:
             if row[4].checkState() == QtCore.Qt.Checked:
                 self.strainsToPlot.append(row)
-        # self.updateFigure()
+                # self.updateFigure()
 
     def updateFigure(self):
-        self.Project.printGenericTimeCourse(figHandle = self.figure, strainsToPlot=self.strainsToPlot, titersToPlot=self.titersToPlot, removePointFraction=4, shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True )
+        self.Project.printGenericTimeCourse(figHandle=self.figure, strainsToPlot=self.strainsToPlot,
+                                            titersToPlot=self.titersToPlot, removePointFraction=4,
+                                            shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True)
         self.mpl_canvas.draw()
 
-    def selectStrain(self, selection):  self.selectedStrain = selection
-    def selectid1(self, selection): self.selectedid1 = selection
-    def selectid2(self, selection): self.selectedid2 = selection
+    def selectStrain(self, selection):
+        self.selectedStrain = selection
 
-    def clearStrainsToPlot(self): [row[4].setCheckState(QtCore.Qt.Unchecked) for row in self.strainCheckBoxList]
+    def selectid1(self, selection):
+        self.selectedid1 = selection
+
+    def selectid2(self, selection):
+        self.selectedid2 = selection
+
+    def clearStrainsToPlot(self):
+        [row[4].setCheckState(QtCore.Qt.Unchecked) for row in self.strainCheckBoxList]
 
     def selectStrainsUpdate(self):
         for row in self.strainCheckBoxList:
             if row[0] == self.selectedId and (row[1] == self.selectedStrain or self.selectedStrain == 'All') \
-                    and (row[2] == self.selectedid1 or self.selectedid1 == 'All')\
+                    and (row[2] == self.selectedid1 or self.selectedid1 == 'All') \
                     and (row[3] == self.selectedid2 or self.selectedid2 == 'All'):
                 row[4].setCheckState(QtCore.Qt.Checked)
 
@@ -256,35 +265,33 @@ class Ui_MainWindow(object):
         id += 1
         self.selectedId = id
         for row in range(self.tableWidget.rowCount()):
-            self.tableWidget.takeItem(row,3)
+            self.tableWidget.takeItem(row, 3)
 
-        for col, key in zip(range(3),['strain','id1','id2']):
-            uniques = sorted(list(set(row[col+1] for row in self.strainCheckBoxList if row[0] == id)))
+        for col, key in zip(range(3), ['strain', 'id1', 'id2']):
+            uniques = sorted(list(set(row[col + 1] for row in self.strainCheckBoxList if row[0] == id)))
             self.sortComboBox[key] = QtGui.QComboBox()
             if key == 'strain': self.sortComboBox[key].activated[str].connect(self.selectStrain)
             if key == 'id1': self.sortComboBox[key].activated[str].connect(self.selectid1)
             if key == 'id2': self.sortComboBox[key].activated[str].connect(self.selectid2)
             self.sortComboBox[key].addItem('All')
             [self.sortComboBox[key].addItem(unique) for unique in uniques]
-            self.tableWidget.setCellWidget(0,col,self.sortComboBox[key])
+            self.tableWidget.setCellWidget(0, col, self.sortComboBox[key])
 
         self.selectStrainsPushButton = QtGui.QPushButton(self.centralwidget)
         self.selectStrainsPushButton.clicked.connect(self.selectStrainsUpdate)
-        self.tableWidget.setCellWidget(0,3,self.selectStrainsPushButton)
+        self.tableWidget.setCellWidget(0, 3, self.selectStrainsPushButton)
         self.selectStrainsPushButton.setText(_translate("MainWindow", "Select", None))
         item = QtGui.QTableWidgetItem()
         item.setText(_translate("MainWindow", "", None))
         self.tableWidget.setVerticalHeaderItem(0, item)
 
-        numRows = len([row[0] for row in self.strainCheckBoxList if row[0] == id])+1
+        numRows = len([row[0] for row in self.strainCheckBoxList if row[0] == id]) + 1
 
         self.tableWidget.setRowCount(numRows)
-        for i in range(numRows-1):
+        for i in range(numRows - 1):
             item = QtGui.QTableWidgetItem()
-            item.setText(_translate("MainWindow", str(i+1), None))
-            self.tableWidget.setVerticalHeaderItem(i+1, item)
-
-
+            item.setText(_translate("MainWindow", str(i + 1), None))
+            self.tableWidget.setVerticalHeaderItem(i + 1, item)
 
         index = 1
         sortedStrains = sorted(self.strainCheckBoxList, key=lambda x: x[self.sortByCol])
@@ -293,22 +300,28 @@ class Ui_MainWindow(object):
             if row[0] == id:
                 for j in range(3):
                     item = QtGui.QTableWidgetItem()
-                    item.setText(_translate("MainWindow", row[j+1], None))
-                    self.tableWidget.setItem(index,j,item)
-                self.tableWidget.setItem(index,3,row[4])
+                    item.setText(_translate("MainWindow", row[j + 1], None))
+                    self.tableWidget.setItem(index, j, item)
+                self.tableWidget.setItem(index, 3, row[4])
                 index += 1
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "FermAT: Fermentation Data Analysis and Plotting Inventory", None))
-        self.label_3.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:600;\">Data Browser</span></p></body></html>", None))
+        MainWindow.setWindowTitle(
+            _translate("MainWindow", "FermAT: Fermentation Data Analysis and Plotting Inventory", None))
+        self.label_3.setText(_translate("MainWindow",
+                                        "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:600;\">Data Browser</span></p></body></html>",
+                                        None))
         # self.comboBox.setItemText(0, _translate("MainWindow", "Experiment #1", None))
         # self.comboBox.setItemText(1, _translate("MainWindow", "Experiment #2", None))
         # self.comboBox.setItemText(2, _translate("MainWindow", "Experiment #3", None))
-        self.label.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:10pt; font-weight:600;\">Strains</span></p></body></html>", None))
-
+        self.label.setText(_translate("MainWindow",
+                                      "<html><head/><body><p align=\"center\"><span style=\" font-size:10pt; font-weight:600;\">Strains</span></p></body></html>",
+                                      None))
 
         # self.tableWidget.setSortingEnabled(__sortingEnabled)
-        self.label_2.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:10pt; font-weight:600;\">Titers</span></p></body></html>", None))
+        self.label_2.setText(_translate("MainWindow",
+                                        "<html><head/><body><p align=\"center\"><span style=\" font-size:10pt; font-weight:600;\">Titers</span></p></body></html>",
+                                        None))
         # self.checkBox_4.setText(_translate("MainWindow", "CheckBox", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.menuData.setTitle(_translate("MainWindow", "Data", None))
@@ -324,19 +337,21 @@ class Ui_MainWindow(object):
         self.actionIdentifier_1.setText(_translate("MainWindow", "Identifier 1", None))
         self.actionIdentifier_2.setText(_translate("MainWindow", "Identifier 2", None))
 
+
 class fDAPI_login(object):
     def __init__(self):
-       # SQLite stuff
+        # SQLite stuff
         # Initialize database
         conn = sql.connect('userDB.db')
         c = conn.cursor()
-        c.execute("CREATE TABLE IF NOT EXISTS %s (username TEXT, password TEXT) "% "userpass")
+        c.execute("CREATE TABLE IF NOT EXISTS %s (username TEXT, password TEXT) " % "userpass")
         conn.commit()
         c.close()
         conn.close()
 
+
 class mainWindow(QtGui.QDialog):
-    def __init__(self,Project,parent=None):
+    def __init__(self, Project, parent=None):
         super(mainWindow, self).__init__(parent)
         self.Project = Project
         # Populate the experimental data combo box
@@ -344,7 +359,7 @@ class mainWindow(QtGui.QDialog):
         print(projectData[0][0])
         experimentComboBox = QtGui.QComboBox(self)
         for i in range(len(projectData)):
-            experimentComboBox.addItem(projectData[i][1])#+' - '+exptDescrpt[i])
+            experimentComboBox.addItem(projectData[i][1])  # +' - '+exptDescrpt[i])
         experimentComboBox.activated[str].connect(self.exptComboBoxSelect)
 
         # Initiate experiment list
@@ -357,11 +372,10 @@ class mainWindow(QtGui.QDialog):
         self.checkBox = dict()
         self.titersCheckBox = dict()
 
-
         # top bar
         topBarHorzLayout = QtGui.QHBoxLayout()
         topBarButtons = []
-        for button in ['Input Data','Plot Options','Visual Options']:
+        for button in ['Input Data', 'Plot Options', 'Visual Options']:
             topBarButtons.append(QtGui.QPushButton(button))
             topBarHorzLayout.addWidget(topBarButtons[-1])
 
@@ -380,7 +394,7 @@ class mainWindow(QtGui.QDialog):
         self.figure = plt.figure()
         # self.strainsToPlot = self.newProjectContainer.getAllStrains()
         # self.titersToPlot = self.newProjectContainer.getAllTiters()
-        self.sortBy = 'identifier1'
+        self.sortBy = 'id_1'
         self.plotType = 'printGenericTimeCourse'
         self.showGrowthRates = True
         self.plotCurveFit = True
@@ -397,7 +411,6 @@ class mainWindow(QtGui.QDialog):
         plotVertLayout.addWidget(self.mpl_toolbar)
         plotVertLayout.addWidget(self.mpl_canvas)
 
-
         bottomHorzLayout = QtGui.QHBoxLayout()
         bottomHorzLayout.addLayout(self.dataSelectionLayout)
         bottomHorzLayout.addLayout(plotVertLayout)
@@ -406,12 +419,11 @@ class mainWindow(QtGui.QDialog):
         mainVertLayout.addLayout(topBarHorzLayout)
         mainVertLayout.addLayout(bottomHorzLayout)
 
-
         self.setLayout(mainVertLayout)
 
-    def exptComboBoxSelect(self,exptName):
+    def exptComboBoxSelect(self, exptName):
         # On selection of a new experiment, must clear all plotting data
-        if len(self.checkBox)>0:
+        if len(self.checkBox) > 0:
             for key in self.checkBox:
                 self.checkBox[key].close()
 
@@ -420,13 +432,14 @@ class mainWindow(QtGui.QDialog):
                 self.titersCheckBox[key].close()
 
         # Set the current object as the selected experiment
-        self.newProjectContainer = [experiment[2] for experiment in self.Project.experimentList if experiment[0] == exptName][0]
+        self.newProjectContainer = \
+            [experiment[2] for experiment in self.Project.experimentList if experiment[0] == exptName][0]
 
         # Populate the list of strains and add to layout
         self.strainsToPlot = self.newProjectContainer.get_strains()
         # self.strainsToPlot = []
         for strain in self.strainsToPlot:
-            self.checkBox[strain] = (QtGui.QCheckBox(strain,self))
+            self.checkBox[strain] = (QtGui.QCheckBox(strain, self))
             self.checkBox[strain].stateChanged.connect(self.updateStrainsToPlot)
             self.strainsToPlotVertLayout.addWidget(self.checkBox[strain])
         # for key in self.checkBox:
@@ -441,13 +454,11 @@ class mainWindow(QtGui.QDialog):
         #
         #
         for titer in self.titersToPlot:
-            self.titersCheckBox[titer] = (QtGui.QCheckBox(titer,self))
+            self.titersCheckBox[titer] = (QtGui.QCheckBox(titer, self))
             self.titersCheckBox[titer].stateChanged.connect(self.updateTiters)
             self.titersLayout.addWidget(self.titersCheckBox[titer])
 
-
-
-        self.sortBy = 'identifier1'
+        self.sortBy = 'id_1'
         self.plotType = 'printGenericTimeCourse'
 
         # self.updateFigure()
@@ -480,20 +491,24 @@ class mainWindow(QtGui.QDialog):
     def updateOption(self):
         for checkBoxKey in self.optionsCheckBox:
             if self.optionsCheckBox[checkBoxKey].checkState() == QtCore.Qt.Checked:
-                setattr(self,checkBoxKey,True)
+                setattr(self, checkBoxKey, True)
             else:
-                setattr(self,checkBoxKey,False)
+                setattr(self, checkBoxKey, False)
         self.updateFigure()
 
     def updateFigure(self):
-        #getattr(self.newProjectContainer,self.plotType)(self.figure, self.strainsToPlot, self.sortBy)
+        # getattr(self.newProjectContainer,self.plotType)(self.figure, self.strainsToPlot, self.sortBy)
         if self.plotType == 'printGenericTimeCourse':
-            self.newProjectContainer.printGenericTimeCourse(figHandle=self.figure, strainsToPlot=self.strainsToPlot,titersToPlot=self.titersToPlot, removePointFraction=4, plotCurveFit=self.plotCurveFit, showGrowthRates=self.showGrowthRates)
+            self.newProjectContainer.printGenericTimeCourse(figHandle=self.figure, strainsToPlot=self.strainsToPlot,
+                                                            titersToPlot=self.titersToPlot, removePointFraction=4,
+                                                            plotCurveFit=self.plotCurveFit,
+                                                            showGrowthRates=self.showGrowthRates)
         if self.plotType == 'printGrowthRateBarChart':
             self.newProjectContainer.printGrowthRateBarChart(self.figure, self.strainsToPlot, self.sortBy)
         if self.plotType == 'printAllReplicateTimeCourse':
             self.newProjectContainer.printAllReplicateTimeCourse(self.figure, self.strainsToPlot)
         self.mpl_canvas.draw()
+
 
 class Window(QtGui.QDialog):
     def __init__(self, newProjectContainer, parent=None):
@@ -504,7 +519,7 @@ class Window(QtGui.QDialog):
         self.figure = plt.figure()
         self.strainsToPlot = self.newProjectContainer.get_strains()
         self.titersToPlot = self.newProjectContainer.get_titers()
-        self.sortBy = 'identifier1'
+        self.sortBy = 'id_1'
         self.plotType = 'printGenericTimeCourse'
         self.showGrowthRates = True
         self.plotCurveFit = True
@@ -523,9 +538,9 @@ class Window(QtGui.QDialog):
         # self.button.clicked.connect(self.plot)
 
         comboBox = QtGui.QComboBox(self)
-        comboBox.addItem('strainID')
-        comboBox.addItem('identifier1')
-        comboBox.addItem('identifier2')
+        comboBox.addItem('strain_id')
+        comboBox.addItem('id_1')
+        comboBox.addItem('id_2')
         comboBox.activated[str].connect(self.updateSortBy)
 
         plotTypeComboBox = QtGui.QComboBox(self)
@@ -536,17 +551,17 @@ class Window(QtGui.QDialog):
 
         self.checkBox = dict()
         for strain in self.strainsToPlot:
-            self.checkBox[strain] = (QtGui.QCheckBox(strain,self))
+            self.checkBox[strain] = (QtGui.QCheckBox(strain, self))
             self.checkBox[strain].stateChanged.connect(self.updateStrainsToPlot)
 
         self.titersCheckBox = dict()
         for titer in self.titersToPlot:
-            self.titersCheckBox[titer] = (QtGui.QCheckBox(titer,self))
+            self.titersCheckBox[titer] = (QtGui.QCheckBox(titer, self))
             self.titersCheckBox[titer].stateChanged.connect(self.updateTiters)
 
         self.optionsCheckBox = dict()
-        for key in ['showGrowthRates','plotCurveFit']:
-            self.optionsCheckBox[key] = QtGui.QCheckBox(key,self)
+        for key in ['showGrowthRates', 'plotCurveFit']:
+            self.optionsCheckBox[key] = QtGui.QCheckBox(key, self)
             self.optionsCheckBox[key].stateChanged.connect(self.updateOption)
             self.optionsCheckBox[key].setChecked = True
 
@@ -555,7 +570,6 @@ class Window(QtGui.QDialog):
         leftVertLayout = QtGui.QVBoxLayout()
         leftVertLayout.addWidget(self.toolbar)
         leftVertLayout.addWidget(self.canvas)
-
 
         rightVertLayout = QtGui.QVBoxLayout()
         rightVertLayout.addWidget(plotTypeComboBox)
@@ -604,19 +618,23 @@ class Window(QtGui.QDialog):
     def updateOption(self):
         for checkBoxKey in self.optionsCheckBox:
             if self.optionsCheckBox[checkBoxKey].checkState() == QtCore.Qt.Checked:
-                setattr(self,checkBoxKey,True)
+                setattr(self, checkBoxKey, True)
             else:
-                setattr(self,checkBoxKey,False)
+                setattr(self, checkBoxKey, False)
         self.updateFigure()
+
     # def updateBadReplicates(self):
     #     for replicateCheckBoxKey in self.replicateCheckBox:
 
 
 
     def updateFigure(self):
-        #getattr(self.newProjectContainer,self.plotType)(self.figure, self.strainsToPlot, self.sortBy)
+        # getattr(self.newProjectContainer,self.plotType)(self.figure, self.strainsToPlot, self.sortBy)
         if self.plotType == 'printGenericTimeCourse':
-            self.newProjectContainer.printGenericTimeCourse(figHandle=self.figure, strainsToPlot=self.strainsToPlot,titersToPlot=self.titersToPlot, removePointFraction=4, plotCurveFit=self.plotCurveFit, showGrowthRates=self.showGrowthRates)
+            self.newProjectContainer.printGenericTimeCourse(figHandle=self.figure, strainsToPlot=self.strainsToPlot,
+                                                            titersToPlot=self.titersToPlot, removePointFraction=4,
+                                                            plotCurveFit=self.plotCurveFit,
+                                                            showGrowthRates=self.showGrowthRates)
         if self.plotType == 'printGrowthRateBarChart':
             self.newProjectContainer.printGrowthRateBarChart(self.figure, self.strainsToPlot, self.sortBy)
         if self.plotType == 'printAllReplicateTimeCourse':
