@@ -3,8 +3,8 @@ FermAT: Fermentation Analysis Toolbox
 This package is intended to help parse, analyze, plot and store time course data common to fermentation, including
 OD, titers and fluorescence.
 
-Quick Start Guide
-**********************************
+## Quick Start Guide
+### Install
 Download a [link](https://www.python.org/downloads/ "Python 3 installation" for your platform, 
 or you can use ` [link](https://www.continuum.io/downloads "Anaconda"). Anaconda has many of the dependencies pre-installed,
 and is an easy option to get off the ground quickly. 
@@ -27,12 +27,12 @@ I would install in develop mode if you plan on updating frequently. If you insta
 updated package automatically. If you install it in site-packages, you will need to run `pip setup.py install` before 
 python will use the updated version (since it is stored in site-packages folder).
 
+### FermAT_web
 The development webserver can be run by executing the following in the FermAT_web folder:
     
     python manage.py runserver
 
-Docker
-*******
+## Docker
 Docker is a framework to seamlessly allow for reproducible package deployment.
 A Dockerfile is included in the root directory and can be used to quickly generate an environment for the development server.
 
