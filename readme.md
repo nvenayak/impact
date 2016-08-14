@@ -27,6 +27,10 @@ I would install in develop mode if you plan on updating frequently. If you insta
 updated package automatically. If you install it in site-packages, you will need to run `pip setup.py install` before 
 python will use the updated version (since it is stored in site-packages folder).
 
+The development webserver can be run by executing the following in the FermAT_web folder:
+    
+    python manage.py runserver
+
 Docker
 *******
 Docker is a framework to seamlessly allow for reproducible package deployment.
