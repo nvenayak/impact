@@ -3,7 +3,7 @@ import dill as pickle
 
 import sqlite3 as sql
 
-from .TrialIdentifier import RunIdentifier
+from .TrialIdentifier import TrialIdentifier
 from .AnalyteData import TimeCourse
 
 
@@ -16,7 +16,7 @@ class SingleTrial(object):
     def __init__(self):
         self._t = np.array([])
         self.titerObjectDict = dict()
-        self.runIdentifier = RunIdentifier()
+        self.trial_identifier = TrialIdentifier()
         self.yields = dict()
 
         self._substrate_name = None
@@ -110,7 +110,7 @@ class SingleTrial(object):
 
         c.execute(
             """INSERT INTO singleTrialTable""" + stat_prefix + """(replicateID, replicate_id, yieldsDict) VALUES (?, ?, ?)""",
-            (replicateID, self.runIdentifier.replicate_id, pickle.dumps(self.yields)))
+            (replicateID, self.trial_identifier.replicate_id, pickle.dumps(self.yields)))
 
         c.execute("""SELECT MAX(singleTrialID""" + stat_prefix + """) from singleTrialTable""" + stat_prefix + """""")
         singleTrialID = c.fetchall()[0][0]
@@ -152,26 +152,26 @@ class SingleTrial(object):
 
         self.yields = pickle.loads(data)
 
-        c.execute("""SELECT timeCourseID, singleTrial""" + stat_prefix + """ID, titerType, analyte_name, timeVec, dataVec, rate FROM
+        c.execute("""SELECT timeCourseID, singleTrial""" + stat_prefix + """ID, titerType, analyte_name, time_vector, data_vector, rate FROM
                 timeCourseTable""" + stat_prefix + """ WHERE singleTrial""" + stat_prefix + """ID == ? """,
                   (singleTrialID,))
         for row in c.fetchall():
             # product = row[3]
             temp_titer_object = TimeCourse()
             for attribute in ['strain_id', 'id_1', 'id_2']:
-                setattr(temp_titer_object.runIdentifier, attribute, getattr(self.runIdentifier, attribute))
-            temp_titer_object.runIdentifier.id_1 = self.runIdentifier.id_1
-            temp_titer_object.runIdentifier.identifier2 = self.runIdentifier.id_2
-            temp_titer_object.runIdentifier.analyte_type = row[2]
-            temp_titer_object.runIdentifier.analyte_name = row[3]
+                setattr(temp_titer_object.trial_identifier, attribute, getattr(self.trial_identifier, attribute))
+            temp_titer_object.trial_identifier.id_1 = self.trial_identifier.id_1
+            temp_titer_object.trial_identifier.identifier2 = self.trial_identifier.id_2
+            temp_titer_object.trial_identifier.analyte_type = row[2]
+            temp_titer_object.trial_identifier.analyte_name = row[3]
 
             if stat_prefix == '':
-                temp_titer_object.runIdentifier.replicate_id = self.runIdentifier.replicate_id
+                temp_titer_object.trial_identifier.replicate_id = self.trial_identifier.replicate_id
                 temp_titer_object._timeVec = np.loads(row[4])
-            temp_titer_object._dataVec = np.loads(row[5])
+            temp_titer_object._data_vector = np.loads(row[5])
             temp_titer_object.rate = pickle.loads(row[6])
 
-            # self._t = self.titer_dict[product].timeVec
+            # self._t = self.titer_dict[product].time_vector
             self.add_titer(temp_titer_object)
 
         # The yields get recalculated when the titers are added, when in reality. A quick solution is to set the yield
@@ -184,7 +184,7 @@ class SingleTrial(object):
         summary['products'] = self.product_names
         summary['biomass'] = self.biomass_name
         summary['number_of_data_points'] = len(self._t)
-        summary['run_identifier'] = self.runIdentifier.summary(['strain_id', 'id_1', 'id_2',
+        summary['run_identifier'] = self.trial_identifier.summary(['strain_id', 'id_1', 'id_2',
                                                                 'replicate_id'])
 
         if print:
@@ -199,17 +199,17 @@ class SingleTrial(object):
         if self.biomass_name is None:
             return 'Biomass not defined'
 
-        for product in self.product_names + [self.biomass_name]:
+        for product in self.product_names + [self.biomass_name] + [self.substrate_name]:
             self.titerObjectDict[product].specific_productivity = self.titerObjectDict[product].gradient / \
-                                                                  self.titerObjectDict[self.biomass_name].dataVec
+                                                                  self.titerObjectDict[self.biomass_name].data_vector
 
     def calculate_ODE_fit(self):
         """
         WIP to fit the data to ODEs
         """
-        biomass = self.titerObjectDict[self.biomass_name].dataVec
-        biomass_rate = np.gradient(self.titerObjectDict[self.biomass_name].dataVec) / np.gradient(
-            self.titerObjectDict[self.biomass_name].timeVec)
+        biomass = self.titerObjectDict[self.biomass_name].data_vector
+        biomass_rate = np.gradient(self.titerObjectDict[self.biomass_name].data_vector) / np.gradient(
+            self.titerObjectDict[self.biomass_name].time_vector)
         self.titerObjectDict[self.substrate_name]
         self.titerObjectDict[self.product_names]
 
@@ -292,8 +292,8 @@ class SingleTrial(object):
         #     # Get the molar mass from COBRA model and covert the grams to mmol
         #     substrate = model.metabolites.get_by_id(substrate_name)
         #     # substrate_mmol = substrate.formulaWeight()
-        #     # substrate.lower_bound = self.substrate.dataVec[-1]
-        #     # substrate.upper_bound = self.substrate.dataVec[-1]
+        #     # substrate.lower_bound = self.substrate.data_vector[-1]
+        #     # substrate.upper_bound = self.substrate.data_vector[-1]
         #     productsCOBRA = dict()
         #     for key in self.yields:
         #         modelMetID = commonNameCobraDictionary[key]
@@ -313,12 +313,12 @@ class SingleTrial(object):
 
         if self.OD is not None:
             # Calc mass of biomass
-            biomass_gdw = self._OD.dataVec / OD_gdw
+            biomass_gdw = self._OD.data_vector / OD_gdw
         else:
             biomass_gdw = None
 
         # Calculate the mass of products consumed
-        totalProductMass = np.sum([self.products[productKey].dataVec for productKey in self.products], axis=0)
+        totalProductMass = np.sum([self.products[productKey].data_vector for productKey in self.products], axis=0)
 
         # Calculate the mass balance (input-output)
         if biomass_gdw is None:   biomass_gdw = np.zeros(
@@ -342,7 +342,7 @@ class SingleTrial(object):
         """
 
         # Check if this titer already exists
-        if titerObject.runIdentifier.analyte_name in self.titerObjectDict:
+        if titerObject.trial_identifier.analyte_name in self.titerObjectDict:
             # print(self.biomass_name)
             # print(self.substrate_name)
             # print(self.product_names)
@@ -350,39 +350,39 @@ class SingleTrial(object):
             raise Exception('A duplicate titer was added to the singleTiterObject,\n'
                             'Make sure replicates are defined properly,\n'
                             'Duplicate TrialIdentifier: ',
-                            vars(titerObject.runIdentifier))
+                            vars(titerObject.trial_identifier))
 
-        self.titerObjectDict[titerObject.runIdentifier.analyte_name] = titerObject
+        self.titerObjectDict[titerObject.trial_identifier.analyte_name] = titerObject
 
-        if titerObject.runIdentifier.analyte_type == 'substrate':
+        if titerObject.trial_identifier.analyte_type == 'substrate':
             if self.substrate_name is None:
-                self.substrate_name = titerObject.runIdentifier.analyte_name
+                self.substrate_name = titerObject.trial_identifier.analyte_name
             else:
                 raise Exception('No support for Multiple substrates: ', self.substrate_name, ' ',
-                                titerObject.runIdentifier.analyte_name)
+                                titerObject.trial_identifier.analyte_name)
             self.calculate_substrate_consumed()
 
-        if titerObject.runIdentifier.analyte_type == 'biomass' or titerObject.runIdentifier.analyte_type == 'OD':
+        if titerObject.trial_identifier.analyte_type == 'biomass' or titerObject.trial_identifier.analyte_type == 'OD':
             if self.biomass_name is None:
-                self.biomass_name = titerObject.runIdentifier.analyte_name
+                self.biomass_name = titerObject.trial_identifier.analyte_name
             else:
                 raise Exception('No support for Multiple biomasses: ', self.biomass_name, ' ',
-                                titerObject.runIdentifier.analyte_name)
+                                titerObject.trial_identifier.analyte_name)
 
-        if titerObject.runIdentifier.analyte_type == 'product':
-            self.product_names.append(titerObject.runIdentifier.analyte_name)
+        if titerObject.trial_identifier.analyte_type == 'product':
+            self.product_names.append(titerObject.trial_identifier.analyte_name)
 
             if self.substrate_name is not None:
                 self.calculate_yield()
 
-        # if 'substrate' in [self.titer_dict[key].runIdentifier.titerType for key in self.titer_dict] and \
-        #                 'product' in [self.titer_dict[key].runIdentifier.titerType for key in
+        # if 'substrate' in [self.titer_dict[key].trial_identifier.titerType for key in self.titer_dict] and \
+        #                 'product' in [self.titer_dict[key].trial_identifier.titerType for key in
         #                               self.titer_dict]:
         #     self.calcYield()
 
         self.check_time_vectors_match()
-        self.runIdentifier = titerObject.runIdentifier
-        self.runIdentifier.time = None
+        self.trial_identifier = titerObject.trial_identifier
+        self.trial_identifier.time = None
 
     def check_time_vectors_match(self):
         """
@@ -395,7 +395,7 @@ class SingleTrial(object):
             flag = 0
 
             for key in self.titerObjectDict:
-                t.append(self.titerObjectDict[key].timeVec)
+                t.append(self.titerObjectDict[key].time_vector)
 
             for i in range(len(t) - 1):
                 if (t[i] != t[i + 1]).all():
@@ -409,8 +409,8 @@ class SingleTrial(object):
                 self._t = t[0]
 
     def get_unique_timepoint_id(self):
-        return self.substrate.runIdentifier.strain_id + self.substrate.runIdentifier.id_1 + self.substrate.runIdentifier.identifier2 + str(
-            self.substrate.runIdentifier.replicate_id)
+        return self.substrate.trial_identifier.strain_id + self.substrate.trial_identifier.id_1 + self.substrate.trial_identifier.identifier2 + str(
+            self.substrate.trial_identifier.replicate_id)
 
     def get_unique_replicate_id(self):
         return self.titerObjectDict[list(self.titerObjectDict.keys())[0]].getReplicateID()
@@ -435,45 +435,45 @@ class SingleTrial(object):
         stage = None
         if stage is None:
             self.substrateConsumed = np.array(
-                [(self.titerObjectDict[self.substrate_name].dataVec[0] - dataPoint) for dataPoint in
-                 self.titerObjectDict[self.substrate_name].dataVec])
+                [(self.titerObjectDict[self.substrate_name].data_vector[0] - dataPoint) for dataPoint in
+                 self.titerObjectDict[self.substrate_name].data_vector])
         else:
             raise Exception('Unimplemented functionality')
             # print(self.substrate_name)
             # print(stage)
             # print(self.stages)
             self.substrateConsumed = np.array(
-                [(self.titerObjectDict[self.substrate_name].dataVec[self.stages[stage][0]] - dataPoint) for dataPoint in
-                 self.titerObjectDict[self.substrate_name].dataVec[self.stages[stage][0]:self.stages[stage][1]]])
+                [(self.titerObjectDict[self.substrate_name].data_vector[self.stages[stage][0]] - dataPoint) for dataPoint in
+                 self.titerObjectDict[self.substrate_name].data_vector[self.stages[stage][0]:self.stages[stage][1]]])
             # print(self.substrateConsumed)
             # print(np.array(
-            #     [(self.titer_dict[self.substrate_name].dataVec[0] - dataPoint) for dataPoint in
-            #      self.titer_dict[self.substrate_name].dataVec]))
+            #     [(self.titer_dict[self.substrate_name].data_vector[0] - dataPoint) for dataPoint in
+            #      self.titer_dict[self.substrate_name].data_vector]))
 
     def calculate_yield(self, stage=None):
         if stage is None:
             self.yields = dict()
             for productKey in [key for key in self.titerObjectDict if
-                               self.titerObjectDict[key].runIdentifier.analyte_type == 'product']:
+                               self.titerObjectDict[key].trial_identifier.analyte_type == 'product']:
                 try:
                     self.yields[productKey] = np.divide(
-                        [(dataPoint - self.titerObjectDict[productKey].dataVec[0]) for dataPoint in
-                         self.titerObjectDict[productKey].dataVec],
+                        [(dataPoint - self.titerObjectDict[productKey].data_vector[0]) for dataPoint in
+                         self.titerObjectDict[productKey].data_vector],
                         self.substrateConsumed)
                 except Exception as e:
                     print(productKey)
-                    print(self.titerObjectDict[productKey].dataVec)
+                    print(self.titerObjectDict[productKey].data_vector)
                     print(e)
         else:
             raise Exception('Unimplemented functionality')
             self.yields = dict()
             for productKey in [key for key in self.titerObjectDict if
-                               self.titerObjectDict[key].runIdentifier.analyte_type == 'product']:
+                               self.titerObjectDict[key].trial_identifier.analyte_type == 'product']:
                 # print(self.stages)
                 # print(stage)
                 self.yields[productKey] = np.divide(
-                    self.titerObjectDict[productKey].dataVec[self.stages[stage][0]:self.stages[stage][1]] -
-                    self.titerObjectDict[productKey].dataVec[self.stages[stage][0]],
+                    self.titerObjectDict[productKey].data_vector[self.stages[stage][0]:self.stages[stage][1]] -
+                    self.titerObjectDict[productKey].data_vector[self.stages[stage][0]],
                     self.substrateConsumed
                 )
 

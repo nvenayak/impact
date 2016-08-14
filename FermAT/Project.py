@@ -1,4 +1,4 @@
-from FermAT.TrialIdentifier import RunIdentifier
+from FermAT.TrialIdentifier import TrialIdentifier
 import sqlite3 as sql
 
 
@@ -64,9 +64,9 @@ class Project(object):
                     c.execute(
                         "INSERT INTO replicateExperiment (experiment_id, strain_id, id_1, id_2) VALUES (?, ?,?,?)",
                         (len(self.experimentList),
-                         getattr(experiment, attrName)[key].runIdentifier.strain_id,
-                         getattr(experiment, attrName)[key].runIdentifier.id_1,
-                         getattr(experiment, attrName)[key].runIdentifier.id_2)
+                         getattr(experiment, attrName)[key].trial_identifier.strain_id,
+                         getattr(experiment, attrName)[key].trial_identifier.id_1,
+                         getattr(experiment, attrName)[key].trial_identifier.id_2)
                     )
 
 
@@ -92,13 +92,13 @@ class Project(object):
         # c = conn.cursor()
         # c.execute("""INSERT INTO timeCourseTable VALUES (?,?,?,?,?,?,?,?,?)""" ,
         #           (datetime.datetime.now().strftime("%Y%m%d %H:%M"),
-        #           self.RunIdentifier.strain_id,
-        #           self.RunIdentifier.id_1,
-        #           self.RunIdentifier.id_2,
-        #           self.runIdentifier.replicate_id,
-        #           self.RunIdentifier.time,
-        #           self.RunIdentifier.analyte_name,
-        #           self.RunIdentifier.titerType))
+        #           self.TrialIdentifier.strain_id,
+        #           self.TrialIdentifier.id_1,
+        #           self.TrialIdentifier.id_2,
+        #           self.trial_identifier.replicate_id,
+        #           self.TrialIdentifier.time,
+        #           self.TrialIdentifier.analyte_name,
+        #           self.TrialIdentifier.titerType))
         # conn.commit()
         # c.close()
         # conn.close()
@@ -374,15 +374,15 @@ class Project(object):
                         # Plot the fit curve
                         if plotCurveFit == True:
                             handleArray[i] = plt.plot(np.linspace(min(scaledTime), max(scaledTime), 50),
-                                                      replicateToPlot.avg.OD.returnCurveFitPoints(
+                                                      replicateToPlot.avg.OD.data_curve_fit(
                                                           np.linspace(min(replicateToPlot.t), max(replicateToPlot.t),
                                                                       50)),
                                                       '-', lw=1.5, color=colors[colorIndex])[0]
 
                         # Plot the data
                         temp = plt.errorbar(scaledTime[::removePointFraction],
-                                            replicateToPlot.avg.OD.dataVec[::removePointFraction],
-                                            replicateToPlot.std.OD.dataVec[::removePointFraction],
+                                            replicateToPlot.avg.OD.data_vector[::removePointFraction],
+                                            replicateToPlot.std.OD.data_vector[::removePointFraction],
                                             lw=2.5, elinewidth=1, capsize=2, fmt=plotSymbol, markersize=5,
                                             color=colors[colorIndex])[0]
                         if plotCurveFit == False: handleArray[i] = temp
@@ -392,13 +392,13 @@ class Project(object):
                         # Fill in the error bar range
                         if shadeErrorRegion:
                             plt.fill_between(scaledTime,
-                                             replicateToPlot.avg.OD.dataVec + replicateToPlot.std.OD.dataVec,
-                                             replicateToPlot.avg.OD.dataVec - replicateToPlot.std.OD.dataVec,
+                                             replicateToPlot.avg.OD.data_vector + replicateToPlot.std.OD.data_vector,
+                                             replicateToPlot.avg.OD.data_vector - replicateToPlot.std.OD.data_vector,
                                              facecolor=colors[colorIndex], alpha=0.1)
                         # Add growth rates at end of curve
                         if showGrowthRates:
                             plt.text(scaledTime[-1] + 0.5,
-                                     replicateToPlot.avg.OD.returnCurveFitPoints(
+                                     replicateToPlot.avg.OD.data_curve_fit(
                                          np.linspace(min(replicateToPlot.t), max(replicateToPlot.t), 50))[-1],
                                      '$\mu$ = ' + '{:.2f}'.format(
                                          replicateToPlot.avg.OD.rate[1]) + ' $\pm$ ' + '{:.2f}'.format(
@@ -411,14 +411,14 @@ class Project(object):
                         scaledTime = replicateToPlot.t
 
                         handleArray[i] = plt.plot(np.linspace(min(scaledTime), max(scaledTime), 50),
-                                                  replicateToPlot.avg.products[product].returnCurveFitPoints(
+                                                  replicateToPlot.avg.products[product].data_curve_fit(
                                                       np.linspace(min(replicateToPlot.t), max(replicateToPlot.t), 50)),
                                                   '-', lw=0.5, color=colors[colorIndex])[0]
                         handleArray[i] = mpatches.Patch(color=colors[colorIndex])
 
                         handle_ebar.append(
-                            plt.errorbar(replicateToPlot.t, replicateToPlot.avg.products[product].dataVec,
-                                         replicateToPlot.std.products[product].dataVec, lw=2.5, elinewidth=1, capsize=2,
+                            plt.errorbar(replicateToPlot.t, replicateToPlot.avg.products[product].data_vector,
+                                         replicateToPlot.std.products[product].data_vector, lw=2.5, elinewidth=1, capsize=2,
                                          fmt='o-', color=colors[colorIndex]))
                         ylabel = product + " AnalyteData (g/L)"
                     minOneLinePlotted = True

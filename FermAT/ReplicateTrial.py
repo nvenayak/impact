@@ -3,7 +3,7 @@ import dill as pickle
 
 from .SingleTrial import SingleTrial
 from .AnalyteData import TimeCourseShell
-from .TrialIdentifier import RunIdentifier
+from .TrialIdentifier import TrialIdentifier
 
 
 class ReplicateTrial(object):
@@ -17,7 +17,7 @@ class ReplicateTrial(object):
         self.std = SingleTrial()
         self.t = None
         self.single_trial_list = []
-        self.runIdentifier = RunIdentifier()
+        self.trial_identifier = TrialIdentifier()
         self.bad_replicates = []
         self.replicate_ids = []
         # self.checkReplicateUniqueIDMatch()
@@ -72,8 +72,8 @@ class ReplicateTrial(object):
             c.execute("""\
                INSERT INTO replicateTable(experiment_id, strain_id, id_1, id_2, id_3)
                VALUES (?, ?, ?, ?, ?)""",
-                      (experiment_id, self.runIdentifier.strain_id, self.runIdentifier.id_1,
-                       self.runIdentifier.id_2, id_3)
+                      (experiment_id, self.trial_identifier.strain_id, self.trial_identifier.id_1,
+                       self.trial_identifier.id_2, id_3)
                       )
             c.execute("""SELECT MAX(replicateID) FROM replicateTable""")
             replicateID = c.fetchall()[0][0]
@@ -98,9 +98,9 @@ class ReplicateTrial(object):
 
         c.execute("""SELECT * FROM replicateTable WHERE replicateID = ?""", (replicateID,))
         for row in c.fetchall():
-            self.runIdentifier.strain_id = row[2]
-            self.runIdentifier.id_1 = row[3]
-            self.runIdentifier.id_2 = row[4]
+            self.trial_identifier.strain_id = row[2]
+            self.trial_identifier.id_1 = row[3]
+            self.trial_identifier.id_2 = row[4]
 
         c.execute(
             """SELECT singleTrialID, replicateID, replicate_id, yieldsDict FROM singleTrialTable WHERE replicateID = ?""",
@@ -108,8 +108,8 @@ class ReplicateTrial(object):
         for row in c.fetchall():
             self.single_trial_list.append(SingleTrial())
             self.single_trial_list[-1].yields = pickle.loads(row[3])
-            self.single_trial_list[-1].runIdentifier = self.runIdentifier
-            self.single_trial_list[-1].runIdentifier.replicate_id = row[2]
+            self.single_trial_list[-1].trial_identifier = self.trial_identifier
+            self.single_trial_list[-1].trial_identifier.replicate_id = row[2]
             self.single_trial_list[-1].db_load(c=c, singleTrialID=row[0])
 
         for stat in ['_avg', '_std']:
@@ -139,13 +139,13 @@ class ReplicateTrial(object):
 
                 # if len(self.single_trial_list[i].t) != len(self.single_trial_list[i + 1].t):  # TODO
                 #     print("Time Vector 1: ", self.single_trial_list[i].t, "\nTime Vector 2: ", self.single_trial_list[i + 1].t)
-                #     print("Vector 1: ", self.single_trial_list[i].substrate.dataVec, "\nVector 2: ",
-                #           self.single_trial_list[i + 1].substrate.dataVec)
+                #     print("Vector 1: ", self.single_trial_list[i].substrate.data_vector, "\nVector 2: ",
+                #           self.single_trial_list[i + 1].substrate.data_vector)
                 #     raise (Exception("length of substrate vectors do not match"))
                 #
                 # for key in self.single_trial_list[i].products:
-                #     if len(self.single_trial_list[i].products[key].dataVec) != len(
-                #             self.single_trial_list[i + 1].products[key].dataVec):
+                #     if len(self.single_trial_list[i].products[key].data_vector) != len(
+                #             self.single_trial_list[i + 1].products[key].data_vector):
                 #         raise (Exception("length of product vector " + str(key) + " do not match"))
 
     def add_replicate(self, singleTrial):
@@ -171,10 +171,10 @@ class ReplicateTrial(object):
 
         self.check_replicate_unique_id_match()
 
-        self.runIdentifier = singleTrial.runIdentifier
-        self.runIdentifier.time = None
+        self.trial_identifier = singleTrial.trial_identifier
+        self.trial_identifier.time = None
         self.replicate_ids.append(
-            singleTrial.runIdentifier.replicate_id)  # TODO remove this redundant functionality
+            singleTrial.trial_identifier.replicate_id)  # TODO remove this redundant functionality
         try:
             self.replicate_ids.sort()
         except Exception:
@@ -189,11 +189,16 @@ class ReplicateTrial(object):
             0]:  # TODO Generalize this
             for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
                 getattr(self, stat).titerObjectDict[key] = TimeCourseShell()
-                getattr(self, stat).titerObjectDict[key].timeVec = self.t
-                getattr(self, stat).titerObjectDict[key].dataVec = calc(
-                    [singleExperimentObject.titerObjectDict[key].dataVec for singleExperimentObject in
-                     self.single_trial_list if
-                     singleExperimentObject.runIdentifier.replicate_id not in self.bad_replicates], axis=0)
+                getattr(self, stat).titerObjectDict[key].time_vector = self.t
+                try:
+                    getattr(self, stat).titerObjectDict[key].data_vector = calc(
+                        [singleExperimentObject.titerObjectDict[key].data_vector
+                         for singleExperimentObject in self.single_trial_list if
+                         singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates], axis=0)
+                except Exception as e:
+                    print([singleExperimentObject.titerObjectDict[key].data_vector
+                         for singleExperimentObject in self.single_trial_list if
+                         singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates])
                 if None not in [singleExperimentObject.titerObjectDict[key].rate for singleExperimentObject in
                                 self.single_trial_list]:
                     temp = dict()
@@ -201,10 +206,10 @@ class ReplicateTrial(object):
                         temp[param] = calc(
                             [singleExperimentObject.titerObjectDict[key].rate[param] for singleExperimentObject in
                              self.single_trial_list if
-                             singleExperimentObject.runIdentifier.replicate_id not in self.bad_replicates])
+                             singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates])
                     getattr(self, stat).titerObjectDict[key].rate = temp
-                getattr(self, stat).titerObjectDict[key].runIdentifier = self.single_trial_list[0].titerObjectDict[
-                    key].runIdentifier
+                getattr(self, stat).titerObjectDict[key].trial_identifier = self.single_trial_list[0].titerObjectDict[
+                    key].trial_identifier
 
         if self.single_trial_list[
             0].yields:  # TODO Should make this general by checking for the existance of any yields

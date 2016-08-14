@@ -151,141 +151,43 @@
             
   
 <style>
-/* CSS for nbsphinx extension */
+/* CSS overrides for sphinx_rtd_theme */
 
-/* remove conflicting styling from Sphinx themes */
-div.nbinput,
-div.nbinput > div,
-div.nbinput div[class^=highlight],
-div.nbinput div[class^=highlight] pre,
-div.nboutput,
-div.nboutput > div,
-div.nboutput div[class^=highlight],
-div.nboutput div[class^=highlight] pre {
-    background: none;
-    border: none;
-    padding: 0 0;
-    margin: 0;
-    box-shadow: none;
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
 }
 
-/* avoid gaps between output lines */
-div.nboutput div[class^=highlight] pre {
-    line-height: unset;
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
 }
 
-/* input/output containers */
-div.nbinput,
-div.nboutput {
-    display: -webkit-flex;
-    display: flex;
-    align-items: flex-start;
-    margin: 0;
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
 }
-
-/* input container */
-div.nbinput {
-    padding-top: 5px;
+.admonition.warning .first {
+    background: #f0b37e;
 }
-
-/* last container */
-div.nblast {
-    padding-bottom: 5px;
+.admonition.note .first {
+    background: #6ab0de;
 }
-
-/* input prompt */
-div.nbinput > :first-child pre {
-    color: #303F9F;
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
 }
-
-/* output prompt */
-div.nboutput > :first-child pre {
-    color: #D84315;
-}
-
-/* all prompts */
-div.nbinput > :first-child[class^=highlight],
-div.nboutput > :first-child[class^=highlight],
-div.nboutput > :first-child {
-    min-width: 11ex;
-    padding-top: 0.4em;
-    padding-right: 0.4em;
-    text-align: right;
-    flex: 0;
-}
-
-/* input/output area */
-div.nbinput > :nth-child(2)[class^=highlight],
-div.nboutput > :nth-child(2),
-div.nboutput > :nth-child(2)[class^=highlight] {
-    padding: 0.4em;
-    -webkit-flex: 1;
-    flex: 1;
-}
-
-/* input area */
-div.nbinput > :nth-child(2)[class^=highlight] {
-    border: 1px solid #cfcfcf;
-    border-radius: 2px;
-    background: #f7f7f7;
-}
-
-/* override MathJax center alignment in output cells */
-div.nboutput div[class*=MathJax] {
-    text-align: left !important;
-}
-
-/* override sphinx.ext.pngmath center alignment in output cells */
-div.nboutput div.math p {
-    text-align: left;
-}
-
-/* standard error */
-div.nboutput  > :nth-child(2).stderr {
-    background: #fdd;
-}
-
-/* ANSI colors */
-.ansi-black-fg { color: #3E424D; }
-.ansi-black-bg { background-color: #3E424D; }
-.ansi-black-intense-fg { color: #282C36; }
-.ansi-black-intense-bg { background-color: #282C36; }
-.ansi-red-fg { color: #E75C58; }
-.ansi-red-bg { background-color: #E75C58; }
-.ansi-red-intense-fg { color: #B22B31; }
-.ansi-red-intense-bg { background-color: #B22B31; }
-.ansi-green-fg { color: #00A250; }
-.ansi-green-bg { background-color: #00A250; }
-.ansi-green-intense-fg { color: #007427; }
-.ansi-green-intense-bg { background-color: #007427; }
-.ansi-yellow-fg { color: #DDB62B; }
-.ansi-yellow-bg { background-color: #DDB62B; }
-.ansi-yellow-intense-fg { color: #B27D12; }
-.ansi-yellow-intense-bg { background-color: #B27D12; }
-.ansi-blue-fg { color: #208FFB; }
-.ansi-blue-bg { background-color: #208FFB; }
-.ansi-blue-intense-fg { color: #0065CA; }
-.ansi-blue-intense-bg { background-color: #0065CA; }
-.ansi-magenta-fg { color: #D160C4; }
-.ansi-magenta-bg { background-color: #D160C4; }
-.ansi-magenta-intense-fg { color: #A03196; }
-.ansi-magenta-intense-bg { background-color: #A03196; }
-.ansi-cyan-fg { color: #60C6C8; }
-.ansi-cyan-bg { background-color: #60C6C8; }
-.ansi-cyan-intense-fg { color: #258F8F; }
-.ansi-cyan-intense-bg { background-color: #258F8F; }
-.ansi-white-fg { color: #C5C1B4; }
-.ansi-white-bg { background-color: #C5C1B4; }
-.ansi-white-intense-fg { color: #A1A6B2; }
-.ansi-white-intense-bg { background-color: #A1A6B2; }
-
-.ansi-bold { font-weight: bold; }
 </style>
 <div class="section" id="module-FermAT.TrialIdentifier">
 <span id="fermat-trialidentifier-module"></span><h1>FermAT.TrialIdentifier module<a class="headerlink" href="#module-FermAT.TrialIdentifier" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="FermAT.TrialIdentifier.RunIdentifier">
-<em class="property">class </em><code class="descclassname">FermAT.TrialIdentifier.</code><code class="descname">RunIdentifier</code><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.TrialIdentifier.TrialIdentifier">
+<em class="property">class </em><code class="descclassname">FermAT.TrialIdentifier.</code><code class="descname">TrialIdentifier</code><span class="sig-paren">(</span><em>strain_id=''</em>, <em>id_1=''</em>, <em>id_2=''</em>, <em>id_3=''</em>, <em>replicate_id=None</em>, <em>time=-1</em>, <em>analyte_name='None'</em>, <em>analyte_type='None'</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.TrialIdentifier" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Carries information about the run through all the objects</p>
 <p class="rubric">Attributes</p>
@@ -325,33 +227,33 @@ div.nboutput  > :nth-child(2).stderr {
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.TrialIdentifier.RunIdentifier.get_unique_for_SingleTrial" title="FermAT.TrialIdentifier.RunIdentifier.get_unique_for_SingleTrial"><code class="xref py py-obj docutils literal"><span class="pre">get_unique_for_SingleTrial</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.TrialIdentifier.TrialIdentifier.get_unique_for_SingleTrial" title="FermAT.TrialIdentifier.TrialIdentifier.get_unique_for_SingleTrial"><code class="xref py py-obj docutils literal"><span class="pre">get_unique_for_SingleTrial</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.TrialIdentifier.RunIdentifier.get_unique_id_for_ReplicateTrial" title="FermAT.TrialIdentifier.RunIdentifier.get_unique_id_for_ReplicateTrial"><code class="xref py py-obj docutils literal"><span class="pre">get_unique_id_for_ReplicateTrial</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.TrialIdentifier.TrialIdentifier.get_unique_id_for_ReplicateTrial" title="FermAT.TrialIdentifier.TrialIdentifier.get_unique_id_for_ReplicateTrial"><code class="xref py py-obj docutils literal"><span class="pre">get_unique_id_for_ReplicateTrial</span></code></a>()</td>
 <td>Get the unique information for a single replicate_id Returns &#8212;&#8212;- unique_id : str     Unique id defining a replicate_id.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.TrialIdentifier.RunIdentifier.parse_RunIdentifier_from_csv" title="FermAT.TrialIdentifier.RunIdentifier.parse_RunIdentifier_from_csv"><code class="xref py py-obj docutils literal"><span class="pre">parse_RunIdentifier_from_csv</span></code></a>(csv_RunIdentifier)</td>
-<td>Used to parse a CSV runIdentifier</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.TrialIdentifier.TrialIdentifier.parse_trial_identifier_from_csv" title="FermAT.TrialIdentifier.TrialIdentifier.parse_trial_identifier_from_csv"><code class="xref py py-obj docutils literal"><span class="pre">parse_trial_identifier_from_csv</span></code></a>(...)</td>
+<td>Used to parse a CSV trial_identifier</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.TrialIdentifier.RunIdentifier.summary" title="FermAT.TrialIdentifier.RunIdentifier.summary"><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code></a>(items)</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.TrialIdentifier.TrialIdentifier.summary" title="FermAT.TrialIdentifier.TrialIdentifier.summary"><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code></a>(items)</td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="FermAT.TrialIdentifier.RunIdentifier.analyte_type">
-<code class="descname">analyte_type</code><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier.analyte_type" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.TrialIdentifier.TrialIdentifier.analyte_type">
+<code class="descname">analyte_type</code><a class="headerlink" href="#FermAT.TrialIdentifier.TrialIdentifier.analyte_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="FermAT.TrialIdentifier.RunIdentifier.get_unique_for_SingleTrial">
-<code class="descname">get_unique_for_SingleTrial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier.get_unique_for_SingleTrial" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.TrialIdentifier.TrialIdentifier.get_unique_for_SingleTrial">
+<code class="descname">get_unique_for_SingleTrial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.TrialIdentifier.get_unique_for_SingleTrial" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="FermAT.TrialIdentifier.RunIdentifier.get_unique_id_for_ReplicateTrial">
-<code class="descname">get_unique_id_for_ReplicateTrial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier.get_unique_id_for_ReplicateTrial" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.TrialIdentifier.TrialIdentifier.get_unique_id_for_ReplicateTrial">
+<code class="descname">get_unique_id_for_ReplicateTrial</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.TrialIdentifier.get_unique_id_for_ReplicateTrial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the unique information for a single replicate_id
 Returns
 &#8212;&#8212;-
@@ -361,16 +263,16 @@ unique_id : str</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="FermAT.TrialIdentifier.RunIdentifier.parse_RunIdentifier_from_csv">
-<code class="descname">parse_RunIdentifier_from_csv</code><span class="sig-paren">(</span><em>csv_RunIdentifier</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier.parse_RunIdentifier_from_csv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Used to parse a CSV runIdentifier</p>
+<dt id="FermAT.TrialIdentifier.TrialIdentifier.parse_trial_identifier_from_csv">
+<code class="descname">parse_trial_identifier_from_csv</code><span class="sig-paren">(</span><em>csv_trial_identifier</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.TrialIdentifier.parse_trial_identifier_from_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to parse a CSV trial_identifier</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>csv_RunIdentifier</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>csv_trial_identifier</strong> : str</p>
 <blockquote class="last">
-<div><p>a comma-separated string containing a RunIdentifier in standard form - strain_id,id_1,id_2,replicate_id</p>
+<div><p>a comma-separated string containing a TrialIdentifier in standard form - strain_id,id_1,id_2,replicate_id</p>
 </div></blockquote>
 </td>
 </tr>
@@ -379,8 +281,8 @@ unique_id : str</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="FermAT.TrialIdentifier.RunIdentifier.summary">
-<code class="descname">summary</code><span class="sig-paren">(</span><em>items</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.RunIdentifier.summary" title="Permalink to this definition">¶</a></dt>
+<dt id="FermAT.TrialIdentifier.TrialIdentifier.summary">
+<code class="descname">summary</code><span class="sig-paren">(</span><em>items</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.TrialIdentifier.TrialIdentifier.summary" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

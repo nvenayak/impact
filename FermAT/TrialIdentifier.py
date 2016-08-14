@@ -1,4 +1,4 @@
-class RunIdentifier(object):
+class TrialIdentifier(object):
     """
     Carries information about the run through all the objects
 
@@ -20,15 +20,17 @@ class RunIdentifier(object):
         The type of titer, three acceptable values e.g. 'biomass','substrate','product'
     """
 
-    def __init__(self):
-        self.strain_id = ''  # e.g. MG1655 dlacI
-        self.id_1 = ''  # e.g. pTOG009
-        self.id_2 = ''  # e.g. IPTG
-        self.id_3 = ''  # e.g. 37C
-        self.replicate_id = None  # e.g. 1
-        self.time = -1  # e.g. 0
-        self.analyte_name = 'None'  # e.g. Lactate
-        self._analyte_type = 'None'  # e.g. titer or OD
+    def __init__(self, strain_id='', id_1='', id_2='', id_3='',
+                 replicate_id = None, time = -1, analyte_name = 'None',
+                 analyte_type = 'None'):
+        self.strain_id = strain_id          # e.g. MG1655 dlacI
+        self.id_1 = id_1                    # e.g. pTOG009
+        self.id_2 = id_2                    # e.g. IPTG
+        self.id_3 = id_3                    # e.g. 37C
+        self.replicate_id = replicate_id    # e.g. 1
+        self.time = time                    # e.g. 0
+        self.analyte_name = analyte_name    # e.g. Lactate
+        self._analyte_type = analyte_type   # e.g. titer or OD
 
     @property
     def analyte_type(self):
@@ -51,17 +53,17 @@ class RunIdentifier(object):
             summary[item] = getattr(self, item)
         return summary
 
-    def parse_RunIdentifier_from_csv(self, csv_RunIdentifier):
+    def parse_trial_identifier_from_csv(self, csv_trial_identifier):
         """
-        Used to parse a CSV runIdentifier
+        Used to parse a CSV trial_identifier
 
         Parameters
         ----------
-        csv_RunIdentifier : str 
-            a comma-separated string containing a RunIdentifier in standard form - strain_id,id_1,id_2,replicate_id
+        csv_trial_identifier : str
+            a comma-separated string containing a TrialIdentifier in standard form - strain_id,id_1,id_2,replicate_id
         """
-        if type(csv_RunIdentifier) is str:
-            tempParsedIdentifier = csv_RunIdentifier.split(',')
+        if type(csv_trial_identifier) is str:
+            tempParsedIdentifier = csv_trial_identifier.split(',')
             if len(tempParsedIdentifier) == 0:
                 print(tempParsedIdentifier, " <-- not processed")
             if len(tempParsedIdentifier) > 0:

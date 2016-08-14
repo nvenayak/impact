@@ -16,10 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 
 import sys
-sys.path.append("C:/Users/Naveen/Documents/University/Grad School/University of Toronto/Research/python/dataImportandPlottingToolbox")
 from . import views
-
-import include
 
 urlpatterns = [
     url(r'^$',views.welcome),

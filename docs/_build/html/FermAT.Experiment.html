@@ -86,6 +86,8 @@
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Building FermAT Objects with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html#Database">Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html#Exporting-Data">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features_0.html">Analyzing Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features_1.html">Stages</a></li>
 <li class="toctree-l1"><a class="reference internal" href="import_experiment_data.html">Importing Raw Experimental Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="FermAT.html">FermAT package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="FermAT.html#submodules">Submodules</a><ul class="current">
@@ -152,135 +154,37 @@
             
   
 <style>
-/* CSS for nbsphinx extension */
+/* CSS overrides for sphinx_rtd_theme */
 
-/* remove conflicting styling from Sphinx themes */
-div.nbinput,
-div.nbinput > div,
-div.nbinput div[class^=highlight],
-div.nbinput div[class^=highlight] pre,
-div.nboutput,
-div.nboutput > div,
-div.nboutput div[class^=highlight],
-div.nboutput div[class^=highlight] pre {
-    background: none;
-    border: none;
-    padding: 0 0;
-    margin: 0;
-    box-shadow: none;
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
 }
 
-/* avoid gaps between output lines */
-div.nboutput div[class^=highlight] pre {
-    line-height: unset;
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
 }
 
-/* input/output containers */
-div.nbinput,
-div.nboutput {
-    display: -webkit-flex;
-    display: flex;
-    align-items: flex-start;
-    margin: 0;
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
 }
-
-/* input container */
-div.nbinput {
-    padding-top: 5px;
+.admonition.warning .first {
+    background: #f0b37e;
 }
-
-/* last container */
-div.nblast {
-    padding-bottom: 5px;
+.admonition.note .first {
+    background: #6ab0de;
 }
-
-/* input prompt */
-div.nbinput > :first-child pre {
-    color: #303F9F;
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
 }
-
-/* output prompt */
-div.nboutput > :first-child pre {
-    color: #D84315;
-}
-
-/* all prompts */
-div.nbinput > :first-child[class^=highlight],
-div.nboutput > :first-child[class^=highlight],
-div.nboutput > :first-child {
-    min-width: 11ex;
-    padding-top: 0.4em;
-    padding-right: 0.4em;
-    text-align: right;
-    flex: 0;
-}
-
-/* input/output area */
-div.nbinput > :nth-child(2)[class^=highlight],
-div.nboutput > :nth-child(2),
-div.nboutput > :nth-child(2)[class^=highlight] {
-    padding: 0.4em;
-    -webkit-flex: 1;
-    flex: 1;
-}
-
-/* input area */
-div.nbinput > :nth-child(2)[class^=highlight] {
-    border: 1px solid #cfcfcf;
-    border-radius: 2px;
-    background: #f7f7f7;
-}
-
-/* override MathJax center alignment in output cells */
-div.nboutput div[class*=MathJax] {
-    text-align: left !important;
-}
-
-/* override sphinx.ext.pngmath center alignment in output cells */
-div.nboutput div.math p {
-    text-align: left;
-}
-
-/* standard error */
-div.nboutput  > :nth-child(2).stderr {
-    background: #fdd;
-}
-
-/* ANSI colors */
-.ansi-black-fg { color: #3E424D; }
-.ansi-black-bg { background-color: #3E424D; }
-.ansi-black-intense-fg { color: #282C36; }
-.ansi-black-intense-bg { background-color: #282C36; }
-.ansi-red-fg { color: #E75C58; }
-.ansi-red-bg { background-color: #E75C58; }
-.ansi-red-intense-fg { color: #B22B31; }
-.ansi-red-intense-bg { background-color: #B22B31; }
-.ansi-green-fg { color: #00A250; }
-.ansi-green-bg { background-color: #00A250; }
-.ansi-green-intense-fg { color: #007427; }
-.ansi-green-intense-bg { background-color: #007427; }
-.ansi-yellow-fg { color: #DDB62B; }
-.ansi-yellow-bg { background-color: #DDB62B; }
-.ansi-yellow-intense-fg { color: #B27D12; }
-.ansi-yellow-intense-bg { background-color: #B27D12; }
-.ansi-blue-fg { color: #208FFB; }
-.ansi-blue-bg { background-color: #208FFB; }
-.ansi-blue-intense-fg { color: #0065CA; }
-.ansi-blue-intense-bg { background-color: #0065CA; }
-.ansi-magenta-fg { color: #D160C4; }
-.ansi-magenta-bg { background-color: #D160C4; }
-.ansi-magenta-intense-fg { color: #A03196; }
-.ansi-magenta-intense-bg { background-color: #A03196; }
-.ansi-cyan-fg { color: #60C6C8; }
-.ansi-cyan-bg { background-color: #60C6C8; }
-.ansi-cyan-intense-fg { color: #258F8F; }
-.ansi-cyan-intense-bg { background-color: #258F8F; }
-.ansi-white-fg { color: #C5C1B4; }
-.ansi-white-bg { background-color: #C5C1B4; }
-.ansi-white-intense-fg { color: #A1A6B2; }
-.ansi-white-intense-bg { background-color: #A1A6B2; }
-
-.ansi-bold { font-weight: bold; }
 </style>
 <div class="section" id="module-FermAT.Experiment">
 <span id="fermat-experiment-module"></span><h1>FermAT.Experiment module<a class="headerlink" href="#module-FermAT.Experiment" title="Permalink to this headline">¶</a></h1>
@@ -304,61 +208,64 @@ div.nboutput  > :nth-child(2).stderr {
 <tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.db_commit" title="FermAT.Experiment.Experiment.db_commit"><code class="xref py py-obj docutils literal"><span class="pre">db_commit</span></code></a>(db_name)</td>
 <td>Commit the experiment to the database</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.db_load" title="FermAT.Experiment.Experiment.db_load"><code class="xref py py-obj docutils literal"><span class="pre">db_load</span></code></a>(db_name,&nbsp;experiment_id)</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.db_delete" title="FermAT.Experiment.Experiment.db_delete"><code class="xref py py-obj docutils literal"><span class="pre">db_delete</span></code></a>(db_name,&nbsp;experiment_id)</td>
+<td>Delete an experiment from the database.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.db_load" title="FermAT.Experiment.Experiment.db_load"><code class="xref py py-obj docutils literal"><span class="pre">db_load</span></code></a>(db_name,&nbsp;experiment_id)</td>
 <td>Load an experiment from the database.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.get_strains" title="FermAT.Experiment.Experiment.get_strains"><code class="xref py py-obj docutils literal"><span class="pre">get_strains</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.get_strains" title="FermAT.Experiment.Experiment.get_strains"><code class="xref py py-obj docutils literal"><span class="pre">get_strains</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.get_strains_django" title="FermAT.Experiment.Experiment.get_strains_django"><code class="xref py py-obj docutils literal"><span class="pre">get_strains_django</span></code></a>(dbName,&nbsp;experiment_id)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.get_strains_django" title="FermAT.Experiment.Experiment.get_strains_django"><code class="xref py py-obj docutils literal"><span class="pre">get_strains_django</span></code></a>(dbName,&nbsp;experiment_id)</td>
 <td>Get info for all the strains in the database, used by django front end</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.get_titers" title="FermAT.Experiment.Experiment.get_titers"><code class="xref py py-obj docutils literal"><span class="pre">get_titers</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.get_titers" title="FermAT.Experiment.Experiment.get_titers"><code class="xref py py-obj docutils literal"><span class="pre">get_titers</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parseRawData" title="FermAT.Experiment.Experiment.parseRawData"><code class="xref py py-obj docutils literal"><span class="pre">parseRawData</span></code></a>(dataFormat[,&nbsp;fileName,&nbsp;data,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parseRawData" title="FermAT.Experiment.Experiment.parseRawData"><code class="xref py py-obj docutils literal"><span class="pre">parseRawData</span></code></a>(dataFormat[,&nbsp;fileName,&nbsp;data,&nbsp;...])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parseSingleExperimentObjectList" title="FermAT.Experiment.Experiment.parseSingleExperimentObjectList"><code class="xref py py-obj docutils literal"><span class="pre">parseSingleExperimentObjectList</span></code></a>(...)</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parseSingleExperimentObjectList" title="FermAT.Experiment.Experiment.parseSingleExperimentObjectList"><code class="xref py py-obj docutils literal"><span class="pre">parseSingleExperimentObjectList</span></code></a>(...)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parseTimePointCollection" title="FermAT.Experiment.Experiment.parseTimePointCollection"><code class="xref py py-obj docutils literal"><span class="pre">parseTimePointCollection</span></code></a>(timePointList[,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parseTimePointCollection" title="FermAT.Experiment.Experiment.parseTimePointCollection"><code class="xref py py-obj docutils literal"><span class="pre">parseTimePointCollection</span></code></a>(timePointList[,&nbsp;...])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parseTiterObjectCollection" title="FermAT.Experiment.Experiment.parseTiterObjectCollection"><code class="xref py py-obj docutils literal"><span class="pre">parseTiterObjectCollection</span></code></a>(titerObjectDict)</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parseTiterObjectCollection" title="FermAT.Experiment.Experiment.parseTiterObjectCollection"><code class="xref py py-obj docutils literal"><span class="pre">parseTiterObjectCollection</span></code></a>(titerObjectDict)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parse_single_trial_list" title="FermAT.Experiment.Experiment.parse_single_trial_list"><code class="xref py py-obj docutils literal"><span class="pre">parse_single_trial_list</span></code></a>(single_trial_list)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parse_single_trial_list" title="FermAT.Experiment.Experiment.parse_single_trial_list"><code class="xref py py-obj docutils literal"><span class="pre">parse_single_trial_list</span></code></a>(single_trial_list)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parse_titers" title="FermAT.Experiment.Experiment.parse_titers"><code class="xref py py-obj docutils literal"><span class="pre">parse_titers</span></code></a>(titer_list)</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.parse_titers" title="FermAT.Experiment.Experiment.parse_titers"><code class="xref py py-obj docutils literal"><span class="pre">parse_titers</span></code></a>(titer_list)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.pickle" title="FermAT.Experiment.Experiment.pickle"><code class="xref py py-obj docutils literal"><span class="pre">pickle</span></code></a>(fileName)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.pickle" title="FermAT.Experiment.Experiment.pickle"><code class="xref py py-obj docutils literal"><span class="pre">pickle</span></code></a>(fileName)</td>
 <td>Pickle experiment.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.plottingGUI" title="FermAT.Experiment.Experiment.plottingGUI"><code class="xref py py-obj docutils literal"><span class="pre">plottingGUI</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.plottingGUI" title="FermAT.Experiment.Experiment.plottingGUI"><code class="xref py py-obj docutils literal"><span class="pre">plottingGUI</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.printAllReplicateTimeCourse" title="FermAT.Experiment.Experiment.printAllReplicateTimeCourse"><code class="xref py py-obj docutils literal"><span class="pre">printAllReplicateTimeCourse</span></code></a>([figHandle,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.printAllReplicateTimeCourse" title="FermAT.Experiment.Experiment.printAllReplicateTimeCourse"><code class="xref py py-obj docutils literal"><span class="pre">printAllReplicateTimeCourse</span></code></a>([figHandle,&nbsp;...])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.printEndPointYield" title="FermAT.Experiment.Experiment.printEndPointYield"><code class="xref py py-obj docutils literal"><span class="pre">printEndPointYield</span></code></a>([figHandle,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.printEndPointYield" title="FermAT.Experiment.Experiment.printEndPointYield"><code class="xref py py-obj docutils literal"><span class="pre">printEndPointYield</span></code></a>([figHandle,&nbsp;...])</td>
 <td>MPL plotting function, deprecated since 2016/06/14 due to switch to plotly</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.printGenericTimeCourse" title="FermAT.Experiment.Experiment.printGenericTimeCourse"><code class="xref py py-obj docutils literal"><span class="pre">printGenericTimeCourse</span></code></a>([figHandle,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.printGenericTimeCourse" title="FermAT.Experiment.Experiment.printGenericTimeCourse"><code class="xref py py-obj docutils literal"><span class="pre">printGenericTimeCourse</span></code></a>([figHandle,&nbsp;...])</td>
 <td>Wrapper for FermAT.printGenericTimeCourse_plotly</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.printGrowthRateBarChart" title="FermAT.Experiment.Experiment.printGrowthRateBarChart"><code class="xref py py-obj docutils literal"><span class="pre">printGrowthRateBarChart</span></code></a>([figHandle,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.printGrowthRateBarChart" title="FermAT.Experiment.Experiment.printGrowthRateBarChart"><code class="xref py py-obj docutils literal"><span class="pre">printGrowthRateBarChart</span></code></a>([figHandle,&nbsp;...])</td>
 <td>MPL plotting function, deprecated since 2016/06/14 due to switch to plotly</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.printYieldTimeCourse" title="FermAT.Experiment.Experiment.printYieldTimeCourse"><code class="xref py py-obj docutils literal"><span class="pre">printYieldTimeCourse</span></code></a>(strainsToPlot)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.printYieldTimeCourse" title="FermAT.Experiment.Experiment.printYieldTimeCourse"><code class="xref py py-obj docutils literal"><span class="pre">printYieldTimeCourse</span></code></a>(strainsToPlot)</td>
 <td>MPL plotting function, deprecated since 2016/06/14 due to switch to plotly</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.summary" title="FermAT.Experiment.Experiment.summary"><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code></a>([level])</td>
+<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.summary" title="FermAT.Experiment.Experiment.summary"><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code></a>([level])</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.unpickle" title="FermAT.Experiment.Experiment.unpickle"><code class="xref py py-obj docutils literal"><span class="pre">unpickle</span></code></a>(fileName)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#FermAT.Experiment.Experiment.unpickle" title="FermAT.Experiment.Experiment.unpickle"><code class="xref py py-obj docutils literal"><span class="pre">unpickle</span></code></a>(fileName)</td>
 <td>Unpickle pickled experiments.</td>
 </tr>
 </tbody>
@@ -393,6 +300,28 @@ div.nboutput  > :nth-child(2).stderr {
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>db_name</strong> : str</p>
 <blockquote class="last">
 <div><p>Path to the database, must be initialized prior (FermAT.init_db())</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="FermAT.Experiment.Experiment.db_delete">
+<code class="descname">db_delete</code><span class="sig-paren">(</span><em>db_name</em>, <em>experiment_id</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.Experiment.Experiment.db_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an experiment from the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>db_name</strong> : str</p>
+<blockquote>
+<div><p>Path to the database, must be initialized prior (FermAT.init_db())</p>
+</div></blockquote>
+<p><strong>experiment_id</strong> : int</p>
+<blockquote class="last">
+<div><p>id of experiment to load</p>
 </div></blockquote>
 </td>
 </tr>

@@ -11,8 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   setup
-   gettingStarted
+   quickstart
+   getting_started
+   features_0
+   features_1
    import_experiment_data
    FermAT
 

@@ -13,6 +13,8 @@ Contents:
 
    setup
    gettingStarted
+   features_0
+   features_1
    import_experiment_data
    FermAT
 

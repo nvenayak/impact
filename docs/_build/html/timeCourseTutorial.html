@@ -152,7 +152,7 @@ div.nboutput div[class^=highlight] pre {
 
 /* avoid gaps between output lines */
 div.nboutput div[class^=highlight] pre {
-    line-height: unset;
+    line-height: normal;
 }
 
 /* input/output containers */
@@ -188,7 +188,7 @@ div.nboutput > :first-child pre {
 div.nbinput > :first-child[class^=highlight],
 div.nboutput > :first-child[class^=highlight],
 div.nboutput > :first-child {
-    min-width: 11ex;
+    min-width: 9ex;
     padding-top: 0.4em;
     padding-right: 0.4em;
     text-align: right;
@@ -202,6 +202,7 @@ div.nboutput > :nth-child(2)[class^=highlight] {
     padding: 0.4em;
     -webkit-flex: 1;
     flex: 1;
+    overflow: auto;
 }
 
 /* input area */
@@ -261,6 +262,38 @@ div.nboutput  > :nth-child(2).stderr {
 .ansi-white-intense-bg { background-color: #A1A6B2; }
 
 .ansi-bold { font-weight: bold; }
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast,
+.nboutput.nblast {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast + .nbinput {
+    margin-top: -19px;
+}
+
+/* nice headers on first paragraph of info/warning boxes */
+.admonition .first {
+    margin: -12px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    line-height: 1;
+    display: block;
+}
+.admonition.warning .first {
+    background: #f0b37e;
+}
+.admonition.note .first {
+    background: #6ab0de;
+}
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
 </style>
 <div class="section" id="Importing-and-Working-with-fDAPI.TimeCourse-Objects">
 <h1>Importing and Working with fDAPI.TimeCourse Objects<a class="headerlink" href="#Importing-and-Working-with-fDAPI.TimeCourse-Objects" title="Permalink to this headline">¶</a></h1>
@@ -285,8 +318,8 @@ div.nboutput  > :nth-child(2).stderr {
 </div>
 <div class="stderr container">
 <div class="highlight"><pre>
-C:\Users\Naveen\Anaconda3\lib\site-packages\IPython\html.py:14: ShimWarning: The &#96;IPython.html&#96; package has been deprecated. You should import from &#96;notebook&#96; instead. &#96;IPython.html.widgets&#96; has moved to &#96;ipywidgets&#96;.
-  &quot;&#96;IPython.html.widgets&#96; has moved to &#96;ipywidgets&#96;.&quot;, ShimWarning)
+C:\Users\Naveen\Anaconda3\lib\site-packages\IPython\html.py:14: ShimWarning: The `IPython.html` package has been deprecated. You should import from `notebook` instead. `IPython.html.widgets` has moved to `ipywidgets`.
+  &#34;`IPython.html.widgets` has moved to `ipywidgets`.&#34;, ShimWarning)
 </pre></div></div>
 </div>
 <p>Initialize the time course object, and set the titer type (for curve
@@ -298,7 +331,7 @@ fitting)</p>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span><span class="n">timeCourse</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">(</span><span class="n">removeDeathPhaseFlag</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">timeCourse</span><span class="o">.</span><span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerType</span> <span class="o">=</span> <span class="s1">&#39;OD&#39;</span>
+<span class="n">timeCourse</span><span class="o">.</span><span class="n">trial_identifier</span><span class="o">.</span><span class="n">titerType</span> <span class="o">=</span> <span class="s1">&#39;OD&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -352,7 +385,7 @@ we can enable the removeDeathPhaseFlag = True</p>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span><span class="n">timeCourse</span> <span class="o">=</span> <span class="n">fDAPI</span><span class="o">.</span><span class="n">TimeCourse</span><span class="p">(</span><span class="n">removeDeathPhaseFlag</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
-<span class="n">timeCourse</span><span class="o">.</span><span class="n">runIdentifier</span><span class="o">.</span><span class="n">titerType</span> <span class="o">=</span> <span class="s1">&#39;OD&#39;</span>
+<span class="n">timeCourse</span><span class="o">.</span><span class="n">trial_identifier</span><span class="o">.</span><span class="n">titerType</span> <span class="o">=</span> <span class="s1">&#39;OD&#39;</span>
 
 <span class="n">timeCourse</span><span class="o">.</span><span class="n">timeVec</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">22</span><span class="p">]</span>
 <span class="n">timeCourse</span><span class="o">.</span><span class="n">dataVec</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">1.6</span><span class="p">,</span><span class="mf">1.7</span><span class="p">,</span><span class="mf">1.6</span><span class="p">,</span><span class="mf">1.55</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.45</span><span class="p">,</span><span class="mf">1.4</span><span class="p">]</span>

@@ -85,6 +85,8 @@
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Building FermAT Objects with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html#Database">Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gettingStarted.html#Exporting-Data">Exporting Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features_0.html">Analyzing Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features_1.html">Stages</a></li>
 <li class="toctree-l1"><a class="reference internal" href="import_experiment_data.html">Importing Raw Experimental Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FermAT.html">FermAT package</a></li>
 </ul>
@@ -140,8 +142,10 @@
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -182,7 +186,7 @@
   </dt>
 
       
-  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.RunIdentifier.analyte_type">analyte_type (FermAT.TrialIdentifier.RunIdentifier attribute)</a>
+  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.TrialIdentifier.analyte_type">analyte_type (FermAT.TrialIdentifier.TrialIdentifier attribute)</a>
   </dt>
 
       
@@ -196,11 +200,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.calcExponentialRate">calcExponentialRate() (FermAT.AnalyteData.TimeCourse method)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.calcExponentialRate">[1]</a>
-  </dt>
-
-      
-  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.CurveFitObject.calcFit">calcFit() (FermAT.AnalyteData.CurveFitObject method)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.CurveFitObject.calcFit">[1]</a>
+  <dt><a href="FermAT.curve_fitting.html#FermAT.curve_fitting.CurveFitObject.calcFit">calcFit() (FermAT.curve_fitting.CurveFitObject method)</a>
   </dt>
 
       
@@ -227,12 +227,12 @@
   <dt><a href="FermAT.SingleTrial.html#FermAT.SingleTrial.SingleTrial.calculate_substrate_consumed">calculate_substrate_consumed() (FermAT.SingleTrial.SingleTrial method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="FermAT.SingleTrial.html#FermAT.SingleTrial.SingleTrial.calculate_yield">calculate_yield() (FermAT.SingleTrial.SingleTrial method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="FermAT.ReplicateTrial.html#FermAT.ReplicateTrial.ReplicateTrial.check_replicate_unique_id_match">check_replicate_unique_id_match() (FermAT.ReplicateTrial.ReplicateTrial method)</a>
   </dt>
@@ -264,7 +264,11 @@
 
       </dl></dd>
       
-  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.CurveFitObject">CurveFitObject (class in FermAT.AnalyteData)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.CurveFitObject">[1]</a>
+  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.curve_fit_data">curve_fit_data() (FermAT.AnalyteData.TimeCourse method)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.curve_fit_data">[1]</a>
+  </dt>
+
+      
+  <dt><a href="FermAT.curve_fitting.html#FermAT.curve_fitting.CurveFitObject">CurveFitObject (class in FermAT.curve_fitting)</a>
   </dt>
 
   </dl></td>
@@ -278,12 +282,16 @@
   </dt>
 
       
-  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.dataVec">dataVec (FermAT.AnalyteData.TimeCourse attribute)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.dataVec">[1]</a>
+  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.data_curve_fit">data_curve_fit() (FermAT.AnalyteData.TimeCourse method)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.data_curve_fit">[1]</a>
+  </dt>
+
+      
+  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.data_vector">data_vector (FermAT.AnalyteData.TimeCourse attribute)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.data_vector">[1]</a>
   </dt>
 
       <dd><dl>
         
-  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourseShell.dataVec">(FermAT.AnalyteData.TimeCourseShell attribute)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourseShell.dataVec">[1]</a>
+  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourseShell.data_vector">(FermAT.AnalyteData.TimeCourseShell attribute)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourseShell.data_vector">[1]</a>
   </dt>
 
       </dl></dd>
@@ -307,6 +315,10 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="FermAT.Experiment.html#FermAT.Experiment.Experiment.db_delete">db_delete() (FermAT.Experiment.Experiment method)</a>
+  </dt>
+
       
   <dt><a href="FermAT.Experiment.html#FermAT.Experiment.Experiment.db_load">db_load() (FermAT.Experiment.Experiment method)</a>
   </dt>
@@ -364,13 +376,27 @@
   </dt>
 
       
+  <dt><a href="FermAT.curve_fitting.html#module-FermAT.curve_fitting">FermAT.curve_fitting (module)</a>
+  </dt>
+
+      
   <dt><a href="FermAT.Experiment.html#module-FermAT.Experiment">FermAT.Experiment (module)</a>
+  </dt>
+
+      
+  <dt><a href="FermAT.Options.html#module-FermAT.Options">FermAT.Options (module)</a>
+  </dt>
+
+      
+  <dt><a href="FermAT.parsers.html#module-FermAT.parsers">FermAT.parsers (module)</a>
   </dt>
 
       
   <dt><a href="FermAT.Project.html#module-FermAT.Project">FermAT.Project (module)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="FermAT.QtGUI.html#module-FermAT.QtGUI">FermAT.QtGUI (module)</a>
   </dt>
@@ -379,8 +405,6 @@
   <dt><a href="FermAT.ReplicateTrial.html#module-FermAT.ReplicateTrial">FermAT.ReplicateTrial (module)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="FermAT.settings.html#module-FermAT.settings">FermAT.settings (module)</a>
   </dt>
@@ -416,6 +440,10 @@
   </dt>
 
       
+  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.get_fit_parameters">get_fit_parameters() (FermAT.AnalyteData.TimeCourse method)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.get_fit_parameters">[1]</a>
+  </dt>
+
+      
   <dt><a href="FermAT.ReplicateTrial.html#FermAT.ReplicateTrial.ReplicateTrial.get_normalize_data">get_normalize_data() (FermAT.ReplicateTrial.ReplicateTrial method)</a>
   </dt>
 
@@ -436,11 +464,11 @@
   </dt>
 
       
-  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.RunIdentifier.get_unique_for_SingleTrial">get_unique_for_SingleTrial() (FermAT.TrialIdentifier.RunIdentifier method)</a>
+  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.TrialIdentifier.get_unique_for_SingleTrial">get_unique_for_SingleTrial() (FermAT.TrialIdentifier.TrialIdentifier method)</a>
   </dt>
 
       
-  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.RunIdentifier.get_unique_id_for_ReplicateTrial">get_unique_id_for_ReplicateTrial() (FermAT.TrialIdentifier.RunIdentifier method)</a>
+  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.TrialIdentifier.get_unique_id_for_ReplicateTrial">get_unique_id_for_ReplicateTrial() (FermAT.TrialIdentifier.TrialIdentifier method)</a>
   </dt>
 
       
@@ -480,10 +508,6 @@
   </dt>
 
       
-  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.getFitParameters">getFitParameters() (FermAT.AnalyteData.TimeCourse method)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.getFitParameters">[1]</a>
-  </dt>
-
-      
   <dt><a href="FermAT.Project.html#FermAT.Project.Project.getReplicateExperimentFromID">getReplicateExperimentFromID() (FermAT.Project.Project method)</a>
   </dt>
 
@@ -503,6 +527,14 @@
   <dt><a href="FermAT.Project.html#FermAT.Project.Project.getTitersSelectedStrains_django">getTitersSelectedStrains_django() (FermAT.Project.Project method)</a>
   </dt>
 
+      
+  <dt><a href="FermAT.curve_fitting.html#FermAT.curve_fitting.gompertz">gompertz() (in module FermAT.curve_fitting)</a>
+  </dt>
+
+      
+  <dt><a href="FermAT.curve_fitting.html#FermAT.curve_fitting.growthEquation_generalized_logistic">growthEquation_generalized_logistic() (in module FermAT.curve_fitting)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -511,6 +543,16 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="FermAT.html#FermAT.init_db">init_db() (in module FermAT)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="FermAT.curve_fitting.html#FermAT.curve_fitting.janoschek">janoschek() (in module FermAT.curve_fitting)</a>
   </dt>
 
   </dl></td>
@@ -542,19 +584,29 @@
   </dl></td>
 </tr></table>
 
-<h2 id="P">P</h2>
+<h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.RunIdentifier.parse_RunIdentifier_from_csv">parse_RunIdentifier_from_csv() (FermAT.TrialIdentifier.RunIdentifier method)</a>
+  <dt><a href="FermAT.Options.html#FermAT.Options.Options">Options (class in FermAT.Options)</a>
   </dt>
 
+  </dl></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="FermAT.Experiment.html#FermAT.Experiment.Experiment.parse_single_trial_list">parse_single_trial_list() (FermAT.Experiment.Experiment method)</a>
   </dt>
 
       
   <dt><a href="FermAT.Experiment.html#FermAT.Experiment.Experiment.parse_titers">parse_titers() (FermAT.Experiment.Experiment method)</a>
+  </dt>
+
+      
+  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.TrialIdentifier.parse_trial_identifier_from_csv">parse_trial_identifier_from_csv() (FermAT.TrialIdentifier.TrialIdentifier method)</a>
   </dt>
 
       
@@ -587,12 +639,12 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="FermAT.Project.html#FermAT.Project.Project.plottingGUI2">plottingGUI2() (FermAT.Project.Project method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="FermAT.Experiment.html#FermAT.Experiment.Experiment.printAllReplicateTimeCourse">printAllReplicateTimeCourse() (FermAT.Experiment.Experiment method)</a>
   </dt>
@@ -624,6 +676,10 @@
   </dt>
 
       
+  <dt><a href="FermAT.curve_fitting.html#FermAT.curve_fitting.productionEquation_generalized_logistic">productionEquation_generalized_logistic() (in module FermAT.curve_fitting)</a>
+  </dt>
+
+      
   <dt><a href="FermAT.SingleTrial.html#FermAT.SingleTrial.SingleTrial.products">products (FermAT.SingleTrial.SingleTrial attribute)</a>
   </dt>
 
@@ -645,26 +701,12 @@
   <dt><a href="FermAT.QtGUI.html#FermAT.QtGUI.Ui_MainWindow.retranslateUi">retranslateUi() (FermAT.QtGUI.Ui_MainWindow method)</a>
   </dt>
 
-      
-  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.returnCurveFitPoints">returnCurveFitPoints() (FermAT.AnalyteData.TimeCourse method)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.returnCurveFitPoints">[1]</a>
-  </dt>
-
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.RunIdentifier">RunIdentifier (class in FermAT.TrialIdentifier)</a>
+  <dt><a href="FermAT.curve_fitting.html#FermAT.curve_fitting.richard_5">richard_5() (in module FermAT.curve_fitting)</a>
   </dt>
 
-      
-  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.AnalyteData.runIdentifier">runIdentifier (FermAT.AnalyteData.AnalyteData attribute)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.AnalyteData.runIdentifier">[1]</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.runIdentifier">(FermAT.AnalyteData.TimeCourse attribute)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.runIdentifier">[1]</a>
-  </dt>
-
-      </dl></dd>
   </dl></td>
 </tr></table>
 
@@ -691,10 +733,14 @@
   <dt><a href="FermAT.QtGUI.html#FermAT.QtGUI.Ui_MainWindow.setupUi">setupUi() (FermAT.QtGUI.Ui_MainWindow method)</a>
   </dt>
 
+      
+  <dt><a href="FermAT.SingleTrial.html#FermAT.SingleTrial.SingleTrial">SingleTrial (class in FermAT.SingleTrial)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="FermAT.SingleTrial.html#FermAT.SingleTrial.SingleTrial">SingleTrial (class in FermAT.SingleTrial)</a>
+  <dt><a href="FermAT.parsers.html#FermAT.parsers.spectromax_OD">spectromax_OD() (in module FermAT.parsers)</a>
   </dt>
 
       
@@ -727,7 +773,7 @@
   </dt>
 
         
-  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.RunIdentifier.summary">(FermAT.TrialIdentifier.RunIdentifier method)</a>
+  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.TrialIdentifier.summary">(FermAT.TrialIdentifier.TrialIdentifier method)</a>
   </dt>
 
       </dl></dd>
@@ -739,6 +785,10 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="FermAT.SingleTrial.html#FermAT.SingleTrial.SingleTrial.t">t (FermAT.SingleTrial.SingleTrial attribute)</a>
+  </dt>
+
+      
+  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.time_vector">time_vector (FermAT.AnalyteData.TimeCourse attribute)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.time_vector">[1]</a>
   </dt>
 
       
@@ -760,7 +810,17 @@
   </dt>
 
       
-  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.timeVec">timeVec (FermAT.AnalyteData.TimeCourse attribute)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.timeVec">[1]</a>
+  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.AnalyteData.trial_identifier">trial_identifier (FermAT.AnalyteData.AnalyteData attribute)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.AnalyteData.trial_identifier">[1]</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="FermAT.AnalyteData.html#FermAT.AnalyteData.TimeCourse.trial_identifier">(FermAT.AnalyteData.TimeCourse attribute)</a>, <a href="FermAT.Titer.html#FermAT.AnalyteData.TimeCourse.trial_identifier">[1]</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="FermAT.TrialIdentifier.html#FermAT.TrialIdentifier.TrialIdentifier">TrialIdentifier (class in FermAT.TrialIdentifier)</a>
   </dt>
 
   </dl></td>
