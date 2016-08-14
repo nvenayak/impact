@@ -14,7 +14,7 @@ Fresh environments can be quickly spun up using the requirements.txt
 	pip install -r requirements.txt
 
 It has the following dependencies:
-::
+
     install_requires=['pyexcel_xlsx','lmfit==0.8.3','dill','numpy','scipy',
                       'datetime','plotly','colorlover','cobra','django','django-bootstrap-form']
 
@@ -31,7 +31,7 @@ Docker
 *******
 Docker is a framework to seamlessly allow for reproducible package deployment. 
 A Dockerfile is included in the root directory and can be used to quickly generate an environment for the development server.
-::
+
     git clone http://github.com/nvenayak/FermAT
     cd FermAT
     docker build --tag=fermat .
