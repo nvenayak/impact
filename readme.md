@@ -6,8 +6,8 @@ There are two parts to the package:
 - `FermAT`: which contains the core toolbox
 - `FermAT_web`: a web-based front end written in django
 
-`FermAT_web` is designed as a wrapped for FermAT. All major functionality should continue in this fashion, and be
-included in the core package.
+`FermAT_web` is designed as a wrapper for FermAT and contains most functionality. All major functionality should continue in this fashion, and be
+included in the core package as much as possible.
 
 ## Quick Start Guide
 ### Install
@@ -15,19 +15,19 @@ Download a [link](https://www.python.org/downloads/ "Python 3 installation" for 
 or you can use ` [link](https://www.continuum.io/downloads "Anaconda"). Anaconda has many of the dependencies pre-installed,
 and is an easy option to get off the ground quickly. 
 
+First, clone the repository:
+    
+    git clone http://github.com/nvenayak/FermAT
+    cd FermAT
+
 Fresh environments can be quickly spun up using the requirements.txt
 
 	pip install -r requirements.txt
 
-It has the following dependencies:
+You can install the package in two steps:
 
-    install_requires=['pyexcel_xlsx','lmfit==0.8.3','dill','numpy','scipy',
-                      'datetime','plotly','colorlover','cobra','django','django-bootstrap-form']
-
-You can install the package in two ways:
-
-1.	`python setup.py install` which will install into your site-packages directory, 
-2.	`python setup.py develop` which will install into your current directory.
+1.	For fresh installs first use: `python setup.py install` which will install dependencies, 
+2.	Then, use: `python setup.py develop` which will install into your current directory.
 
 I would install in develop mode if you plan on updating frequently. If you install it in the local directory, when you update the package contents (e.g. via git), python will use the
 updated package automatically. If you install it in site-packages, you will need to run `pip setup.py install` before 
