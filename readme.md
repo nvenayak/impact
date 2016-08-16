@@ -1,7 +1,13 @@
 FermAT: Fermentation Analysis Toolbox
 =====================================
-This package is intended to help parse, analyze, plot and store time course data common to fermentation, including
-OD, titers and fluorescence.
+FermAT is designed to help scientists parse, analyze, plot and store data for fermentation experiments.
+There are two parts to the package:
+
+- `FermAT`: which contains the core toolbox
+- `FermAT_web`: a web-based front end written in django
+
+`FermAT_web` is designed as a wrapped for FermAT. All major functionality should continue in this fashion, and be
+included in the core package.
 
 ## Quick Start Guide
 ### Install
@@ -28,8 +34,14 @@ updated package automatically. If you install it in site-packages, you will need
 python will use the updated version (since it is stored in site-packages folder).
 
 ### FermAT_web
-The development webserver can be run by executing the following in the FermAT_web folder:
-    
+The development webserver can be run by executing a few commands in the FermAT_web folder:
+
+After the first pull, a user should be created:
+
+    python manage.py createsuperuser
+
+Then, the server can be run and logged into by visiting http://localhost:8000 and logging in with the the newly created credentials
+
     python manage.py runserver
 
 ## Docker
