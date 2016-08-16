@@ -15,34 +15,41 @@ Download a [link](https://www.python.org/downloads/ "Python 3 installation" for 
 or you can use ` [link](https://www.continuum.io/downloads "Anaconda"). Anaconda has many of the dependencies pre-installed,
 and is an easy option to get off the ground quickly. 
 
-First, clone the repository:
+#### Fresh install
+First, clone the repository. You will need your github username and password but if you are here presumably you are logged in.
     
     git clone http://github.com/nvenayak/FermAT
     cd FermAT
 
-Fresh environments can be quickly spun up using the requirements.txt
-
+Install the dependencies for the project using requirements.txt:
+	
 	pip install -r requirements.txt
 
-You can install the package in two steps:
+Install the package, if you are to be updating the package at all, I recommend
 
-1.	For fresh installs first use: `python setup.py install` which will install dependencies, 
-2.	Then, use: `python setup.py develop` which will install into your current directory.
-
-I would install in develop mode if you plan on updating frequently. If you install it in the local directory, when you update the package contents (e.g. via git), python will use the
-updated package automatically. If you install it in site-packages, you will need to run `pip setup.py install` before 
-python will use the updated version (since it is stored in site-packages folder).
+    python setup.py develop
 
 ### FermAT_web
-The development webserver can be run by executing a few commands in the FermAT_web folder:
+The development webserver can be run by executing a few commands in the FermAT_web folder.
+First change directory:
 
-After the first pull, a user should be created:
+    cd FermAT_web
 
+After the first pull, the database and a user should be created:
+
+    python manage.py migrate
     python manage.py createsuperuser
 
 Then, the server can be run and logged into by visiting http://localhost:8000 and logging in with the the newly created credentials
 
     python manage.py runserver
+
+#### Updating
+To update to the latest version, simply run:
+    
+    git pull
+    
+in the root folder
 
 ## Docker
 Docker is a framework to seamlessly allow for reproducible package deployment.

@@ -62,7 +62,7 @@ class Experiment(object):
 
         return combined_experiment
 
-    def db_commit(self, db_name):
+    def db_commit(self, db_name, overwrite_experiment_id = None):
         """
         Commit the experiment to the database
 
@@ -83,10 +83,18 @@ class Experiment(object):
         prepped_column_data = [self.info[key] for key in prepared_columns]
 
 
-        c.execute("""INSERT INTO experimentTable (""" + prepped_column_query + \
-                  """) VALUES (""" + ', '.join('?' for a in prepped_column_data) + """)""", prepped_column_data)
-        c.execute("SELECT MAX(experiment_id) FROM experimentTable")
-        experiment_id = c.fetchall()[0][0]
+        if overwrite_experiment_id is None:
+            c.execute("""INSERT INTO experimentTable (""" + prepped_column_query + \
+                      """) VALUES (""" + ', '.join('?' for a in prepped_column_data) + """)""", prepped_column_data)
+            c.execute("SELECT MAX(experiment_id) FROM experimentTable")
+            experiment_id = c.fetchall()[0][0]
+        elif type(overwrite_experiment_id) is int:
+            experiment_id = overwrite_experiment_id
+            for i, col in enumerate(prepared_columns):
+                c.execute("""UPDATE experimentTable SET """
+                          + col + """ = ? WHERE experiment_id = ?""", (prepped_column_data[i],experiment_id)
+                          )
+
         for key in self.replicate_experiment_dict:
             self.replicate_experiment_dict[key].db_commit(experiment_id, c=c)
 

@@ -57,7 +57,7 @@ class TimeCourse(AnalyteData):
                       'data': 'None'}
 
         self.gradient = []
-        self.specific_productivity = []
+        self._specific_productivity = None
 
         # Options
         self.removeDeathPhaseFlag = options.remove_death_phase_flag
@@ -74,6 +74,21 @@ class TimeCourse(AnalyteData):
 
         # Declare the default curve fit
         self.fit_type = 'gompertz'
+
+    @property
+    def specific_productivity(self):
+        if self._specific_productivity is None:
+            if not self.parent:
+                raise Exception('Cannot calculate productivity automatically because no parent single_trial'
+                                'is defined')
+            self.parent.calculate_specific_productivity()
+            return self._specific_productivity
+        else:
+            return self._specific_productivity
+
+    @specific_productivity.setter
+    def specific_productivity(self, specific_productivity):
+        self._specific_productivity = specific_productivity
 
     @property
     def stage_indices(self):
@@ -164,17 +179,17 @@ class TimeCourse(AnalyteData):
         else:
             stat_prefix = '_' + stat
         c.execute(
-            """INSERT INTO timeCourseTable""" + stat_prefix + """(singleTrial""" + stat_prefix + """ID, titerType, analyte_name, time_vector, data_vector, rate) VALUES (?, ?, ?, ?, ?, ?)""",
-            (singleTrialID, self.trial_identifier.analyte_type, self.trial_identifier.analyte_name, self.time_vector.dumps(),
-             self.data_vector.dumps(), pickle.dumps(self.rate))
-        )
+            """INSERT INTO timeCourseTable""" + stat_prefix + """(singleTrial""" + stat_prefix
+            + """ID, titerType, analyte_name, time_vector, data_vector, rate) VALUES (?, ?, ?, ?, ?, ?)""",
+            (singleTrialID, self.trial_identifier.analyte_type, self.trial_identifier.analyte_name,
+             self.time_vector.dumps(), self.data_vector.dumps(), pickle.dumps(self.rate)))
 
     def summary(self, print=False):
         summary = dict()
         summary['time_vector'] = self.time_vector
         summary['data_vector'] = self.data_vector
         summary['number_of_data_points'] = len(self.time_vector)
-        summary['run_identifier'] = self.trial_identifier.summary(['strain_id', 'id_1', 'id_2',
+        summary['trial_identifier'] = self.trial_identifier.summary(['strain_id', 'id_1', 'id_2',
                                                                 'analyte_name', 'titerType', 'replicate_id'])
 
         if print:
@@ -189,7 +204,7 @@ class TimeCourse(AnalyteData):
         stage.data_vector = self.data_vector[stage_bounds[0]:stage_bounds[1] + 1]
         if len(self.gradient) > 0:
             stage.gradient = self.gradient[stage_bounds[0]:stage_bounds[1] + 1]
-        if len(self.specific_productivity) > 0:
+        if self.specific_productivity is not None:
             stage.specific_productivity = self.specific_productivity[stage_bounds[0]:stage_bounds[1] + 1]
 
         return stage
@@ -218,6 +233,8 @@ class TimeCourse(AnalyteData):
             # print('Skipping exponential rate calculation')
 
             # self.curve_fit_data()
+
+        timePoint.parent = self
 
     def curve_fit_data(self):
         if self.trial_identifier.analyte_type == 'titer' or self.trial_identifier.analyte_type in ['substrate', 'product']:

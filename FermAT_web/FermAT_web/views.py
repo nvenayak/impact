@@ -32,6 +32,40 @@ def welcome(request):
 def index(request):
     return render(request,'FermAT_web/login.html')
 
+def color_scale_examples(request):
+    import colorlover as cl
+    ordered_numbers = ['3','4','5','6','7','8','9','10','11','12']
+    output = ''
+    for number in ordered_numbers:
+        output += '<h3>'+number+' colors</h3>'
+        for type in cl.scales[number]:
+            output += '<h4>'+type+'</h4>'
+            output += cl.to_html(cl.scales[number][type])
+            # for scale in cl.scales[number][type]:
+            #     output += 'Scale: '+scale
+            #     output += cl.to_html(cl.scales[number][type][scale])
+            # output += '<br>'
+
+    from collections import OrderedDict
+
+
+    # ordered_numbers.sort()
+    # print(ordered_numbers)
+    ordered_scales = OrderedDict([(ordered_number,cl.scales[ordered_number]) for ordered_number in ordered_numbers])
+
+
+    return HttpResponse(output)
+
+def download_plot(request):
+    file_name = FermAT.printGenericTimeCourse_plotly(dbName=db_name,
+                                         strainsToPlot=[strain['replicateID'] for strain in
+                                                        request.session['selectedStrainsInfo']],
+                                         titersToPlot=request.session['selectedTiters'],
+                                         output_type='image', format='poster',img_scale=10,
+                                         **request.session['prepared_plot_options']
+                                         )
+    image_data = open(file_name,'rb').read()
+    return HttpResponse(image_data, content_type="image/png")
 
 # Input views
 @login_required
@@ -45,6 +79,7 @@ def new_experiment(request):
             # process the data in form.cleaned_data as required
             expt = FermAT.Experiment(info=form.cleaned_data)
             expt_id = expt.db_commit(db_name)
+            request.session['experiment_id'] = expt_id
             # redirect to a new URL:
 
             # Select a default input format and return the input data view
@@ -175,7 +210,7 @@ def process_input_data(request):
                 raise Exception('Unknown data format selected')
 
             expt.parseRawData(input_format, data = converted_data) # Convert strings to floats
-            experiment_id = expt.db_commit(db_name)
+            experiment_id = expt.db_commit(db_name, overwrite_experiment_id=request.session['experiment_id'])
             request.session['experiment_id'] = int(experiment_id)
 
             update_experiments_from_db(request)
@@ -194,18 +229,19 @@ def analyze(request):
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            return HttpResponseRedirect('/thanks/')
-
+            expt = FermAT.Experiment()
+            expt.db_load(db_name = db_name, experiment_id=request.session['experiment_id'])
+            expt.info = form.cleaned_data
+            experiment_id = expt.db_commit(db_name, overwrite_experiment_id=request.session['experiment_id'])
+            return experimentSelect_analyze(request, experiment_id)
     # if a GET (or any other method) we'll create a blank form
     else:
         form = newExperimentForm()
 
-    data = modifyMainPageSessionData(request, mainWindow = 'analyze')
-    data['newExperimentForm'] = form
+        data = modifyMainPageSessionData(request, mainWindow = 'analyze')
+        data['newExperimentForm'] = form
 
-    return render(request, 'FermAT_web/analyze.html', data)
+        return render(request, 'FermAT_web/analyze.html', data)
 
 # Plot views
 @login_required
@@ -231,7 +267,49 @@ def experimentSelect_analyze(request, experiment_id):
 
     data['newExperimentForm'] = form
     data['experiment_id'] = int(experiment_id)
-    # selectedExpt.summary()
+
+    experiment = FermAT.Experiment()
+    experiment.db_load(db_name=db_name, experiment_id = int(experiment_id))
+    # print(vars(experiment))
+    # print(experiment.titer_dict)
+    replicate_info = []
+    for key in experiment.replicate_experiment_dict:
+        replicate = experiment.replicate_experiment_dict[key]
+        temp = {}
+        for attr in ['strain_id','id_1','id_2']:
+            temp[attr] = getattr(replicate.trial_identifier,attr)
+
+        # Get unique titers
+        titers = []
+        for single_trial in replicate.single_trial_list:
+            [titers.append(analyte) for analyte in [single_trial.biomass_name] + [single_trial.substrate_name] + single_trial.product_names]
+        unique_titers = list(set(titers))
+        temp['number_of_analytes'] = len(unique_titers)
+        temp['replicate_id'] = replicate.db_replicate_id
+
+        temp['number_of_replicates'] = len(replicate.single_trial_list)
+        replicate_info.append(temp)
+    data['replicate_info'] = replicate_info
+    data['analyze_tab'] = 'replicate'
+    print(replicate_info)
+    return render(request, 'FermAT_web/analyze.html', data)
+
+@login_required
+def analyze_select_replicate(request, replicate_id):
+    replicate = FermAT.ReplicateTrial()
+    replicate.db_load(db_name=db_name, replicateID = int(replicate_id))
+
+    titers = []
+    for single_trial in replicate.single_trial_list:
+        titers = [analyte for analyte in
+         [single_trial.biomass_name] + [single_trial.substrate_name] + single_trial.product_names]
+    unique_titers = list(set(titers))
+    data = modifyMainPageSessionData(request)
+    data['analytes'] = unique_titers
+    data['analyze_tab'] = 'analyte'
+    form = newExperimentForm()
+    data['newExperimentForm'] = form
+
     return render(request, 'FermAT_web/analyze.html', data)
 
 @login_required
@@ -476,8 +554,8 @@ def experimentSelect_export(request, experiment_id):
         squared_data.append(temp_row)
     data = modifyMainPageSessionData(request)
     data['data_body'] = squared_data
-    print(raw_data)
-    print(squared_data)
+    # print(raw_data)
+    # print(squared_data)
     return render(request, 'FermAT_web/export.html', data)
 
 

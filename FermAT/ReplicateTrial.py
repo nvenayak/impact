@@ -83,7 +83,7 @@ class ReplicateTrial(object):
             self.avg.db_commit(replicateID, c=c, stat='avg')
             self.std.db_commit(replicateID, c=c, stat='std')
 
-    def db_load(self, c=None, replicateID='all'):
+    def db_load(self, c=None, db_name = None, replicateID='all'):
         """
         Load from the database.
 
@@ -92,6 +92,17 @@ class ReplicateTrial(object):
         c : sql cursor
         replicateID : int
         """
+
+        if c is None:
+            if db_name is None:
+                raise Exception('Need either a cursor or db name')
+            import sqlite3 as sql
+            conn = sql.connect(db_name)
+            c = conn.cursor()
+            close_conn = True
+        else:
+            close_conn = False
+
         if type(replicateID) is not (int):
             raise Exception(
                 'Cannot load multiple replicates in a single call to this function, load from parent instead')
@@ -101,6 +112,7 @@ class ReplicateTrial(object):
             self.trial_identifier.strain_id = row[2]
             self.trial_identifier.id_1 = row[3]
             self.trial_identifier.id_2 = row[4]
+            self.db_replicate_id = row[0]
 
         c.execute(
             """SELECT singleTrialID, replicateID, replicate_id, yieldsDict FROM singleTrialTable WHERE replicateID = ?""",
@@ -120,6 +132,9 @@ class ReplicateTrial(object):
             getattr(self, stat.replace('_', '')).db_load(c=c, singleTrialID=row[0], stat=stat.replace('_', ''))
 
         self.t = self.single_trial_list[0].t
+
+        if close_conn:
+            conn.close()
 
     def check_replicate_unique_id_match(self):
         """

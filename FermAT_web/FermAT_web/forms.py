@@ -1,6 +1,7 @@
 from django import forms
 from django.forms.widgets import SelectDateWidget
 import datetime
+import colorlover
 
 class newExperimentForm(forms.Form):
     experiment_title = forms.CharField(label='Experiment Title', initial='Toggle Switch Characterization Run 3 2016.05.13')

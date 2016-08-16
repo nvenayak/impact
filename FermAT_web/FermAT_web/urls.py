@@ -60,4 +60,10 @@ urlpatterns = [
     url(r'^welcome/$', views.welcome),
 
     url(r'^iPython/$', views.iPython),
+
+    url(r'^color_scales/$',views.color_scale_examples),
+    url(r'^download_plot/$', views.download_plot),
+
+    url(r'^analyze/replicate_select/(?P<replicate_id>[0-9]+)$', views.analyze_select_replicate),
+
 ]

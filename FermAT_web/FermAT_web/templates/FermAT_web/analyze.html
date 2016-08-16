@@ -2,91 +2,116 @@
 {% load bootstrap %}
 {% block content %}
 <div class="container-fluid">
-    <div class="col-lg-3 col-md-2">
-        <div class="row">
-            <div class="btn-group btn-group-justified" role = "group">
-                <div class="btn-group btn-group-justified" role="group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        {% for row in exptInfo %}
-                        {% if row.experiment_id == experiment_id %} {{row.experiment_id}} - {{row.experiment_title}} {% endif %}
-                        {% endfor %}
-                        &nbsp
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu text-center">
-                        {% for row in exptInfo %}
-                        <li><a href="/experimentSelect_analyze/{{row.experiment_id}}">{{row.experiment_id}} - {{row.experiment_title}}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+  <div class="col-lg-3 col-md-2">
+    <div class="row">
+      <div class="btn-group btn-group-justified" role = "group">
+        <div class="btn-group btn-group-justified" role="group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            {% for row in exptInfo %}
+            {% if row.experiment_id == experiment_id %} {{row.experiment_id}} - {{row.experiment_title}} {% endif %}
+            {% endfor %}
+            &nbsp
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu text-center">
+            {% for row in exptInfo %}
+            <li><a href="/experimentSelect_analyze/{{row.experiment_id}}">{{row.experiment_id}} - {{row.experiment_title}}</a></li>
+            {% endfor %}
+          </ul>
         </div>
-        <div class="row">
-            <br>
-            <form class="form" action="" method="post">
-                {% csrf_token %}
-                {{ newExperimentForm|bootstrap }}
-
-                <input class="btn btn-default pull-right" type="submit" value="Modify" />
-            </form>
-        </div>
+      </div>
     </div>
+    <div class="row">
+      <br>
+      <form class="form" action="/analyze/" method="post">
+        {% csrf_token %}
+        {{ newExperimentForm|bootstrap }}
 
-    <div class="col-lg-3 col-md2">
-        <ul class="nav nav-tabs nav-justified">
-            <li role="presentation"><a href="#">Replicates</a></li>
-            <li role="presentation"><a href="#">Trials</a></li>
-            <li role="presentation" class="active"><a href="#">Time Courses</a></li>
-        </ul>
-
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th>Replicate</th>
-                <th>Strain ID</th>
-                <th>ID 1</th>
-                <th>ID 2</th>
-                <th># Titers</th>
-                <th># Replicates</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class='clickable-row' data-url='http://www.google.com' >
-                <td>Trial 1</td>
-                <td>Trial 1</td>
-                <td>Trial 1</td>
-                <td>Trial 1</td>
-                <td>Trial 1</td>
-                <td>Trial 1</td>
-            </tr>
-            <tr>
-                <td>Trial 2</td>
-                <td>Trial 2</td>
-                <td>Trial 2</td>
-                <td>Trial 2</td>
-                <td>Trial 2</td>
-                <td>Trial 2</td>
-            </tr>
-            <tr><td>Trial 3</td></tr>
-            <tr><td>Trial 4</td></tr>
-            <tr><td>Trial 5</td></tr>
-            </tbody>
-        </table>
+        <input class="btn btn-default pull-right" type="submit" value="Modify" />
+      </form>
     </div>
+  </div>
 
-    <div class="col-lg-6 col-md8">
-        asdf
-    </div>
+  <div class="col-lg-3 col-md2">
+    <ul class="nav nav-tabs nav-justified">
+      <li role="presentation" {% if analyze_tab == 'replicate' %} class="active" {% endif %}><a href="#">Replicates</a></li>
+      <li role="presentation" {% if analyze_tab == 'analyte' %} class="active" {% endif %}><a href="#">Analytes</a></li>
+      <li role="presentation" {% if analyze_tab == 'trial' %} class="active" {% endif %}><a href="#">Trials</a></li>
+    </ul>
+
+    <table class="table table-hover">
+    {% if analyze_tab == 'replicate' %}
+      <thead>
+      <tr>
+        <th>Replicate ID</th>
+        <th>Strain ID</th>
+        <th>ID 1</th>
+        <th>ID 2</th>
+        <th># Analytes</th>
+        <th># Replicates</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      {% for row in replicate_info %}
+      <tr class='clickable-row' data-url='/analyze/replicate_select/{{ row.replicate_id}}' >
+          <td>{{ row.replicate_id }}</td>
+          <td>{{ row.strain_id }}</td>
+          <td>{{ row.id_1 }}</td>
+          <td>{{ row.id_2 }}</td>
+          <td>{{ row.number_of_analytes }}</td>
+          <td>{{ row.number_of_replicates }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    {% endif %}
+
+    {% if analyze_tab == 'analyte' %}
+      <thead>
+      <tr>
+        <th>Analyte</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for analyte in analytes %}
+      <tr class='clickable-row' data-url='/analyze/analyte_select/{{ analyte}}' >
+          <td>{{ analyte }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    {% endif %}
+
+    {% if analyze_tab == 'trial' %}
+      <thead>
+      <tr>
+        <th>Replicate Number</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for number in replicate_number %}
+      <tr class='clickable-row' data-url='/replicate_select/{{ row.replicate_id}}' >
+          <td>{{ number }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    {% endif %}
+
+    </table>
+  </div>
+
+  <div class="col-lg-6 col-md8">
+    asdf
+  </div>
 
 </div>
 </div>
 
 <script>
-    jQuery(document).ready(function($) {
-        $(".clickable-row").click(function() {
-            window.document.location = $(this).data("url");
-        });
+  jQuery(document).ready(function($) {
+    $(".clickable-row").click(function() {
+      window.document.location = $(this).data("url");
     });
+  });
 
 </script>
 {% endblock %}

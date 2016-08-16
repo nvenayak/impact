@@ -352,6 +352,9 @@ class SingleTrial(object):
                             'Duplicate TrialIdentifier: ',
                             vars(titerObject.trial_identifier))
 
+        # Set the parent
+        titerObject.parent = self
+
         self.titerObjectDict[titerObject.trial_identifier.analyte_name] = titerObject
 
         if titerObject.trial_identifier.analyte_type == 'substrate':
