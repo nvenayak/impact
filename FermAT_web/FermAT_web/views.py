@@ -440,6 +440,7 @@ def removeStrains(request):
     else:
         return HttpResponse('Expected POST data for /selectTiters/')
 
+
 @login_required
 def clearData(request):
     data = modifyMainPageSessionData(request, selectedStrainsInfo = [], strainsToPlot=[])
