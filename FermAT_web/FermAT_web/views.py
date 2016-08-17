@@ -434,7 +434,7 @@ def selectStrains(request):
 def removeStrains(request):
     if request.method == 'POST':
         request.session['selectedStrainsInfo'] = [strain for strain in request.session['selectedStrainsInfo'] if str(strain['replicateID']) not in request.POST.keys()]
-
+        request.session['strainsToPlot'] = [strain['replicateID'] for strain in request.session['selectedStrainsInfo'] if str(strain['replicateID']) not in request.POST.keys()]
         data = updateFigure(request)
         return render(request, 'FermAT_web/home.html',data)
     else:
@@ -442,8 +442,7 @@ def removeStrains(request):
 
 @login_required
 def clearData(request):
-    data = modifyMainPageSessionData(request, selectedStrainsInfo = [])
-
+    data = modifyMainPageSessionData(request, selectedStrainsInfo = [], strainsToPlot=[])
     return render(request, 'FermAT_web/home.html', data)
 
 @login_required
