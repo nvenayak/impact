@@ -109,9 +109,13 @@ def experiment_select_input(request, experiment_id):
 
 
 @login_required
+def input_initial(request):
+    return render(request, 'FermAT_web/input.html', {'selected_input_window':'home'})
+
+@login_required
 def select_input_format(request, input_format, experiment_id=None):
     request.session['input_format'] = input_format
-    request.session['selected_input_window'] = 'bulk_input'
+    request.session['selected_input_window'] = 'table_input'
     # request.session['experiment_id'] = int(experiment_id)
     if experiment_id is None:
         try:
@@ -122,12 +126,12 @@ def select_input_format(request, input_format, experiment_id=None):
         column_labels = ['StrainID (CSV)'] + ['timepoint_'+str(n) for n in range(1,1000)]
         row_labels = ['Time (hours)'] + ['strain_'+str(n) for n in range(1,1000)]
     elif input_format == 'default_titers':
-        row_labels = ['AnalyteData name (BiGG)','AnalyteData Type'] + ['titer_'+str(n) for n in range(1,20)]
-        column_labels = ['Strain ID (CSV)'] + ['strain_'+str(n) for n in range(1,1000)]
+        row_labels = ['Analyte name (BiGG)','Analyte type'] + ['timepoint_'+str(n) for n in range(1,20)]
+        column_labels = ['Strain ID (CSV)'] + ['Analyte_'+str(n) for n in range(1,1000)]
     else:
         return HttpResponse('Invalid input_format')
 
-    return render(request, 'FermAT_web/input.html', {'row_labels': row_labels,
+    return render(request, 'FermAT_web/table_input.html', {'row_labels': row_labels,
                                                      'column_labels': column_labels,
                                                      'selected_layout': input_format,
                                                      'selected_input_window': request.session['selected_input_window'],
@@ -347,7 +351,7 @@ def plot_options(request):
             request.session['mainWindow'] = 'plot'
             data = updateFigure(request)
             # data = modifyMainPageSessionData(request)
-            return render(request,'FermAT_web/home.html',data)
+            return render(request,'FermAT_web/plot.html',data)
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -382,7 +386,7 @@ def update_experiments_from_db(request):
 
     data = modifyMainPageSessionData(request, exptInfo = exptInfo)
 
-    return render(request, 'FermAT_web/home.html', data)
+    return render(request, 'FermAT_web/plot.html', data)
 
 # @login_required
 @login_required
@@ -398,7 +402,7 @@ def experimentSelect(request, experiment_id):
 
     data = modifyMainPageSessionData(request, uniqueIDs = uniqueIDs)
     data['experiment_id'] = int(experiment_id)
-    return render(request, 'FermAT_web/home.html', data)
+    return render(request, 'FermAT_web/plot.html', data)
 
 
 @login_required
@@ -428,7 +432,7 @@ def selectStrains(request):
         data = modifyMainPageSessionData(request, analyte_names = FermAT.Project().getTitersSelectedStrains_django(db_name, data['selectedStrainsInfo']))
     else:
         return HttpResponse('Expected POST for selectStrains')
-    return render(request, 'FermAT_web/home.html',data)
+    return render(request, 'FermAT_web/plot.html',data)
 
 @login_required
 def removeStrains(request):
@@ -436,24 +440,24 @@ def removeStrains(request):
         request.session['selectedStrainsInfo'] = [strain for strain in request.session['selectedStrainsInfo'] if str(strain['replicateID']) not in request.POST.keys()]
         request.session['strainsToPlot'] = [strain['replicateID'] for strain in request.session['selectedStrainsInfo'] if str(strain['replicateID']) not in request.POST.keys()]
         data = updateFigure(request)
-        return render(request, 'FermAT_web/home.html',data)
+        return render(request, 'FermAT_web/plot.html',data)
     else:
-        return HttpResponse('Expected POST data for /selectTiters/')
+        return HttpResponse('Expected POST data for plot/select_titers/')
 
 
 @login_required
 def clearData(request):
     data = modifyMainPageSessionData(request, selectedStrainsInfo = [], strainsToPlot=[])
-    return render(request, 'FermAT_web/home.html', data)
+    return render(request, 'FermAT_web/plot.html', data)
 
 @login_required
 def selectTiters(request):
     if request.method == 'POST':
         modifyMainPageSessionData(request, selectedTiters = [titer for titer in request.session['analyte_names'] if titer in request.POST.keys()])
         data = updateFigure(request)
-        return render(request, 'FermAT_web/home.html', data)
+        return render(request, 'FermAT_web/plot.html', data)
     else:
-        return HttpResponse('Expected POST data for /selectTiters/')
+        return HttpResponse('Expected POST data for post/select_titers/')
 
 @login_required
 def selectStrainSubset(request):
@@ -472,7 +476,7 @@ def selectStrainSubset(request):
                 request.session['selectedStrainsInfo'].append(strain)
         modifyMainPageSessionData(request, analyte_names = FermAT.Project().getTitersSelectedStrains_django(db_name, request.session['selectedStrainsInfo']))
         data = updateFigure(request)
-        return render(request, 'FermAT_web/home.html',data)
+        return render(request, 'FermAT_web/plot.html',data)
     else:
         return HttpResponse('Expected POST')
 
@@ -490,7 +494,19 @@ def selectMainWindow(request, mainWindowSelection):
         data = modifyMainPageSessionData(request)
     else:
         data = modifyMainPageSessionData(request)
-    return render(request, 'FermAT_web/home.html',data)
+    return render(request, 'FermAT_web/plot.html',data)
+
+def plot(request):
+    update_experiments_from_db(request)
+
+    request.session['mainWindow'] = 'plot'
+    experiment = FermAT.Experiment()
+    experiment.db_load(db_name, 1)
+    updateFigure(request)
+    data = modifyMainPageSessionData(request)
+
+    return render(request, 'FermAT_web/plot.html', data)
+
 
 def updateFigure(request):
 

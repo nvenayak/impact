@@ -1,4 +1,4 @@
-{% extends "FermAT_web/twoColBase.html" %}
+{% extends "FermAT_web/base.html" %}
 
 {% block content %}
   <div class="container-fluid">
@@ -37,7 +37,7 @@
                 <th>ID #1</th>
                 <th>ID #2</th>
               </tr>
-              <form action="/selectStrainSubset/" method="post">{% csrf_token %}
+              <form action="/plot/select_strain_subset/" method="post">{% csrf_token %}
                 <tr>
                   <td>
                     <select name="strain_id" class="form-control">
@@ -71,7 +71,7 @@
                 </tr>
               </form>
 
-              <form action="/selectStrains/" method="post">{% csrf_token %}
+              <form action="/plot/select_strains/" method="post">{% csrf_token %}
                 {% for row in strainInfo %}
                   <tr>
                     <td>{{row.strain_id}}</td>
@@ -97,7 +97,7 @@
           </div>
 
           <div class="panel-body">
-            <form action="/removeStrains/" method="post">{% csrf_token %}
+            <form action="/plot/remove_strains/" method="post">{% csrf_token %}
               <table class="table table-condensed">
                 <tr>
                   <th>Strain ID</th>
@@ -115,7 +115,7 @@
               </table>
               <div class="btn-group pull-right" role="group">
                 <div class="btn-group" role="group">
-                  <a class="btn btn-default" href="/clearData/" role="button">Clear Data</a>
+                  <a class="btn btn-default" href="/plot/clear_data/" role="button">Clear Data</a>
                 </div>
                 <div class="btn-group" role="group">
                   <button class="btn btn-default pull-right" type="submit">Remove strains</button>
@@ -131,7 +131,7 @@
           </div>
 
           <div class="panel-body">
-            <form action="/selectTiters/" method="post">{% csrf_token %}
+            <form action="/plot/select_titers/" method="post">{% csrf_token %}
               <table class="table table-condensed">
                 <tr>
                   <th>Name</th>
@@ -152,8 +152,8 @@
 
       <div class="col-lg-9 col-md-8">
         <ul class="nav nav-tabs nav-justified">
-          <li role="presentation" {% if mainWindow == 'plot' %} class="active" {% endif %}><a href="/mainWindow/plot">Plot</a></li>
-          <li role="presentation" {% if mainWindow == 'plot_options' %} class="active" {% endif %}><a href="/plot_options">Options</a></li>
+          <li role="presentation" {% if mainWindow == 'plot' %} class="active" {% endif %}><a href="/plot">Plot</a></li>
+          <li role="presentation" {% if mainWindow == 'plot_options' %} class="active" {% endif %}><a href="/plot/options">Options</a></li>
           <!--<li role="presentation" {% if mainWindow == 'plot_options' %} class="active" {% endif %}><a href="/download_plot">Download</a></li>-->
         </ul>
         <br>

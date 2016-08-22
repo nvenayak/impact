@@ -1,4 +1,4 @@
-{% extends "FermAT_web/home.html" %}
+{% extends "FermAT_web/plot.html" %}
 
 {% load bootstrap %}
 
@@ -35,7 +35,7 @@
       </div>
     </div>
   </div>
-  <form class="form-horizontal" action="/plot_options/" method="post">
+  <form class="form-horizontal" action="/plot/options/" method="post">
     {% csrf_token %}
 
     {{ plot_options_form|bootstrap_horizontal }}

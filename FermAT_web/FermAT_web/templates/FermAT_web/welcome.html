@@ -1,9 +1,9 @@
-{% extends "FermAT_web/twoColBase.html" %}
+{% extends "FermAT_web/base.html" %}
 {% load staticfiles %}
 {% block content %}
-<div class="container-fluid">
+<div class="container">
     <!--<div class="col-md-8"></div>-->
-    <div class="col-md-8 col-md-offset-2">
+    <div class="col-md-12">
         <div class="jumbotron">
             <!--<img class="image-responsive pull-right" height="10px" align="center" src="{% static 'FermAT_logo.svg' %}">-->
             <h1>Welcome to FermAT:</h1>
@@ -29,9 +29,9 @@
 
 {% block footer %}
 <footer>
-    <div class="container-fluid">
+    <div class="container">
         <!--<div class="col-md-8"></div>-->
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-12">
             <!--<div class="navbar navbar-fixed-bottom">-->
             <img class="image-responsive pull-right" height="30px" src="{% static 'FermAT_logo.svg' %}">
             <p align="right">FermAT: Fermentation Analysis Toolbox &nbsp&nbsp&nbsp<br> © Naveen Venayak 2016 &nbsp&nbsp&nbsp</p>
