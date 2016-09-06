@@ -25,9 +25,27 @@
           <li {% if mainWindow == 'plot' %} class="active" {% endif %}><a href="/plot">Plot&nbsp&nbsp<span class="glyphicon glyphicon-signal" aria-hidden="true"></span></a></li>
           <li {% if mainWindow == 'export' %} class="active" {% endif %}><a href="/export">Export&nbsp&nbsp<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span></a></li>
           <li {% if mainWindow == 'iPython' %} class="active" {% endif %}><a href="/iPython">iPython&nbsp&nbsp<span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span></a></li>
+
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="http://www.github.com/nvenayak/FermAT" target="_blank">Source (requires auth)</a></li>
+              <li><a href="/static/docs/quickstart.html">Quickstart</a></li>
+              <li><a href="/static/docs/index.html">Docs</a></li>
+            </ul>
+          </li>
+
           <p class="navbar-text">Signed in as <a href="#" class="navbar-link">{{ user.username }}</a></p>
           &nbsp&nbsp&nbsp&nbsp<a href="/logout?next=/" class="btn btn-default navbar-btn" >Sign out&nbsp&nbsp<span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a>
         {% else %}
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="http://www.github.com/nvenayak/FermAT" target="_blank">Source (requires auth)</a></li>
+              <li><a href="/static/docs/quickstart.html" target="_blank">Quickstart</a></li>
+              <li><a href="/static/docs/index.html" target="_blank">Docs</a></li>
+            </ul>
+          </li>
           <p class="navbar-text"><a href="/login?next=/" class="navbar-link">Sign in&nbsp&nbsp<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> </a></p>
         {% endif %}
       </ul>

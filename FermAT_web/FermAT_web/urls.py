@@ -41,7 +41,7 @@ urlpatterns = [
     url(r'^input/$', views.input_initial),
     url(r'^input/new_experiment/$',views.new_experiment),
     url(r'^select_input_format/(?P<input_format>[a-z|A-Z|_]+)$', views.select_input_format),
-
+    url(r'^input/analysis_options$',views.analysis_options),
 
     # plot urls
     url(r'^plot/$', views.plot),
@@ -68,6 +68,8 @@ urlpatterns = [
     # other urls
     url(r'^color_scales/$',views.color_scale_examples),
     url(r'^download_plot/$', views.download_plot),
+
+    url(r'^iPython/auth/$',views.iPython_auth)
 
     # url(r'^mainWindow/(?P<mainWindowSelection>[a-z|A-Z]+)$',views.selectMainWindow),
 

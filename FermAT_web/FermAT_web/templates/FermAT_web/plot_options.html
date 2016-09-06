@@ -3,18 +3,16 @@
 {% load bootstrap %}
 
 {% block main_window %}
-<div class="container">
+<div class="container-fluid">
 
 
   <div class="panel panel-default">
     <div class="panel-body">
-      If the experiment details are not in the database, please detail them here. Then, you will be able to add the data
-      for this experiment.
-      <br><br>
-      <!-- Button trigger modal -->
-      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
-        Color Options
-      </button>
+      <a data-toggle="modal" data-target="#myModal"><b>Color palette</b></a>:  preview all colors in the colorlover palette, you will have full customization if you export your plot to plotly for editing.&nbsp&nbsp&nbsp
+{#      <!-- Button trigger modal -->#}
+{#      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">#}
+{#        Color Options#}
+{#      </button>#}
 
       <!-- Modal -->
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

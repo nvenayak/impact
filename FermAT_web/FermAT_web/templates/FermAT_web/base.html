@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+{% load bootstrap3 %}
 {% load staticfiles %}
 
 <head>
@@ -9,22 +9,33 @@
 </head>
 
 <body class="body">
+
 <!--style="background-color:#f6f6f6">-->
 <div>
+  {#  {% bootstrap_javascript jquery=1 %}#}
+  {% bootstrap_messages %}
   {% block content %}
   {% endblock %}
 </div>
 </body>
 {% block footer %}
   <footer>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-3 col-md-4">
-          <!--<div class="navbar navbar-fixed-bottom">-->
-          <img class="image-responsive pull-right" height="30px" src="{% static 'FermAT_logo.svg' %}">
-          <p align="right">FermAT: Fermentation Analysis Toolbox &nbsp&nbsp&nbsp<br> © Naveen Venayak 2016 &nbsp&nbsp&nbsp</p>
-          <!--</div>-->
-        </div>
+
+    <div class="container-fluid">
+      <div class="row pull-bottom">
+        <div><hr style="margin-bottom: 5px;margin-top: 5px"></div>
+
+        <table align="right">
+          <tr style="vertical-align:middle">
+            <td>
+              <p align="right" style="vertical-align: baseline;">FermAT: Fermentation Analysis Toolbox<br> © Naveen Venayak 2016</p>
+            </td>
+            <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+            <td>
+              <img class="image-responsive pull-right" height="30px" src="{% static 'FermAT_logo.svg' %}">
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
   </footer>

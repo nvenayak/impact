@@ -1,8 +1,10 @@
 {% extends 'FermAT_web/input.html' %}
 
 {% block content %}
+  {% include "FermAT_web/includes/input_header.html" %}
+
 <div class="container-fluid">
-  <div class="col-md-3">
+  <div class="col-md-4">
     <div class="panel panel-default">
       <div class="panel-body">
         <h3>Experiment:</h3>
@@ -53,7 +55,7 @@
 
   </div>
 
-  <div class="col-md-9">
+  <div class="col-md-8">
     <div class="row">
       <div class="btn-group" role="group" aria-label="...">
         <button name="save" id="save" type="button" class="btn btn-default">Import Data</button>
@@ -130,6 +132,12 @@
 
   Handsontable.Dom.addEvent(save, 'click', function() {
     // save all cell's data
+{#    var xhr = new XMLHttpRequest();#}
+{##}
+{#    xhr.open("POST", '/input/inputData', true);#}
+{#    xhr.setRequestHeader('Content-Type', 'application/json');#}
+{#    xhr.setRequestHeader('X-CSRF-Token',csrftoken);#}
+{#    xhr.send({data: hot.getData()});#}
     $.ajax({
       url: '/input/inputData',
       type: 'POST',

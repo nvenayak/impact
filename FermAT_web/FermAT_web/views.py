@@ -4,12 +4,14 @@ import os
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib import messages
 
-from .forms import newExperimentForm, plot_options_form
+from .forms import *
 
 from django.contrib.auth.views import *
 # from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.signals import user_logged_in
 
 from sqlite3 import OperationalError
 
@@ -18,11 +20,22 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../../'))
 import FermAT
 import FermAT.settings
 
+from io import StringIO
+import sys
+
 # Set the default db_name, stored in the root directory
 db_name = FermAT.settings.db_name   # os.path.join(os.path.dirname(__file__),"../../default_FermAT_db.sqlite3")
-default_input_format = 'default_OD'
+default_input_format = 'default_titers'
 
 FermAT.init_db(db_name=db_name)
+
+def logged_in_message(sender, user, request, **kwargs):
+    """
+    Add a welcome message when the user logs in
+    """
+    messages.info(request, "Successfully logged in as: "+request.user.username+". Welcome..")
+
+user_logged_in.connect(logged_in_message)
 
 # No login required
 def welcome(request):
@@ -56,6 +69,7 @@ def color_scale_examples(request):
 
     return HttpResponse(output)
 
+@login_required
 def download_plot(request):
     file_name = FermAT.printGenericTimeCourse_plotly(dbName=db_name,
                                          strainsToPlot=[strain['replicateID'] for strain in
@@ -100,6 +114,32 @@ def new_experiment(request):
 def input(request):
     return select_input_format(request, default_input_format)
 
+@login_required
+def analysis_options(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = analysis_options_form(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            expt = FermAT.Experiment(info=form.cleaned_data)
+            expt_id = expt.db_commit(db_name)
+            request.session['experiment_id'] = expt_id
+            # redirect to a new URL:
+
+            # Select a default input format and return the input data view
+            return select_input_format(request, default_input_format, experiment_id=expt_id)
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = analysis_options_form()
+
+    request.session['selected_input_window'] = 'analysis_options'
+
+    return render(request, 'FermAT_web/analysis_options.html',
+                  {'analysis_options_form': form,
+                   'selected_input_window': request.session['selected_input_window']})
 
 @login_required
 def experiment_select_input(request, experiment_id):
@@ -110,7 +150,8 @@ def experiment_select_input(request, experiment_id):
 
 @login_required
 def input_initial(request):
-    return render(request, 'FermAT_web/input.html', {'selected_input_window':'home'})
+    return render(request, 'FermAT_web/input.html', {'selected_input_window':'home',
+                                                     'mainWindow': 'input'})
 
 @login_required
 def select_input_format(request, input_format, experiment_id=None):
@@ -213,12 +254,25 @@ def process_input_data(request):
             else:
                 raise Exception('Unknown data format selected')
 
+
+
+            # old_stdout = sys.stdout
+            # sys.stdout = mystdout = StringIO()
+
             expt.parseRawData(input_format, data = converted_data) # Convert strings to floats
+
+            # sys.stdout = old_stdout
+            # processing_std_out = mystdout.getvalue()
+            # print('mystdout: \n',processing_std_out)
+            messages.add_message(request, messages.INFO, 'test')
+            # messages.info(request, processing_std_out)
+            # messages.info(request,'test message')
+
             experiment_id = expt.db_commit(db_name, overwrite_experiment_id=request.session['experiment_id'])
             request.session['experiment_id'] = int(experiment_id)
 
             update_experiments_from_db(request)
-
+            # return experimentSelect_analyze(request, experiment_id)
             return HttpResponse(json.dumps({'redirect': '/experimentSelect_analyze/'+str(experiment_id)}), content_type="application/json")
     else:
         print('EXPECTED POST')
@@ -327,7 +381,29 @@ def plot_options(request):
             # process the data in form.cleaned_data as required
             request.session['plot_options'] = form.cleaned_data
 
+
             request.session['prepared_plot_options'] = request.session['plot_options']
+
+            if request.session['plot_options']['yield_titer_select'] == 'yieldFlag':
+                request.session['prepared_plot_options']['yieldFlag'] = True
+                request.session['prepared_plot_options']['titerFlag'] = False
+            elif request.session['plot_options']['yield_titer_select'] == 'titerFlag':
+                request.session['prepared_plot_options']['yieldFlag'] = False
+                request.session['prepared_plot_options']['titerFlag'] = True
+            else:
+                raise Exception('Unexpected value')
+            if 'yield_titer_select' in request.session['prepared_plot_options'].keys():
+                del request.session['prepared_plot_options']['yield_titer_select']
+
+            if request.session['plot_options']['plot_type'] == 'endpoint':
+                request.session['prepared_plot_options']['endpointFlag'] = True
+            elif request.session['plot_options']['plot_type'] == 'timecourse':
+                request.session['prepared_plot_options']['endpointFlag'] = False
+            else:
+                raise Exception('Unexpected value')
+            if 'plot_type' in request.session['prepared_plot_options'].keys():
+                del request.session['prepared_plot_options']['plot_type']
+
             if request.session['prepared_plot_options'] == []:
                 request.session['prepared_plot_options'] = dict()
             else:
@@ -388,7 +464,6 @@ def update_experiments_from_db(request):
 
     return render(request, 'FermAT_web/plot.html', data)
 
-# @login_required
 @login_required
 def experimentSelect(request, experiment_id):
     strainInfo = FermAT.Experiment().get_strains_django(db_name, experiment_id)
@@ -496,18 +571,24 @@ def selectMainWindow(request, mainWindowSelection):
         data = modifyMainPageSessionData(request)
     return render(request, 'FermAT_web/plot.html',data)
 
+@login_required
 def plot(request):
     update_experiments_from_db(request)
 
     request.session['mainWindow'] = 'plot'
     experiment = FermAT.Experiment()
-    experiment.db_load(db_name, 1)
-    updateFigure(request)
+    try:
+        experiment.db_load(db_name, 1)
+    except IndexError as e:
+        data = modifyMainPageSessionData(request, plotlyCode = '<h4> Please select data to plot </h4>')
+        pass
+    else:
+        updateFigure(request)
     data = modifyMainPageSessionData(request)
 
     return render(request, 'FermAT_web/plot.html', data)
 
-
+@login_required
 def updateFigure(request):
 
     if 'mainWindow' in request.session.keys():
@@ -583,3 +664,13 @@ def export(request):
 @login_required
 def iPython(request):
     return render(request, 'FermAT_web/iPython.html')
+
+@login_required
+def iPython_auth(request):
+    # https://developers.shopware.com/blog/2015/03/02/sso-with-nginx-authrequest-module/
+    pass
+    # if user is authenticated
+        # spin up docker container
+        # return autheticated
+    # else
+        # return unautheticated

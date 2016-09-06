@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+# Administrator e-mail (used to generate link for account creation
+ADMIN_EMAIL = 'naveen.venayak@gmail.com'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,6 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Production settings
+
 
 # Application definition
 
@@ -38,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bootstrapform'
+    'bootstrapform',
+    'bootstrap3'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -79,7 +84,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '../db/django_db.sqlite3'),
     }
 }
 
@@ -123,3 +128,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/login'
+
+# Security
+SECURE_SSL_REDIRECT = False
