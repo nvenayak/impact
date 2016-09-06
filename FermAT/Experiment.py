@@ -253,6 +253,7 @@ class Experiment(object):
 
             # Get data from xlsx file
             data = get_data(fileName)
+            # print(data)
             print('Imported data from %s' % (fileName))
 
         if dataFormat == 'NV_OD':
@@ -517,8 +518,8 @@ class Experiment(object):
             self.parseTimePointCollection(self.timepoint_list)
 
         # This is the new way all parsers should be defined and called
-        # parser_case_dict = {'spectromax_OD':parsers.spectromax_OD(self,data)}
-        # if dataFormat in parser_case_dict.keys():   parser_case_dict['dataFormat']
+        parser_case_dict = {'spectromax_OD':parsers.spectromax_OD}
+        if dataFormat in parser_case_dict.keys():   parser_case_dict[dataFormat](self,data)
 
 
 

@@ -3,14 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from .ReplicateTrial import ReplicateTrial
 
-# If in the iPython environment, initialize notebook mode
-try:
-    temp = __IPYTHON__
-except NameError:
-    pass
-else:
-    import plotly
-    plotly.offline.init_notebook_mode()
+# # If in the iPython environment, initialize notebook mode
+# try:
+#     temp = __IPYTHON__
+# except NameError:
+#     pass
+# else:
+    #     import plotly
+    #     plotly.offline.init_notebook_mode()
 
 # Load plotly - will eventually move this to head
 from plotly import tools
@@ -25,7 +25,7 @@ import colorlover as cl
 # def print_generic_timecourse_plotly(replicate_trial_list = replicate_trial_list, )
 
 def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[],
-                                  secondary_y_axis_titers=None,
+                                  secondary_y_axis_titers=None, pts_per_hour = 4,
                                   output_type='html', stage_indices=None, stage=None,
                                   cl_scales=['10', 'qual', 'Paired'], colors=None,
                                   yieldFlag=False, titerFlag=True, endpointFlag=False, sortBy='strain_id',
@@ -80,7 +80,6 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
 
 
 
-    pts_per_hour = 4
 
     # Check for correct inputs
     if replicateTrialList is None and dbName is None:
@@ -372,7 +371,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
 
 def render_output_ploty(output_type, fig, number_of_columns = None, column_width_multiplier = None, img_scale = None):
     if output_type == 'html':
-        return plot(fig, show_link=False, output_type='div')
+        return plot(fig, show_link=False, output_type='div', include_plotlyjs = False)
     elif output_type == 'file':
         plot(fig, show_link=True)
     elif output_type == 'iPython':
@@ -424,11 +423,13 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
 
     for replicate in replicate_trial_list:
         # Determine how many points should be plotted
+        # print(replicate.t[-1])
         required_num_pts = replicate.t[-1] * pts_per_hour
+        # print(required_num_pts)
         removePointFraction = int(len(replicate.t) / required_num_pts)
-
+        # print(removePointFraction)
         if removePointFraction < 1:  removePointFraction = 1
-
+        # print(removePointFraction)
         normalize_to = None
 
         # Get the correct data
