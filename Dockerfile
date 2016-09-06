@@ -7,9 +7,23 @@ RUN pip install -r requirements.txt
 WORKDIR ../
 COPY /FermAT /code/FermAT
 COPY /FermAT_web /code/FermAT_web
+COPY /docs/_build/html /code/FermAT_web/FermAT_web/static/docs
+
+#COPY /docs /code/docs
+#WORKDIR /code/docs
+#RUN pip install nbsphinx
+#RUN pip install sphinx_bootstrap_theme
+#RUN pip install ipython
+#RUN pip install jupyter
+#RUN apt-get install make
+#RUN /bin/bash -c ls
+#RUN /bin/bash -c 'make html'
+
 COPY setup.py /code
 WORKDIR /code
-RUN python setup.py install
+RUN mkdir /code/db
+RUN python setup.py develop
 EXPOSE 8000
 WORKDIR /code/FermAT_web
-CMD python manage.py runserver 0.0.0.0:8000
+RUN python3 manage.py migrate
+CMD python3 manage.py runserver 0.0.0.0:8000

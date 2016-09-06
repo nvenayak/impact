@@ -1,189 +1,169 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>FermAT package &mdash; FermAT 0.0.0 documentation</title>
-  
 
-  
-  
 
-  
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="FermAT 0.0.0 documentation" href="index.html"/>
-        <link rel="next" title="FermAT.Experiment module" href="FermAT.Experiment.html"/>
-        <link rel="prev" title="Importing Raw Experimental Data" href="import_experiment_data.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>FermAT package &mdash; FermAT 0.3.0 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/simplex/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="FermAT 0.3.0 documentation" href="index.html" />
+    <link rel="next" title="FermAT.Experiment module" href="FermAT.Experiment.html" />
+    <link rel="prev" title="Importing Raw Experimental Data" href="import_experiment_data.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
 
-          
-            <a href="index.html" class="icon icon-home"> FermAT
-          
+  </head>
+  <body role="document">
 
-          
-          </a>
+  <div id="navbar" class="navbar navbar-default navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          FermAT</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
+      </div>
 
-          
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="/">Home</a></li>
             
             
-              <div class="version">
-                0.0
-              </div>
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <ul class="current">
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">FermAT <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html#docker">Docker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Building FermAT Objects with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Building FermAT Objects with Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#TrialIdentifier">TrialIdentifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#TimePoint">TimePoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#TimeCourse">TimeCourse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#SingleTrial">SingleTrial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#ReplicateTrial">ReplicateTrial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#Experiment">Experiment</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html#Database">Database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html#Exporting-Data">Exporting Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="features_0.html">Analyzing Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="features_0.html">Analyzing Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="features_0.html#Rates">Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features_0.html#Specific-Productivity">Specific Productivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features_0.html#Metabolic-Model-Integration">Metabolic Model Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features_0.html#dFBA-Batch-Integration">dFBA Batch Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features_0.html#Carbon-Balance">Carbon Balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features_0.html#Flux-mapping-with-escher">Flux mapping with escher</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="features_1.html">Stages</a></li>
 <li class="toctree-l1"><a class="reference internal" href="import_experiment_data.html">Importing Raw Experimental Data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">FermAT package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.Experiment.html">FermAT.Experiment module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.Project.html">FermAT.Project module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.ReplicateTrial.html">FermAT.ReplicateTrial module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.SingleTrial.html">FermAT.SingleTrial module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.TimePoint.html">FermAT.TimePoint module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.AnalyteData.html">FermAT.AnalyteData module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.TrialIdentifier.html">FermAT.TrialIdentifier module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FermAT.synthetic_data.html">FermAT.synthetic_data module</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-FermAT">Module contents</a></li>
 </ul>
 </li>
 </ul>
-
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">This page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">FermAT package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-FermAT">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
             
+            
+              
+                
+  <li>
+    <a href="import_experiment_data.html" title="Previous Chapter: Importing Raw Experimental Data"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Importing Raw...</span>
+    </a>
+  </li>
+  <li>
+    <a href="FermAT.Experiment.html" title="Next Chapter: FermAT.Experiment module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">FermAT.Experi... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/FermAT.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
           
         </div>
-      </div>
-    </nav>
+    </div>
+  </div>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">FermAT</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>FermAT package</li>
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="_sources/FermAT.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast,
-.nboutput.nblast {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast + .nbinput {
-    margin-top: -19px;
-}
-
-/* nice headers on first paragraph of info/warning boxes */
-.admonition .first {
-    margin: -12px;
-    padding: 6px 12px;
-    margin-bottom: 12px;
-    color: #fff;
-    line-height: 1;
-    display: block;
-}
-.admonition.warning .first {
-    background: #f0b37e;
-}
-.admonition.note .first {
-    background: #6ab0de;
-}
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-</style>
-<div class="section" id="fermat-package">
+  <div class="section" id="fermat-package">
 <h1>FermAT package<a class="headerlink" href="#fermat-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
@@ -234,167 +214,25 @@
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="FermAT.printGenericTimeCourse_plotly">
-<code class="descclassname">FermAT.</code><code class="descname">printGenericTimeCourse_plotly</code><span class="sig-paren">(</span><em>replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[], secondary_y_axis_titers=None, output_type='html', stage_indices=None, stage=None, cl_scales=['10', 'qual', 'Paired'], colors=None, yieldFlag=False, titerFlag=True, endpointFlag=False, sortBy='strain_id', img_scale=1, fig_height=None, column_width_multiplier=400, number_of_columns=3, horizontal_spacing=0.2, vertical_spacing=0.4, row_height=300, format='web', single_subplot=False</em><span class="sig-paren">)</span><a class="headerlink" href="#FermAT.printGenericTimeCourse_plotly" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>replicateTrialList: ~class`titer`</strong></p>
-<blockquote>
-<div><p>A list of replicate_id trials to be plotted</p>
-</div></blockquote>
-<p><strong>dbName</strong> : str</p>
-<blockquote>
-<div><p>The name/path of the db if you will be loading data</p>
-</div></blockquote>
-<p><strong>strainsToPlot</strong> : list</p>
-<blockquote>
-<div><p>A list of the strain identifiers, a concatenation of the strain_id+id_1+id_2</p>
-</div></blockquote>
-<p><strong>titersToPlot</strong> : list</p>
-<blockquote>
-<div><p>A list of the titers to plot</p>
-</div></blockquote>
-<p><strong>output_type</strong> : str</p>
-<blockquote>
-<div><p>The type of output (html, file, image, iPython)</p>
-</div></blockquote>
-<p><strong>stage_indices</strong> : list of index pairs defining stages</p>
-<blockquote>
-<div><p>The indices of stages to be defined. This will be moved elsewhere</p>
-</div></blockquote>
-<p><strong>stage</strong> : int</p>
-<blockquote>
-<div><p>The stage of interest (as defined in stage_indices)</p>
-</div></blockquote>
-<p><strong>cl_scales</strong> : list of color scale identifiers</p>
-<p><strong>colors</strong> : list of str indicating the color &#8216;rgb(0, 0, 0)&#8217;</p>
-<p><strong>yieldFlag</strong> : bool</p>
-<blockquote>
-<div><p>True to plot yield</p>
-</div></blockquote>
-<p><strong>titerFlag</strong> : bool</p>
-<blockquote>
-<div><p>True to plot titer</p>
-</div></blockquote>
-<p><strong>endpointFlag</strong> : bool</p>
-<blockquote>
-<div><p>True to plot endpoint, otherwise plot timecourse</p>
-</div></blockquote>
-<p><strong>sortBy</strong> : str</p>
-<blockquote>
-<div><p>Identifier to plot by (strain_id, id_1, id_2, None)</p>
-</div></blockquote>
-<p><strong>img_scale</strong> : int</p>
-<blockquote>
-<div><p>The output scale of the image</p>
-</div></blockquote>
-<p><strong>fig_height</strong> : float</p>
-<blockquote>
-<div><p>The height of the figure</p>
-</div></blockquote>
-<p><strong>column_width_multiplier</strong> : float</p>
-<blockquote>
-<div><p>The width of each column</p>
-</div></blockquote>
-<p><strong>number_of_columns</strong> : int</p>
-<blockquote>
-<div><p>The number of columns</p>
-</div></blockquote>
-<p><strong>horizontal_spacing</strong> : float</p>
-<blockquote>
-<div><p>The horizontal spacing between subplots</p>
-</div></blockquote>
-<p><strong>vertical_spacing</strong> : float</p>
-<blockquote>
-<div><p>The vertical spacing between subplots</p>
-</div></blockquote>
-<p><strong>row_height</strong> : float</p>
-<blockquote>
-<div><p>The height of a row in the plot</p>
-</div></blockquote>
-<p><strong>format</strong> : str</p>
-<blockquote class="last">
-<div><p>The format settings to use, the only option is poster</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </div>
 </div>
 
 
-           </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="FermAT.Experiment.html" class="btn btn-neutral float-right" title="FermAT.Experiment module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="import_experiment_data.html" class="btn btn-neutral" title="Importing Raw Experimental Data" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
     </div>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
     <p>
-        &copy; Copyright 2016, Naveen Venayak.
-
+        &copy; Copyright 2016, Naveen Venayak.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
 </footer>
-
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.0.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+  </body>
 </html>

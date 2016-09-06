@@ -24,7 +24,7 @@ Install the dependencies for the project using requirements.txt:
 	
 	pip install -r requirements.txt
 
-Install the package, if you are to be updating the package at all, I recommend
+Install the package, use develop mode to ensure all the relative paths remain correct.
 
     python setup.py develop
     
@@ -54,7 +54,25 @@ A Dockerfile is included in the root directory and can be used to quickly genera
 
     git clone http://github.com/nvenayak/FermAT
     cd FermAT
-    docker build --tag=fermat .
-    docker run -p 8000:8000 fermat
+    sudo docker build --tag=fermat .
+    
+The -v flag will ensure the database is stored on the host-machine and not the container. 
+This allows persistance of the database and allows quick changes to the code and web framework to be tested.
+
+    sudo docker run --restart=always \
+                    -p 80:8000 \
+                    -v /home/ubuntu/db:/code/db \
+                    -v /home/ubuntu/FermAT/FermAT/FermAT:/code/FermAT \
+                    -v /home/ubuntu/FermAT/FermAT/FermAT_web:/code/FermAT_web \
+                    fermat
+
+If there is no intentions to make edits the the source code, there is no need for the second two volume flags.
+
+    sudo docker run -d -p 80:8000 -v /home/ubuntu/db:/code/db fermat
+
+You can access the command line of the docker container by first getting the docker id and then attaching to it.
+    
+    sudo docker ps
+    sudo docker exec -t -i <docker id> /bin/bash
 
 Please see the relevant documentation here: http://nvenayak.github.io/FermAT/
