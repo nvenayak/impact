@@ -51,7 +51,7 @@ class plot_options_form(forms.Form):
     # yieldFlag = forms.BooleanField(label='Yield Flag', initial = False, required=False)
     # titerFlag = forms.BooleanField(label='AnalyteData Flag', initial = True, required=False)
     plot_type = forms.ChoiceField(label = 'Plot type: ', choices = [('timecourse','Timecourse (scatter)'),
-                                                             ('Endpoint','Endpoint (bar chart)')])
+                                                             ('endpoint','Endpoint (bar chart)')])
     # endpointFlag = forms.BooleanField(label='Endpoint Flag', initial = False, required=False)
     sortBy = forms.ChoiceField(label = 'Sort By', choices = [('strain_id','strain_id'),
                                                              ('id_1','id_1'),
