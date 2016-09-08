@@ -19,7 +19,7 @@ class plot_options_form(forms.Form):
     stage_indices = forms.CharField(label='Stage Indices',
                                     help_text='[&nbsp&nbsp[stage_start_0, stage_end_0],..,[stage_start_n, stage_end_n]&nbsp&nbsp]&nbsp&nbsp&nbsp'
                                               'E.g [[0,5],[6,10]]&nbsp&nbsp&nbsp'
-                                              'Stage1: points 0 - 5    Stage2: points 6-10',
+                                              'Stage0: points 0 - 5    Stage1: points 6-10',
                                     required=False)
     stage = forms.IntegerField(label='Stage of Interest', required=False)
     choice_list = []
