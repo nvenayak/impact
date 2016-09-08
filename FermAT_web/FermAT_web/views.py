@@ -22,6 +22,7 @@ import FermAT.settings
 
 from io import StringIO
 import sys
+import copy
 
 # Set the default db_name, stored in the root directory
 db_name = FermAT.settings.db_name   # os.path.join(os.path.dirname(__file__),"../../default_FermAT_db.sqlite3")
@@ -388,10 +389,10 @@ def plot_options(request):
             # process the data in form.cleaned_data as required
             request.session['plot_options'] = form.cleaned_data
 
+            # Make a copy to ensure that the form default values remain correct
+            request.session['prepared_plot_options'] = copy.copy(request.session['plot_options'])
 
-            request.session['prepared_plot_options'] = request.session['plot_options']
-
-
+            # Prepare yield_titer_select information
             if request.session['plot_options']['yield_titer_select'] == 'yieldFlag':
                 request.session['prepared_plot_options']['yieldFlag'] = True
                 request.session['prepared_plot_options']['titerFlag'] = False
@@ -401,9 +402,11 @@ def plot_options(request):
             else:
                 raise Exception('Unexpected value')
 
+            # Delete the entry from the prepared data, it is not required for plotting
             if 'yield_titer_select' in request.session['prepared_plot_options'].keys():
                 del request.session['prepared_plot_options']['yield_titer_select']
 
+            # Set the plot type
             if request.session['plot_options']['plot_type'] == 'endpoint':
                 request.session['prepared_plot_options']['endpointFlag'] = True
             elif request.session['plot_options']['plot_type'] == 'timecourse':
@@ -411,9 +414,11 @@ def plot_options(request):
             else:
                 raise Exception('Unexpected value: '+request.session['plot_options']['plot_type'])
 
+            # Remove plot_type as it is not a plotting parameter
             if 'plot_type' in request.session['prepared_plot_options'].keys():
                 del request.session['prepared_plot_options']['plot_type']
 
+            # Extract info from form regarding stages and clean up
             if request.session['prepared_plot_options'] == []:
                 request.session['prepared_plot_options'] = dict()
             request.session['prepared_plot_options']['cl_scales'] = ast.literal_eval(request.session['plot_options']['cl_scales'])
@@ -426,24 +431,24 @@ def plot_options(request):
 
             del request.session['prepared_plot_options']['use_stage_indices']
 
+            # Extract sort by information
             if request.session['plot_options']['sortBy'] == 'None':
                 print('in here5')
                 request.session['prepared_plot_options']['sortBy'] = None
 
-            print(request.session['prepared_plot_options'])
-
-            # redirect to a new URL:
-            # data = modifyMainPageSessionData(request, mainWindow = 'plot')
             request.session['mainWindow'] = 'plot'
             data = updateFigure(request)
-            # data = modifyMainPageSessionData(request)
+
             return render(request,'FermAT_web/plot.html',data)
 
     # if a GET (or any other method) we'll create a blank form
     else:
         if request.session['plot_options'] != []:
+            print(request.session['plot_options'])
+            print('using above session info')
             form = plot_options_form(initial=request.session['plot_options'])
         else:
+            print('using empty form')
             form = plot_options_form()
 
         data = modifyMainPageSessionData(request, mainWindow = 'plot_options')
