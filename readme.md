@@ -74,5 +74,9 @@ You can access the command line of the docker container by first getting the doc
     
     sudo docker ps
     sudo docker exec -t -i <docker id> /bin/bash
+    
+You can also attach to the console using
+
+    sudo docker attach <docker id>
 
 Please see the relevant documentation here: http://nvenayak.github.io/FermAT/

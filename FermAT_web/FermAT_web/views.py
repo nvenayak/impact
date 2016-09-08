@@ -391,6 +391,7 @@ def plot_options(request):
 
             request.session['prepared_plot_options'] = request.session['plot_options']
 
+
             if request.session['plot_options']['yield_titer_select'] == 'yieldFlag':
                 request.session['prepared_plot_options']['yieldFlag'] = True
                 request.session['prepared_plot_options']['titerFlag'] = False
@@ -399,6 +400,7 @@ def plot_options(request):
                 request.session['prepared_plot_options']['titerFlag'] = True
             else:
                 raise Exception('Unexpected value')
+
             if 'yield_titer_select' in request.session['prepared_plot_options'].keys():
                 del request.session['prepared_plot_options']['yield_titer_select']
 
@@ -588,7 +590,7 @@ def plot(request):
     try:
         experiment.db_load(db_name, 1)
     except IndexError as e:
-        data = modifyMainPageSessionData(request, plotlyCode = '<h4> Please first import data to plot </h4>')
+        modifyMainPageSessionData(request, plotlyCode = '<h4> Please first import and select data to plot </h4>')
         pass
     else:
         updateFigure(request)
