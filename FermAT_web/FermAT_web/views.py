@@ -483,8 +483,8 @@ def experimentSelect(request, experiment_id):
     for key in ['strain_id','id_1','id_2']:
         uniqueIDs[key] = sorted(set([strain[key] for strain in strainInfo]))
 
-    data = modifyMainPageSessionData(request, uniqueIDs = uniqueIDs)
-    data['experiment_id'] = int(experiment_id)
+    data = modifyMainPageSessionData(request, uniqueIDs = uniqueIDs, experiment_id = int(experiment_id))
+
     return render(request, 'FermAT_web/plot.html', data)
 
 
@@ -620,7 +620,7 @@ def updateFigure(request):
 @login_required
 def modifyMainPageSessionData(request, **kwargs):
     data = dict()
-    for key in ['strainInfo','exptInfo','selectedStrainsInfo','mainWindow', 'plotlyCode',
+    for key in ['strainInfo','exptInfo','selectedStrainsInfo','mainWindow', 'plotlyCode', 'experiment_id',
                 'analyte_names','strainsToPlot','uniqueIDs','selectedTiters','plot_options','prepared_plot_options']:
         if key in kwargs:
             data[key] = kwargs[key]
