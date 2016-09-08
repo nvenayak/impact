@@ -204,8 +204,9 @@ class TimeCourse(AnalyteData):
         stage.data_vector = self.data_vector[stage_bounds[0]:stage_bounds[1] + 1]
         if len(self.gradient) > 0:
             stage.gradient = self.gradient[stage_bounds[0]:stage_bounds[1] + 1]
-        if self.specific_productivity is not None:
-            stage.specific_productivity = self.specific_productivity[stage_bounds[0]:stage_bounds[1] + 1]
+        if self._specific_productivity is not None:
+            # Set the private variable to prevent any calculations
+            stage._specific_productivity = self._specific_productivity[stage_bounds[0]:stage_bounds[1] + 1]
 
         return stage
 
