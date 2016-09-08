@@ -47,7 +47,7 @@ class plot_options_form(forms.Form):
     cl_scales = forms.ChoiceField(label = 'Color palette: ', choices = choice_list)
     # cl_scales = forms.CharField(label='Colors', initial = "['10','qual','Paired']")
     yield_titer_select = forms.ChoiceField(label = 'Data to plot: ', choices = [('yieldFlag','Yield'),
-                                                             ('titerFlag','Titer')])
+                                                             ('titerFlag','Titer')], initial='titerFlag')
     # yieldFlag = forms.BooleanField(label='Yield Flag', initial = False, required=False)
     # titerFlag = forms.BooleanField(label='AnalyteData Flag', initial = True, required=False)
     plot_type = forms.ChoiceField(label = 'Plot type: ', choices = [('timecourse','Timecourse (scatter)'),
