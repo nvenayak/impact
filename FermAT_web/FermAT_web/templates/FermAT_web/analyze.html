@@ -26,8 +26,10 @@
       <form class="form" action="/analyze/" method="post">
         {% csrf_token %}
         {{ newExperimentForm|bootstrap }}
-
-        <input class="btn btn-default pull-right" type="submit" value="Modify" />
+        <div class="btn-group pull-right" role="group">
+          <a class="btn btn-default"  role="button" href="/analyze/delete_experiment/{{ experiment_id }}" /> Delete Experiment</a>
+          <input class="btn btn-default" type="submit" value="Submit" />
+        </div>
       </form>
     </div>
   </div>

@@ -56,6 +56,7 @@ urlpatterns = [
     # analyze urls
     url(r'^analyze/$', views.analyze),
     url(r'^analyze/replicate_select/(?P<replicate_id>[0-9]+)$', views.analyze_select_replicate),
+    url(r'^analyze/delete_experiment/(?P<experiment_id>[0-9]+)$', views.delete_experiment),
 
 
     # export urls

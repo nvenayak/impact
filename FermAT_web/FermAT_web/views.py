@@ -302,6 +302,12 @@ def analyze(request):
 
         return render(request, 'FermAT_web/analyze.html', data)
 
+@login_required
+def delete_experiment(request, experiment_id):
+    FermAT.Experiment().db_delete(db_name, experiment_id)
+    update_experiments_from_db(request)
+    return analyze(request)
+
 # Plot views
 @login_required
 def experimentSelect_analyze(request, experiment_id):
@@ -464,7 +470,7 @@ def update_experiments_from_db(request):
 
     data = modifyMainPageSessionData(request, exptInfo = exptInfo)
 
-    return render(request, 'FermAT_web/plot.html', data)
+    # return render(request, 'FermAT_web/plot.html', data)
 
 @login_required
 def experimentSelect(request, experiment_id):
@@ -582,7 +588,7 @@ def plot(request):
     try:
         experiment.db_load(db_name, 1)
     except IndexError as e:
-        data = modifyMainPageSessionData(request, plotlyCode = '<h4> Please select data to plot </h4>')
+        data = modifyMainPageSessionData(request, plotlyCode = '<h4> Please first import data to plot </h4>')
         pass
     else:
         updateFigure(request)
