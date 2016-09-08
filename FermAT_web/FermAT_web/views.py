@@ -588,12 +588,10 @@ def selectMainWindow(request, mainWindowSelection):
 
 @login_required
 def plot(request):
-    update_experiments_from_db(request)
-
     request.session['mainWindow'] = 'plot'
-    experiment = FermAT.Experiment()
+    # experiment = FermAT.Experiment()
     try:
-        experiment.db_load(db_name, 1)
+        update_experiments_from_db(request)
     except IndexError as e:
         modifyMainPageSessionData(request, plotlyCode = '<h4> Please first import and select data to plot </h4>')
         pass
