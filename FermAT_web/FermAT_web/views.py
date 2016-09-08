@@ -256,24 +256,25 @@ def process_input_data(request):
 
 
 
-            # old_stdout = sys.stdout
-            # sys.stdout = mystdout = StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = mystdout = StringIO()
 
             expt.parseRawData(input_format, data = converted_data) # Convert strings to floats
 
-            # sys.stdout = old_stdout
-            # processing_std_out = mystdout.getvalue()
-            # print('mystdout: \n',processing_std_out)
-            messages.add_message(request, messages.INFO, 'test')
-            # messages.info(request, processing_std_out)
-            # messages.info(request,'test message')
+            sys.stdout = old_stdout
+            import html
+            processing_std_out = mystdout.getvalue()
+            # print(processing_std_out)
+            processing_std_out = html.escape(processing_std_out)
+            # print(processing_std_out)
 
             experiment_id = expt.db_commit(db_name, overwrite_experiment_id=request.session['experiment_id'])
             request.session['experiment_id'] = int(experiment_id)
 
             update_experiments_from_db(request)
             # return experimentSelect_analyze(request, experiment_id)
-            return HttpResponse(json.dumps({'redirect': '/experimentSelect_analyze/'+str(experiment_id)}), content_type="application/json")
+            return HttpResponse(json.dumps({'redirect': '/experimentSelect_analyze/'+str(experiment_id),
+                                            'console_output':processing_std_out}), content_type="application/json")
     else:
         print('EXPECTED POST')
 
@@ -400,26 +401,27 @@ def plot_options(request):
             elif request.session['plot_options']['plot_type'] == 'timecourse':
                 request.session['prepared_plot_options']['endpointFlag'] = False
             else:
-                raise Exception('Unexpected value')
+                raise Exception('Unexpected value: '+request.session['plot_options']['plot_type'])
+
             if 'plot_type' in request.session['prepared_plot_options'].keys():
                 del request.session['prepared_plot_options']['plot_type']
 
             if request.session['prepared_plot_options'] == []:
                 request.session['prepared_plot_options'] = dict()
+            request.session['prepared_plot_options']['cl_scales'] = ast.literal_eval(request.session['plot_options']['cl_scales'])
+            if not request.session['prepared_plot_options']['use_stage_indices']:
+                request.session['prepared_plot_options']['stage_indices'] = None
+                request.session['prepared_plot_options']['stage'] = None
             else:
-                request.session['prepared_plot_options']['cl_scales'] = ast.literal_eval(request.session['plot_options']['cl_scales'])
-                if not request.session['prepared_plot_options']['use_stage_indices']:
-                    request.session['prepared_plot_options']['stage_indices'] = None
-                    request.session['prepared_plot_options']['stage'] = None
-                else:
-                    request.session['prepared_plot_options']['stage_indices'] = ast.literal_eval(request.session['plot_options']['stage_indices'])
-                    request.session['prepared_plot_options']['stage'] = request.session['plot_options']['stage']
+                request.session['prepared_plot_options']['stage_indices'] = ast.literal_eval(request.session['plot_options']['stage_indices'])
+                request.session['prepared_plot_options']['stage'] = request.session['plot_options']['stage']
 
-                del request.session['prepared_plot_options']['use_stage_indices']
+            del request.session['prepared_plot_options']['use_stage_indices']
 
-                if request.session['plot_options']['sortBy'] == 'None':
-                    print('in here5')
-                    request.session['prepared_plot_options']['sortBy'] = None
+            if request.session['plot_options']['sortBy'] == 'None':
+                print('in here5')
+                request.session['prepared_plot_options']['sortBy'] = None
+
             print(request.session['prepared_plot_options'])
 
             # redirect to a new URL:
