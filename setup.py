@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='FermAT',
-    version='0.4.0',
+    version='0.5.0',
     packages=['FermAT'],
     url='www.github.com/nvenayak/FermAT',
     license='',
