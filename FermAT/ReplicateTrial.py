@@ -1,6 +1,6 @@
 import numpy as np
 import dill as pickle
-
+import pandas as pd
 from .SingleTrial import SingleTrial
 from .AnalyteData import TimeCourseShell
 from .TrialIdentifier import TrialIdentifier
@@ -188,44 +188,101 @@ class ReplicateTrial(object):
 
         self.trial_identifier = singleTrial.trial_identifier
         self.trial_identifier.time = None
-        self.replicate_ids.append(
-            singleTrial.trial_identifier.replicate_id)  # TODO remove this redundant functionality
+        if singleTrial.trial_identifier.replicate_id not in self.replicate_ids:
+            self.replicate_ids.append(
+                singleTrial.trial_identifier.replicate_id)  # TODO remove this redundant functionality
+        else:
+            raise Exception('Duplicate replicate id: '
+                            + singleTrial.trial_identifier.replicate_id
+                            + '.\nCurrent ids: '
+                            + self.replicate_ids)
         try:
             self.replicate_ids.sort()
-        except Exception:
+        except Exception as e:
+            print(e)
             print(self.replicate_ids)
+
         self.calculate_statistics()
 
     def calculate_statistics(self):
         """
         Calculates the statistics on the SingleTrial objects
         """
-        for key in [singleTrial.titerObjectDict.keys() for singleTrial in self.single_trial_list][
-            0]:  # TODO Generalize this
+        # Get all unique titers
+        unique_analytes = []
+        for single_trial in self.single_trial_list:
+            for titer in single_trial.titerObjectDict:
+                unique_analytes.append(titer)
+
+                unique_analytes = list(set(unique_analytes))
+
+        # analyte_df = pd.DataFrame()
+        for analyte in unique_analytes:
             for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
-                getattr(self, stat).titerObjectDict[key] = TimeCourseShell()
-                getattr(self, stat).titerObjectDict[key].time_vector = self.t
+                getattr(self, stat).titerObjectDict[analyte] = TimeCourseShell()
+                getattr(self, stat).titerObjectDict[analyte].time_vector = self.t
+
                 try:
-                    getattr(self, stat).titerObjectDict[key].data_vector = calc(
-                        [singleExperimentObject.titerObjectDict[key].data_vector
-                         for singleExperimentObject in self.single_trial_list if
-                         singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates], axis=0)
+                    # # Depricated non pd implementation
+                    # getattr(self, stat).titerObjectDict[analyte].data_vector = calc(
+                    #     [singleExperimentObject.titerObjectDict[analyte].data_vector
+                    #      for singleExperimentObject in self.single_trial_list if
+                    #      singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates], axis=0)
+
+                    # pd
+                    # Build the df from all the replicates
+                    analyte_df = pd.DataFrame()
+
+                    # Only iterate through single trials with the analyte of interest
+                    temp_single_trial_list = [single_trial for single_trial in self.single_trial_list if analyte in single_trial.titerObjectDict]
+                    for single_trial in temp_single_trial_list:
+                        temp_analyte_df = pd.DataFrame(
+                            {single_trial.trial_identifier.replicate_id: single_trial.titerObjectDict[analyte].pd_series})
+
+                        # Merging the dataframes this way will allow different time indices for different analytes
+                        analyte_df = pd.merge(analyte_df,
+                                              temp_analyte_df,
+                                              left_index=True,
+                                              right_index=True,
+                                              how='outer')
+                        # analyte_df[single_trial.trial_identifier.replicate_id] = single_trial.titerObjectDict[analyte].pd_series
+
+                    # Save the mean or std
+                    if stat == 'avg':
+                        getattr(self, stat).titerObjectDict[analyte].pd_series = analyte_df.mean(axis=1)
+                    elif stat == 'std':
+                        getattr(self, stat).titerObjectDict[analyte].pd_series = analyte_df.std(axis=1)
+                    else:
+                        raise Exception('Unknown statistic type')
+
+                    #To maintain backward compatabaility
+                    getattr(self, stat).titerObjectDict[analyte].data_vector = np.array(getattr(self, stat).titerObjectDict[analyte].pd_series)
+
+                    print(stat)
+                    print('df:')
+                    print(analyte_df.head())
+                    print('mean series:')
+                    print(getattr(self, stat).titerObjectDict[analyte].pd_series.head())
                 except Exception as e:
-                    print([singleExperimentObject.titerObjectDict[key].data_vector
+                    print(e)
+                    print([singleExperimentObject.titerObjectDict[analyte].data_vector
                          for singleExperimentObject in self.single_trial_list if
                          singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates])
-                if None not in [singleExperimentObject.titerObjectDict[key].rate for singleExperimentObject in
-                                self.single_trial_list]:
+
+                # If a rate exists, calculate the mean
+                if None not in [singleExperimentObject.titerObjectDict[analyte].rate
+                                for singleExperimentObject in self.single_trial_list]:
                     temp = dict()
-                    for param in self.single_trial_list[0].titerObjectDict[key].rate:
+                    for param in self.single_trial_list[0].titerObjectDict[analyte].rate:
                         temp[param] = calc(
-                            [singleExperimentObject.titerObjectDict[key].rate[param] for singleExperimentObject in
+                            [singleExperimentObject.titerObjectDict[analyte].rate[param] for singleExperimentObject in
                              self.single_trial_list if
                              singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates])
-                    getattr(self, stat).titerObjectDict[key].rate = temp
-                getattr(self, stat).titerObjectDict[key].trial_identifier = self.single_trial_list[0].titerObjectDict[
-                    key].trial_identifier
+                    getattr(self, stat).titerObjectDict[analyte].rate = temp
+                getattr(self, stat).titerObjectDict[analyte].trial_identifier = self.single_trial_list[0].titerObjectDict[
+                    analyte].trial_identifier
 
+        # If a yield exists, calculate the mean
         if self.single_trial_list[
             0].yields:  # TODO Should make this general by checking for the existance of any yields
             for key in self.single_trial_list[0].yields:

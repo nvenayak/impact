@@ -1,7 +1,8 @@
 import numpy as np
 import dill as pickle
-
+import pandas as pd
 import sqlite3 as sql
+import warnings
 
 from .TrialIdentifier import TrialIdentifier
 from .AnalyteData import TimeCourse
@@ -16,8 +17,11 @@ class SingleTrial(object):
     def __init__(self):
         self._t = np.array([])
         self.titerObjectDict = dict()
+        self.analyte_df = pd.DataFrame()
+
         self.trial_identifier = TrialIdentifier()
         self.yields = dict()
+        self.yields_df = pd.DataFrame()
 
         self._substrate_name = None
         self.product_names = []
@@ -125,7 +129,7 @@ class SingleTrial(object):
         Parameters
         ----------
         singleTrialID : int
-            The singleTrialID to laod
+            The singleTrialID to load
         c : SQL cursor
         stat : str
             If this is a statistic (avg, std), which statistic? None is used for raw data.
@@ -167,8 +171,17 @@ class SingleTrial(object):
 
             if stat_prefix == '':
                 temp_titer_object.trial_identifier.replicate_id = self.trial_identifier.replicate_id
-                temp_titer_object._timeVec = np.loads(row[4])
+                temp_titer_object._time_vector = np.loads(row[4])
+                temp_titer_object.pd_series = pd.Series(np.loads(row[5]), index=np.loads(row[4]))
+                # print(temp_titer_object._time_vector)
             temp_titer_object._data_vector = np.loads(row[5])
+            temp_titer_object.pd_series = pd.Series(np.loads(row[5]))
+            # try:
+            #     temp_titer_object.pd_series = pd.Series(np.loads(row[5]), index=np.loads(row[4]))
+            # except Exception as e:
+            #     print(np.loads(row[5]))
+            #     print(np.loads(row[4]))
+            #     raise Exception(e)
             temp_titer_object.rate = pickle.loads(row[6])
 
             # self._t = self.titer_dict[product].time_vector
@@ -330,7 +343,7 @@ class SingleTrial(object):
                 'biomass_gdw'      : biomass_gdw,
                 'massBalance'      : massBalance}
 
-    def add_titer(self, titerObject):
+    def add_titer(self, titerObject, no_calculations = False):
         """
         Add a :class:`~TiterObject`
 
@@ -383,9 +396,18 @@ class SingleTrial(object):
         #                               self.titer_dict]:
         #     self.calcYield()
 
+
+
         self.check_time_vectors_match()
         self.trial_identifier = titerObject.trial_identifier
         self.trial_identifier.time = None
+
+        # Pandas support
+        temp_analyte_df = pd.DataFrame({titerObject.trial_identifier.analyte_name:titerObject.pd_series})
+
+        # Merging the dataframes this way will allow different time indices for different analytes
+        self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
+        # print(self.analyte_df.head())
 
     def check_time_vectors_match(self):
         """
@@ -398,16 +420,20 @@ class SingleTrial(object):
             flag = 0
 
             for key in self.titerObjectDict:
-                t.append(self.titerObjectDict[key].time_vector)
+                # print(self.titerObjectDict[key].time_vector)
+                t.append(self.titerObjectDict[key]._time_vector)
 
+                # print(t)
             for i in range(len(t) - 1):
                 if (t[i] != t[i + 1]).all():
                     index = i
                     flag = 1
 
             if flag == 1:
-                raise (Exception(
-                    "Time vectors within an experiment don't match, must implement new methods to deal with this type of data (if even possible)"))
+                # print(t)
+                warnings.warn("Deprecated. New pandas functinality will enable analysis with differently sized data", DeprecationWarning)
+                # raise Exception(
+                #     "Time vectors within an experiment don't match, must implement new methods to deal with this type of data (if even possible)")
             else:
                 self._t = t[0]
 

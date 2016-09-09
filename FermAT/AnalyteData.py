@@ -1,4 +1,5 @@
 from scipy.signal import savgol_filter
+import pandas as pd
 
 import numpy as np
 import dill as pickle
@@ -50,8 +51,13 @@ class TimeCourse(AnalyteData):
 
     def __init__(self, options = Options(), removeDeathPhaseFlag=False, useFilteredData=False):
         AnalyteData.__init__(self)
-        self.time_vector = None
+        self.pd_series = None
+        self._time_vector = None
+        self.time_vector = None # Error thrown if deleted
         self._data_vector = None
+        self.pd_series = None
+
+
         self.rate = dict()
         self.units = {'time': 'None',
                       'data': 'None'}
@@ -112,14 +118,23 @@ class TimeCourse(AnalyteData):
 
     @property
     def time_vector(self):
-        return self._timeVec
+
+        return self._time_vector
 
     @time_vector.setter
-    def time_vector(self, timeVec):
-        self._timeVec = np.array(timeVec)
+    def time_vector(self, time_vector):
+        if self.pd_series is None:
+            self.pd_series = pd.Series(index=time_vector)
+        else:
+            # print(self.pd_series)
+            self.pd_series.index = time_vector
+
+        self._time_vector = np.array(self.pd_series.index)
 
     @property
     def data_vector(self):
+        self._data_vector = np.array(self.pd_series)
+
         if self.useFilteredDataFlag == True:
             return savgol_filter(self._data_vector, self.savgolFilterWindowSize, 3)
         else:
@@ -127,7 +142,15 @@ class TimeCourse(AnalyteData):
 
     @data_vector.setter
     def data_vector(self, dataVec):
-        self._data_vector = np.array(dataVec)
+        if self.pd_series is None:
+            self.pd_series = pd.Series(dataVec)
+        else:
+            self.pd_series = pd.Series(dataVec,index=self.pd_series.index)
+
+        # To maintain backwards compatability
+        self._data_vector = np.array(self.pd_series)
+        # self._data_vector = np.array(dataVec)
+
         self.gradient = np.gradient(self._data_vector) / np.gradient(self.time_vector)
         self.deathPhaseStart = len(dataVec)
 
@@ -136,6 +159,8 @@ class TimeCourse(AnalyteData):
 
         if len(self.data_vector) > self.minimum_points_for_curve_fit:
             self.curve_fit_data()
+
+
 
     def find_death_phase(self, dataVec):
         if np.max(dataVec) > 0.2:
@@ -224,7 +249,7 @@ class TimeCourse(AnalyteData):
                     raise Exception("trial_identifiers don't match within the timeCourse object")
 
         self.timePointList.sort(key=lambda timePoint: timePoint.t)
-        self._timeVec = np.array([timePoint.t for timePoint in self.timePointList])
+        self._time_vector = np.array([timePoint.t for timePoint in self.timePointList])
         self._data_vector = np.array([timePoint.titer for timePoint in self.timePointList])
 
         if len(self.timePointList) > 6:
@@ -235,6 +260,10 @@ class TimeCourse(AnalyteData):
 
             # self.curve_fit_data()
 
+        if self.pd_series is None:
+            self.pd_series = pd.Series()
+        pd_timepoint = pd.Series([timePoint.titer], index=[timePoint.t])
+        self.pd_series = self.pd_series.append(pd_timepoint)
         timePoint.parent = self
 
     def curve_fit_data(self):
