@@ -262,8 +262,10 @@ def process_input_data(request):
             sys.stdout = mystdout = StringIO()
 
             try:
+                # Parse the new data and combine the experiments. The info from the original experiment will be maintained
                 new_expt.parseRawData(input_format, data = converted_data) # Convert strings to floats
                 expt = expt + new_expt
+
                 experiment_id = expt.db_commit(db_name, overwrite_experiment_id=request.session['experiment_id'])
                 request.session['experiment_id'] = int(experiment_id)
                 processing_std_out = mystdout.getvalue()

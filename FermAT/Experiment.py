@@ -52,12 +52,13 @@ class Experiment(object):
                 for titer in singleTrial.titerObjectDict:
                     titer_list.append(singleTrial.titerObjectDict[titer])
 
-        for replicateExperiment in experiment.replicateExperimentObjectDict:
-            for singleTrial in experiment.replicateExperimentObjectDict[replicateExperiment].single_trial_list:
+        for replicateExperiment in experiment.replicate_experiment_dict:
+            for singleTrial in experiment.replicate_experiment_dict[replicateExperiment].single_trial_list:
                 for titer in singleTrial.titerObjectDict:
                     titer_list.append(singleTrial.titerObjectDict[titer])
 
         combined_experiment = Experiment()
+        combined_experiment.info = self.info
         combined_experiment.parse_titers(titer_list)
 
         return combined_experiment
