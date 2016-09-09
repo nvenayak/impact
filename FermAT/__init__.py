@@ -67,21 +67,21 @@ def init_db(db_name):
        CREATE TABLE IF NOT EXISTS replicateTable
          (replicateID INTEGER PRIMARY KEY, experiment_id INT,
           strain_id TEXT, id_1 TEXT, id_2 TEXT, id_3 TEXT,
-          FOREIGN KEY(experiment_id) REFERENCES experimentTable(experiment_id))
+          FOREIGN KEY(experiment_id) REFERENCES experimentTable(experiment_id) ON DELETE CASCADE)
     """)
 
     for suffix in ['', '_avg', '_std']:
         c.execute("""\
            CREATE TABLE IF NOT EXISTS singleTrialTable""" + suffix + """
            (singleTrialID""" + suffix + """ INTEGER PRIMARY KEY, replicateID INT, replicate_id INT, yieldsDict BLOB,
-           FOREIGN KEY(replicateID) REFERENCES replicateTable(replicateTable))
+           FOREIGN KEY(replicateID) REFERENCES replicateTable(replicateTable) ON DELETE CASCADE)
         """)
 
         c.execute("""\
            CREATE TABLE IF NOT EXISTS timeCourseTable""" + suffix + """
            (timeCourseID INTEGER PRIMARY KEY, singleTrial""" + suffix + """ID INTEGER,
            titerType TEXT, analyte_name TEXT, time_vector BLOB, data_vector BLOB, rate BLOB,
-           FOREIGN KEY(singleTrial""" + suffix + """ID) REFERENCES singleTrialID(singleTrialTable""" + suffix + """))
+           FOREIGN KEY(singleTrial""" + suffix + """ID) REFERENCES singleTrialID(singleTrialTable""" + suffix + """) ON DELETE CASCADE)
         """)
 
     conn.commit()
