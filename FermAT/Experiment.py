@@ -504,12 +504,14 @@ class Experiment(object):
                         #     temp_run_identifier_object.titerType = 'product'
 
                         # Remove these time points
-                        if temp_run_identifier_object.time not in [12, 72, 84]:
+                        # if temp_run_identifier_object.time not in [12, 72, 84]:
                             # print(temp_run_identifier_object.time,' ',data['titers'][i][analyte_nameColumn[key]])
-                            self.timepoint_list.append(
-                                TimePoint(copy.copy(temp_run_identifier_object), key,
-                                          temp_run_identifier_object.time,
-                                          data['titers'][i][analyte_nameColumn[key]]))
+                        if data['titers'][i][analyte_nameColumn[key]] == 'nan':
+                            data['titers'][i][analyte_nameColumn[key]] = np.nan
+                        self.timepoint_list.append(
+                            TimePoint(copy.copy(temp_run_identifier_object), key,
+                                      temp_run_identifier_object.time,
+                                      data['titers'][i][analyte_nameColumn[key]]))
 
                 else:
                     skipped_lines += 1

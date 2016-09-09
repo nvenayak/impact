@@ -146,11 +146,12 @@ class ReplicateTrial(object):
                 raise Exception(
                     "the replicates do not have the same uniqueID, either the uniqueID includes too much information or the strains don't match")
 
-            if (self.single_trial_list[i].t != self.single_trial_list[i + 1].t).all():
-                print(self.single_trial_list[i].t, self.single_trial_list[i + 1].t)
-                raise Exception("time vectors don't match within replicates")
-            else:
-                self.t = self.single_trial_list[i].t
+            # Deprecated as of v0.5.0, pandas allows dealing with data with different shapes
+            # if (self.single_trial_list[i].t != self.single_trial_list[i + 1].t).all():
+            #     print(self.single_trial_list[i].t, self.single_trial_list[i + 1].t)
+            #     raise Exception("time vectors don't match within replicates")
+            # else:
+            #     self.t = self.single_trial_list[i].t
 
                 # if len(self.single_trial_list[i].t) != len(self.single_trial_list[i + 1].t):  # TODO
                 #     print("Time Vector 1: ", self.single_trial_list[i].t, "\nTime Vector 2: ", self.single_trial_list[i + 1].t)
@@ -214,13 +215,13 @@ class ReplicateTrial(object):
             for titer in single_trial.titerObjectDict:
                 unique_analytes.append(titer)
 
-                unique_analytes = list(set(unique_analytes))
+        unique_analytes = list(set(unique_analytes))
 
         # analyte_df = pd.DataFrame()
         for analyte in unique_analytes:
             for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
                 getattr(self, stat).titerObjectDict[analyte] = TimeCourseShell()
-                getattr(self, stat).titerObjectDict[analyte].time_vector = self.t
+                # getattr(self, stat).titerObjectDict[analyte].time_vector = self.t
 
                 try:
                     # # Depricated non pd implementation
@@ -256,13 +257,14 @@ class ReplicateTrial(object):
                         raise Exception('Unknown statistic type')
 
                     #To maintain backward compatabaility
-                    getattr(self, stat).titerObjectDict[analyte].data_vector = np.array(getattr(self, stat).titerObjectDict[analyte].pd_series)
+                    getattr(self, stat).titerObjectDict[analyte]._time_vector = np.array(getattr(self, stat).titerObjectDict[analyte].pd_series.index)
+                    getattr(self, stat).titerObjectDict[analyte]._data_vector = np.array(getattr(self, stat).titerObjectDict[analyte].pd_series)
 
-                    print(stat)
-                    print('df:')
-                    print(analyte_df.head())
-                    print('mean series:')
-                    print(getattr(self, stat).titerObjectDict[analyte].pd_series.head())
+                    # print(stat)
+                    # print('df:')
+                    # print(analyte_df.head())
+                    # print('mean series:')
+                    # print(getattr(self, stat).titerObjectDict[analyte].pd_series.head())
                 except Exception as e:
                     print(e)
                     print([singleExperimentObject.titerObjectDict[analyte].data_vector
@@ -282,11 +284,37 @@ class ReplicateTrial(object):
                 getattr(self, stat).titerObjectDict[analyte].trial_identifier = self.single_trial_list[0].titerObjectDict[
                     analyte].trial_identifier
 
-        # If a yield exists, calculate the mean
-        if self.single_trial_list[
-            0].yields:  # TODO Should make this general by checking for the existance of any yields
-            for key in self.single_trial_list[0].yields:
-                self.avg.yields[key] = np.mean(
-                    [singleExperimentObject.yields[key] for singleExperimentObject in self.single_trial_list], axis=0)
-                self.std.yields[key] = np.std(
-                    [singleExperimentObject.yields[key] for singleExperimentObject in self.single_trial_list], axis=0)
+
+        # Get all unique yields
+        unique_yields = []
+        for single_trial in self.single_trial_list:
+            for analyte in single_trial.yields:
+                unique_yields.append(analyte)
+        unique_yields = list(set(unique_analytes))
+
+        # Calculate statistics for each
+        for analyte in unique_yields:
+            temp_single_trial_list = [single_trial for single_trial in self.single_trial_list if
+                                      analyte in single_trial.yields]
+            yield_df = pd.DataFrame()
+            for single_trial in temp_single_trial_list:
+                temp_yield_df = pd.DataFrame({single_trial.trial_identifier.replicate_id: single_trial.yields[analyte]})
+                yield_df = pd.merge(yield_df,
+                                    temp_yield_df,
+                                      left_index=True,
+                                      right_index=True,
+                                      how='outer')
+
+            # Save the mean or std
+            if stat == 'avg':
+                self.avg.yields[analyte] = np.array(yield_df.mean(axis=1))
+            elif stat == 'std':
+                self.avg.yields[analyte] = np.array(yield_df.std(axis=1))
+            else:
+                raise Exception('Unknown statistic type')
+
+            # Deprecated since v0.5.0
+            # self.avg.yields[key] = np.mean(
+            #     [singleExperimentObject.yields[key] for singleExperimentObject in self.single_trial_list], axis=0)
+            # self.std.yields[key] = np.std(
+            #     [singleExperimentObject.yields[key] for singleExperimentObject in self.single_trial_list], axis=0)
