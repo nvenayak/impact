@@ -156,14 +156,18 @@
       {#    xhr.setRequestHeader('X-CSRF-Token',csrftoken);#}
       {#    xhr.send({data: hot.getData()});#}
       input_modal.modal('toggle');
+      input_modal.find('.modal-body').html("Analysis in progress. This may take some time for large datasets.");
+      $('#continue_button').attr('disabled', 'disabled')
+{#      continue_button.attr('disabled', 'disabled');#}
 
       $.ajax({
         url: '/input/inputData',
         type: 'POST',
         data: JSON.stringify({data: hot.getData()}),
         success: function(response){
-          input_modal.find('.modal-body').text('Analysis complete'+response.console_output)
+          input_modal.find('.modal-body').html(response.console_output);
           continue_button.href = response.redirect;
+          $('#continue_button').removeAttr('disabled');
 {#          window.location.href = response.redirect;#}
         }
       });

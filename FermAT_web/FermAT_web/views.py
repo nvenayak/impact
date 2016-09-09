@@ -246,6 +246,7 @@ def process_input_data(request):
 
             # Load the data into the model
             expt = FermAT.Experiment()
+            new_expt = FermAT.Experiment()
             expt.db_load(db_name, experiment_id = request.session['experiment_id'])
 
             if request.session['input_format'] == 'default_OD':
@@ -260,22 +261,29 @@ def process_input_data(request):
             old_stdout = sys.stdout
             sys.stdout = mystdout = StringIO()
 
-            expt.parseRawData(input_format, data = converted_data) # Convert strings to floats
+            try:
+                new_expt.parseRawData(input_format, data = converted_data) # Convert strings to floats
+                expt = expt + new_expt
+                experiment_id = expt.db_commit(db_name, overwrite_experiment_id=request.session['experiment_id'])
+                request.session['experiment_id'] = int(experiment_id)
+                processing_std_out = mystdout.getvalue()
+                console_output = '<h3> Analysis complete:</h3>'+'<pre>'+processing_std_out+'</pre>'
+                redirect_url = '/experimentSelect_analyze/'+str(experiment_id)
+            except Exception as e:
+                import traceback
+                traceback.print_exc(file=mystdout)
+                # print(e)
+                processing_std_out = mystdout.getvalue()
+                print(processing_std_out)
+                console_output = '<h3> Processing error:</h3>'+'<pre>'+processing_std_out+'</pre>'
+                redirect_url = '#'
 
             sys.stdout = old_stdout
-            import html
-            processing_std_out = mystdout.getvalue()
-            # print(processing_std_out)
-            processing_std_out = html.escape(processing_std_out)
-            # print(processing_std_out)
-
-            experiment_id = expt.db_commit(db_name, overwrite_experiment_id=request.session['experiment_id'])
-            request.session['experiment_id'] = int(experiment_id)
-
             update_experiments_from_db(request)
             # return experimentSelect_analyze(request, experiment_id)
-            return HttpResponse(json.dumps({'redirect': '/experimentSelect_analyze/'+str(experiment_id),
-                                            'console_output':processing_std_out}), content_type="application/json")
+            return HttpResponse(json.dumps({'redirect': redirect_url,
+                                            'console_output':console_output}),
+                                content_type="application/json")
     else:
         print('EXPECTED POST')
 
