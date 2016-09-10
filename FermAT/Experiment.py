@@ -147,6 +147,10 @@ class Experiment(object):
             id of experiment to load
         """
         conn = sql.connect(db_name)
+
+        # This is required to propogate deletions
+        conn.execute("PRAGMA FOREIGN_KEYS = ON")
+
         c = conn.cursor()
         c.execute("""DELETE FROM experimentTable WHERE (experiment_id == ?)""", (experiment_id,))
         conn.commit()

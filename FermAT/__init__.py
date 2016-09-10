@@ -54,8 +54,15 @@ def init_db(db_name):
 
     # Initialize database
     conn = sql.connect(db_name)
+    # conn.execute("PRAGMA FOREIGN_KEYS=ON")
+    # conn.commit()
+    # conn = sql.connect(db_name)
+    # rows = conn.execute('pragma foreign_keys')
+    # for row in rows:
+    #     print('pragma')
+    #     print(row)
+
     c = conn.cursor()
-    c.execute("""PRAGMA foreign_keys = ON """)
 
     c.execute("""\
        CREATE TABLE IF NOT EXISTS experimentTable
@@ -76,14 +83,14 @@ def init_db(db_name):
         c.execute("""\
            CREATE TABLE IF NOT EXISTS singleTrialTable""" + suffix + """
            (singleTrialID""" + suffix + """ INTEGER PRIMARY KEY, replicateID INT, replicate_id INT, yieldsDict BLOB,
-           FOREIGN KEY(replicateID) REFERENCES replicateTable(replicateTable) ON DELETE CASCADE)
+           FOREIGN KEY(replicateID) REFERENCES replicateTable(replicateID) ON DELETE CASCADE)
         """)
 
         c.execute("""\
            CREATE TABLE IF NOT EXISTS timeCourseTable""" + suffix + """
            (timeCourseID INTEGER PRIMARY KEY, singleTrial""" + suffix + """ID INTEGER,
            titerType TEXT, analyte_name TEXT, time_vector BLOB, data_vector BLOB, rate BLOB,
-           FOREIGN KEY(singleTrial""" + suffix + """ID) REFERENCES singleTrialID(singleTrialTable""" + suffix + """) ON DELETE CASCADE)
+           FOREIGN KEY(singleTrial""" + suffix + """ID) REFERENCES singleTrialTable""" + suffix + """(singleTrialID""" + suffix +""") ON DELETE CASCADE)
         """)
 
     conn.commit()
