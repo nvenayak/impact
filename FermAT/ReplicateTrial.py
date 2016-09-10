@@ -20,6 +20,7 @@ class ReplicateTrial(object):
         self.trial_identifier = TrialIdentifier()
         self.bad_replicates = []
         self.replicate_ids = []
+        self.replicate_df = dict()
         # self.checkReplicateUniqueIDMatch()
 
         self.stages = []
@@ -243,7 +244,7 @@ class ReplicateTrial(object):
 
                     # pd
                     # Build the df from all the replicates
-                    self.analyte_df = pd.DataFrame()
+                    self.replicate_df[analyte] = pd.DataFrame()
 
                     # Only iterate through single trials with the analyte of interest
                     temp_single_trial_list = [single_trial for single_trial in self.single_trial_list if analyte in single_trial.titerObjectDict]
@@ -251,7 +252,7 @@ class ReplicateTrial(object):
                         temp_analyte_df = pd.DataFrame(
                             {single_trial.trial_identifier.replicate_id: single_trial.titerObjectDict[analyte].pd_series})
                         # Merging the dataframes this way will allow different time indices for different analytes
-                        self.analyte_df = pd.merge(self.analyte_df,
+                        self.replicate_df[analyte] = pd.merge(self.replicate_df[analyte],
                                               temp_analyte_df,
                                               left_index=True,
                                               right_index=True,
@@ -261,9 +262,9 @@ class ReplicateTrial(object):
 
                     # Save the mean or std
                     if stat == 'avg':
-                        getattr(self, stat).titerObjectDict[analyte].pd_series = self.analyte_df.mean(axis=1)
+                        getattr(self, stat).titerObjectDict[analyte].pd_series = self.replicate_df[analyte].mean(axis=1)
                     elif stat == 'std':
-                        getattr(self, stat).titerObjectDict[analyte].pd_series = self.analyte_df.std(axis=1)
+                        getattr(self, stat).titerObjectDict[analyte].pd_series = self.replicate_df[analyte].std(axis=1)
                     else:
                         raise Exception('Unknown statistic type')
 

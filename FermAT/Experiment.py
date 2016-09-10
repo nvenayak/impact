@@ -163,12 +163,12 @@ class Experiment(object):
                 data.append([titer_key])
 
                 # With pd
-                print(self.replicate_experiment_dict[replicate_key].analyte_df.head())
-                data.append(['Time (hours)'] + list(self.replicate_experiment_dict[replicate_key].analyte_df.index))
-                for col in self.replicate_experiment_dict[replicate_key].analyte_df:
+                # print(self.replicate_experiment_dict[replicate_key].analyte_df.head())
+                data.append(['Time (hours)'] + list(self.replicate_experiment_dict[replicate_key].replicate_df[titer_key].index))
+                for col in self.replicate_experiment_dict[replicate_key].replicate_df[titer_key]:
                     data.append(['rep #'
                                  + str(col)]
-                                 + list(self.replicate_experiment_dict[replicate_key].analyte_df[col]))
+                                 + list(self.replicate_experiment_dict[replicate_key].replicate_df[titer_key][col]))
                 # print(self.replicate_experiment_dict[replicate_key].avg.analyte_df)
                 data.append(['Average'] + list(
                     self.replicate_experiment_dict[replicate_key].avg.titerObjectDict[titer_key].pd_series))
