@@ -55,6 +55,7 @@ def init_db(db_name):
     # Initialize database
     conn = sql.connect(db_name)
     c = conn.cursor()
+    c.execute("""PRAGMA foreign_keys = ON """)
 
     c.execute("""\
        CREATE TABLE IF NOT EXISTS experimentTable
@@ -62,6 +63,7 @@ def init_db(db_name):
        experiment_start_date TEXT, experiment_end_date TEXT, primary_scientist_name TEXT,
        secondary_scientist_name TEXT, medium_base TEXT, medium_supplements TEXT, notes TEXT)
     """)
+
 
     c.execute("""\
        CREATE TABLE IF NOT EXISTS replicateTable
