@@ -19,7 +19,7 @@ class SingleTrial(object):
         self.titerObjectDict = dict()
         self.analyte_df = pd.DataFrame()
 
-        self.trial_identifier = TrialIdentifier()
+        self.trial_identifier = None #TrialIdentifier()
         self.yields = dict()
         self.yields_df = pd.DataFrame()
 
@@ -110,6 +110,8 @@ class SingleTrial(object):
         if stat is None:
             stat_prefix = ''
         else:
+            # Trial identifier not required for storing replicates, here's a temp one
+            self.trial_identifier = TrialIdentifier()
             stat_prefix = '_' + stat
 
         c.execute(
@@ -165,7 +167,7 @@ class SingleTrial(object):
             for attribute in ['strain_id', 'id_1', 'id_2']:
                 setattr(temp_titer_object.trial_identifier, attribute, getattr(self.trial_identifier, attribute))
             temp_titer_object.trial_identifier.id_1 = self.trial_identifier.id_1
-            temp_titer_object.trial_identifier.identifier2 = self.trial_identifier.id_2
+            temp_titer_object.trial_identifier.id_2 = self.trial_identifier.id_2
             temp_titer_object.trial_identifier.analyte_type = row[2]
             temp_titer_object.trial_identifier.analyte_name = row[3]
 
@@ -174,8 +176,9 @@ class SingleTrial(object):
                 temp_titer_object._time_vector = np.loads(row[4])
                 temp_titer_object.pd_series = pd.Series(np.loads(row[5]), index=np.loads(row[4]))
                 # print(temp_titer_object._time_vector)
+            else:
+                temp_titer_object.pd_series = pd.Series(np.loads(row[5]))
             temp_titer_object._data_vector = np.loads(row[5])
-            temp_titer_object.pd_series = pd.Series(np.loads(row[5]))
             # try:
             #     temp_titer_object.pd_series = pd.Series(np.loads(row[5]), index=np.loads(row[4]))
             # except Exception as e:
@@ -185,7 +188,9 @@ class SingleTrial(object):
             temp_titer_object.rate = pickle.loads(row[6])
 
             # self._t = self.titer_dict[product].time_vector
+
             self.add_titer(temp_titer_object)
+
 
         # The yields get recalculated when the titers are added, when in reality. A quick solution is to set the yield
         # to the correct values after adding all the titer objects (the std of the yield is not the ratio of the stds)
@@ -359,7 +364,8 @@ class SingleTrial(object):
             # print(self.biomass_name)
             # print(self.substrate_name)
             # print(self.product_names)
-            # print(self.titer_dict.keys())
+            print('titerObjectDict',self.titerObjectDict)
+            print('analyte to add: ',titerObject.trial_identifier.analyte_name)
             raise Exception('A duplicate titer was added to the singleTiterObject,\n'
                             'Make sure replicates are defined properly,\n'
                             'Duplicate TrialIdentifier: ',
@@ -378,7 +384,7 @@ class SingleTrial(object):
                                 titerObject.trial_identifier.analyte_name)
             self.calculate_substrate_consumed()
 
-        if titerObject.trial_identifier.analyte_type == 'biomass' or titerObject.trial_identifier.analyte_type == 'OD':
+        if titerObject.trial_identifier.analyte_type in ['biomass','OD']:
             if self.biomass_name is None:
                 self.biomass_name = titerObject.trial_identifier.analyte_name
             else:
@@ -399,14 +405,32 @@ class SingleTrial(object):
 
 
         self.check_time_vectors_match()
-        self.trial_identifier = titerObject.trial_identifier
+
+        # check if trial identifiers match
+        if self.trial_identifier is None:
+            self.trial_identifier = TrialIdentifier()
+            for attr in ['strain_id', 'id_1', 'id_2', 'replicate_id']:
+                setattr(self.trial_identifier, attr, getattr(titerObject.trial_identifier, attr))
+
+        for attr in ['strain_id','id_1','id_2','replicate_id']:
+            if getattr(self.trial_identifier,attr) != getattr(titerObject.trial_identifier,attr):
+                raise Exception('Trial identifiers do not match at the following attribute: '
+                                +attr
+                                +' val 1: '
+                                +getattr(self.trial_identifier,attr)
+                                +' val 2: '
+                                +getattr(titerObject.trial_identifier,attr))
+            else:
+                setattr(self.trial_identifier, attr, getattr(titerObject.trial_identifier, attr))
+
+
         self.trial_identifier.time = None
 
         # Pandas support
-        temp_analyte_df = pd.DataFrame({titerObject.trial_identifier.analyte_name:titerObject.pd_series})
+        self.analyte_df[titerObject.trial_identifier.analyte_name] = titerObject.pd_series
 
         # Merging the dataframes this way will allow different time indices for different analytes
-        self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
+        # self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
         # print(self.analyte_df.head())
 
     def check_time_vectors_match(self):
@@ -438,7 +462,7 @@ class SingleTrial(object):
                 self._t = t[0]
 
     def get_unique_timepoint_id(self):
-        return self.substrate.trial_identifier.strain_id + self.substrate.trial_identifier.id_1 + self.substrate.trial_identifier.identifier2 + str(
+        return self.substrate.trial_identifier.strain_id + self.substrate.trial_identifier.id_1 + self.substrate.trial_identifier.id_2 + str(
             self.substrate.trial_identifier.replicate_id)
 
     def get_unique_replicate_id(self):

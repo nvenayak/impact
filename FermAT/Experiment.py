@@ -161,20 +161,36 @@ class Experiment(object):
                     [single_trial.substrate_name] + \
                     single_trial.product_names:
                 data.append([titer_key])
-                for i, single_trial in enumerate(self.replicate_experiment_dict[replicate_key].single_trial_list):
-                    # data.append([single_trial.trial_identifier.replicate_id])
-                    if titer_key is not None:
-                        if i == 0:
-                            data.append(['Time (hours)'] + list(single_trial.titerObjectDict[titer_key].time_vector))
-                        data.append(['rep #' + str(single_trial.trial_identifier.replicate_id)] + list(
-                            single_trial.titerObjectDict[titer_key].data_vector))
-                if titer_key is not None:
-                    data.append(['Average'] + list(
-                        self.replicate_experiment_dict[replicate_key].avg.titerObjectDict[titer_key].data_vector))
-                    data.append(['Std'] + list(
-                        self.replicate_experiment_dict[replicate_key].std.titerObjectDict[titer_key].data_vector))
-                    # Add spacing between the titers
-                    data.append([])
+
+                # With pd
+                print(self.replicate_experiment_dict[replicate_key].analyte_df.head())
+                data.append(['Time (hours)'] + list(self.replicate_experiment_dict[replicate_key].analyte_df.index))
+                for col in self.replicate_experiment_dict[replicate_key].analyte_df:
+                    data.append(['rep #'
+                                 + str(col)]
+                                 + list(self.replicate_experiment_dict[replicate_key].analyte_df[col]))
+                # print(self.replicate_experiment_dict[replicate_key].avg.analyte_df)
+                data.append(['Average'] + list(
+                    self.replicate_experiment_dict[replicate_key].avg.titerObjectDict[titer_key].pd_series))
+                data.append(['Std'] + list(
+                    self.replicate_experiment_dict[replicate_key].std.titerObjectDict[titer_key].pd_series))
+
+                # # Without pd
+                # for i, single_trial in enumerate(self.replicate_experiment_dict[replicate_key].single_trial_list):
+                #     # data.append([single_trial.trial_identifier.replicate_id])
+                #     if titer_key is not None:
+                #         if i == 0:
+                #             data.append(['Time (hours)'] + list(single_trial.titerObjectDict[titer_key].time_vector))
+                #         data.append(['rep #' + str(single_trial.trial_identifier.replicate_id)] + list(
+                #             single_trial.titerObjectDict[titer_key].data_vector))
+                # if titer_key is not None:
+                #     data.append(['Average'] + list(
+                #         self.replicate_experiment_dict[replicate_key].avg.titerObjectDict[titer_key].data_vector))
+                #     data.append(['Std'] + list(
+                #         self.replicate_experiment_dict[replicate_key].std.titerObjectDict[titer_key].data_vector))
+
+                # Add spacing between the titers
+                data.append([])
             # Add spacing between the replicates
             data.append([])
             data.append([])

@@ -4,7 +4,7 @@ import pandas as pd
 from .SingleTrial import SingleTrial
 from .AnalyteData import TimeCourseShell
 from .TrialIdentifier import TrialIdentifier
-
+import copy
 
 class ReplicateTrial(object):
     """
@@ -109,6 +109,13 @@ class ReplicateTrial(object):
 
         c.execute("""SELECT * FROM replicateTable WHERE replicateID = ?""", (replicateID,))
         for row in c.fetchall():
+            # for stat in ['avg', 'std']:
+            #     temp_trial_identifier = TrialIdentifier()
+            #     temp_trial_identifier.strain_id = row[2]
+            #     temp_trial_identifier.id_1 = row[3]
+            #     temp_trial_identifier.id_2 = row[4]
+            #     getattr(self, stat).trial_identifier = temp_trial_identifier
+            self.trial_identifier = TrialIdentifier()
             self.trial_identifier.strain_id = row[2]
             self.trial_identifier.id_1 = row[3]
             self.trial_identifier.id_2 = row[4]
@@ -118,18 +125,21 @@ class ReplicateTrial(object):
             """SELECT singleTrialID, replicateID, replicate_id, yieldsDict FROM singleTrialTable WHERE replicateID = ?""",
             (replicateID,))
         for row in c.fetchall():
-            self.single_trial_list.append(SingleTrial())
-            self.single_trial_list[-1].yields = pickle.loads(row[3])
-            self.single_trial_list[-1].trial_identifier = self.trial_identifier
-            self.single_trial_list[-1].trial_identifier.replicate_id = row[2]
-            self.single_trial_list[-1].db_load(c=c, singleTrialID=row[0])
+            temp_single_trial = SingleTrial()
+            temp_single_trial.yields = pickle.loads(row[3])
+            temp_single_trial.trial_identifier = self.trial_identifier
+            temp_single_trial.trial_identifier.replicate_id = row[2]
+            temp_single_trial.db_load(c=c, singleTrialID=row[0])
+            self.add_replicate(temp_single_trial)
 
-        for stat in ['_avg', '_std']:
-            c.execute(
-                """SELECT singleTrialID""" + stat + """, replicateID, replicate_id, yieldsDict FROM singleTrialTable""" + stat + """ WHERE replicateID = ?""",
-                (replicateID,))
-            row = c.fetchall()[0]
-            getattr(self, stat.replace('_', '')).db_load(c=c, singleTrialID=row[0], stat=stat.replace('_', ''))
+        # Deprecated since v0.6.0, will calculate this data on the fly instead of from db
+        # for stat in ['_avg', '_std']:
+        #     c.execute(
+        #         """SELECT singleTrialID""" + stat + """,  replicate_id, yieldsDict FROM singleTrialTable""" + stat + """ WHERE replicateID = ?""",
+        #         (replicateID,))
+        #     row = c.fetchall()[0]
+        #     print(row[0:2])
+        #     getattr(self, stat.replace('_', '')).db_load(c=c, singleTrialID=row[0], stat=stat.replace('_', ''))
 
         self.t = self.single_trial_list[0].t
 
@@ -183,11 +193,12 @@ class ReplicateTrial(object):
                 getattr(self, stat)._substrate_name = self.single_trial_list[0].substrate_name
                 getattr(self, stat).product_names = self.single_trial_list[0].product_names
                 getattr(self, stat).biomass_name = self.single_trial_list[0].biomass_name
+                # for attr in ['strain_id','id_1','id_2']
                 # getattr(self, stat).stages = self.single_trial_list[0].stages
 
         self.check_replicate_unique_id_match()
 
-        self.trial_identifier = singleTrial.trial_identifier
+        self.trial_identifier = copy.copy(singleTrial.trial_identifier)
         self.trial_identifier.time = None
         if singleTrial.trial_identifier.replicate_id not in self.replicate_ids:
             self.replicate_ids.append(
@@ -232,27 +243,27 @@ class ReplicateTrial(object):
 
                     # pd
                     # Build the df from all the replicates
-                    analyte_df = pd.DataFrame()
+                    self.analyte_df = pd.DataFrame()
 
                     # Only iterate through single trials with the analyte of interest
                     temp_single_trial_list = [single_trial for single_trial in self.single_trial_list if analyte in single_trial.titerObjectDict]
                     for single_trial in temp_single_trial_list:
                         temp_analyte_df = pd.DataFrame(
                             {single_trial.trial_identifier.replicate_id: single_trial.titerObjectDict[analyte].pd_series})
-
                         # Merging the dataframes this way will allow different time indices for different analytes
-                        analyte_df = pd.merge(analyte_df,
+                        self.analyte_df = pd.merge(self.analyte_df,
                                               temp_analyte_df,
                                               left_index=True,
                                               right_index=True,
                                               how='outer')
+                        # print(self.analyte_df.head())
                         # analyte_df[single_trial.trial_identifier.replicate_id] = single_trial.titerObjectDict[analyte].pd_series
 
                     # Save the mean or std
                     if stat == 'avg':
-                        getattr(self, stat).titerObjectDict[analyte].pd_series = analyte_df.mean(axis=1)
+                        getattr(self, stat).titerObjectDict[analyte].pd_series = self.analyte_df.mean(axis=1)
                     elif stat == 'std':
-                        getattr(self, stat).titerObjectDict[analyte].pd_series = analyte_df.std(axis=1)
+                        getattr(self, stat).titerObjectDict[analyte].pd_series = self.analyte_df.std(axis=1)
                     else:
                         raise Exception('Unknown statistic type')
 
