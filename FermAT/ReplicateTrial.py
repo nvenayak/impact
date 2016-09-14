@@ -5,6 +5,9 @@ from .SingleTrial import SingleTrial
 from .AnalyteData import TimeCourseShell
 from .TrialIdentifier import TrialIdentifier
 import copy
+from scipy import stats
+import matplotlib.pyplot as plt
+from .settings import default_outlier_cleaning_flag, max_fraction_replicates_to_remove, verbose
 
 class ReplicateTrial(object):
     """
@@ -21,6 +24,8 @@ class ReplicateTrial(object):
         self.bad_replicates = []
         self.replicate_ids = []
         self.replicate_df = dict()
+
+        self.outliner_cleaning_flag = default_outlier_cleaning_flag
         # self.checkReplicateUniqueIDMatch()
 
         self.stages = []
@@ -229,37 +234,107 @@ class ReplicateTrial(object):
 
         unique_analytes = list(set(unique_analytes))
 
-        # analyte_df = pd.DataFrame()
+        # Build the combined vectors
+        for analyte in unique_analytes:
+            # # Depricated non pd implementation
+            # getattr(self, stat).titerObjectDict[analyte].data_vector = calc(
+            #     [singleExperimentObject.titerObjectDict[analyte].data_vector
+            #      for singleExperimentObject in self.single_trial_list if
+            #      singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates], axis=0)
+
+            # pd
+            # Build the df from all the replicates
+            self.replicate_df[analyte] = pd.DataFrame()
+
+            # Only iterate through single trials with the analyte of interest
+            temp_single_trial_list = [single_trial for single_trial in self.single_trial_list if
+                                      analyte in single_trial.titerObjectDict]
+            temp_analyte_df = pd.DataFrame(
+                {single_trial.trial_identifier.replicate_id: single_trial.titerObjectDict[analyte].pd_series
+                 for single_trial in temp_single_trial_list})
+            # Merging the dataframes this way will allow different time indices for different analytes
+            self.replicate_df[analyte] = pd.merge(self.replicate_df[analyte],
+                                                  temp_analyte_df,
+                                                  left_index=True,
+                                                  right_index=True,
+                                                  how='outer')
+
+            # Remove outliers
+            # http://stackoverflow.com/questions/23199796/detect-and-exclude-outliers-in-pandas-dataframe
+            df = self.replicate_df[analyte]
+            col_names = list(df.columns.values)
+            backup = self.replicate_df[analyte]
+            if self.outliner_cleaning_flag and len(col_names) > 2:
+                outliner_removal_method = 'iterative_removal'
+                # Method one for outlier removal
+                if outliner_removal_method == 'z_score':
+                    # print(col_names)
+                    fraction_outlier_pts = np.sum(np.abs(stats.zscore(df)) < 1, axis=0) / len(df)
+                    print(fraction_outlier_pts)
+                    bad_replicates = [col_name for i, col_name in enumerate(col_names) if fraction_outlier_pts[i] < 0.8]
+                    # good_replicates = (np.abs(stats.zscore(df)) < 3).all(axis=0)  # Find any values > 3 std from mean
+                    # if bad_replicates.any():
+                    print(bad_replicates)
+                    if bad_replicates != []:
+                        good_replicate_cols = [col_names[x] for x, col_name in enumerate(bad_replicates)
+                                               if col_name not in bad_replicates]
+                    else:
+                        good_replicate_cols = col_names
+                    bad_replicate_cols = [col_names[x] for x, col_name in enumerate(bad_replicates)
+                                           if col_name in bad_replicates]
+                    print('good', good_replicate_cols)
+                    print('bad: ',bad_replicate_cols)
+
+                # method 2 for outlier removal (preferred)
+                # this method removal each replicate one by one, and if the removal of a replicate reduces the std
+                # by a certain threshold, the replicate is flagged as removed
+                if outliner_removal_method == 'iterative_removal':
+                    bad_replicate_cols = []
+                    good_replicate_cols = []
+
+                    # Determine the max number of replicates to remove
+                    for _ in range(int(len(df)*max_fraction_replicates_to_remove)):
+
+                        # A value between 0 and 1, > 1 means removing the replicate makes the yield worse
+                        std_deviation_cutoff = 0.1
+                        # df = pd.DataFrame({key: np.random.randn(5) for key in ['a', 'b', 'c']})
+                        temp_std_by_mean = {}
+                        for temp_remove_replicate in list(df.columns.values):
+                            indices = [replicate for i, replicate in enumerate(df.columns.values) if
+                                       replicate != temp_remove_replicate]
+                            temp_remove_replicate_df = df[indices]
+                            temp_mean = temp_remove_replicate_df.mean(axis=1)
+                            temp_std = temp_remove_replicate_df.std(axis=1)
+                            temp_std_by_mean[temp_remove_replicate] = np.mean(abs(temp_std / temp_mean))
+
+                        temp_min_val = min([temp_std_by_mean[key] for key in temp_std_by_mean])
+                        if temp_min_val < std_deviation_cutoff:
+                            bad_replicate_cols.append([key for key in temp_std_by_mean if temp_std_by_mean[key] == temp_min_val ][0])
+
+                        good_replicate_cols = [key for key in temp_std_by_mean if key not in bad_replicate_cols]
+                        df = df[good_replicate_cols]
+                self.replicate_df[analyte] = df[good_replicate_cols]
+
+                # Plot the results of replicate removal
+                if verbose:
+                    plt.figure()
+                    try:
+                        if good_replicate_cols != []:
+                            plt.plot(backup[good_replicate_cols], 'r')
+                        if bad_replicate_cols != []:
+                            plt.plot(backup[bad_replicate_cols], 'b')
+                    except Exception as e:
+                        print(e)
+                del backup
+
         for analyte in unique_analytes:
             for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
                 getattr(self, stat).titerObjectDict[analyte] = TimeCourseShell()
+
+                # Deprecated since v0.5.0
                 # getattr(self, stat).titerObjectDict[analyte].time_vector = self.t
 
                 try:
-                    # # Depricated non pd implementation
-                    # getattr(self, stat).titerObjectDict[analyte].data_vector = calc(
-                    #     [singleExperimentObject.titerObjectDict[analyte].data_vector
-                    #      for singleExperimentObject in self.single_trial_list if
-                    #      singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates], axis=0)
-
-                    # pd
-                    # Build the df from all the replicates
-                    self.replicate_df[analyte] = pd.DataFrame()
-
-                    # Only iterate through single trials with the analyte of interest
-                    temp_single_trial_list = [single_trial for single_trial in self.single_trial_list if analyte in single_trial.titerObjectDict]
-                    for single_trial in temp_single_trial_list:
-                        temp_analyte_df = pd.DataFrame(
-                            {single_trial.trial_identifier.replicate_id: single_trial.titerObjectDict[analyte].pd_series})
-                        # Merging the dataframes this way will allow different time indices for different analytes
-                        self.replicate_df[analyte] = pd.merge(self.replicate_df[analyte],
-                                              temp_analyte_df,
-                                              left_index=True,
-                                              right_index=True,
-                                              how='outer')
-                        # print(self.analyte_df.head())
-                        # analyte_df[single_trial.trial_identifier.replicate_id] = single_trial.titerObjectDict[analyte].pd_series
-
                     # Save the mean or std
                     if stat == 'avg':
                         getattr(self, stat).titerObjectDict[analyte].pd_series = self.replicate_df[analyte].mean(axis=1)
@@ -268,15 +343,12 @@ class ReplicateTrial(object):
                     else:
                         raise Exception('Unknown statistic type')
 
-                    #To maintain backward compatabaility
-                    getattr(self, stat).titerObjectDict[analyte]._time_vector = np.array(getattr(self, stat).titerObjectDict[analyte].pd_series.index)
-                    getattr(self, stat).titerObjectDict[analyte]._data_vector = np.array(getattr(self, stat).titerObjectDict[analyte].pd_series)
+                    # To maintain backward compatabaility
+                    getattr(self, stat).titerObjectDict[analyte]._time_vector = \
+                        np.array(getattr(self, stat).titerObjectDict[analyte].pd_series.index)
+                    getattr(self, stat).titerObjectDict[analyte]._data_vector = \
+                        np.array(getattr(self, stat).titerObjectDict[analyte].pd_series)
 
-                    # print(stat)
-                    # print('df:')
-                    # print(analyte_df.head())
-                    # print('mean series:')
-                    # print(getattr(self, stat).titerObjectDict[analyte].pd_series.head())
                 except Exception as e:
                     print(e)
                     print([singleExperimentObject.titerObjectDict[analyte].data_vector
@@ -289,12 +361,12 @@ class ReplicateTrial(object):
                     temp = dict()
                     for param in self.single_trial_list[0].titerObjectDict[analyte].rate:
                         temp[param] = calc(
-                            [singleExperimentObject.titerObjectDict[analyte].rate[param] for singleExperimentObject in
-                             self.single_trial_list if
-                             singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates])
+                            [singleExperimentObject.titerObjectDict[analyte].rate[param]
+                             for singleExperimentObject in self.single_trial_list
+                             if singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates])
                     getattr(self, stat).titerObjectDict[analyte].rate = temp
-                getattr(self, stat).titerObjectDict[analyte].trial_identifier = self.single_trial_list[0].titerObjectDict[
-                    analyte].trial_identifier
+                getattr(self, stat).titerObjectDict[analyte].trial_identifier = \
+                    self.single_trial_list[0].titerObjectDict[analyte].trial_identifier
 
 
         # Get all unique yields
@@ -304,7 +376,7 @@ class ReplicateTrial(object):
                 unique_yields.append(analyte)
         unique_yields = list(set(unique_analytes))
 
-        # Calculate statistics for each
+        # Calculate statistics for each yield
         for analyte in unique_yields:
             temp_single_trial_list = [single_trial for single_trial in self.single_trial_list if
                                       analyte in single_trial.yields]
