@@ -79,6 +79,12 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     """
 
 
+    if yieldFlag:
+        data_to_plot = 'yield'
+    elif titerFlag:
+        data_to_plot = 'titer'
+    else:
+        raise Exception('Neither yield nor titer selected')
 
 
     # Check for correct inputs
@@ -331,7 +337,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         else:  # time course (not end point)
             final_plot_number = print_generic_timecourse_plotly(replicateTrialList, product, colors, pts_per_hour, showlegend_flag, fig,
                                             sortBy, pltNum, number_of_columns, single_subplot, axis_params, chart_fonts,
-                                            height, legend_params, data_to_plot='titer')
+                                            height, legend_params, data_to_plot=data_to_plot)
             showlegend_flag = False
             # else:
             #     raise Exception('No plot type selection (endpointFlag or yieldFlag must be True)')
@@ -420,6 +426,8 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
     elif data_to_plot == 'titer':
         titerFlag = True
         yieldFlag = False
+    else:
+        raise Exception('Neither yield nor titer selected to plot')
 
     for replicate in replicate_trial_list:
         # Determine how many points should be plotted

@@ -62,7 +62,7 @@ class CoreTestCase(unittest.TestCase):
         # Plot
         expt.printGenericTimeCourse(titersToPlot=['pyruvate', 'acetate', '1,3-butanediol', 'acetaldehyde',
                                                   'ethanol', 'meso-2,3-butanediol', 'acetoin'],
-                                    output_type='file')
+                                    output_type='file', titerFlag = False, yieldFlag = True)
 
 if __name__ == '__main__':
     unittest.main()
