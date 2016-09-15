@@ -18,6 +18,7 @@ setup(
                       'plotly>=1.9.10',
                       'pyexcel-xlsx>=0.1.0',
                       'scipy>=0.17.0',
+                      'colorlover',
                       'django-bootstrap-form',
                       'django-bootstrap3',
                       'sphinx_bootstrap_theme',

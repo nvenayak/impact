@@ -213,7 +213,7 @@ class ReplicateTrial(object):
             raise Exception('Duplicate replicate id: '
                             + singleTrial.trial_identifier.replicate_id
                             + '.\nCurrent ids: '
-                            + self.replicate_ids)
+                            + str(self.replicate_ids))
         try:
             self.replicate_ids.sort()
         except Exception as e:
@@ -390,12 +390,9 @@ class ReplicateTrial(object):
                                       how='outer')
 
             # Save the mean or std
-            if stat == 'avg':
-                self.avg.yields[analyte] = np.array(yield_df.mean(axis=1))
-            elif stat == 'std':
-                self.avg.yields[analyte] = np.array(yield_df.std(axis=1))
-            else:
-                raise Exception('Unknown statistic type')
+            self.avg.yields[analyte] = np.array(yield_df.mean(axis=1))
+            self.std.yields[analyte] = np.array(yield_df.std(axis=1))
+
 
             # Deprecated since v0.5.0
             # self.avg.yields[key] = np.mean(
