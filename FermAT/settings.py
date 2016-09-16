@@ -11,4 +11,4 @@ default_outlier_cleaning_flag = True
 max_fraction_replicates_to_remove = 0.75
 
 # Display all diagnostic info
-verbose = True
+verbose = False

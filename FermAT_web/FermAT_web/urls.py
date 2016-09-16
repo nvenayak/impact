@@ -21,6 +21,8 @@ from . import views
 urlpatterns = [
     url(r'^$',views.welcome),
 
+    url(r'^check_auth$', views.check_auth),
+
     # authentication urls
     url(r'^registration/register$',views.register),
     url(r'^createAccount/$',views.index),

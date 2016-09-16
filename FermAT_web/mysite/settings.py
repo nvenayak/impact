@@ -137,3 +137,7 @@ LOGIN_REDIRECT_URL = '/login'
 
 # Security
 SECURE_SSL_REDIRECT = False
+
+
+# Deployment settings
+STATIC_ROOT = os.path.join(BASE_DIR, "../static/")

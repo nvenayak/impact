@@ -7,6 +7,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 
+from collections import OrderedDict
+
 from .forms import *
 
 from django.contrib.auth.views import *
@@ -61,7 +63,7 @@ def color_scale_examples(request):
             #     output += cl.to_html(cl.scales[number][type][scale])
             # output += '<br>'
 
-    from collections import OrderedDict
+
 
 
     # ordered_numbers.sort()
@@ -70,6 +72,13 @@ def color_scale_examples(request):
 
 
     return HttpResponse(output)
+
+
+def check_auth(request):
+    if request.user.is_authenticated():
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=401)
 
 @login_required
 def download_plot(request):
@@ -96,7 +105,6 @@ def new_experiment(request):
             expt = FermAT.Experiment(info=form.cleaned_data)
             expt_id = expt.db_commit(db_name)
             request.session['experiment_id'] = expt_id
-            # redirect to a new URL:
 
             # Select a default input format and return the input data view
             return select_input_format(request, default_input_format, experiment_id=expt_id)
@@ -161,9 +169,13 @@ def select_input_format(request, input_format, experiment_id=None):
     request.session['selected_input_window'] = 'table_input'
     # request.session['experiment_id'] = int(experiment_id)
     if experiment_id is None:
+        # load the experiment if there is one
         try:
             experiment_id = request.session['experiment_id']
-        except KeyError:    pass
+        except KeyError:
+            pass
+
+    update_experiments_from_db(request)
 
     if input_format == 'default_OD':
         column_labels = ['StrainID (CSV)'] + ['timepoint_'+str(n) for n in range(1,1000)]
@@ -180,7 +192,7 @@ def select_input_format(request, input_format, experiment_id=None):
                                                      'selected_input_window': request.session['selected_input_window'],
                                                      'mainWindow': 'input',
                                                      'experiment_id': experiment_id,
-                                                     'exptInfo': FermAT.Project().getAllExperimentInfo_django(db_name)})
+                                                     'exptInfo': request.session['exptInfo']})
 
 
 @login_required
@@ -293,6 +305,7 @@ def process_input_data(request):
 # Analyze Views
 @login_required
 def analyze(request):
+    update_experiments_from_db(request)
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -304,6 +317,7 @@ def analyze(request):
             expt.db_load(db_name = db_name, experiment_id=request.session['experiment_id'])
             expt.info = form.cleaned_data
             experiment_id = expt.db_commit(db_name, overwrite_experiment_id=request.session['experiment_id'])
+            update_experiments_from_db(request)
             return experimentSelect_analyze(request, experiment_id)
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -342,8 +356,9 @@ def experimentSelect_analyze(request, experiment_id):
     # for field in exptInfo:
     #     getattr(form,field).initial = exptInfo[field]
 
+    data = modifyMainPageSessionData(request, experiment_id = int(experiment_id))
     data['newExperimentForm'] = form
-    data['experiment_id'] = int(experiment_id)
+
 
     experiment = FermAT.Experiment()
     experiment.db_load(db_name=db_name, experiment_id = int(experiment_id))
@@ -368,7 +383,7 @@ def experimentSelect_analyze(request, experiment_id):
         replicate_info.append(temp)
     data['replicate_info'] = replicate_info
     data['analyze_tab'] = 'replicate'
-    print(replicate_info)
+    # print(replicate_info)
     return render(request, 'FermAT_web/analyze.html', data)
 
 @login_required
@@ -486,7 +501,7 @@ def update_experiments_from_db(request):
         FermAT.init_db(db_name)
         exptInfo = FermAT.Project().getAllExperimentInfo_django(db_name)
 
-    data = modifyMainPageSessionData(request, exptInfo = exptInfo)
+    modifyMainPageSessionData(request, exptInfo = exptInfo)
 
     # return render(request, 'FermAT_web/plot.html', data)
 
