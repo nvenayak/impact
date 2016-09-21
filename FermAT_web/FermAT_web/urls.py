@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^$',views.welcome),
 
     url(r'^check_auth$', views.check_auth),
+    url(r'^get_username_auth$', views.get_username_auth),
 
     # authentication urls
     url(r'^registration/register$',views.register),
@@ -50,10 +51,10 @@ urlpatterns = [
     url(r'^plot/options/$', views.plot_options),
     url(r'^plot/select_strains/(P<identifier>[a-z|A-Z]+)/(P<identifierName>[a-z|A-Z]+)$', views.selectStrains),
     url(r'^plot/select_strains/$', views.selectStrains),
-    url(r'^plot/select_strain_subset/$', views.selectStrainSubset),
+    url(r'^plot/select_strain_subset/$', views.select_strain_subset),
     url(r'^plot/remove_strains/$', views.removeStrains),
     url(r'^plot/select_titers/$', views.selectTiters),
-    url(r'^plot/clear_data/$', views.clearData),
+    url(r'^plot/clear_data/$', views.clear_data),
 
     # analyze urls
     url(r'^analyze/$', views.analyze),
@@ -73,7 +74,4 @@ urlpatterns = [
     url(r'^download_plot/$', views.download_plot),
 
     url(r'^iPython/auth/$',views.iPython_auth)
-
-    # url(r'^mainWindow/(?P<mainWindowSelection>[a-z|A-Z]+)$',views.selectMainWindow),
-
 ]
