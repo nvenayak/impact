@@ -12,10 +12,10 @@ Contents:
    :maxdepth: 2
 
    quickstart
-   getting_started
-   features_0
-   features_1
-   import_experiment_data
+   0_getting_started
+   1_features_0
+   2_features_1
+   3_import_experiment_data
    FermAT
 
 
