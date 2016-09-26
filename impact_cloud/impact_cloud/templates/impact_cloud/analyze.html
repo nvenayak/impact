@@ -1,0 +1,335 @@
+{% extends "impact_cloud/base.html" %}
+{% load bootstrap %}
+{% load bootstrap3 %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="col-lg-3">
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              Modify or Delete Experiment
+              <a data-toggle="collapse" href="#collapse1">
+                <span class="glyphicon glyphicon-option-horizontal pull-right" aria-hidden="true"></span>
+              </a>
+            </h4>
+          </div>
+          <div id="collapse1" class="panel-collapse collapse in">
+            <div class="panel-body">
+
+              <div class="btn-group btn-group-justified" role = "group">
+                <div class="btn-group btn-group-justified" role="group">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    {% for row in exptInfo %}
+                      {% if row.experiment_id == experiment_id %} {{row.experiment_id}} - {{row.experiment_title}} {% endif %}
+                    {% endfor %}
+                    &nbsp
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu text-center">
+                    {% for row in exptInfo %}
+                      <li><a href="/experimentSelect_analyze/{{row.experiment_id}}">{{row.experiment_id}} - {{row.experiment_title}}</a></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+
+
+              <br>
+              <form class="form" action="/analyze/" method="post">
+                {% csrf_token %}
+                {{ newExperimentForm|bootstrap }}
+                <div class="btn-group pull-right" role="group">
+                  <a class="btn btn-default"  role="button" href="/analyze/delete_experiment/{{ experiment_id }}" /> {% bootstrap_icon "trash" %}&nbsp&nbspDelete</a>
+                  <button class="btn btn-default" type="submit">{% bootstrap_icon "repeat" %}&nbsp&nbspUpdate</button>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="col-lg-4">
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              Choose data
+              <a data-toggle="collapse" href="#collapse2">
+                <span class="glyphicon glyphicon-option-horizontal pull-right" aria-hidden="true"></span>
+              </a>
+            </h4>
+          </div>
+          <div id="collapse2" class="panel-collapse collapse in">
+            <div class="panel-body">
+              <ul class="nav nav-tabs nav-justified">
+                <li role="presentation" {% if analyze_tab == 'trial' %} class="active" {% endif %}><a href="#">Trials</a></li>
+                <li role="presentation" {% if analyze_tab == 'analyte' %} class="active" {% endif %}><a href="#">Analytes</a></li>
+                <li role="presentation" {% if analyze_tab == 'replicate' %} class="active" {% endif %}><a href="#">Replicate</a></li>
+              </ul>
+
+              <table class="table table-hover">
+                {% if analyze_tab == 'replicate' %}
+                  <thead>
+                  <tr>
+                    <th>Replicate ID</th>
+                    <th>Strain ID</th>
+                    <th>ID 1</th>
+                    <th>ID 2</th>
+                    <th># Analytes</th>
+                    <th># Replicates</th>
+                  </tr>
+                  </thead>
+
+                  <tbody>
+                  {% for row in replicate_info %}
+                    <tr class='clickable-row' data-url='/analyze/replicate_select/{{ row.replicate_id}}' >
+                      <td>{{ row.replicate_id }}</td>
+                      <td>{{ row.strain_id }}</td>
+                      <td>{{ row.id_1 }}</td>
+                      <td>{{ row.id_2 }}</td>
+                      <td>{{ row.number_of_analytes }}</td>
+                      <td>{{ row.number_of_replicates }}</td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                {% endif %}
+
+                {% if analyze_tab == 'analyte' %}
+                  <thead>
+                  <tr>
+                    <th>Analyte</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for analyte in analytes %}
+                    <tr class='clickable-row' data-url='/analyze/analyte_select/{{ analyte}}' >
+                      <td>{{ analyte }}</td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                {% endif %}
+
+                {% if analyze_tab == 'trial' %}
+                  <thead>
+                  <tr>
+                    <th>Replicate Number</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for number in replicate_number %}
+                    <tr class='clickable-row' data-url='/replicate_select/{{ row.replicate_id}}' >
+                      <td>{{ number }}</td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                {% endif %}
+
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              To be implemented..
+              <a data-toggle="collapse" href="#collapse3">
+                <span class="glyphicon glyphicon-option-horizontal pull-right" aria-hidden="true"></span>
+              </a>
+            </h4>
+          </div>
+          <div id="collapse3" class="panel-collapse collapse in">
+            <div class="panel-body">
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  </div>
+
+  <script>
+    jQuery(document).ready(function($) {
+      $(".clickable-row").click(function() {
+        window.document.location = $(this).data("url");
+      });
+    });
+  </script>
+{% endblock %}
+
+{#<!--<div class="container-fluid">-->#}
+{#<!--<div class="row">-->#}
+{#<!--<div class="col-lg-3 col-md-4">-->#}
+{#<!--&lt;!&ndash;<h3>Experiments</h3>&ndash;&gt;-->#}
+{#<!--<div class="btn-group btn-group-justified" role = "group">-->#}
+{#<!--<div class="btn-group btn-group-justified" role="group">-->#}
+{#<!--<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">-->#}
+{#<!--Choose Experiment  <span class="caret"></span>-->#}
+{#<!--</button>-->#}
+{#<!--<ul class="dropdown-menu text-center">-->#}
+{#<!--{% for row in exptInfo %}-->#}
+{#<!--<li><a href="/experimentSelect/{{row.experiment_id}}">{{row.experiment_id}} - {{row.experiment_title}}</a></li>-->#}
+{#<!--{% endfor %}-->#}
+{#<!--</ul>-->#}
+{#<!--</div>-->#}
+{#<!--</div>-->#}
+{##}
+{#<!--<br>-->#}
+{##}
+{#<!--<div class="panel panel-primary">-->#}
+{#<!--<div class="panel-heading">-->#}
+{#<!--<h3 class="panel-title">Experiment Data</h3> <br>-->#}
+{#<!--{{ selectedexperiment_title }}-->#}
+{#<!--</div>-->#}
+{##}
+{#<!--<div class="panel-body">-->#}
+{#<!--<table class="table table-condensed">-->#}
+{#<!--<tr>-->#}
+{#<!--<th>Strain ID</th>-->#}
+{#<!--<th>ID #1</th>-->#}
+{#<!--<th>ID #2</th>-->#}
+{#<!--</tr>-->#}
+{#<!--<form action="/select_strain_subset/" method="post">{% csrf_token %}-->#}
+{#<!--<tr>-->#}
+{#<!--<td>-->#}
+{#<!--<select name="strain_id" class="form-control">-->#}
+{#<!--<option value="All">All</option>-->#}
+{#<!--{% for row in uniqueIDs.strain_id %}-->#}
+{##}
+{#<!--<option value="{{row}}">{{row}}</option>-->#}
+{#<!--{% endfor %}-->#}
+{#<!--</select>-->#}
+{#<!--</td>-->#}
+{#<!--<td>-->#}
+{#<!--<select name="id_1"class="form-control">-->#}
+{#<!--<option value="All">All</option>-->#}
+{#<!--{% for row in uniqueIDs.id_1 %}-->#}
+{##}
+{#<!--<option value="{{row}}">{{row}}</option>-->#}
+{#<!--{% endfor %}-->#}
+{#<!--</select>-->#}
+{#<!--</td>-->#}
+{#<!--<td>-->#}
+{#<!--<select name="id_2" class="form-control">-->#}
+{#<!--<option value="All">All</option>-->#}
+{#<!--{% for row in uniqueIDs.id_2 %}-->#}
+{#<!--<option value="{{row}}">{{row}}</option>-->#}
+{#<!--{% endfor %}-->#}
+{#<!--</select>-->#}
+{#<!--</td>-->#}
+{#<!--<td>-->#}
+{#<!--<button class="btn btn-default pull-right" type="submit">-->#}
+{#<!--<span class="glyphicon glyphicon-filter" aria-hidden="true"></span>-->#}
+{#<!--</button>-->#}
+{#<!--</td>-->#}
+{#<!--</tr>-->#}
+{##}
+{#<!--</form>-->#}
+{##}
+{#<!--<form action="/selectStrains/" method="post">{% csrf_token %}-->#}
+{#<!--{% for row in strainInfo %}-->#}
+{#<!--<tr>-->#}
+{#<!--<td>{{row.strain_id}}</td>-->#}
+{#<!--<td>{{row.id_1}}</td>-->#}
+{#<!--<td>{{row.id_2}}</td>-->#}
+{#<!--<td><div><input type="checkbox" name="{{row.replicateID}}" {% for selectedStrain in selectedStrainsInfo %}-->#}
+{#<!--{% if row.replicateID == selectedStrain.replicateID %} checked {% endif %}-->#}
+{#<!--{% endfor %}></div></td>-->#}
+{#<!--</tr>-->#}
+{##}
+{#<!--{% endfor %}-->#}
+{#<!--<tr><td></td><td></td><td><button class="btn btn-default" type="submit">Add strains</button></td></tr>-->#}
+{#<!--</form>-->#}
+{#<!--</table>-->#}
+{#<!--</div>-->#}
+{#<!--</div>-->#}
+{##}
+{##}
+{#<!--<div class="panel panel-success">-->#}
+{#<!--<div class="panel-heading">-->#}
+{#<!--<h3 class="panel-title">Selected Data</h3>-->#}
+{#<!--</div>-->#}
+{##}
+{#<!--<div class="panel-body">-->#}
+{#<!--<form action="/removeStrains/" method="post">{% csrf_token %}-->#}
+{#<!--<table class="table table-condensed">-->#}
+{#<!--<tr>-->#}
+{#<!--<th>Strain ID</th>-->#}
+{#<!--<th>ID #1</th>-->#}
+{#<!--<th>ID #2</th>-->#}
+{#<!--</tr>-->#}
+{#<!--{% for row in selectedStrainsInfo %}-->#}
+{#<!--<tr>-->#}
+{#<!--<td>{{row.strain_id}}</td>-->#}
+{#<!--<td>{{row.id_1}}</td>-->#}
+{#<!--<td>{{row.id_2}}</td>-->#}
+{#<!--<td><div><input type="checkbox" name="{{row.replicateID}}"></div></td>-->#}
+{#<!--</tr>-->#}
+{#<!--{% endfor %}-->#}
+{#<!--</table>-->#}
+{#<!--<div class="btn-group pull-right" role="group">-->#}
+{#<!--<div class="btn-group" role="group">-->#}
+{#<!--<a class="btn btn-default" href="/clearData/" role="button">Clear Data</a>-->#}
+{#<!--</div>-->#}
+{#<!--<div class="btn-group" role="group">-->#}
+{#<!--<button class="btn btn-default pull-right" type="submit">Remove strains</button>-->#}
+{#<!--</div>-->#}
+{#<!--</div>-->#}
+{#<!--</form>-->#}
+{#<!--</div>-->#}
+{#<!--</div>-->#}
+{##}
+{#<!--<div class="panel panel-info">-->#}
+{#<!--<div class="panel-heading">-->#}
+{#<!--<h3 class="panel-title">Selected Titers</h3>-->#}
+{#<!--</div>-->#}
+{##}
+{#<!--<div class="panel-body">-->#}
+{#<!--<form action="/selectTiters/" method="post">{% csrf_token %}-->#}
+{#<!--<table class="table table-condensed">-->#}
+{#<!--<tr>-->#}
+{#<!--<th>Name</th>-->#}
+{#<!--<th>Type</th>-->#}
+{#<!--</tr>-->#}
+{#<!--{% for titer in analyte_names %}-->#}
+{#<!--<tr>-->#}
+{#<!--<td>{{titer}}</td>-->#}
+{##}
+{#<!--<td><div><input type="checkbox" name="{{titer}}" {% if titer in selectedTiters %} checked {% endif %}></div></td>-->#}
+{#<!--</tr>-->#}
+{#<!--{% endfor %}-->#}
+{##}
+{#<!--</table>-->#}
+{#<!--<button class="btn btn-default pull-right" type="submit">Update Titers</button>-->#}
+{#<!--</form>-->#}
+{##}
+{#<!--</div>-->#}
+{#<!--</div>-->#}
+{##}
+{##}
+{##}
+{#<!--</div>-->#}
+{#<!--<div class="col-lg-9 col-md8">-->#}
+{#<!--<ul class="nav nav-tabs nav-justified">-->#}
+{#<!--<li role="presentation" {% if mainWindow == 'plot' %} class="active" {% endif %}><a href="/mainWindow/plot">Plot</a></li>-->#}
+{#<!--<li role="presentation" {% if mainWindow == 'plot_options' %} class="active" {% endif %}><a href="/plot_options">Options</a></li>-->#}
+{#<!--</ul>-->#}
+{#<!--<br>-->#}
+{#<!--{% if mainWindow == 'dataSummary' %} {% include "impact_cloud/includes/dataSummary.html" %}  {% endif %}-->#}
+{#<!--{% if mainWindow == 'plot' %} {% include "impact_cloud/includes/plot.html" %} {% endif %}-->#}
+{#<!--{% if mainWindow == 'plot_options' %} {% include "impact_cloud/plot_options.html" %} {% endif %}-->#}
+{#<!--</div>-->#}
+{##}
+{#<!--</div>-->#}
+{#<!--</div>-->#}

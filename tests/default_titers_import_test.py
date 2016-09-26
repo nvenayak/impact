@@ -1,4 +1,4 @@
-import FermAT
+import impact
 import datetime
 import unittest
 
@@ -8,19 +8,19 @@ class CoreTestCase(unittest.TestCase):
             'importDate': datetime.datetime.today(),
             'runStartDate': datetime.datetime.today(),
             'runEndDate':datetime.datetime.today(),
-            'principalScientistName':'FermAT Test',
+            'principalScientistName':'impact Test',
             'mediumBase':'NA',
             'mediumSupplements':'NA',
             'notes':'This is a test of the default_titers parser',
             'experimentTitle': 'default_titer test'
         }
-        self.db_name = 'test_FermAT_db.sqlite3'
+        self.db_name = 'test_impact_db.sqlite3'
 
         # Create experiment
-        self.expt = FermAT.Experiment(info = info)
+        self.expt = impact.Experiment(info = info)
 
         # Init a temp db
-        FermAT.init_db(db_name=self.db_name)
+        impact.init_db(db_name=self.db_name)
 
 
     def tearDown(self):
@@ -37,7 +37,7 @@ class CoreTestCase(unittest.TestCase):
         experiment_id = self.expt.db_commit(db_name=self.db_name)
 
         # Reinstantiate and import from db
-        expt = FermAT.Experiment()
+        expt = impact.Experiment()
         expt.db_load(db_name = self.db_name, experiment_id = experiment_id)
 
         # Plot
@@ -56,7 +56,7 @@ class CoreTestCase(unittest.TestCase):
         experiment_id = self.expt.db_commit(db_name=self.db_name)
 
         # Reinstantiate and import from db
-        expt = FermAT.Experiment()
+        expt = impact.Experiment()
         expt.db_load(db_name=self.db_name, experiment_id=experiment_id)
 
         # Plot

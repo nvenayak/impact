@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load bootstrap3 %}
+{% load staticfiles %}
+
+<head>
+  {% include "impact_cloud/includes/header.html" %}
+  {% include "impact_cloud/includes/navbar.html" %}
+</head>
+
+<body class="body">
+
+<!--style="background-color:#f6f6f6">-->
+<div>
+  {#  {% bootstrap_javascript jquery=1 %}#}
+  {% bootstrap_messages %}
+  {% block content %}
+  {% endblock %}
+</div>
+</body>
+{% block footer %}
+  <footer>
+
+    <div class="container-fluid">
+      <div class="row pull-bottom">
+        <div><hr style="margin-bottom: 5px;margin-top: 5px"></div>
+
+        <table align="right">
+          <tr style="vertical-align:middle">
+            <td>
+              <p align="right" style="vertical-align: baseline;">IMPACT: Integrated Microbial Physiology Accelerated Characterization Toolbox<br> © Naveen Venayak 2016</p>
+            </td>
+            <td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+            <td>
+              <img class="image-responsive pull-right" height="30px" src="{% static 'impact_logo.png' %}">
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </footer>
+{% endblock %}
+</html>

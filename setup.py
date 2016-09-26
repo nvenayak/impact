@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(
-    name='FermAT',
+    name='impact',
     version='0.5.0',
-    packages=['FermAT'],
-    url='www.github.com/nvenayak/FermAT',
+    packages=['impact'],
+    url='www.github.com/nvenayak/impact',
     license='',
     author='Naveen Venayak',
     author_email='naveen.venayak@gmail.com',

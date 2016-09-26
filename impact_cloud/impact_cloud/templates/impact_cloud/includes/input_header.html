@@ -1,0 +1,16 @@
+<style>
+  .handsontable col.rowHeader {
+    width: 180px;
+</style>
+
+<body class="body">
+<ul class="nav nav-tabs">
+  <li role="presentation" {% if selected_input_window == 'home' %}class="active"{% endif %}>
+    <a href="/input/"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a>
+  </li>
+  <li role="presentation" {% if selected_input_window == 'new_experiment' %}class="active"{% endif %}><a href="/input/new_experiment">New Experiment</a></li>
+  <li role="presentation" {% if selected_input_window == 'table_input' %}class="active"{% endif %}><a href="/input/table_input">Table Import (copy/paste)</a></li>
+  <li role="presentation" {% if selected_input_window == 'table_input' %}class="active"{% endif %}><a href="/input/file">File Upload</a></li>
+  {#  <li role="presentation" {% if selected_input_window == 'analysis_options' %}class="active"{% endif %} class="disabled"><a href="/input/analysis_options">Analysis Options</a></li>#}
+</ul>
+<br>

@@ -1,0 +1,45 @@
+{% extends "impact_cloud/plot.html" %}
+
+{% load bootstrap %}
+
+{% block main_window %}
+<div class="container-fluid">
+
+
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <a data-toggle="modal" data-target="#myModal"><b>Color palette</b></a>:  preview all colors in the colorlover palette, you will have full customization if you export your plot to plotly for editing.&nbsp&nbsp&nbsp
+{#      <!-- Button trigger modal -->#}
+{#      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">#}
+{#        Color Options#}
+{#      </button>#}
+
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">Color options</h4>
+            </div>
+            <div class="modal-body">
+              {% include 'impact_cloud/includes/color_lover.html' %}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form class="form-horizontal" action="/plot/options/" method="post">
+    {% csrf_token %}
+
+    {{ plot_options_form|bootstrap_horizontal }}
+
+    <input class="btn btn-default pull-right" type="submit" value="Submit" />
+  </form>
+</div>
+{% endblock %}}
+

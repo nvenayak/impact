@@ -1,0 +1,59 @@
+{% extends "impact_cloud/base.html" %}
+{% load staticfiles %}
+{% block content %}
+  <div class="container">
+    <!--<div class="col-md-8"></div>-->
+    <div class="col-md-12">
+      <div class="jumbotron">
+{#        <img class="image-responsive pull-right" height="10px" align="center" src="{% static 'impact_logo.svg' %}">#}
+
+        <h1>Welcome<img class="image-responsive pull-right" height="75px" src="{% static 'impact_logo.png' %}"></h1>
+
+{#        <h2>The Fermentation Analysis Toolbox</h2>#}
+
+
+        <h3>
+          IMPACT is designed to help scientists rapidly parse, analyze, visualize and store fermentation data to characterize microbial physiology.
+          IMPACT is open-source and available on <a href="http://github.com/nvenayak/impact">GitHub</a> to promote active development and collaboration.
+        </h3>
+
+        <p>
+          First login, or ask for an account by email. Then, you can begin inputting data and following the navbar.
+        </p>
+        {#        <br><br>#}
+
+        {#        <div class="btn-group" role="group" aria-label="...">#}
+        {#          <a class="btn btn-default" href="/static/docs/quickstart.html" role="button">Quickstart</a>#}
+        {#          <a class="btn btn-default" href="http://github.com/nvenayak/impact" role="button">Source</a>#}
+        {#          <a class="btn btn-default" href="/static/docs/index.html" role="button">Docs</a>#}
+        {#        </div>#}
+        {##}
+        {##}
+        {##}
+        {##}
+        {#        <div>#}
+        {#          {%  if user.is_authenticated %}#}
+        {#          {% else %}#}
+        {#            <a class="btn btn-primary btn-lg" href="/login.html" role="button">Sign in</a>#}
+        {#          {% endif %}#}
+        {#        </div>#}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+  <footer>
+    <div class="container">
+      <!--<div class="col-md-8"></div>-->
+        <table align="right">
+          <tr style="vertical-align:middle">
+            <td>
+              <p align="right" style="vertical-align: baseline;">IMPACT: Integrated Microbial Physiology Accelerated Characterization Toolbox<br> © Naveen Venayak 2016</p>
+            </td>
+          </tr>
+        </table>
+
+    </div>
+  </footer>
+{% endblock %}

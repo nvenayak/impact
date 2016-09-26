@@ -5,9 +5,9 @@ ADD requirements.txt /code
 WORKDIR /code
 RUN pip install -r requirements.txt
 WORKDIR ../
-COPY /FermAT /code/FermAT
-COPY /FermAT_web /code/FermAT_web
-COPY /docs/_build/html /code/FermAT_web/FermAT_web/static/docs
+COPY /impact /code/impact
+COPY /impact_cloud /code/impact_cloud
+COPY /docs/_build/html /code/impact_cloud/impact_cloud/static/docs
 
 #COPY /docs /code/docs
 #WORKDIR /code/docs
@@ -24,6 +24,6 @@ WORKDIR /code
 RUN mkdir /code/db
 RUN python setup.py develop
 EXPOSE 8000
-WORKDIR /code/FermAT_web
+WORKDIR /code/impact_cloud
 RUN python3 manage.py migrate
 CMD python3 manage.py runserver 0.0.0.0:8000
