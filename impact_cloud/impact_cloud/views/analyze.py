@@ -100,7 +100,8 @@ def experimentSelect_analyze(request, experiment_id):
 
         # Get unique titers
         titers = []
-        for single_trial in replicate.single_trial_list:
+        for replicate_id in replicate.single_trial_dict:
+            single_trial = replicate.single_trial_dict[replicate_id]
             [titers.append(analyte) for analyte in [single_trial.biomass_name] + [single_trial.substrate_name] + single_trial.product_names]
         unique_titers = list(set(titers))
         temp['number_of_analytes'] = len(unique_titers)
