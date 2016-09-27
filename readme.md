@@ -1,6 +1,6 @@
-impact: Fermentation Analysis Toolbox
-=====================================
-impact is designed to help scientists parse, analyze, plot and store data for fermentation experiments.
+Impact: an integrated microbial physiology toolbox
+==================================================
+Impact is designed to help scientists parse, analyze, plot and store data for fermentation experiments.
 There are two parts to the package:
 
 - `impact`: which contains the core toolbox
@@ -61,14 +61,14 @@ This allows persistance of the database and allows quick changes to the code and
 
     sudo docker run --restart=always \
                     -p 80:8000 \
-                    -v /home/ubuntu/db:/code/db \
-                    -v /home/ubuntu/impact/impact/impact:/code/impact \
-                    -v /home/ubuntu/impact/impact/impact_cloud:/code/impact_cloud \
+                    -v ~/db:/code/db \
+                    -v ~/impact/impact/impact:/code/impact \
+                    -v ~/impact/impact/impact_cloud:/code/impact_cloud \
                     impact
 
 If there is no intentions to make edits the the source code, there is no need for the second two volume flags.
 
-    sudo docker run -d -p 80:8000 -v /home/ubuntu/db:/code/db impact
+    sudo docker run -d -p 80:8000 -v ~/db:/code/db impact
 
 You can access the command line of the docker container by first getting the docker id and then attaching to it.
     
