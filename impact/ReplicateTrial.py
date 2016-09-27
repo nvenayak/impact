@@ -37,11 +37,15 @@ class ReplicateTrial(object):
 
 
     def serialize(self):
-        pass
-        # serialized_dict = {}
-        #
-        # for single_trial in self.single_trial_list:
-        #     serialized_dict[single_trial.serialize()
+        serialized_dict = {}
+
+        for replicate_id in self.single_trial_dict:
+            serialized_dict[str(replicate_id)] = self.single_trial_dict[replicate_id].serialize()
+        serialized_dict['avg'] = self.avg.serialize()
+        serialized_dict['std'] = self.std.serialize()
+        import json
+        return json.dumps(serialized_dict)
+
 
     def calculate_stages(self, stage_indices=None):
         if stage_indices is None:
@@ -293,9 +297,6 @@ class ReplicateTrial(object):
                     np.array(getattr(self, stat).analyte_dict[analyte].pd_series.index)
                 getattr(self, stat).analyte_dict[analyte]._data_vector = \
                     np.array(getattr(self, stat).analyte_dict[analyte].pd_series)
-
-                print(getattr(self, stat).analyte_dict[analyte]._time_vector)
-                print(getattr(self, stat).analyte_dict[analyte]._data_vector)
 
 
                 # except Exception as e:

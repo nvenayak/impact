@@ -53,9 +53,9 @@ class Experiment(object):
                     titer_list.append(singleTrial.analyte_dict[titer])
 
         for replicateExperiment in experiment.replicate_experiment_dict:
-            for singleTrial in experiment.replicate_experiment_dict[replicateExperiment].single_trial_list:
-                for titer in singleTrial.analyte_dict:
-                    titer_list.append(singleTrial.analyte_dict[titer])
+            for replicate_id in experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict:
+                for titer in experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict[replicate_id].analyte_dict:
+                    titer_list.append(experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict[replicate_id].analyte_dict[titer])
 
         combined_experiment = Experiment()
         combined_experiment.info = self.info
@@ -265,6 +265,10 @@ class Experiment(object):
         c.close()
         return strainDescriptions
 
+    def serialize(self):
+        pass
+        # for replicate replicate_experiment_dict
+
     def summary(self, level=None):
         for replicate_key in self.replicate_experiment_dict:
             self.replicate_experiment_dict[replicate_key].summary()
@@ -284,8 +288,8 @@ class Experiment(object):
         return temp
 
     def get_titers(self):
-        titersToPlot = [[[titer for titer in singleExperiment.analyte_dict] for singleExperiment in
-                         self.replicate_experiment_dict[key].single_trial_list] for key in
+        titersToPlot = [[[titer for titer in self.replicate_experiment_dict[key].single_trial_dict[replicate_id].analyte_dict] for replicate_id in
+                         self.replicate_experiment_dict[key].single_trial_dict] for key in
                         self.replicate_experiment_dict]
 
         # Flatten list and find the uniques
@@ -664,7 +668,7 @@ class Experiment(object):
         ----------
         replicateTrial : :class:`~ReplicateTrial`
         """
-        self.replicate_experiment_dict[replicateTrial.single_trial_list[0].get_unique_replicate_id()] = replicateTrial
+        self.replicate_experiment_dict[replicateTrial.single_trial_dict[list(replicateTrial.single_trial_dict.keys())[0]].get_unique_replicate_id()] = replicateTrial
 
     def pickle(self, fileName):
         """

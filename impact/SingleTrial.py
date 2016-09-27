@@ -43,9 +43,10 @@ class SingleTrial(object):
     def serialize(self):
         serialized_dict = {}
 
-        serialized_dict['strain_id'] = self.trial_identifier.strain_id
-        serialized_dict['id_1'] = self.trial_identifier.id_1
-        serialized_dict['id_2'] = self.trial_identifier.id_2
+        if self.trial_identifier:
+            serialized_dict['strain_id'] = self.trial_identifier.strain_id
+            serialized_dict['id_1'] = self.trial_identifier.id_1
+            serialized_dict['id_2'] = self.trial_identifier.id_2
 
         for analyte_name in self.analyte_dict:
             serialized_dict[analyte_name] = self.analyte_dict[analyte_name].serialize()
@@ -383,11 +384,6 @@ class SingleTrial(object):
 
         # Check if this titer already exists
         if titerObject.trial_identifier.analyte_name in self.analyte_dict:
-            # print(self.biomass_name)
-            # print(self.substrate_name)
-            # print(self.product_names)
-            print('analyte_dict', self.analyte_dict)
-            print('analyte to add: ',titerObject.trial_identifier.analyte_name)
             raise Exception('A duplicate titer was added to the singleTiterObject,\n'
                             'Make sure replicates are defined properly,\n'
                             'Duplicate TrialIdentifier: ',
@@ -419,14 +415,7 @@ class SingleTrial(object):
             if self.substrate_name is not None:
                 self.calculate_yield()
 
-        # if 'substrate' in [self.titer_dict[key].trial_identifier.titerType for key in self.titer_dict] and \
-        #                 'product' in [self.titer_dict[key].trial_identifier.titerType for key in
-        #                               self.titer_dict]:
-        #     self.calcYield()
-
-
-
-        self.check_time_vectors_match()
+        # self.check_time_vectors_match()
 
         # check if trial identifiers match
         if self.trial_identifier is None:

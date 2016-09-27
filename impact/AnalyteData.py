@@ -92,7 +92,7 @@ class TimeCourse(AnalyteData):
         serialized_dict['gradient'] = list(self.gradient)
 
         try:
-            serialized_dict['specific_productivity'] = self.specific_productivity
+            serialized_dict['specific_productivity'] = list(self.specific_productivity)
         except Exception as e:
             print(e)
 
@@ -197,11 +197,11 @@ class TimeCourse(AnalyteData):
         # which need to have a negative diff to consider it death phase
 
         death_phase_start = len(data_vector)
+
         # Check if there is a reasonable difference between the min and max of the curve
         if (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector) > 2:
             if verbose: print('Growth range: ', (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector))
 
-        # try:
             if use_filtered_data_flag:
                 filteredData = savgol_filter(data_vector, 51, 3)
             else:
@@ -223,9 +223,6 @@ class TimeCourse(AnalyteData):
                     # Reset counter if death_phase increases again
                     count = 1
                     flag = 0
-            # except Exception as e:
-            #     print(e)
-            #     print(data_vector)
 
         if death_phase_start == 0:
             death_phase_start = len(data_vector)
