@@ -1,6 +1,6 @@
 @ECHO OFF
 
-sphinx-apidoc -o . -e ../FermAT
+sphinx-apidoc -o . -e ../impact
 
 REM Command file for Sphinx documentation
 

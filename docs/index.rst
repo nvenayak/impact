@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-FermAT Documentation
+impact Documentation
 =============================================================================
 
 Contents:
@@ -16,7 +16,7 @@ Contents:
    1_features_0
    2_features_1
    3_import_experiment_data
-   FermAT
+   impact
 
 
 Indices and tables

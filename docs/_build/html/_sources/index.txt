@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-FermAT Documentation
+impact Documentation
 =============================================================================
 
 Contents:
@@ -12,11 +12,11 @@ Contents:
    :maxdepth: 2
 
    quickstart
-   getting_started
-   features_0
-   features_1
-   import_experiment_data
-   FermAT
+   0_getting_started
+   1_features_0
+   2_features_1
+   3_import_experiment_data
+   impact
 
 
 Indices and tables

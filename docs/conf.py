@@ -51,7 +51,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'FermAT'
+project = 'impact'
 copyright = '2016, Naveen Venayak'
 author = 'Naveen Venayak'
 
@@ -123,10 +123,10 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # theme further.
 html_theme_options = {
     # Navigation bar title. (Default: ``project`` value)
-    'navbar_title': "FermAT",
+    'navbar_title': "impact",
 
     # Tab name for entire site. (Default: "Site")
-    'navbar_site_name': "FermAT",
+    'navbar_site_name': "impact",
 
     # A list of tuples containing pages or urls to link to.
     # Valid tuples should be in the following forms:
@@ -268,7 +268,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'FermAT'
+htmlhelp_basename = 'impact'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -290,7 +290,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'FermAT.tex', 'FermAT: Fermentation Analysis Toolbox',
+  (master_doc, 'impact.tex', 'impact: Fermentation Analysis Toolbox',
    'Naveen Venayak', 'manual'),
 ]
 

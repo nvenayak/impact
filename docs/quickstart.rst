@@ -27,7 +27,7 @@ Docker
 Docker is a framework to seamlessly allow for reproducible package deployment. 
 A Dockerfile is included in the root directory and can be used to quickly generate an environment for the development server.
 ::
-    git clone http://github.com/nvenayak/FermAT
-    cd FermAT
-    docker build --tag=fermat .
-    docker run -p 8000:8000 fermat
+    git clone http://github.com/nvenayak/impact
+    cd impact
+    docker build --tag=impact .
+    docker run -p 8000:8000 impact
