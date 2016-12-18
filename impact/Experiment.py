@@ -63,6 +63,10 @@ class Experiment(object):
 
         return combined_experiment
 
+    def calculate(self):
+        for replicate_key in self.replicate_experiment_dict:
+            self.replicate_experiment_dict[replicate_key].calculate()
+
     def db_commit(self, db_name, overwrite_experiment_id = None):
         """
         Commit the experiment to the database
@@ -162,7 +166,7 @@ class Experiment(object):
             self.replicate_experiment_dict[row[0] + row[1] + row[2]].db_load(c=c, replicateID=row[4])
 
         c.close()
-
+        self.calculate()
 
     def db_delete(self, db_name, experiment_id):
         """
@@ -189,38 +193,21 @@ class Experiment(object):
         data = []
         for replicate_key in self.replicate_experiment_dict:
             data.append([replicate_key])
-            single_trial = self.replicate_experiment_dict[replicate_key].single_trial_list[0]
+            single_trial = self.replicate_experiment_dict[replicate_key].single_trial_dict[list(self.replicate_experiment_dict[replicate_key].single_trial_dict.keys())[0]]
             for titer_key in [single_trial.biomass_name] + \
                     [single_trial.substrate_name] + \
                     single_trial.product_names:
                 data.append([titer_key])
 
-                # With pd
-                # print(self.replicate_experiment_dict[replicate_key].analyte_df.head())
                 data.append(['Time (hours)'] + list(self.replicate_experiment_dict[replicate_key].replicate_df[titer_key].index))
                 for col in self.replicate_experiment_dict[replicate_key].replicate_df[titer_key]:
                     data.append(['rep #'
                                  + str(col)]
                                  + list(self.replicate_experiment_dict[replicate_key].replicate_df[titer_key][col]))
-                # print(self.replicate_experiment_dict[replicate_key].avg.analyte_df)
                 data.append(['Average'] + list(
                     self.replicate_experiment_dict[replicate_key].avg.analyte_dict[titer_key].pd_series))
                 data.append(['Std'] + list(
                     self.replicate_experiment_dict[replicate_key].std.analyte_dict[titer_key].pd_series))
-
-                # # Without pd
-                # for i, single_trial in enumerate(self.replicate_experiment_dict[replicate_key].single_trial_list):
-                #     # data.append([single_trial.trial_identifier.replicate_id])
-                #     if titer_key is not None:
-                #         if i == 0:
-                #             data.append(['Time (hours)'] + list(single_trial.analyte_dict[titer_key].time_vector))
-                #         data.append(['rep #' + str(single_trial.trial_identifier.replicate_id)] + list(
-                #             single_trial.analyte_dict[titer_key].data_vector))
-                # if titer_key is not None:
-                #     data.append(['Average'] + list(
-                #         self.replicate_experiment_dict[replicate_key].avg.analyte_dict[titer_key].data_vector))
-                #     data.append(['Std'] + list(
-                #         self.replicate_experiment_dict[replicate_key].std.analyte_dict[titer_key].data_vector))
 
                 # Add spacing between the titers
                 data.append([])
@@ -541,7 +528,7 @@ class Experiment(object):
 
             skipped_lines = 0
             for i in range(first_data_row, len(data['titers'])):
-                # print(data['titers'][i])
+                print(data['titers'][i])
                 if type(data['titers'][i][0]) is str:
                     temp_run_identifier_object = TrialIdentifier()
                     temp_run_identifier_object.parse_trial_identifier_from_csv(data['titers'][i][0])
@@ -572,6 +559,7 @@ class Experiment(object):
             print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timepoint_list), tf - t0))
             print("Number of lines skipped: ", skipped_lines)
             self.parseTimePointCollection(self.timepoint_list)
+            self.calculate()
 
         # This is the new way all parsers should be defined and called
         parser_case_dict = {'spectromax_OD':parsers.spectromax_OD}

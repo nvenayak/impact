@@ -81,8 +81,7 @@ class TrialIdentifier(object):
                 self.time = float(tempParsedIdentifier[4])
 
     def get_unique_for_SingleTrial(self):
-        return self.strain_id + self.id_1 + self.id_1 + str(
-            self.replicate_id) + self.analyte_name + self.analyte_type
+        return self.strain_id + self.id_1 + self.id_1 + str(self.replicate_id) + self.analyte_name + self.analyte_type
 
     def get_unique_id_for_ReplicateTrial(self):
         """

@@ -106,6 +106,10 @@ class SingleTrial(object):
         if self._substrate:
             self.calculate_yield()
 
+    def calculate(self):
+        for analyte_key in self.analyte_dict:
+            self.analyte_dict[analyte_key].calculate()
+
     def normalize_data(self, normalize_to):
         for product in self.product_names:
             self.normalized_data[product] = self.analyte_dict[product] / self.analyte_dict[normalize_to]
@@ -382,6 +386,8 @@ class SingleTrial(object):
 
         """
 
+        from .settings import live_calculations
+
         # Check if this titer already exists
         if titerObject.trial_identifier.analyte_name in self.analyte_dict:
             raise Exception('A duplicate titer was added to the singleTiterObject,\n'
@@ -438,11 +444,12 @@ class SingleTrial(object):
         self.trial_identifier.time = None
 
         # Pandas support
-        self.analyte_df[titerObject.trial_identifier.analyte_name] = titerObject.pd_series
+        temp_analyte_df = pd.DataFrame()
+        temp_analyte_df[titerObject.trial_identifier.analyte_name] = titerObject.pd_series
 
         # Merging the dataframes this way will allow different time indices for different analytes
-        # self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
-        # print(self.analyte_df.head())
+        self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
+        self.t = self.analyte_df.index
 
     def check_time_vectors_match(self):
         """

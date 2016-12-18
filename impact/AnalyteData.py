@@ -1,13 +1,12 @@
 from .TrialIdentifier import TrialIdentifier
 from .curve_fitting import *
 from .Options import *
-from .settings import verbose
+from .settings import verbose, live_calculations
 
 import pandas as pd
 import dill as pickle
 
 from scipy.signal import savgol_filter
-
 
 class AnalyteData(object):
     def __init__(self):
@@ -45,11 +44,20 @@ class TimeCourse(AnalyteData):
     Child of :class:`~AnalyteData` which contains curve fitting relevant to time course data
     """
 
-    def __init__(self, options = Options(), removeDeathPhaseFlag=False, useFilteredData=False):
+    def __init__(self, **kwargs):
+        # Get the default parameters
+        from .settings import remove_death_phase_flag, use_filtered_data, \
+            minimum_points_for_curve_fit, savgolFilterWindowSize
+
+        # Overwrite user-set parameters
+        for arg in kwargs:
+            setattr(self,arg,kwargs[arg])
+
+        # Parent constructor
         AnalyteData.__init__(self)
 
         # Used to store the single_trial to which each analyte instance belongs
-        self.parent = None
+        self.parent = None  # type SingleTrial
 
         # Keep track of whether or not calculations need to be updated
         self.calculations_uptodate = False
@@ -69,10 +77,10 @@ class TimeCourse(AnalyteData):
         self._specific_productivity = None
 
         # Options
-        self.removeDeathPhaseFlag = options.remove_death_phase_flag
-        self.useFilteredDataFlag = options.use_filtered_data
-        self.minimum_points_for_curve_fit = options.minimum_points_for_curve_fit
-        self.savgolFilterWindowSize = 21  # Must be odd
+        self.removeDeathPhaseFlag = remove_death_phase_flag
+        self.useFilteredDataFlag = use_filtered_data
+        self.minimum_points_for_curve_fit = minimum_points_for_curve_fit
+        self.savgolFilterWindowSize = savgolFilterWindowSize
 
         self.deathPhaseStart = None
         self.blankSubtractionFlag = True
@@ -140,10 +148,11 @@ class TimeCourse(AnalyteData):
         self._trial_identifier = trial_identifier
         if trial_identifier.analyte_type == 'product':
             self.fit_type = 'productionEquation_generalized_logistic'
+        if trial_identifier.analyte_type == 'biomass':
+            self.fit_type = 'janoschek'#'gompertz'#'richard_5','growthEquation_generalized_logistic'
 
     @property
     def time_vector(self):
-
         return self._time_vector
 
     @time_vector.setter
@@ -151,7 +160,6 @@ class TimeCourse(AnalyteData):
         if self.pd_series is None:
             self.pd_series = pd.Series(index=time_vector)
         else:
-            # print(self.pd_series)
             self.pd_series.index = time_vector
 
         self._time_vector = np.array(self.pd_series.index)
@@ -167,6 +175,8 @@ class TimeCourse(AnalyteData):
 
     @data_vector.setter
     def data_vector(self, dataVec):
+        from .settings import live_calculations
+
         if self.pd_series is None:
             self.pd_series = pd.Series(dataVec)
         else:
@@ -174,17 +184,23 @@ class TimeCourse(AnalyteData):
 
         # To maintain backwards compatability
         self._data_vector = np.array(self.pd_series)
-        # self._data_vector = np.array(dataVec)
-        if self._time_vector is not None:
-            self.gradient = np.gradient(self._data_vector) / np.gradient(self.time_vector)
+
         self.deathPhaseStart = len(dataVec)
 
-        if self.removeDeathPhaseFlag:
-            self.find_death_phase(dataVec)
+        if live_calculations:
+            if self._time_vector is not None:
+                self.gradient = np.gradient(self._data_vector) / np.gradient(self.time_vector)
 
-        if len(self.data_vector) > self.minimum_points_for_curve_fit:
-            self.curve_fit_data()
 
+            if self.removeDeathPhaseFlag:
+                self.find_death_phase(dataVec)
+
+            if len(self.data_vector) > self.minimum_points_for_curve_fit:
+                self.curve_fit_data()
+
+
+    def calculate(self):
+        self.curve_fit_data()
 
     def find_death_phase(self, data_vector):
         self.deathPhaseStart = self.find_death_phase_static(data_vector,
@@ -270,26 +286,26 @@ class TimeCourse(AnalyteData):
         return curve_fit_dict[self.fit_type].growthEquation(np.array(t), **self.fit_params)
 
     def add_timepoint(self, timePoint):
+        from .settings import live_calculations
+
         self.timePointList.append(timePoint)
+
         if len(self.timePointList) == 1:
             self.trial_identifier = timePoint.trial_identifier
+            self._time_vector = np.array([timePoint.t])
+            self._data_vector = np.array([timePoint.titer])
         else:
-            for i in range(len(self.timePointList) - 1):
-                if self.timePointList[i].trial_identifier.get_unique_for_SingleTrial() != self.timePointList[
-                            i + 1].trial_identifier.get_unique_for_SingleTrial():
-                    raise Exception("trial_identifiers don't match within the timeCourse object")
+            if self.timePointList[-1].trial_identifier.get_unique_for_SingleTrial() \
+                    != self.timePointList[-2].trial_identifier.get_unique_for_SingleTrial():
+                raise Exception("trial_identifiers don't match within the timeCourse object")
 
-        self.timePointList.sort(key=lambda timePoint: timePoint.t)
-        self._time_vector = np.array([timePoint.t for timePoint in self.timePointList])
-        self._data_vector = np.array([timePoint.titer for timePoint in self.timePointList])
-
-        if len(self.timePointList) > 6:
-            self.gradient = np.gradient(self._data_vector) / np.gradient(self.time_vector)
-            # self.data_vector = np.array([timePoint.titer for timePoint in self.timepoint_list])
-            # pass
-            # print('Skipping exponential fit_params calculation')
-
-            # self.curve_fit_data()
+            if self.timePointList[-1].t < self.timePointList[-2].t:
+                self.timePointList.sort(key=lambda timePoint: timePoint.t)
+                self._time_vector = np.array([timePoint.t for timePoint in self.timePointList])
+                self._data_vector = np.array([timePoint.titer for timePoint in self.timePointList])
+            else:
+                self._time_vector = np.append(self._time_vector, timePoint.t)
+                self._data_vector = np.append(self._data_vector, timePoint.titer)
 
         if self.pd_series is None:
             self.pd_series = pd.Series()
@@ -297,11 +313,25 @@ class TimeCourse(AnalyteData):
         self.pd_series = self.pd_series.append(pd_timepoint)
         timePoint.parent = self
 
+        if len(self.timePointList) > 6 and live_calculations:
+            self.gradient = np.gradient(self._data_vector) / np.gradient(self.time_vector)
+
+            # self.data_vector = np.array([timePoint.titer for timePoint in self.timepoint_list])
+            # pass
+            # print('Skipping exponential fit_params calculation')
+            # print(self._time_vector)
+            # print(self._data_vector)
+            #
+            # print(self.pd_series)
+            # print(self.pd_series.index)
+            # self.curve_fit_data()
     def curve_fit_data(self):
+        from .settings import verbose
+
         if self.trial_identifier.analyte_type == 'titer' or self.trial_identifier.analyte_type in ['substrate', 'product']:
             pass
-            # print(
-            #     'Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py')
+            print(
+                'Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py')
             # gmod.set_param_hint('A', value=np.min(self.data_vector))
             # gmod.set_param_hint('B',value=2)
             # gmod.set_param_hint('C', value=1, vary=False)
@@ -309,6 +339,20 @@ class TimeCourse(AnalyteData):
             # gmod.set_param_hint('K', value = max(self.data_vector))#, max=5)
             # gmod.set_param_hint('nu', value=1, vary=False)
         elif self.trial_identifier.analyte_type in ['biomass']:
+            # from scipy.interpolate import InterpolatedUnivariateSpline
+            # spl = InterpolatedUnivariateSpline(self.time_vector, self.data_vector)
+            # spl.set_smoothing_factor(0.2)
+            # spl_grad = np.gradient(spl(self.time_vector)) / np.gradient(self.time_vector)
+            # self.fit_params['growth_rate'] = max(spl_grad)
+            #
+            # import matplotlib.pyplot as plt
+            # plt.figure()
+            # plt.plot(self.time_vector,self.data_vector,'o')
+            # plt.plot(self.time_vector,spl(self.time_vector),lw=2)
+            # plt.show()
+            # return max(spl_grad)
+
+
             # print('DPS: ',self.deathPhaseStart)
             # print(self.data_vector)
             # print(self.time_vector[0:self.deathPhaseStart])
@@ -317,12 +361,18 @@ class TimeCourse(AnalyteData):
             # print(self.fit_type)
             if verbose: print('Death phase start: ',self.deathPhaseStart)
             result = curve_fit_dict[self.fit_type].calcFit(self.time_vector[0:self.deathPhaseStart],
-                                                                self.data_vector[0:self.deathPhaseStart])  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
+                                                                    self.data_vector[0:self.deathPhaseStart])  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
             if verbose: print('Finished fit')
             # self.fit_params = [0, 0, 0, 0, 0, 0]
             for key in result.best_values:
                 self.fit_params[key] = result.best_values[key]
+            # print(result.fit_report())
 
+            if verbose:
+                import matplotlib.pyplot as plt
+                plt.figure()
+                plt.plot(self.time_vector[0:self.deathPhaseStart], self.data_vector[0:self.deathPhaseStart],         'bo')
+                plt.plot(self.time_vector[0:self.deathPhaseStart], result.best_fit, 'r-')
         else:
             print('Unidentified titer type:' + self.trial_identifier.analyte_type)
             print('Ensure that the trial identifier is described before adding data. This will allow curve fitting'
@@ -347,7 +397,7 @@ class TimeCourseShell(TimeCourse):
         self._data_vector = dataVec
 
 
-class EndPoint(AnalyteData):
+class EndPoint(TimeCourse):
     """
     This is a child of :class:`~AnalyteData` which does not calcualte any time-based data
     """

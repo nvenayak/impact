@@ -1,6 +1,7 @@
 from .TimePoint import TimePoint
 from .TrialIdentifier import TrialIdentifier
 from collections import OrderedDict
+import time as sys_time
 
 def spectromax_OD(experiment, data):
     # This should be an ordered dict if imported from py_xlsx
@@ -40,7 +41,7 @@ def spectromax_OD(experiment, data):
                         temp_trial_identifier.parse_trial_identifier_from_csv(identifiers[i][j])
                         temp_trial_identifier.analyte_type = 'biomass'
                         temp_trial_identifier.analyte_name = 'OD600'
-                        temp_timepoint = TimePoint(temp_trial_identifier, 'OD600', time, data)
+                        temp_timepoint = TimePoint(temp_trial_identifier, 'OD600', time, float(data))
 
                         timepoint_list.append(temp_timepoint)
                     else:
@@ -49,3 +50,8 @@ def spectromax_OD(experiment, data):
             break
 
     experiment.parseTimePointCollection(timepoint_list)
+
+    t0 = sys_time.time()
+    print('Analyzing data..')
+    experiment.calculate()
+    print("Ran analysis in %0.1fs\n" % ((sys_time.time() - t0)))

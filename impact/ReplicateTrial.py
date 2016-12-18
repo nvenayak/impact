@@ -30,11 +30,15 @@ class ReplicateTrial(object):
         self.replicate_ids = []
         self.replicate_df = dict()
 
-        self.outliner_cleaning_flag = default_outlier_cleaning_flag
+        self.outlier_cleaning_flag = default_outlier_cleaning_flag
         # self.checkReplicateUniqueIDMatch()
 
         self.stages = []
 
+    def calculate(self):
+        for single_trial_key in self.single_trial_dict:
+            self.single_trial_dict[single_trial_key].calculate()
+        self.calculate_statistics()
 
     def serialize(self):
         serialized_dict = {}
@@ -207,6 +211,7 @@ class ReplicateTrial(object):
         singleTrial : :class:`~SingleTrial`
             Add a SingleTrial
         """
+        from .settings import live_calculations
 
         if singleTrial.trial_identifier.replicate_id is None:
             singleTrial.trial_identifier.replicate_id = 1
@@ -235,7 +240,7 @@ class ReplicateTrial(object):
                 singleTrial.trial_identifier.replicate_id)  # TODO remove this redundant functionality
         else:
             raise Exception('Duplicate replicate id: '
-                            + singleTrial.trial_identifier.replicate_id
+                            + str(singleTrial.trial_identifier.replicate_id)
                             + '.\nCurrent ids: '
                             + str(self.replicate_ids))
         try:
@@ -244,7 +249,8 @@ class ReplicateTrial(object):
             print(e)
             print(self.replicate_ids)
 
-        self.calculate_statistics()
+        if live_calculations:
+            self.calculate_statistics()
 
     def calculate_statistics(self):
         """
@@ -298,24 +304,20 @@ class ReplicateTrial(object):
                 getattr(self, stat).analyte_dict[analyte]._data_vector = \
                     np.array(getattr(self, stat).analyte_dict[analyte].pd_series)
 
-
-                # except Exception as e:
-                #     print(e)
-                #     print([singleExperimentObject.analyte_dict[analyte].data_vector
-                #          for singleExperimentObject in self.single_trial_list if    # TODO change to dict
-                #          singleExperimentObject.trial_identifier.replicate_id not in self.bad_replicates])
-
                 # If a fit_params exists, calculate the mean
                 if None not in [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
                                 for replicate_id in self.single_trial_dict]:
                     temp = dict()
                     for param in self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].fit_params:
                         temp[param] = calc(
-                            [self.single_trial_dict[replicate_id].analyte_dict[analyte].rate[param]
+                            [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params[param]
                              for replicate_id in self.single_trial_dict
                              if self.single_trial_dict[replicate_id].trial_identifier.replicate_id not in self.bad_replicates])
 
-                    getattr(self, stat).analyte_dict[analyte].rate = temp
+                    getattr(self, stat).analyte_dict[analyte].fit_params = temp
+                else:
+                    print([self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
+                                for replicate_id in self.single_trial_dict])
 
                 getattr(self, stat).analyte_dict[analyte].trial_identifier = \
                     self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].trial_identifier
@@ -359,14 +361,17 @@ class ReplicateTrial(object):
         return unique_analytes
 
     def prune_bad_replicates(self, analyte):  # Remove outliers
+        from .settings import verbose, max_fraction_replicates_to_remove, outlier_cleaning_flag
+
         # http://stackoverflow.com/questions/23199796/detect-and-exclude-outliers-in-pandas-dataframe
         df = self.replicate_df[analyte]
         col_names = list(df.columns.values)
         backup = self.replicate_df[analyte]
-        if self.outliner_cleaning_flag and len(col_names) > 2:
-            outliner_removal_method = 'iterative_removal'
+
+        if outlier_cleaning_flag and len(col_names) > 2:
+            outlier_removal_method = 'iterative_removal'
             # Method one for outlier removal
-            if outliner_removal_method == 'z_score':
+            if outlier_removal_method == 'z_score':
                 # print(col_names)
                 fraction_outlier_pts = np.sum(np.abs(stats.zscore(df)) < 1, axis=0) / len(df)
                 print(fraction_outlier_pts)
@@ -387,13 +392,12 @@ class ReplicateTrial(object):
             # method 2 for outlier removal (preferred)
             # this method removal each replicate one by one, and if the removal of a replicate reduces the std
             # by a certain threshold, the replicate is flagged as removed
-            if outliner_removal_method == 'iterative_removal':
+            if outlier_removal_method == 'iterative_removal':
                 bad_replicate_cols = []
                 good_replicate_cols = []
 
                 # Determine the max number of replicates to remove
                 for _ in range(int(len(df) * max_fraction_replicates_to_remove)):
-
                     # A value between 0 and 1, > 1 means removing the replicate makes the yield worse
                     std_deviation_cutoff = 0.1
                     # df = pd.DataFrame({key: np.random.randn(5) for key in ['a', 'b', 'c']})
@@ -422,6 +426,7 @@ class ReplicateTrial(object):
                         plt.plot(backup[good_replicate_cols], 'r')
                     if bad_replicate_cols != []:
                         plt.plot(backup[bad_replicate_cols], 'b')
+                    plt.title(self.trial_identifier.get_unique_id_for_ReplicateTrial())
                 except Exception as e:
                     print(e)
             del backup
