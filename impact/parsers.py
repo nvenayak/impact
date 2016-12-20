@@ -4,6 +4,8 @@ from collections import OrderedDict
 import time as sys_time
 
 def spectromax_OD(experiment, data):
+    from .settings import live_calculations
+    
     # This should be an ordered dict if imported from py_xlsx
     assert isinstance(data, OrderedDict)
 
@@ -51,7 +53,4 @@ def spectromax_OD(experiment, data):
 
     experiment.parseTimePointCollection(timepoint_list)
 
-    t0 = sys_time.time()
-    print('Analyzing data..')
-    experiment.calculate()
-    print("Ran analysis in %0.1fs\n" % ((sys_time.time() - t0)))
+    if live_calculations:   experiment.calculate()

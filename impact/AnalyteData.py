@@ -175,7 +175,7 @@ class TimeCourse(AnalyteData):
 
     @data_vector.setter
     def data_vector(self, dataVec):
-        from .settings import live_calculations
+        from .settings import live_calculations, perform_curve_fit
 
         if self.pd_series is None:
             self.pd_series = pd.Series(dataVec)
@@ -191,11 +191,10 @@ class TimeCourse(AnalyteData):
             if self._time_vector is not None:
                 self.gradient = np.gradient(self._data_vector) / np.gradient(self.time_vector)
 
-
             if self.removeDeathPhaseFlag:
                 self.find_death_phase(dataVec)
 
-            if len(self.data_vector) > self.minimum_points_for_curve_fit:
+            if len(self.data_vector) > self.minimum_points_for_curve_fit and perform_curve_fit:
                 self.curve_fit_data()
 
 
@@ -394,8 +393,13 @@ class TimeCourseShell(TimeCourse):
 
     @TimeCourse.data_vector.setter
     def data_vector(self, dataVec):
-        self._data_vector = dataVec
+        if self.pd_series is None:
+            self.pd_series = pd.Series(dataVec)
+        else:
+            self.pd_series = pd.Series(dataVec,index=self.pd_series.index)
 
+        # To maintain backwards compatability
+        self._data_vector = np.array(self.pd_series)
 
 class EndPoint(TimeCourse):
     """

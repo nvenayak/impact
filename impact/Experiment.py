@@ -26,6 +26,7 @@ class Experiment(object):
 
     def __init__(self, info=None):
         # Initialize variables
+        self.blank_key_list = []
         self.timepoint_list = []  # dict()
         self.titer_dict = dict()
         self.single_experiment_dict = dict()
@@ -37,6 +38,8 @@ class Experiment(object):
         else:
             self.info = dict()
 
+        self.stage_indices = []
+        self.blank = None
     def __add__(self, experiment):
         """
         Add the experiments together by breaking them down to the analyte data and rebuilding to experiments.
@@ -64,8 +67,22 @@ class Experiment(object):
         return combined_experiment
 
     def calculate(self):
-        for replicate_key in self.replicate_experiment_dict:
+        t0 = time.time()
+        print('Analyzing data..')
+
+        #Precalculate the blank stats, otherwise they won't be available for subtraction
+        if self.blank_key_list:
+            for replicate_key in self.blank_key_list:
+                self.replicate_experiment_dict[replicate_key].calculate()
+                if self.stage_indices:
+                    self.replicate_experiment_dict[replicate_key].calculate_stages(self.stage_indices)
+
+        for replicate_key in [replicate_key for replicate_key in self.replicate_experiment_dict if replicate_key not in self.blank_key_list]:
             self.replicate_experiment_dict[replicate_key].calculate()
+            if self.stage_indices:
+                self.replicate_experiment_dict[replicate_key].calculate_stages(self.stage_indices)
+        print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
+
 
     def db_commit(self, db_name, overwrite_experiment_id = None):
         """
@@ -1196,3 +1213,50 @@ class Experiment(object):
             plt.plot(singleExperiment.OD.time_vector, singleExperiment.OD.data_vector)
         plt.ylabel(singleExperiment.trial_identifier.get_unique_id_for_ReplicateTrial())
         # plt.tight_layout()
+
+    def set_blanks(self,mode='auto',common_id='id_2'):
+
+        self.blank_key_list = [replicate_key
+                      for replicate_key in self.replicate_experiment_dict
+                      if self.replicate_experiment_dict[replicate_key].trial_identifier.strain_id
+                      in ['Blank','blank']]
+
+        blank_ids = {getattr(self.replicate_experiment_dict[replicate_key].trial_identifier,common_id):replicate_key
+                     for replicate_key in self.blank_key_list}
+
+        for replicate_key in [replicate_key for replicate_key in self.replicate_experiment_dict if replicate_key not in self.blank_key_list]:
+            self.replicate_experiment_dict[replicate_key].set_blank(
+                self.replicate_experiment_dict[blank_ids[getattr(self.replicate_experiment_dict[replicate_key].trial_identifier, common_id)]]
+            )
+
+        # for replicate_key in self.replicate_experiment_dict:
+        #     if self.replicate_experiment_dict[replicate_key].trial_identifier.strain_id in ['Blank','blank']:
+        #         blank_list.append(replicate_key)
+        if mode == 'auto':
+            pass
+        else:
+            raise Exception('Unimplemented')
+
+    def set_stages(self, stage_indices=None, stage_times=None):
+        from .settings import live_calculations
+        """
+
+        Parameters
+        ----------
+        stage_times
+        stage_indices
+
+        """
+        if all([stage_indices,stage_times]):
+            raise Exception('Cannot define both stage_indices and stage_times')
+
+        if stage_times:
+            # Find the closest time that matches
+            raise Exception('stage times not implemented')
+
+        self.stage_indices = stage_indices
+
+        if live_calculations:
+            for replicate_key in self.replicate_experiment_dict:
+                replicate = self.replicate_experiment_dict[replicate_key]
+                replicate.calculate_stages(stage_indices)

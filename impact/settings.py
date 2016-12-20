@@ -25,3 +25,4 @@ remove_death_phase_flag = False
 use_filtered_data = False
 minimum_points_for_curve_fit = 5
 savgolFilterWindowSize = 21  # Must be odd
+perform_curve_fit = False

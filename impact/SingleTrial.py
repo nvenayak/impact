@@ -548,7 +548,6 @@ class SingleTrial(object):
                     self.substrateConsumed
                 )
 
-
 class TimeCourseStage(TimeCourse):
     def __init__(self):
         TimeCourse().__init__()

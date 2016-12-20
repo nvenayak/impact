@@ -35,9 +35,13 @@ class ReplicateTrial(object):
 
         self.stages = []
 
+        self.blank = None
+
     def calculate(self):
         for single_trial_key in self.single_trial_dict:
             self.single_trial_dict[single_trial_key].calculate()
+
+        if self.blank:  self.substract_blank()
         self.calculate_statistics()
 
     def serialize(self):
@@ -59,12 +63,16 @@ class ReplicateTrial(object):
         self.stage_indices = stage_indices
 
         for stage_bounds in stage_indices:
-            print(stage_bounds)
-            self.stages.append(self.create_stage(stage_bounds))
+            temp_stage = self.create_stage(stage_bounds)
+            temp_stage.calculate()
+            self.stages.append(temp_stage)
 
     def create_stage(self, stage_bounds):
         stage = ReplicateTrial()
         for replicate_id in self.single_trial_dict:
+            # if self.blank:
+            #     blank_stage = self.blank.create_stage(stage_bounds)
+            #     stage.set_blank(blank_stage)
             single_trial = self.single_trial_dict[replicate_id]
             stage.add_replicate(single_trial.create_stage(stage_bounds))
 
@@ -430,3 +438,31 @@ class ReplicateTrial(object):
                 except Exception as e:
                     print(e)
             del backup
+
+    def set_blank(self, replicate_trial):
+        self.blank = replicate_trial
+
+        # for single_trial_key in self.single_trial_dict:
+        #     self.single_trial_dict[single_trial_key].set_blank()
+
+    def substract_blank(self):
+        # Check which analytes have blanks defined
+        analytes_with_blanks = self.blank.get_unique_analytes()
+
+        # Remove from each analyte and then redo calculations
+        self.blank_subtracted_analytes = []
+        # for blank_analyte in analytes_with_blanks:
+        for single_trial_key in self.single_trial_dict:
+            single_trial = self.single_trial_dict[single_trial_key]
+            for blank_analyte in analytes_with_blanks:
+                print(single_trial.analyte_dict[blank_analyte].data_vector)
+                single_trial.analyte_dict[blank_analyte].data_vector = \
+                    single_trial.analyte_dict[blank_analyte].data_vector \
+                    - self.blank.avg.analyte_dict[blank_analyte].data_vector
+                print(single_trial.analyte_dict[blank_analyte].data_vector)
+        # self.avg.analyte_dict[blank_analyte].data_vector = self.avg.analyte_dict[blank_analyte].data_vector \
+        #     - self.blank.avg.analyte_dict[blank_analyte].data_vector
+        self.blank_subtracted_analytes.append(blank_analyte)
+
+    def get_unique_analytes(self):
+        return list(set([analyte for single_trial_key in self.single_trial_dict for analyte in self.single_trial_dict[single_trial_key].analyte_dict]))

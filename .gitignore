@@ -90,3 +90,5 @@ ENV/
 .idea/
 
 docs/WIPdocs/
+
+*/secrets.py
