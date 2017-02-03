@@ -22,12 +22,10 @@ class CoreTestCase(unittest.TestCase):
         # Init a temp db
         impact.init_db(db_name=self.db_name)
 
-
     def tearDown(self):
         # Delete the temp db
         import os
         os.remove(self.db_name)
-
 
     def test_default_titers_parse(self):
         # Parse the data

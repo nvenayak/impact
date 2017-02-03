@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 
 import sys
 from . import views
+from . import models
 
 # REST API
 from django.contrib.auth.models import User
@@ -33,13 +34,26 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+class ExperimentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Experiment
+        # fields = ('experiment_id','experiment_title')
+
+class ExperimentViewSet(viewsets.ModelViewSet):
+    queryset = models.Experiment.objects.all()
+    serializer_class = ExperimentSerializer
+
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
+router.register(r'experiments', ExperimentViewSet)
 
 urlpatterns = [
+
+    url(r"^account/", include("account.urls")),
+
     # REST api
-    url(r'^/rest_api$', include(router.urls)),
+    url(r'^rest-api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     url(r'^$',views.welcome),
@@ -86,13 +100,10 @@ urlpatterns = [
     url(r'^analyze/replicate_select/(?P<replicate_id>[0-9]+)$', views.analyze_select_replicate),
     url(r'^analyze/delete_experiment/(?P<experiment_id>[0-9]+)$', views.delete_experiment),
 
-
     # export urls
     url(r'^export/$', views.export),
 
-
     url(r'^iPython/$', views.iPython),
-
 
     # other urls
     url(r'^color_scales/$',views.color_scale_examples),

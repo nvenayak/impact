@@ -14,7 +14,8 @@ def analyze_select_replicate(request, replicate_id):
     replicate.db_load(db_name=db_name, replicateID = int(replicate_id))
 
     titers = []
-    for single_trial in replicate.single_trial_list:
+    for replicate_id in replicate.single_trial_dict:
+        single_trial = replicate.single_trial_dict[replicate_id]
         titers = [analyte for analyte in
          [single_trial.biomass_name] + [single_trial.substrate_name] + single_trial.product_names]
     unique_titers = list(set(titers))
@@ -107,7 +108,7 @@ def experimentSelect_analyze(request, experiment_id):
         temp['number_of_analytes'] = len(unique_titers)
         temp['replicate_id'] = replicate.db_replicate_id
 
-        temp['number_of_replicates'] = len(replicate.single_trial_list)
+        temp['number_of_replicates'] = len(replicate.single_trial_dict)
         replicate_info.append(temp)
     data['replicate_info'] = replicate_info
     data['analyze_tab'] = 'replicate'

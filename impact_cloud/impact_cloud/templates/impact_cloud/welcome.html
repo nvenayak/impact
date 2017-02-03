@@ -1,25 +1,49 @@
 {% extends "impact_cloud/base.html" %}
 {% load staticfiles %}
 {% block content %}
+  <style>
+    /*
+   * Start Bootstrap - Landing Page (http://startbootstrap.com/)
+   * Copyright 2013-2016 Start Bootstrap
+   * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+   */
+
+    .content-section-a {
+      padding: 50px 0;
+      background-color: #f8f8f8;
+    }
+
+    .content-section-b {
+      padding: 50px 0;
+      border-top: 1px solid #e7e7e7;
+      border-bottom: 1px solid #e7e7e7;
+    }
+  </style>
   <div class="container">
     <!--<div class="col-md-8"></div>-->
     <div class="col-md-12">
       <div class="jumbotron">
-{#        <img class="image-responsive pull-right" height="10px" align="center" src="{% static 'impact_logo.svg' %}">#}
+        {#        <img class="image-responsive pull-right" height="10px" align="center" src="{% static 'impact_logo.svg' %}">#}
 
-        <h1>Welcome<img class="image-responsive pull-right" height="75px" src="{% static 'impact_logo.png' %}"></h1>
+        <img class="image-responsive" height="50px" src="{% static 'impact_logo.png' %}">
+        <h2>A toolbox for microbial physiology.</h2>
+        {#        <h2>The Fermentation Analysis Toolbox</h2>#}
 
-{#        <h2>The Fermentation Analysis Toolbox</h2>#}
-
-
-        <h3>
-          IMPACT is designed to help scientists rapidly parse, analyze, visualize and store fermentation data to characterize microbial physiology.
-          IMPACT is open-source and available on <a href="http://github.com/nvenayak/impact">GitHub</a> to promote active development and collaboration.
-        </h3>
-
+        {#<img class="image-responsive" height="50px" src="{% static 'impact_logo.png' %}">#}
         <p>
-          First login, or ask for an account by email. Then, you can begin inputting data and following the navbar.
+          Impact helps scientists extract insight from experiments to characterize microbial physiology.
         </p>
+        <p>
+          Expedite parsing raw data, inspecting for outliers and creating visualizations for web or publication,
+          as well as storing, accessing and sharing data. It is best suited for experiments from medium to high-throughput.
+        </p>
+        <p>
+          IMPACT is open-source and available on <a href="http://github.com/nvenayak/impact">GitHub</a> to promote active development and collaboration.
+        </p>
+
+        {#        <p>#}
+        {#          First login, or ask for an account by email. Then, you can begin inputting data and following the navbar.#}
+        {#        </p>#}
         {#        <br><br>#}
 
         {#        <div class="btn-group" role="group" aria-label="...">#}
@@ -40,19 +64,182 @@
       </div>
     </div>
   </div>
+
+  <a  name="services"></a>
+  <div class="content-section-a">
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-5 col-sm-6">
+          <hr class="section-heading-spacer">
+          <div class="clearfix"></div>
+          <h2 class="section-heading">Create experiments</h2>
+          <p class="lead">Experiments can be created to keep track of who performed them, when they were performed, and any additional details.</p>
+        </div>
+        <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+          <img class="img-responsive" src="{% static 'input_data.png' %}" alt="">
+        </div>
+      </div>
+
+    </div>
+    <!-- /.container -->
+
+  </div>
+  <!-- /.content-section-a -->
+
+  <div class="content-section-b">
+
+    <div class="container">
+
+      <div class="row">
+        <div class="col-lg-5 col-lg-offset-1 col-sm-push-6  col-sm-6">
+          <hr class="section-heading-spacer">
+          <div class="clearfix"></div>
+          <h2 class="section-heading">Import data</h2>
+          <p class="lead">Flexible data importing from equipment common for characterizing microbial physiology.</p>
+        </div>
+        <div class="col-lg-5 col-sm-pull-6  col-sm-6">
+          <img class="img-responsive" src="{% static 'table_input.png' %}" alt="">
+        </div>
+      </div>
+
+    </div>
+    <!-- /.container -->
+
+  </div>
+  <!-- /.content-section-b -->
+
+  <div class="content-section-a">
+
+    <div class="container">
+
+      <div class="row">
+        <div class="col-lg-5 col-sm-6">
+          <hr class="section-heading-spacer">
+          <div class="clearfix"></div>
+          <h2 class="section-heading">Inspect experiments.</h2>
+          <p class="lead">Quickly identify outliers and exclude them from analysis</p>
+        </div>
+        <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+          {#            <img class="img-responsive" src="img/phones.png" alt="">#}
+        </div>
+      </div>
+
+    </div>
+    <!-- /.container -->
+
+  </div>
+  <!-- /.content-section-a -->
+
+
+  <div class="content-section-b">
+
+    <div class="container">
+
+      <div class="row">
+        <div class="col-lg-5 col-lg-offset-1 col-sm-push-6  col-sm-6">
+          <hr class="section-heading-spacer">
+          <div class="clearfix"></div>
+          <h2 class="section-heading">Maintain data integrity.</h2>
+          <p class="lead">Ensure the products balance effectively. </p>
+        </div>
+        <div class="col-lg-5 col-sm-pull-6  col-sm-6">
+                      <img class="img-responsive" src="{% static 'mass_balance.png' %}" alt="">
+        </div>
+      </div>
+
+    </div>
+    <!-- /.container -->
+
+  </div>
+  <!-- /.content-section-b -->
+
+  <div class="content-section-a">
+
+    <div class="container">
+
+      <div class="row">
+        <div class="col-lg-5 col-sm-6">
+          <hr class="section-heading-spacer">
+          <div class="clearfix"></div>
+          <h2 class="section-heading">Access your data.</h2>
+          <p class="lead">Use the impact API to access your data on the cloud and query it's features.</p>
+        </div>
+        <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+          {#            <img class="img-responsive" src="img/phones.png" alt="">#}
+        </div>
+      </div>
+
+    </div>
+    <!-- /.container -->
+
+  </div>
+  <!-- /.content-section-a -->
+
+  <div class="content-section-b">
+
+    <div class="container">
+
+      <div class="row">
+        <div class="col-lg-5 col-lg-offset-1 col-sm-push-6  col-sm-6">
+          <hr class="section-heading-spacer">
+          <div class="clearfix"></div>
+          <h2 class="section-heading">Learn.</h2>
+          <p class="lead">Directly interpret large data sets using machine-learning methods, such as principal component analysis and clustering.</p>
+        </div>
+        <div class="col-lg-5 col-sm-pull-6  col-sm-6">
+          {#            <img class="img-responsive" src="{% static 'table_input.png' %}" alt="">#}
+        </div>
+      </div>
+
+    </div>
+    <!-- /.container -->
+
+  </div>
+  <!-- /.content-section-b -->
+
+  {#    <a  name="contact"></a>#}
+  {#    <div class="banner">#}
+  {##}
+  {#      <div class="container">#}
+  {##}
+  {#        <div class="row">#}
+  {#          <div class="col-lg-6">#}
+  {#            <h2>Connect to Start Bootstrap:</h2>#}
+  {#          </div>#}
+  {#          <div class="col-lg-6">#}
+  {#            <ul class="list-inline banner-social-buttons">#}
+  {#              <li>#}
+  {#                <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>#}
+  {#              </li>#}
+  {#              <li>#}
+  {#                <a href="https://github.com/IronSummitMedia/startbootstrap" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>#}
+  {#              </li>#}
+  {#              <li>#}
+  {#                <a href="#" class="btn btn-default btn-lg"><i class="fa fa-linkedin fa-fw"></i> <span class="network-name">Linkedin</span></a>#}
+  {#              </li>#}
+  {#            </ul>#}
+  {#          </div>#}
+  {#        </div>#}
+  {##}
+  {#      </div>#}
+  {#      <!-- /.container -->#}
+  {##}
+  {#    </div>#}
+  {#    <!-- /.banner -->#}
 {% endblock %}
 
 {% block footer %}
   <footer>
     <div class="container">
       <!--<div class="col-md-8"></div>-->
-        <table align="right">
-          <tr style="vertical-align:middle">
-            <td>
-              <p align="right" style="vertical-align: baseline;">IMPACT: Integrated Microbial Physiology Accelerated Characterization Toolbox<br> © Naveen Venayak 2016</p>
-            </td>
-          </tr>
-        </table>
+      <table align="right">
+        <tr style="vertical-align:middle">
+          <td>
+            <p align="right" style="vertical-align: baseline;">IMPACT: Integrated Microbial Physiology Accelerated Characterization Toolbox<br> © Naveen Venayak 2016</p>
+          </td>
+        </tr>
+      </table>
 
     </div>
   </footer>

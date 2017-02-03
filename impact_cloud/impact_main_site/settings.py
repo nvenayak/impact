@@ -42,9 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'bootstrapform',
     'bootstrap3',
     'rest_framework',
+    'account',
     # 'rest_framework.authtoken'
 ]
 
@@ -57,6 +59,9 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "account.middleware.LocaleMiddleware",
+    "account.middleware.TimezoneMiddleware",
+    # 'account.middleware.ExpiredPasswordMiddleware',
 ]
 
 ROOT_URLCONF = 'impact_main_site.urls'
@@ -72,10 +77,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'account.context_processors.account',
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'impact_main_site.wsgi.application'
 
@@ -138,8 +145,8 @@ USE_TZ = True
 # ]
 
 STATIC_URL = '/static/'
-LOGIN_URL = '/login'
-LOGIN_REDIRECT_URL = '/login'
+LOGIN_URL = '/account/login'
+LOGIN_REDIRECT_URL = '/account/login'
 
 # Security
 SECURE_SSL_REDIRECT = False
@@ -158,3 +165,9 @@ REST_FRAMEWORK = {
 }
 
 DATABASE_ROUTERS = ['impact_cloud.CustomRouter.ImpactRouter']
+
+SITE_ID = 1
+ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
+ACCOUNT_OPEN_SIGNUP = False
+
+from .secrets import *
