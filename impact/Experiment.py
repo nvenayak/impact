@@ -18,7 +18,7 @@ except ImportError as e:
     print(e)
     pass
 
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 
 class Experiment(object):
@@ -315,276 +315,17 @@ class Experiment(object):
 
             # Get data from xlsx file
             data = get_data(fileName)
-            # print(data)
             print('Imported data from %s' % (fileName))
 
-        if dataFormat == 'NV_OD':
-            t0 = time.time()
-            if fileName:
-                # Check for correct data for import
-                if 'OD' not in data.keys():
-                    raise Exception("No sheet named 'OD' found")
-                else:
-                    ODDataSheetName = 'OD'
-
-                data = data[ODDataSheetName]
-
-            # Parse data into timeCourseObjects
-            skipped_lines = 0
-            timeCourseObjectList = dict()
-            for row in data[1:]:
-                temp_run_identifier_object = TrialIdentifier()
-                if type(row[0]) is str:
-                    temp_run_identifier_object.parse_trial_identifier_from_csv(row[0])
-                    temp_run_identifier_object.analyte_name = 'OD600'
-                    temp_run_identifier_object.analyte_type = 'biomass'
-                    temp_time_course = TimeCourse()
-                    temp_time_course.trial_identifier = temp_run_identifier_object
-                    # Data in seconds, data required to be in hours
-                    # print(data[0][1:])
-                    temp_time_course.time_vector = np.array(np.divide(data[0][1:], 3600))
-
-                    temp_time_course.data_vector = np.array(row[1:])
-                    self.titer_dict[temp_time_course.getTimeCourseID()] = copy.copy(temp_time_course)
-
-            tf = time.time()
-            print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.titer_dict), tf - t0))
-
-            self.parse_analyte_data_dict(self.titer_dict)
-
-        if dataFormat == 'NV_titers':
-            substrate_name = 'Glucose'
-            titerDataSheetName = "titers"
-
-            if 'titers' not in data.keys():
-                raise Exception("No sheet named 'titers' found")
-
-            ######## Initialize variables
-            analyte_nameColumn = dict()
-            for i in range(1, len(data[titerDataSheetName][2])):
-                analyte_nameColumn[data[titerDataSheetName][2][i]] = i
-
-            tempTimePointCollection = dict()
-            for names in analyte_nameColumn:
-                tempTimePointCollection[names] = []
-
-            timePointCollection = []
-            skipped_lines = 0
-            # timepoint_list = []
-
-            ######## Parse the titer data into single experiment object list
-            ### NOTE: THIS PARSER IS NOT GENERIC AND MUST BE MODIFIED FOR YOUR SPECIFIC INPUT TYPE ###
-            for i in range(4, len(data['titers'])):
-                if type("asdf") == type(data['titers'][i][0]):  # Check if the data is a string
-                    tempParsedIdentifier = data['titers'][i][0].split(',')  # Parse the string using comma delimiter
-                    if len(tempParsedIdentifier) >= 3:  # Ensure corect number of identifiers TODO make this general
-                        temptrial_identifierObject = TrialIdentifier()
-                        tempParsedstrain_identifier = tempParsedIdentifier[0].split("+")
-                        temptrial_identifierObject.strain_id = tempParsedstrain_identifier[0]
-                        temptrial_identifierObject.id_1 = tempParsedstrain_identifier[1]
-                        # temptrial_identifierObject.id_2 = tempParsedIdentifier[2]
-                        tempParsedReplicate = tempParsedIdentifier[1].split('=')
-                        temptrial_identifierObject.replicate_id = int(tempParsedReplicate[1])  # tempParsedIdentifier[1]
-                        tempParsedTime = tempParsedIdentifier[2].split('=')
-                        temptrial_identifierObject.t = float(tempParsedTime[1])  # tempParsedIdentifier[2]
-
-                        for key in tempTimePointCollection:
-                            temptrial_identifierObject.analyte_name = key
-                            if key == 'Glucose':
-                                temptrial_identifierObject.analyte_type = 'substrate'
-                            else:
-                                temptrial_identifierObject.analyte_type = 'product'
-                            self.timepoint_list.append(
-                                TimePoint(copy.copy(temptrial_identifierObject), key, temptrial_identifierObject.t,
-                                          data['titers'][i][analyte_nameColumn[key]]))
-
-                    else:
-                        skipped_lines += 1
-                else:
-                    skipped_lines += 1
-            tf = time.time()
-            print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timepoint_list), tf - t0))
-            print("Number of lines skipped: ", skipped_lines)
-            self.parse_time_point_dict(self.timepoint_list, stage_indices=stage_indices)
-
-        if dataFormat == 'NV_titers0.2':
-            substrate_name = 'Glucose'
-            titerDataSheetName = "titers"
-
-            if 'titers' not in data.keys():
-                raise Exception("No sheet named 'titers' found")
-
-            # Initialize variables
-            analyte_nameColumn = dict()
-            for i in range(1, len(data[titerDataSheetName][2])):
-                analyte_nameColumn[data[titerDataSheetName][2][i]] = i
-
-            tempTimePointCollection = dict()
-            for names in analyte_nameColumn:
-                tempTimePointCollection[names] = []
-
-            timePointCollection = []
-            skipped_lines = 0
-            # timepoint_list = []
-
-            # Parse the titer data into single experiment object list
-            for i in range(4, len(data['titers'])):
-                if type("asdf") == type(data['titers'][i][0]):  # Check if the data is a string
-                    temp_run_identifier_object = TrialIdentifier()
-                    temp_run_identifier_object.parse_trial_identifier_from_csv(data['titers'][i][0])
-
-                    tempParsedIdentifier = data['titers'][i][0].split(',')  # Parse the string using comma delimiter
-
-                    temp_run_identifier_object.t = 15.  # tempParsedIdentifier[2]
-
-                    for key in tempTimePointCollection:
-                        temp_run_identifier_object.analyte_name = key
-                        if key == 'Glucose':
-                            temp_run_identifier_object.analyte_type = 'substrate'
-                            self.timepoint_list.append(TimePoint(copy.copy(temp_run_identifier_object), key, 0, 12))
-                        else:
-                            temp_run_identifier_object.analyte_type = 'product'
-                            self.timepoint_list.append(TimePoint(copy.copy(temp_run_identifier_object), key, 0, 0))
-                        self.timepoint_list.append(
-                            TimePoint(copy.copy(temp_run_identifier_object), key, temp_run_identifier_object.t,
-                                      data['titers'][i][analyte_nameColumn[key]]))
-
-
-                    else:
-                        skipped_lines += 1
-                else:
-                    skipped_lines += 1
-
-
-
-
-            tf = time.time()
-            print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timepoint_list), tf - t0))
-            print("Number of lines skipped: ", skipped_lines)
-            self.parse_time_point_dict(self.timepoint_list)
-
-        if dataFormat == 'KN_titers':
-            # Parameters
-            row_with_titer_names = 0
-            first_data_row = 1
-
-            substrate_name = 'glucose'
-            titerDataSheetName = "titers"
-
-            if fileName is not None:
-                if 'titers' not in data.keys():
-                    raise Exception("No sheet named 'titers' found")
-            elif data is not None:
-                data = {titerDataSheetName: data}
-            else:
-                raise Exception('No fileName or data')
-
-            # Initialize variables
-            analyte_nameColumn = dict()
-            for i in range(1, len(data[titerDataSheetName][row_with_titer_names])):
-                analyte_nameColumn[data[titerDataSheetName][row_with_titer_names][i]] = i
-
-            tempTimePointCollection = dict()
-            for names in analyte_nameColumn:
-                tempTimePointCollection[names] = []
-
-            skipped_lines = 0
-            for i in range(first_data_row, len(data['titers'])):
-                if type(data['titers'][i][0]) is str:
-                    temp_run_identifier_object = TrialIdentifier()
-                    temp_run_identifier_object.parse_trial_identifier_from_csv(data['titers'][i][0])
-
-                    for key in tempTimePointCollection:
-                        temp_run_identifier_object.analyte_name = key
-                        if key == substrate_name:
-                            temp_run_identifier_object.analyte_type = 'substrate'
-                        else:
-                            temp_run_identifier_object.analyte_type = 'product'
-
-                        # Remove these time points
-                        if temp_run_identifier_object.time not in [12, 72, 84]:
-                            self.timepoint_list.append(
-                                TimePoint(copy.copy(temp_run_identifier_object), key, temp_run_identifier_object.time,
-                                          data['titers'][i][analyte_nameColumn[key]]))
-
-                else:
-                    skipped_lines += 1
-            tf = time.time()
-            print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timepoint_list), tf - t0))
-            print("Number of lines skipped: ", skipped_lines)
-            self.parse_time_point_dict(self.timepoint_list)
-
-        if dataFormat == 'default_titers':
-            # Parameters
-            row_with_titer_names = 0
-            row_with_titer_types = 1
-            first_data_row = 2
-
-            titerDataSheetName = "titers"
-
-            if fileName is not None:
-                from collections import OrderedDict
-                if type(data) in [dict, type(OrderedDict())]:
-                    if 'titers' not in data.keys():  # TODO data has no keys if there is only one sheet
-                        raise Exception("No sheet named 'titers' found")
-                else:
-                    data = {titerDataSheetName: data}
-            elif data is not None:
-                data = {titerDataSheetName: data}
-            else:
-                raise Exception('No fileName or data')
-
-            # Initialize variables
-            analyte_nameColumn = dict()
-            titer_type = dict()
-            for i in range(1, len(data[titerDataSheetName][row_with_titer_names])):
-                analyte_nameColumn[data[titerDataSheetName][row_with_titer_names][i]] = i
-                titer_type[data[titerDataSheetName][row_with_titer_names][i]] = \
-                    data[titerDataSheetName][row_with_titer_types][i]
-            # print(titer_type)
-            # Initialize a timepoint_collection for each titer type (column)
-            tempTimePointCollection = dict()
-            for names in analyte_nameColumn:
-                tempTimePointCollection[names] = []
-
-            skipped_lines = 0
-            for i in range(first_data_row, len(data['titers'])):
-                print(data['titers'][i])
-                if type(data['titers'][i][0]) is str:
-                    temp_run_identifier_object = TrialIdentifier()
-                    temp_run_identifier_object.parse_trial_identifier_from_csv(data['titers'][i][0])
-
-                    # temp_run_identifier_object.strain_id = strain_rename_dict[temp_run_identifier_object.strain_id]
-
-                    for key in tempTimePointCollection:
-                        temp_run_identifier_object.analyte_name = key
-                        temp_run_identifier_object.analyte_type = titer_type[key]
-                        # if key == substrate_name:
-                        #     temp_run_identifier_object.titerType = 'substrate'
-                        # else:
-                        #     temp_run_identifier_object.titerType = 'product'
-
-                        # Remove these time points
-                        # if temp_run_identifier_object.time not in [12, 72, 84]:
-                            # print(temp_run_identifier_object.time,' ',data['titers'][i][analyte_nameColumn[key]])
-                        if data['titers'][i][analyte_nameColumn[key]] == 'nan':
-                            data['titers'][i][analyte_nameColumn[key]] = np.nan
-                        self.timepoint_list.append(
-                            TimePoint(copy.copy(temp_run_identifier_object), key,
-                                      temp_run_identifier_object.time,
-                                      data['titers'][i][analyte_nameColumn[key]]))
-
-                else:
-                    skipped_lines += 1
-            tf = time.time()
-            print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timepoint_list), tf - t0))
-            print("Number of lines skipped: ", skipped_lines)
-            self.parse_time_point_dict(self.timepoint_list)
-            self.calculate()
-
-        # This is the new way all parsers should be defined and called
-        parser_case_dict = {'spectromax_OD':parsers.spectromax_OD}
-        if dataFormat in parser_case_dict.keys():   parser_case_dict[dataFormat](self,data)
+        # Import parsers
+        parser_case_dict = {'spectromax_OD':parsers.spectromax_OD,
+                            'tecan_OD': parsers.tecan_OD,
+                            'default_titers':parsers.HPLC_titer_parser
+                            }
+        if dataFormat in parser_case_dict.keys():
+            parser_case_dict[dataFormat](self,data,fileName)
+        else:
+            raise Exception('Parser %s not found', dataFormat)
 
 
 
@@ -1084,7 +825,7 @@ class Experiment(object):
         for singleExperiment in self.replicate_experiment_dict[strainToPlot[0]].single_trial_list:
             plt.plot(singleExperiment.OD.time_vector, singleExperiment.OD.data_vector)
         plt.ylabel(singleExperiment.trial_identifier.get_unique_id_for_ReplicateTrial())
-        # plt.tight_layout()
+
 
     def set_blanks(self,mode='auto',common_id='id_2'):
 

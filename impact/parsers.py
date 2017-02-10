@@ -2,12 +2,19 @@ from .TimePoint import TimePoint
 from .TrialIdentifier import TrialIdentifier
 from collections import OrderedDict
 import time as sys_time
+import numpy as np
+import copy
 
-def spectromax_OD(experiment, data):
-    from .settings import live_calculations
+def spectromax_OD(experiment, data, *args):
+    if fileName:
+        raise Exception('No file types directly parsable for spectromax_OD')
+
+    from .settings import settings
+    live_calculations = settings.live_calculations
     
     # This should be an ordered dict if imported from py_xlsx
     assert isinstance(data, OrderedDict)
+
 
     identifiers = data['identifiers']
     raw_data = data['data']
@@ -51,6 +58,108 @@ def spectromax_OD(experiment, data):
         else:
             break
 
-    experiment.parseTimePointCollection(timepoint_list)
+    experiment.parse_time_point_dict(timepoint_list)
 
     if live_calculations:   experiment.calculate()
+
+def HPLC_titer_parser(experiment, data, fileName):
+    t0 = sys_time.time()
+
+    # Parameters
+    row_with_titer_names = 0
+    row_with_titer_types = 1
+    first_data_row = 2
+    titerDataSheetName = "titers"
+    if fileName is not None:
+        from collections import OrderedDict
+        if type(data) in [dict, type(OrderedDict())]:
+            if 'titers' not in data.keys():  # TODO data has no keys if there is only one sheet
+                raise Exception("No sheet named 'titers' found")
+        else:
+            data = {titerDataSheetName: data}
+    elif data is not None:
+        data = {titerDataSheetName: data}
+    else:
+        raise Exception('No fileName or data')
+
+    # Initialize variables
+    analyte_nameColumn = dict()
+    titer_type = dict()
+    for i in range(1, len(data[titerDataSheetName][row_with_titer_names])):
+        analyte_nameColumn[data[titerDataSheetName][row_with_titer_names][i]] = i
+        titer_type[data[titerDataSheetName][row_with_titer_names][i]] = \
+            data[titerDataSheetName][row_with_titer_types][i]
+    # print(titer_type)
+    # Initialize a timepoint_collection for each titer type (column)
+    tempTimePointCollection = dict()
+    for names in analyte_nameColumn:
+        tempTimePointCollection[names] = []
+    skipped_lines = 0
+    for i in range(first_data_row, len(data['titers'])):
+        print(data['titers'][i])
+        if type(data['titers'][i][0]) is str:
+            temp_run_identifier_object = TrialIdentifier()
+            temp_run_identifier_object.parse_trial_identifier_from_csv(data['titers'][i][0])
+
+            # temp_run_identifier_object.strain_id = strain_rename_dict[temp_run_identifier_object.strain_id]
+
+            for key in tempTimePointCollection:
+                temp_run_identifier_object.analyte_name = key
+                temp_run_identifier_object.analyte_type = titer_type[key]
+                # if key == substrate_name:
+                #     temp_run_identifier_object.titerType = 'substrate'
+                # else:
+                #     temp_run_identifier_object.titerType = 'product'
+
+                # Remove these time points
+                # if temp_run_identifier_object.time not in [12, 72, 84]:
+                # print(temp_run_identifier_object.time,' ',data['titers'][i][analyte_nameColumn[key]])
+                if data['titers'][i][analyte_nameColumn[key]] == 'nan':
+                    data['titers'][i][analyte_nameColumn[key]] = np.nan
+                experiment.timepoint_list.append(
+                    TimePoint(copy.copy(temp_run_identifier_object), key,
+                              temp_run_identifier_object.time,
+                              data['titers'][i][analyte_nameColumn[key]]))
+
+        else:
+            skipped_lines += 1
+    tf = sys_.time()
+    print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(experiment.timepoint_list), tf - t0))
+    print("Number of lines skipped: ", skipped_lines)
+    experiment.parse_time_point_dict(experiment.timepoint_list)
+    experiment.calculate()
+
+def tecan_OD(experiment, data, fileName, t0):
+    from .AnalyteData import TimeCourse
+
+    t0 = sys_time.time()
+    if fileName:
+        # Check for correct data for import
+        if 'OD' not in data.keys():
+            raise Exception("No sheet named 'OD' found")
+        else:
+            ODDataSheetName = 'OD'
+
+        data = data[ODDataSheetName]
+
+    # Parse data into timeCourseObjects
+    skipped_lines = 0
+    timeCourseObjectList = dict()
+    for row in data[1:]:
+        temp_run_identifier_object = TrialIdentifier()
+        if type(row[0]) is str:
+            temp_run_identifier_object.parse_trial_identifier_from_csv(row[0])
+            temp_run_identifier_object.analyte_name = 'OD600'
+            temp_run_identifier_object.analyte_type = 'biomass'
+            temp_time_course = TimeCourse()
+            temp_time_course.trial_identifier = temp_run_identifier_object
+
+            # Data in seconds, data required to be in hours
+            temp_time_course.time_vector = np.array(np.divide(data[0][1:], 3600))
+
+            temp_time_course.data_vector = np.array(row[1:])
+            experiment.titer_dict[temp_time_course.getTimeCourseID()] = copy.copy(temp_time_course)
+    tf = sys_time.time()
+    print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(experiment.titer_dict), tf - t0))
+    experiment.parse_analyte_data_dict(experiment.titer_dict)
+    return data, t0
