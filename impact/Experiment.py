@@ -18,7 +18,7 @@ except ImportError as e:
     print(e)
     pass
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 
 class Experiment(object):
@@ -84,7 +84,7 @@ class Experiment(object):
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
 
 
-    def db_commit(self, db_name, overwrite_experiment_id = None):
+    def db_commit(self, db_name, overwrite_experiment_id = None, db_backend = 'sqlite3'):
         """
         Commit the experiment to the database
 
@@ -93,38 +93,42 @@ class Experiment(object):
         db_name : str
             Path to the database, must be initialized prior (impact.init_db())
         """
-        conn = sql.connect(db_name)
-        c = conn.cursor()
 
-        # Ensure the experiment_id is not explicitely defined (may have been defined in a form via django)
-        if 'experiment_id' in self.info.keys():
-            del self.info['experiment_id']
+        if db_backend == 'sql_alchemy':
+            pass
+        else:
+            conn = sql.connect(db_name)
+            c = conn.cursor()
 
-        prepared_columns = list(self.info.keys())
-        prepped_column_query = ', '.join(col for col in prepared_columns)
-        prepped_column_data = [self.info[key] for key in prepared_columns]
+            # Ensure the experiment_id is not explicitely defined (may have been defined in a form via django)
+            if 'experiment_id' in self.info.keys():
+                del self.info['experiment_id']
+
+            prepared_columns = list(self.info.keys())
+            prepped_column_query = ', '.join(col for col in prepared_columns)
+            prepped_column_data = [self.info[key] for key in prepared_columns]
 
 
-        if overwrite_experiment_id is None:
-            c.execute("""INSERT INTO experimentTable (""" + prepped_column_query + \
-                      """) VALUES (""" + ', '.join('?' for a in prepped_column_data) + """)""", prepped_column_data)
-            c.execute("SELECT MAX(experiment_id) FROM experimentTable")
-            experiment_id = c.fetchall()[0][0]
-        elif type(overwrite_experiment_id) is int:
-            experiment_id = overwrite_experiment_id
-            for i, col in enumerate(prepared_columns):
-                c.execute("""UPDATE experimentTable SET """
-                          + col + """ = ? WHERE experiment_id = ?""", (prepped_column_data[i],experiment_id)
-                          )
+            if overwrite_experiment_id is None:
+                c.execute("""INSERT INTO experimentTable (""" + prepped_column_query + \
+                          """) VALUES (""" + ', '.join('?' for a in prepped_column_data) + """)""", prepped_column_data)
+                c.execute("SELECT MAX(experiment_id) FROM experimentTable")
+                experiment_id = c.fetchall()[0][0]
+            elif type(overwrite_experiment_id) is int:
+                experiment_id = overwrite_experiment_id
+                for i, col in enumerate(prepared_columns):
+                    c.execute("""UPDATE experimentTable SET """
+                              + col + """ = ? WHERE experiment_id = ?""", (prepped_column_data[i],experiment_id)
+                              )
 
-        for key in self.replicate_experiment_dict:
-            self.replicate_experiment_dict[key].db_commit(experiment_id, c=c)
+            for key in self.replicate_experiment_dict:
+                self.replicate_experiment_dict[key].db_commit(experiment_id, c=c)
 
-        conn.commit()
-        c.close()
+            conn.commit()
+            c.close()
 
-        print('Committed experiment #', experiment_id, ' to DB ', db_name)
-        return experiment_id
+            print('Committed experiment #', experiment_id, ' to DB ', db_name)
+            return experiment_id
 
     def json_serialize(self):
         """
@@ -346,7 +350,7 @@ class Experiment(object):
             tf = time.time()
             print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.titer_dict), tf - t0))
 
-            self.parseTiterObjectCollection(self.titer_dict)
+            self.parse_analyte_data_dict(self.titer_dict)
 
         if dataFormat == 'NV_titers':
             substrate_name = 'Glucose'
@@ -401,7 +405,7 @@ class Experiment(object):
             tf = time.time()
             print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timepoint_list), tf - t0))
             print("Number of lines skipped: ", skipped_lines)
-            self.parseTimePointCollection(self.timepoint_list, stage_indices=stage_indices)
+            self.parse_time_point_dict(self.timepoint_list, stage_indices=stage_indices)
 
         if dataFormat == 'NV_titers0.2':
             substrate_name = 'Glucose'
@@ -457,7 +461,7 @@ class Experiment(object):
             tf = time.time()
             print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timepoint_list), tf - t0))
             print("Number of lines skipped: ", skipped_lines)
-            self.parseTimePointCollection(self.timepoint_list)
+            self.parse_time_point_dict(self.timepoint_list)
 
         if dataFormat == 'KN_titers':
             # Parameters
@@ -508,7 +512,7 @@ class Experiment(object):
             tf = time.time()
             print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timepoint_list), tf - t0))
             print("Number of lines skipped: ", skipped_lines)
-            self.parseTimePointCollection(self.timepoint_list)
+            self.parse_time_point_dict(self.timepoint_list)
 
         if dataFormat == 'default_titers':
             # Parameters
@@ -575,7 +579,7 @@ class Experiment(object):
             tf = time.time()
             print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(self.timepoint_list), tf - t0))
             print("Number of lines skipped: ", skipped_lines)
-            self.parseTimePointCollection(self.timepoint_list)
+            self.parse_time_point_dict(self.timepoint_list)
             self.calculate()
 
         # This is the new way all parsers should be defined and called
@@ -584,7 +588,7 @@ class Experiment(object):
 
 
 
-    def parseTimePointCollection(self, timePointList, stage_indices=None):
+    def parse_time_point_dict(self, timePointList, stage_indices=None):
         print('Parsing time point list...')
         t0 = time.time()
         for timePoint in timePointList:
@@ -596,7 +600,7 @@ class Experiment(object):
                 self.titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
         tf = time.time()
         print("Parsed %i titer objects in %0.1fs\n" % (len(self.titer_dict), (tf - t0)))
-        self.parseTiterObjectCollection(self.titer_dict, stage_indices=stage_indices)
+        self.parse_analyte_data_dict(self.titer_dict, stage_indices=stage_indices)
 
     def parse_titers(self, titer_list):
         print('Parsing titer object list...')
@@ -631,7 +635,7 @@ class Experiment(object):
         for replicate_trial in replicate_trial_list:
             self.add_replicate_trial(replicate_trial)
 
-    def parseTiterObjectCollection(self, analyte_dict, stage_indices=None):
+    def parse_analyte_data_dict(self, analyte_dict, stage_indices=None):
         print('Parsing titer object list...')
         t0 = time.time()
         for analyte_dictKey in analyte_dict:
@@ -644,9 +648,9 @@ class Experiment(object):
                     analyte_dict[analyte_dictKey])
         tf = time.time()
         print("Parsed %i single trials in %0.1fms\n" % (len(self.single_experiment_dict), (tf - t0) * 1000))
-        self.parseSingleExperimentObjectList(self.single_experiment_dict)
+        self.parse_single_experiment_dict(self.single_experiment_dict)
 
-    def parseSingleExperimentObjectList(self, singleExperimentObjectList):
+    def parse_single_experiment_dict(self, singleExperimentObjectList):
         print('Parsing single experiment object list...')
         t0 = time.time()
         for key in singleExperimentObjectList:
@@ -710,138 +714,6 @@ class Experiment(object):
         from .plotting import printGenericTimeCourse_plotly
         printGenericTimeCourse_plotly(replicateTrialList=replicateTrialList, titersToPlot=titersToPlot,
                                       output_type=output_type, **kwargs)
-
-
-
-        # if figHandle == []:
-        #     figHandle = plt.figure(figsize=(12, 8))
-        #
-        # figHandle.set_facecolor('w')
-        #
-
-        #
-        # # Determine optimal figure size
-        # if len(titersToPlot) == 1:
-        #     figureSize = (12, 6)
-        # if len(titersToPlot) > 1:
-        #     figureSize = (12, 3.5)
-        # if len(titersToPlot) > 4:
-        #     figureSize = (12, 7)
-        #
-        # if plotCurveFit == True:
-        #     plotSymbol = 'o'
-        # else:
-        #     plotSymbol = 'o-'
-        #
-        # figHandle  # .set_size_inches(figureSize, forward=True)
-        # # plt.figure(figsize=figureSize)
-        # plt.clf()
-        #
-        # colors = plt.get_cmap(self.colorMap)(np.linspace(0, 1, len(strainsToPlot)))
-        #
-        # pltNum = 0
-        # print(titersToPlot)
-        # for product in titersToPlot:
-        #     pltNum += 1
-        #
-        #     # Choose the subplot layout
-        #     if len(titersToPlot) == 1:
-        #         ax = plt.subplot(111)
-        #     elif len(titersToPlot) < 5:
-        #         ax = plt.subplot(1, len(titersToPlot), pltNum)
-        #     elif len(titersToPlot) < 9:
-        #         ax = plt.subplot(2, (len(titersToPlot) + 1) / 2, pltNum)
-        #     else:
-        #         raise Exception("Unimplemented Functionality")
-        #
-        #     # Set some axis aesthetics
-        #     ax.spines["top"].set_visible(False)
-        #     ax.spines["right"].set_visible(False)
-        #
-        #     colorIndex = 0
-        #     handle = dict()
-        #     xlabel = 'Time (hours)'
-        #     for key in strainsToPlot:
-        #         xData = self.replicate_experiment_dict[key].t
-        #         if product == 'OD' or product == self.replicate_experiment_dict[key].avg.titer_dict[product].trial_identifier.analyte_name:
-        #             product = self.replicate_experiment_dict[key].avg.titer_dict[product].trial_identifier.analyte_name
-        #             scaledTime = self.replicate_experiment_dict[key].t
-        #             # Plot the fit curve
-        #             if plotCurveFit == True:
-        #                 handle[key] = plt.plot(np.linspace(min(scaledTime), max(scaledTime), 50),
-        #                                        self.replicate_experiment_dict[key].avg.titer_dict[
-        #                                            product].data_curve_fit(
-        #                                            np.linspace(min(self.replicate_experiment_dict[key].t),
-        #                                                        max(self.replicate_experiment_dict[key].t), 50)),
-        #                                        '-', lw=1.5, color=colors[colorIndex])
-        #             # Plot the data
-        #             print(product)
-        #             print(scaledTime[::removePointFraction])
-        #             print()
-        #             handle[key] = plt.errorbar(scaledTime[::removePointFraction],
-        #                                        self.replicate_experiment_dict[key].avg.titer_dict[
-        #                                            product].data_vector[::removePointFraction],
-        #                                        self.replicate_experiment_dict[key].std.titer_dict[
-        #                                            product].data_vector[::removePointFraction],
-        #                                        lw=2.5, elinewidth=1, capsize=2, fmt=plotSymbol, markersize=5,
-        #                                        color=colors[colorIndex])
-        #             # Fill in the error bar range
-        #             # if shadeErrorRegion==True:
-        #             #     plt.fill_between(scaledTime,self.replicate_experiment_dict[key].avg.OD.data_vector+self.replicate_experiment_dict[key].std.OD.data_vector,
-        #             #                      self.replicate_experiment_dict[key].avg.OD.data_vector-self.replicate_experiment_dict[key].std.OD.data_vector,
-        #             #                      facecolor=colors[colorIndex],alpha=0.1)
-        #             # # Add growth rates at end of curve
-        #             # if showGrowthRates==True:
-        #             #     plt.text(scaledTime[-1]+0.5,
-        #             #              self.replicate_experiment_dict[key].avg.OD.data_curve_fit(np.linspace(min(self.replicate_experiment_dict[key].t),max(self.replicate_experiment_dict[key].t),50))[-1],
-        #             #              '$\mu$ = '+'{:.2f}'.format(self.replicate_experiment_dict[key].avg.OD.fit_params[1]) + ' $\pm$ ' + '{:.2f}'.format(self.replicate_experiment_dict[key].std.OD.fit_params[1])+', n='+str(len(self.replicate_experiment_dict[key].replicate_ids)-len(self.replicate_experiment_dict[key].bad_replicates)),
-        #             #              verticalalignment='center')
-        #             # ylabel = 'OD$_{600}$'
-        #         else:
-        #             scaledTime = self.replicate_experiment_dict[key].t
-        #
-        #             # handle[key] = plt.plot(np.linspace(min(scaledTime),max(scaledTime),50),
-        #             #                         self.replicate_experiment_dict[key].avg.products[product].data_curve_fit(np.linspace(min(self.replicate_experiment_dict[key].t),max(self.replicate_experiment_dict[key].t),50)),
-        #             #                        '-',lw=0.5,color=colors[colorIndex])
-        #
-        #             handle[key] = plt.errorbar(self.replicate_experiment_dict[key].t[::removePointFraction],
-        #                                        self.replicate_experiment_dict[key].avg.titer_dict[
-        #                                            product].data_vector[::removePointFraction],
-        #                                        self.replicate_experiment_dict[key].std.titer_dict[
-        #                                            product].data_vector[::removePointFraction], lw=2.5, elinewidth=1,
-        #                                        capsize=2, fmt='o-', color=colors[colorIndex])
-        #             ylabel = product + " AnalyteData (g/L)"
-        #
-        #         colorIndex += 1
-        #         # plt.show()
-        #     plt.xlabel(xlabel)
-        #     # plt.ylabel(ylabel)
-        #     ymin, ymax = plt.ylim()
-        #     xmin, xmax = plt.xlim()
-        #     plt.xlim([0, xmax * 1.2])
-        #     plt.ylim([0, ymax])
-        # # plt.style.use('ggplot')
-        # plt.tight_layout()
-        # plt.tick_params(right="off", top="off")
-        # # plt.legend([handle[key] for key in handle],[key for key in handle],bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0, frameon=False)
-        # plt.subplots_adjust(right=0.7)
-        #
-        # if len(titersToPlot) == 1:
-        #     plt.legend([handle[key] for key in handle], [key for key in handle], bbox_to_anchor=(1.05, 0.5), loc=6,
-        #                borderaxespad=0, frameon=False)
-        #     plt.subplots_adjust(right=0.7)
-        # elif len(titersToPlot) < 5:
-        #     plt.legend([handle[key] for key in handle], [key for key in handle], bbox_to_anchor=(1.05, 0.5), loc=6,
-        #                borderaxespad=0, frameon=False)
-        #     plt.subplots_adjust(right=0.75)
-        # else:
-        #     plt.legend([handle[key] for key in handle], [key for key in handle], bbox_to_anchor=(1.05, 1.1), loc=6,
-        #                borderaxespad=0, frameon=False)
-        #     plt.subplots_adjust(right=0.75)
-        #
-        #     # Save the figure
-        #     # plt.savefig(os.path.join(os.path.dirname(__file__),'Figures/'+time.strftime('%y')+'.'+time.strftime('%m')+'.'+time.strftime('%d')+" H"+time.strftime('%H')+'-M'+time.strftime('%M')+'-S'+time.strftime('%S')+'.png'))
-        #     # plt.show()
 
     def printGrowthRateBarChart(self, figHandle=[], strainsToPlot=[], sortBy='id_1'):
         """
@@ -1221,13 +1093,19 @@ class Experiment(object):
                       if self.replicate_experiment_dict[replicate_key].trial_identifier.strain_id
                       in ['Blank','blank']]
 
-        blank_ids = {getattr(self.replicate_experiment_dict[replicate_key].trial_identifier,common_id):replicate_key
-                     for replicate_key in self.blank_key_list}
+        if common_id:
+            blank_ids = {getattr(self.replicate_experiment_dict[replicate_key].trial_identifier,common_id):replicate_key
+                         for replicate_key in self.blank_key_list}
 
         for replicate_key in [replicate_key for replicate_key in self.replicate_experiment_dict if replicate_key not in self.blank_key_list]:
-            self.replicate_experiment_dict[replicate_key].set_blank(
-                self.replicate_experiment_dict[blank_ids[getattr(self.replicate_experiment_dict[replicate_key].trial_identifier, common_id)]]
-            )
+            if common_id:
+                self.replicate_experiment_dict[replicate_key].set_blank(
+                    self.replicate_experiment_dict[blank_ids[getattr(self.replicate_experiment_dict[replicate_key].trial_identifier, common_id)]]
+                )
+            else:
+                self.replicate_experiment_dict[replicate_key].set_blank(self.replicate_experiment_dict[self.blank_key_list[0]])
+
+
 
         # for replicate_key in self.replicate_experiment_dict:
         #     if self.replicate_experiment_dict[replicate_key].trial_identifier.strain_id in ['Blank','blank']:
@@ -1238,7 +1116,9 @@ class Experiment(object):
             raise Exception('Unimplemented')
 
     def set_stages(self, stage_indices=None, stage_times=None):
-        from .settings import live_calculations
+        from .settings import settings
+        live_calculations = settings.live_calculations
+
         """
 
         Parameters
