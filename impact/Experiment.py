@@ -281,13 +281,6 @@ class Experiment(object):
         for replicate_key in self.replicate_experiment_dict:
             self.replicate_experiment_dict[replicate_key].summary()
 
-    def plottingGUI(self):
-        app = QtGui.QApplication(sys.argv)
-
-        main = Window(self)
-        main.showMaximized()
-
-        sys.exit(app.exec_())
 
     def get_strains(self):
         temp = [key for key in self.replicate_experiment_dict if
