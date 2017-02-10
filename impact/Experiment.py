@@ -296,15 +296,13 @@ class Experiment(object):
         return temp
 
     def get_titers(self):
-        titersToPlot = [[[titer for titer in self.replicate_experiment_dict[key].single_trial_dict[replicate_id].analyte_dict] for replicate_id in
-                         self.replicate_experiment_dict[key].single_trial_dict] for key in
-                        self.replicate_experiment_dict]
+        titers_to_plot = list(set([titer for key in self.replicate_experiment_dict
+                        for replicate_id in self.replicate_experiment_dict[key].single_trial_dict
+                        for titer in self.replicate_experiment_dict[key].single_trial_dict[replicate_id].analyte_dict]
+                                  )
+                              )
 
-        # Flatten list and find the uniques
-        titersToPlot = [y for x in titersToPlot for y in x]
-        titersToPlot = list(set([y for x in titersToPlot for y in x]))
-
-        return titersToPlot
+        return titers_to_plot
 
     def parseRawData(self, dataFormat, fileName=None, data=None, stage_indices=None, substrate_name=None):
         t0 = time.time()
