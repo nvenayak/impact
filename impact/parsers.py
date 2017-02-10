@@ -5,7 +5,7 @@ import time as sys_time
 import numpy as np
 import copy
 
-def spectromax_OD(experiment, data, *args):
+def spectromax_OD(experiment, data, fileName = None):
     if fileName:
         raise Exception('No file types directly parsable for spectromax_OD')
 
