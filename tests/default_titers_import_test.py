@@ -29,7 +29,7 @@ class CoreTestCase(unittest.TestCase):
 
     def test_default_titers_parse(self):
         # Parse the data
-        self.expt.parseRawData('default_titers', fileName='sample_input_data.xlsx')
+        self.expt.parse_raw_data('default_titers', fileName='sample_input_data.xlsx')
 
         # Commit to the db
         experiment_id = self.expt.db_commit(db_name=self.db_name)
@@ -48,7 +48,7 @@ class CoreTestCase(unittest.TestCase):
         Test importing data with missing data
         """
         # Parse the data
-        self.expt.parseRawData('default_titers', fileName='sample_input_data_missing_data.xlsx')
+        self.expt.parse_raw_data('default_titers', fileName='sample_input_data_missing_data.xlsx')
 
         # Commit to the db
         experiment_id = self.expt.db_commit(db_name=self.db_name)

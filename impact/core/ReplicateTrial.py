@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import numpy as np
 import dill as pickle
 import pandas as pd
@@ -7,21 +9,57 @@ from .TrialIdentifier import TrialIdentifier
 import copy
 from scipy import stats
 import matplotlib.pyplot as plt
-from .settings import default_outlier_cleaning_flag, max_fraction_replicates_to_remove, verbose
+from .settings import settings
+default_outlier_cleaning_flag = settings.default_outlier_cleaning_flag
+max_fraction_replicates_to_remove = settings.max_fraction_replicates_to_remove
+verbose = settings.verbose
 
-class ReplicateTrial(object):
+
+from ..database import Base
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
+
+class ReplicateTrial(Base):
     """
     This object stores SingleTrial objects and calculates statistics on these replicates for each of the
     titers which are stored within it
     """
 
+    __tablename__ = 'replicate_trial'
+
+    id = Column(Integer, primary_key=True)
+
+    avg_id = Column(Integer,ForeignKey('single_trial.id'))
+    avg = relationship('SingleTrial', uselist=False, foreign_keys=[avg_id])
+
+    std_id = Column(Integer,ForeignKey('single_trial.id'))
+    std = relationship('SingleTrial', uselist=False, foreign_keys=[std_id])
+
+    single_trial_dict = relationship('SingleTrial',
+                                     collection_class = attribute_mapped_collection('keyword'),
+                                     foreign_keys = 'SingleTrial.parent_id')
+
+    trial_identifier_id = Column(Integer,ForeignKey('trial_identifier.id'))
+    trial_identifier = relationship('TrialIdentifier')
+
+    bad_replicates = Column(PickleType)
+    replicate_ids = Column(PickleType)
+    replicate_df = Column(PickleType)
+
+    stage_parent_id = Column(Integer,ForeignKey('replicate_trial.id'))
+    stages = relationship('ReplicateTrial')
+
+    blank_id = Column(Integer,ForeignKey('single_trial.id'))
+    blank = relationship('SingleTrial',uselist=False, foreign_keys=[blank_id])
+
+    parent = relationship('Experiment')
+    parent_id = Column(Integer,ForeignKey('experiment.id'))
+
     def __init__(self):
         self.avg = SingleTrial()
         self.std = SingleTrial()
         self.t = None
-
-        # Deprecated since v0.7.0
-        # self.single_trial_list = []
 
         self.single_trial_dict = {}
 
@@ -31,11 +69,10 @@ class ReplicateTrial(object):
         self.replicate_df = dict()
 
         self.outlier_cleaning_flag = default_outlier_cleaning_flag
-        # self.checkReplicateUniqueIDMatch()
 
         self.stages = []
 
-        self.blank = None
+        # self.blank = SingleTrial()
 
     def calculate(self):
         for single_trial_key in self.single_trial_dict:
@@ -53,7 +90,6 @@ class ReplicateTrial(object):
         serialized_dict['std'] = self.std.serialize()
         import json
         return json.dumps(serialized_dict)
-
 
     def calculate_stages(self, stage_indices=None):
         if stage_indices is None:
@@ -81,7 +117,7 @@ class ReplicateTrial(object):
     def summary(self):
         return
 
-    def get_normalize_data(self, normalize_to):
+    def get_normalized_data(self, normalize_to):
         new_replicate = ReplicateTrial()
         for replicate_id in self.single_trial_dict:
             single_trial = self.single_trial_dict[replicate_id]
@@ -89,7 +125,7 @@ class ReplicateTrial(object):
             new_replicate.add_replicate(single_trial)
         self = new_replicate
 
-    def db_commit(self, experiment_id=None, c=None):
+    def db_commit(self, experiment_id=None, c=None, db_backend = 'sqlite3'):
         """
         Commit to the database
 
@@ -98,24 +134,28 @@ class ReplicateTrial(object):
         experiment_id : int
         c : database cursor
         """
-        if experiment_id == None:
-            print('No experiment ID selected')
-        else:
-            id_3 = ''
-            c.execute("""\
-               INSERT INTO replicateTable(experiment_id, strain_id, id_1, id_2, id_3)
-               VALUES (?, ?, ?, ?, ?)""",
-                      (experiment_id, self.trial_identifier.strain_id, self.trial_identifier.id_1,
-                       self.trial_identifier.id_2, id_3)
-                      )
-            c.execute("""SELECT MAX(replicateID) FROM replicateTable""")
-            replicateID = c.fetchall()[0][0]
 
-            for replicate_id in self.single_trial_dict:
-                single_trial = self.single_trial_dict[replicate_id]
-                single_trial.db_commit(replicateID, c=c)
-            self.avg.db_commit(replicateID, c=c, stat='avg')
-            self.std.db_commit(replicateID, c=c, stat='std')
+        if db_backend == 'sql_alchemy':
+            pass
+        else:
+            if experiment_id == None:
+                print('No experiment ID selected')
+            else:
+                id_3 = ''
+                c.execute("""\
+                   INSERT INTO replicateTable(experiment_id, strain_id, id_1, id_2, id_3)
+                   VALUES (?, ?, ?, ?, ?)""",
+                          (experiment_id, self.trial_identifier.strain_id, self.trial_identifier.id_1,
+                           self.trial_identifier.id_2, id_3)
+                          )
+                c.execute("""SELECT MAX(replicateID) FROM replicateTable""")
+                replicateID = c.fetchall()[0][0]
+
+                for replicate_id in self.single_trial_dict:
+                    single_trial = self.single_trial_dict[replicate_id]
+                    single_trial.db_commit(replicateID, c=c)
+                self.avg.db_commit(replicateID, c=c, stat='avg')
+                self.std.db_commit(replicateID, c=c, stat='std')
 
     def db_load(self, c=None, db_name = None, replicateID='all'):
         """
@@ -219,7 +259,8 @@ class ReplicateTrial(object):
         singleTrial : :class:`~SingleTrial`
             Add a SingleTrial
         """
-        from .settings import live_calculations
+        from .settings import settings
+        live_calculations = settings.live_calculations
 
         if singleTrial.trial_identifier.replicate_id is None:
             singleTrial.trial_identifier.replicate_id = 1
@@ -265,7 +306,7 @@ class ReplicateTrial(object):
         Calculates the statistics on the SingleTrial objects
         """
 
-        unique_analytes = self.get_unique_analytes()
+        unique_analytes = self.get_analytes()
 
         # Build the combined vectors
         for analyte in unique_analytes:
@@ -327,6 +368,8 @@ class ReplicateTrial(object):
                     print([self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
                                 for replicate_id in self.single_trial_dict])
 
+                if self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].trial_identifier is None:
+                    print('yolo')
                 getattr(self, stat).analyte_dict[analyte].trial_identifier = \
                     self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].trial_identifier
 
@@ -358,7 +401,7 @@ class ReplicateTrial(object):
             self.avg.yields[analyte] = np.array(yield_df.mean(axis=1))
             self.std.yields[analyte] = np.array(yield_df.std(axis=1))
 
-    def get_unique_analytes(self):
+    def get_analytes(self):
         # Get all unique analytes
         unique_analytes = []
         for replicate_id in self.single_trial_dict:
@@ -369,7 +412,10 @@ class ReplicateTrial(object):
         return unique_analytes
 
     def prune_bad_replicates(self, analyte):  # Remove outliers
-        from .settings import verbose, max_fraction_replicates_to_remove, outlier_cleaning_flag
+        from .settings import settings
+        verbose = settings.verbose
+        max_fraction_replicates_to_remove = settings.max_fraction_replicates_to_remove
+        outlier_cleaning_flag = settings.outlier_cleaning_flag
 
         # http://stackoverflow.com/questions/23199796/detect-and-exclude-outliers-in-pandas-dataframe
         df = self.replicate_df[analyte]
@@ -442,27 +488,26 @@ class ReplicateTrial(object):
     def set_blank(self, replicate_trial):
         self.blank = replicate_trial
 
-        # for single_trial_key in self.single_trial_dict:
-        #     self.single_trial_dict[single_trial_key].set_blank()
-
     def substract_blank(self):
         # Check which analytes have blanks defined
-        analytes_with_blanks = self.blank.get_unique_analytes()
+        analytes_with_blanks = self.blank.get_analytes()
 
         # Remove from each analyte and then redo calculations
         self.blank_subtracted_analytes = []
+
         # for blank_analyte in analytes_with_blanks:
         for single_trial_key in self.single_trial_dict:
             single_trial = self.single_trial_dict[single_trial_key]
             for blank_analyte in analytes_with_blanks:
-                print(single_trial.analyte_dict[blank_analyte].data_vector)
                 single_trial.analyte_dict[blank_analyte].data_vector = \
                     single_trial.analyte_dict[blank_analyte].data_vector \
                     - self.blank.avg.analyte_dict[blank_analyte].data_vector
-                print(single_trial.analyte_dict[blank_analyte].data_vector)
-        # self.avg.analyte_dict[blank_analyte].data_vector = self.avg.analyte_dict[blank_analyte].data_vector \
-        #     - self.blank.avg.analyte_dict[blank_analyte].data_vector
+
         self.blank_subtracted_analytes.append(blank_analyte)
 
     def get_unique_analytes(self):
-        return list(set([analyte for single_trial_key in self.single_trial_dict for analyte in self.single_trial_dict[single_trial_key].analyte_dict]))
+        return list(set([analyte
+                         for single_trial_key in self.single_trial_dict
+                         for analyte in self.single_trial_dict[single_trial_key].analyte_dict]
+                        )
+                    )

@@ -1,15 +1,33 @@
-from .TimePoint import TimePoint
-from .TrialIdentifier import TrialIdentifier
+from .core.AnalyteData import TimePoint
+from .core.TrialIdentifier import TrialIdentifier, Strain
 from collections import OrderedDict
 import time as sys_time
 import numpy as np
 import copy
+import datetime
+
+# "strain_ko=adh,pta;strain_gen1=D1;plasmid_name=pKDL071;inducer=IPTG"
+#
+# 'var_val_delim ='
+# 'id_delim ;'
+
+
+def generic_id_parser(self, id, id_val_delim='=', id_delim=';'):
+    assert isinstance(id,str)
+
+    pairs = id.split(id_delim)
+    id_val = {pair.split(id_val_delim)[0] : pair.split(id_val_delim)[1] for pair in pairs}
+
+    strain = Strain()
+    if 'strain_ko' in id_val.keys():
+        strain.knockouts = id_val['strain_ko']
+
+
+
+    return id_val
 
 def spectromax_OD(experiment, data, fileName = None):
-    if fileName:
-        raise Exception('No file types directly parsable for spectromax_OD')
-
-    from .settings import settings
+    from .core.settings import settings
     live_calculations = settings.live_calculations
     
     # This should be an ordered dict if imported from py_xlsx
@@ -26,7 +44,11 @@ def spectromax_OD(experiment, data, fileName = None):
         # print(start_row_index)
         # Parse the time point out first
         # print(raw_data[start_row_index][0])
+
         if raw_data[start_row_index][0] != '~End':
+            if isinstance(raw_data[start_row_index][0],datetime.datetime):
+                raise Exception("Imported a datetime object, make sure to set all cells to 'TEXT' if importing"
+                                " from excel")
             parsed_time = raw_data[start_row_index][0].split(':')
 
             # Convert the Spectromax format to raw hours
@@ -95,8 +117,8 @@ def HPLC_titer_parser(experiment, data, fileName):
     for names in analyte_nameColumn:
         tempTimePointCollection[names] = []
     skipped_lines = 0
+    timepoint_list = []
     for i in range(first_data_row, len(data['titers'])):
-        print(data['titers'][i])
         if type(data['titers'][i][0]) is str:
             temp_run_identifier_object = TrialIdentifier()
             temp_run_identifier_object.parse_trial_identifier_from_csv(data['titers'][i][0])
@@ -116,17 +138,17 @@ def HPLC_titer_parser(experiment, data, fileName):
                 # print(temp_run_identifier_object.time,' ',data['titers'][i][analyte_nameColumn[key]])
                 if data['titers'][i][analyte_nameColumn[key]] == 'nan':
                     data['titers'][i][analyte_nameColumn[key]] = np.nan
-                experiment.timepoint_list.append(
-                    TimePoint(copy.copy(temp_run_identifier_object), key,
+                timepoint_list.append(
+                    TimePoint(copy.copy(temp_run_identifier_object),
                               temp_run_identifier_object.time,
                               data['titers'][i][analyte_nameColumn[key]]))
 
         else:
             skipped_lines += 1
-    tf = sys_.time()
-    print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(experiment.timepoint_list), tf - t0))
+    tf = sys_time.time()
+    print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(timepoint_list), tf - t0))
     print("Number of lines skipped: ", skipped_lines)
-    experiment.parse_time_point_dict(experiment.timepoint_list)
+    experiment.parse_time_point_dict(timepoint_list)
     experiment.calculate()
 
 def tecan_OD(experiment, data, fileName, t0):

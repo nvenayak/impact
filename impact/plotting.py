@@ -1,22 +1,22 @@
 import sqlite3 as sql
 import numpy as np
 import matplotlib.pyplot as plt
-from .ReplicateTrial import ReplicateTrial
-from .settings import plotly_username, plotly_api_key
+from .core.ReplicateTrial import ReplicateTrial
+from .core.settings import plotly_username, plotly_api_key
 
 
-# # If in the iPython environment, initialize notebook mode
-# try:
-#     temp = __IPYTHON__
-# except NameError:
-#     pass
-# else:
-    #     import plotly
-    #     plotly.offline.init_notebook_mode()
 
-# Load plotly - will eventually move this to head
+# If in the iPython environment, initialize notebook mode
+try:
+    temp = __IPYTHON__
+except NameError:
+    from plotly.offline import plot
+else:
+    import plotly
+    from plotly.offline import iplot
+    plotly.offline.init_notebook_mode()
+
 from plotly import tools
-from plotly.offline import plot
 import plotly.graph_objs as go
 import plotly.plotly as py
 
@@ -31,9 +31,9 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                                   output_type='html', stage_indices=None, stage=None,
                                   cl_scales=['10', 'qual', 'Paired'], colors=None,
                                   yieldFlag=False, titerFlag=True, endpointFlag=False, sortBy='strain_id',
-                                  img_scale=1, fig_height=None, column_width_multiplier=400, number_of_columns=3,
+                                  img_scale=1, fig_height=None, column_width=400, number_of_columns=3,
                                   horizontal_spacing=0.2, vertical_spacing=0.4, row_height=300,
-                                  format='web', single_subplot=False):
+                                  format='web', single_subplot=False, plot_curve_fit = False):
     """
 
     Parameters
@@ -66,7 +66,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         The output scale of the image
     fig_height : float
         The height of the figure
-    column_width_multiplier : float
+    column_width : float
         The width of each column
     number_of_columns : int
         The number of columns
@@ -111,7 +111,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     if stage_indices is not None and stage is not None:
         newReplicateTrialList = []
         for replicateTrial in replicateTrialList:
-            replicateTrial.calculate_stages(stage_indices=stage_indices)
+            # replicateTrial.calculate_stages(stage_indices=stage_indices)
             newReplicateTrialList.append(replicateTrial.stages[stage])
         replicateTrialList = newReplicateTrialList
     elif stage_indices is not None:
@@ -339,7 +339,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         else:  # time course (not end point)
             final_plot_number = print_generic_timecourse_plotly(replicateTrialList, product, colors, pts_per_hour, showlegend_flag, fig,
                                             sortBy, pltNum, number_of_columns, single_subplot, axis_params, chart_fonts,
-                                            height, legend_params, data_to_plot=data_to_plot)
+                                            height, legend_params, plot_curve_fit, data_to_plot=data_to_plot)
             showlegend_flag = False
             # else:
             #     raise Exception('No plot type selection (endpointFlag or yieldFlag must be True)')
@@ -374,7 +374,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                                                         ticks='', showticklabels=False)
 
     return render_output_ploty(output_type, fig, number_of_columns=number_of_columns,
-                               column_width_multiplier=column_width_multiplier, img_scale = img_scale
+                               column_width_multiplier=column_width, img_scale = img_scale
                                )
 
 def render_output_ploty(output_type, fig, number_of_columns = None, column_width_multiplier = None, img_scale = None):
@@ -417,8 +417,8 @@ def order_preserve_sort(seq, idfun=None):
 
 def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_per_hour, showlegend_flag, fig,
                                     sortBy, pltNum, number_of_columns, single_subplot, axis_params, chart_fonts, height,
-                                    legend_params,
-                                    data_to_plot = 'titer',
+                                    legend_params, plot_curve_fit,
+                                    data_to_plot = 'titer'
                                     ):
     color_index = 0
 
@@ -433,13 +433,10 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
 
     for replicate in replicate_trial_list:
         # Determine how many points should be plotted
-        # print(replicate.t[-1])
         required_num_pts = replicate.t[-1] * pts_per_hour
-        # print(required_num_pts)
         removePointFraction = int(len(replicate.t) / required_num_pts)
-        # print(removePointFraction)
         if removePointFraction < 1:  removePointFraction = 1
-        # print(removePointFraction)
+
         normalize_to = None
 
         # Get the correct data
@@ -464,6 +461,10 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
         t = replicate.t[::removePointFraction]
 
         if product in replicate.avg.analyte_dict:
+            if plot_curve_fit:
+                mode = 'markers'
+            else:
+                mode = 'lines+markers'
             trace = go.Scatter(x=t,
                                y=y_avg,
                                error_y={
@@ -471,7 +472,7 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
                                    'array'  : y_std,
                                    'visible': True,
                                    'color'  : colors[color_index]},
-                               mode='lines+markers',
+                               mode=mode,
                                marker={
                                    'color': colors[color_index]},
                                line={'color': colors[color_index]},
@@ -482,23 +483,24 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
                                name=(replicate.trial_identifier.strain_id + '+' +
                                      replicate.trial_identifier.id_1 +
                                      replicate.trial_identifier.id_2).split('LMSE')[-1])  # ,
-            #
-            # # Plot the fit curve
-            # if plotCurveFit and False \
-            #         and replicate_id.avg.titer_dict[product].trial_identifier.titerType in ['biomass', 'product'] \
-            #         and len(replicate_id.avg.titer_dict[product].fit_params.keys()) > 0:
-            #     # print(replicate_id.avg.titer_dict[product].fit_params)
-            #     trace = go.Scatter(x=np.linspace(min(t), max(t), 50),
-            #                        y=replicate_id.avg.titer_dict[product].data_curve_fit(
-            #                            np.linspace(min(replicate_id.t), max(replicate_id.t), 50)),
-            #                        mode='line',
-            #                        name=replicate_id.trial_identifier.strain_id + '\t' +
-            #                             replicate_id.trial_identifier.id_1 + '\t' +
-            #                             replicate_id.trial_identifier.id_2,
-            #                        legendgroup=replicate_id.trial_identifier.strain_id + '\t' +
-            #                                    replicate_id.trial_identifier.id_1 + '\t' +
-            #                                    replicate_id.trial_identifier.id_2,
-            #                        line={'color': colors[color_index]})
+
+            # Plot the fit curve
+            if plot_curve_fit and len(replicate.avg.analyte_dict[product].fit_params.keys()) > 0:
+                # print(replicate_id.avg.titer_dict[product].fit_params)
+                trace_fit = go.Scatter(x=np.linspace(min(t), max(t), 50),
+                                   y=replicate.avg.analyte_dict[product].data_curve_fit(
+                                       np.linspace(min(t), max(t), 50)),
+                                   mode='line',
+                                   marker={
+                                       'color': colors[color_index]},
+                                   line={'color': colors[color_index]},
+                                   legendgroup=(replicate.trial_identifier.strain_id + '+' +
+                                                replicate.trial_identifier.id_1 +
+                                                replicate.trial_identifier.id_2).split('LMSE')[-1],
+                                   name=(replicate.trial_identifier.strain_id + '+' +
+                                         replicate.trial_identifier.id_1 +
+                                         replicate.trial_identifier.id_2).split('LMSE')[-1])  # ,
+
             #
             #     if pltNum > 4:
             #         row = 2
@@ -565,11 +567,14 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
             # Append the plot if it was created
             if sortBy == 'product_in_legend' or single_subplot:
                 fig.append_trace(trace, 1, 1)
+                if plot_curve_fit:
+                    fig.append_trace(trace_fit,1,1)
             else:
                 row = math.ceil(pltNum / number_of_columns)
                 col = pltNum - (row - 1) * number_of_columns
                 fig.append_trace(trace, row, col)
-
+                if plot_curve_fit:
+                    fig.append_trace(trace_fit, row, col)
         # Keep moving color index to keeps colors consistent across plots
         color_index += 1
         final_plot_number = pltNum

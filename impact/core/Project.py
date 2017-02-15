@@ -1,15 +1,24 @@
 from .TrialIdentifier import TrialIdentifier
 from .Experiment import Experiment
-from .settings import db_name
-from .database import init_db
+from .settings import settings
+db_name = settings.db_name
+from ..database import init_db
 
 import sqlite3 as sql
 
 
 
+class Identifier(object):
+    def __init__(self):
+        self.nickname = ''
+        self.description = ''
+
+
 class Project(object):
     """
     """
+
+    # users = relationship('Users')
 
     colorMap = 'Set3'
 
@@ -63,7 +72,7 @@ class Project(object):
 
     # def newExperiment(self, dateStamp, description, rawData):
     #     experiment = Experiment()
-    #     experiment.parseRawData(rawData[1], fileName=rawData[0])
+    #     experiment.parse_raw_data(rawData[1], fileName=rawData[0])
     #     # conn = sql.connect('defaultProjectDatabase.db')
     #     # c = conn.cursor()
     #     # preppedData = sql.Binary(pickle.dumps(experiment,pickle.HIGHEST_PROTOCOL))

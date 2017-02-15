@@ -57,11 +57,12 @@ def generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, nois
         return dydt
 
     # Now let's generate the data
-    sol = odeint(dFBA_functions, y0, t, args=([flux * np.random.uniform(1 - noise, 1 + noise) for flux in biomass_flux],
-                                              [flux * np.random.uniform(1 - noise, 1 + noise) for flux in
-                                               substrate_flux],
-                                              [flux * np.random.uniform(1 - noise, 1 + noise) for flux in
-                                               product_flux]))
+    sol = odeint(dFBA_functions, y0, t, args=([flux * np.random.uniform(1 - noise, 1 + noise)
+                                               for flux in biomass_flux],
+                                              [flux * np.random.uniform(1 - noise, 1 + noise)
+                                               for flux in substrate_flux],
+                                              [flux * np.random.uniform(1 - noise, 1 + noise)
+                                               for flux in product_flux]))
 
     dFBA_profile = {key: [row[i] for row in sol] for i, key in enumerate(exchange_keys)}
 
@@ -69,10 +70,10 @@ def generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, nois
         plt.figure(figsize=[12, 6])
         for key in exchange_keys:
             plt.plot(t, dFBA_profile[key])
-        # plt.ylim([0, 250])
         plt.legend(exchange_keys, loc=2)
 
     return dFBA_profile
+
 
 def dynamic_model_integration(t, y0, model, single_trial, biomass_keys, substrate_keys, product_keys,extra_points_multiplier = 1):
     from scipy.interpolate import interp1d
@@ -92,10 +93,7 @@ def dynamic_model_integration(t, y0, model, single_trial, biomass_keys, substrat
         exchange_keys = biomass_keys + substrate_keys + product_keys
 
         if solution.status == 'infeasible':
-            dydt = []
-            for _ in exchange_keys:
-                dydt.append(0)
-            return dydt
+            return [0]*len(exchange_keys)
         else:
             # Let's assign the data to these variables
             biomass_flux = []

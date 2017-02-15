@@ -1,10 +1,9 @@
-from .TimePoint import TimePoint
-from .AnalyteData import TimeCourse
+from .AnalyteData import TimeCourse, TimePoint
 from .TrialIdentifier import TrialIdentifier
 from .SingleTrial import SingleTrial
 from .ReplicateTrial import ReplicateTrial
 
-from . import parsers
+from .. import parsers
 
 import sqlite3 as sql
 
@@ -21,15 +20,41 @@ except ImportError as e:
 import matplotlib.pyplot as plt
 import numpy as np
 
-class Experiment(object):
+from warnings import warn
+
+from ..database import Base
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
+
+class Stage(Base):
+    __tablename__ = 'stage'
+
+    id = Column(Integer, primary_key=True)
+    start_time = Column(Float)
+    end_time = Column(Float)
+
+    parent = relationship('Experiment')
+    parent_id = Column(Integer,ForeignKey('experiment.id'))
+
+class Experiment(Base):
     # colorMap = 'Set2'
+    __tablename__ = 'experiment'
+
+    id = Column(Integer, primary_key=True)
+    replicate_trials = relationship('ReplicateTrial')
+    stages = relationship('Stage')
+
+
+
 
     def __init__(self, info=None):
         # Initialize variables
         self.blank_key_list = []
-        self.timepoint_list = []  # dict()
-        self.titer_dict = dict()
-        self.single_experiment_dict = dict()
+        # self.timepoint_list = []  # dict()
+        # self.titer_dict = dict()
+        # self.single_experiment_dict = dict()
+
         self.replicate_experiment_dict = dict()
         self.info_keys = ['import_date', 'experiment_start_date', 'experiment_end_date', 'experiment_title', 'primary_scientist_name',
                           'secondary_scientist_name', 'medium_base', 'medium_supplements', 'notes']
@@ -40,6 +65,7 @@ class Experiment(object):
 
         self.stage_indices = []
         self.blank = None
+
     def __add__(self, experiment):
         """
         Add the experiments together by breaking them down to the analyte data and rebuilding to experiments.
@@ -48,7 +74,7 @@ class Experiment(object):
         ----------
         experiment
         """
-        # Break the experiment into its titer components
+        # Break the experiment into its base analytes
         titer_list = []
         for replicateExperiment in self.replicate_experiment_dict:
             for singleTrial in self.replicate_experiment_dict[replicateExperiment].single_trial_list:
@@ -82,7 +108,6 @@ class Experiment(object):
             if self.stage_indices:
                 self.replicate_experiment_dict[replicate_key].calculate_stages(self.stage_indices)
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
-
 
     def db_commit(self, db_name, overwrite_experiment_id = None, db_backend = 'sqlite3'):
         """
@@ -281,7 +306,6 @@ class Experiment(object):
         for replicate_key in self.replicate_experiment_dict:
             self.replicate_experiment_dict[replicate_key].summary()
 
-
     def get_strains(self):
         temp = [key for key in self.replicate_experiment_dict if
                 self.replicate_experiment_dict[key].trial_identifier.id_1 != '']
@@ -297,7 +321,7 @@ class Experiment(object):
 
         return titers_to_plot
 
-    def parseRawData(self, dataFormat, fileName=None, data=None, stage_indices=None, substrate_name=None):
+    def parse_raw_data(self, dataFormat, fileName=None, data=None, stage_indices=None, substrate_name=None):
         t0 = time.time()
 
         if data == None:
@@ -318,21 +342,27 @@ class Experiment(object):
         else:
             raise Exception('Parser %s not found', dataFormat)
 
-
+    def parseRawData(self, *args, **kwargs):
+        """
+        Wrapper for parse_raw_data to maintain legacy support
+        """
+        warn('Please use parse_raw_data instead')
+        self.parse_raw_data(self, *args, **kwargs)
 
     def parse_time_point_dict(self, timePointList, stage_indices=None):
         print('Parsing time point list...')
         t0 = time.time()
+        titer_dict = {}
         for timePoint in timePointList:
             flag = 0
-            if timePoint.get_unique_timepoint_id() in self.titer_dict:
-                self.titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
+            if timePoint.get_unique_timepoint_id() in titer_dict:
+                titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
             else:
-                self.titer_dict[timePoint.get_unique_timepoint_id()] = TimeCourse()
-                self.titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
+                titer_dict[timePoint.get_unique_timepoint_id()] = TimeCourse()
+                titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
         tf = time.time()
-        print("Parsed %i titer objects in %0.1fs\n" % (len(self.titer_dict), (tf - t0)))
-        self.parse_analyte_data_dict(self.titer_dict, stage_indices=stage_indices)
+        print("Parsed %i titer objects in %0.1fs\n" % (len(titer_dict), (tf - t0)))
+        self.parse_analyte_data_dict(titer_dict, stage_indices=stage_indices)
 
     def parse_titers(self, titer_list):
         print('Parsing titer object list...')
@@ -370,17 +400,18 @@ class Experiment(object):
     def parse_analyte_data_dict(self, analyte_dict, stage_indices=None):
         print('Parsing titer object list...')
         t0 = time.time()
+        single_experiment_dict = {}
         for analyte_dictKey in analyte_dict:
-            if analyte_dict[analyte_dictKey].getTimeCourseID() in self.single_experiment_dict:
-                self.single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()].add_titer(
+            if analyte_dict[analyte_dictKey].getTimeCourseID() in single_experiment_dict:
+                single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()].add_titer(
                     analyte_dict[analyte_dictKey])
             else:
-                self.single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()] = SingleTrial()
-                self.single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()].add_titer(
+                single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()] = SingleTrial()
+                single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()].add_titer(
                     analyte_dict[analyte_dictKey])
         tf = time.time()
-        print("Parsed %i single trials in %0.1fms\n" % (len(self.single_experiment_dict), (tf - t0) * 1000))
-        self.parse_single_experiment_dict(self.single_experiment_dict)
+        print("Parsed %i single trials in %0.1fms\n" % (len(single_experiment_dict), (tf - t0) * 1000))
+        self.parse_single_experiment_dict(single_experiment_dict)
 
     def parse_single_experiment_dict(self, singleExperimentObjectList):
         print('Parsing single experiment object list...')
@@ -443,7 +474,7 @@ class Experiment(object):
 
         replicateTrialList = [self.replicate_experiment_dict[key] for key in strainsToPlot]
 
-        from .plotting import printGenericTimeCourse_plotly
+        from ..plotting import printGenericTimeCourse_plotly
         printGenericTimeCourse_plotly(replicateTrialList=replicateTrialList, titersToPlot=titersToPlot,
                                       output_type=output_type, **kwargs)
 

@@ -7,16 +7,54 @@ import warnings
 from .TrialIdentifier import TrialIdentifier
 from .AnalyteData import TimeCourse
 
+from django.db import models
+from ..database import Base
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
 
-class SingleTrial(object):
+class Yield(object):
+    pass
+
+class SingleTrial(Base):
     """
     Container for :class:`~TiterObject` to build a whole trial out of different measurements. E.g. one flask would
     contain data for biomass (OD), products (ethanol, acetate), substrates (glucose), fluorescence (gfpmut3, mCherry)
     """
 
+    __tablename__ = 'single_trial'
+
+    id = Column(Integer, primary_key=True)
+
+    trial_identifier_id = Column(Integer,ForeignKey('trial_identifier.id'))
+    _trial_identifier = relationship('TrialIdentifier')
+
+    analyte_dict = relationship('TimeCourse',
+                                collection_class = attribute_mapped_collection('keyword'),
+                                cascade = 'save-update, delete')
+
+    analyte_df = Column(PickleType)
+    yields = Column(PickleType)
+    yields_df = Column(PickleType)
+
+    _substrate_name = Column(PickleType)
+    product_names = Column(PickleType)
+    biomass_name = Column(PickleType)
+
+    stage_indices = Column(PickleType)
+
+    parent_id = Column(Integer, ForeignKey('replicate_trial.id'))
+
+    stage_parent_id = Column(Integer, ForeignKey('single_trial.id'))
+    stages = relationship('SingleTrial', foreign_keys = 'SingleTrial.stage_parent_id')
+
+    normalized_data = Column(PickleType)
+
+
+
     def __init__(self):
         # Trial identifier with relevant features common to the trial
-        self.trial_identifier = None
+        self._trial_identifier = None
 
         # Analyte objects
         self.analyte_dict = dict()
@@ -83,7 +121,7 @@ class SingleTrial(object):
     @substrate_name.setter
     def substrate_name(self, substrate_name):
         self._substrate_name = substrate_name
-        self.check_time_vectors_match()
+        # self.check_time_vectors_match()
         self.calculate_substrate_consumed()
         if len(self.product_names) > 0:
             self.calculate_yield()
@@ -105,6 +143,14 @@ class SingleTrial(object):
         self._products = products
         if self._substrate:
             self.calculate_yield()
+
+    @property
+    def trial_identifier(self):
+        return self._trial_identifier
+
+    @trial_identifier.setter
+    def trial_identifier(self, trial_identifier):
+        self._trial_identifier = trial_identifier
 
     def calculate(self):
         for analyte_key in self.analyte_dict:
@@ -375,7 +421,7 @@ class SingleTrial(object):
                 'biomass_gdw'      : biomass_gdw,
                 'massBalance'      : massBalance}
 
-    def add_titer(self, titerObject, no_calculations = False):
+    def add_titer(self, titerObject):
         """
         Add a :class:`~TiterObject`
 
@@ -385,8 +431,8 @@ class SingleTrial(object):
             A titer object to be added
 
         """
-
-        from .settings import live_calculations
+        from .settings import settings
+        live_calculations = settings.live_calculations
 
         # Check if this titer already exists
         if titerObject.trial_identifier.analyte_name in self.analyte_dict:
@@ -448,36 +494,35 @@ class SingleTrial(object):
         temp_analyte_df[titerObject.trial_identifier.analyte_name] = titerObject.pd_series
 
         # Merging the dataframes this way will allow different time indices for different analytes
+        # print(self.analyte_df)
+        # print(temp_analyte_df)
         self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
         self.t = self.analyte_df.index
 
-    def check_time_vectors_match(self):
-        """
-        Ensure that the time vectors match between :class:`~AnalyteData` objects. Functionality to deal with missing data or
-        data with different sizes is not implemented.
-        """
-        checkTimeVectorsFlag = 1
-        if checkTimeVectorsFlag == 1:
-            t = []
-            flag = 0
-
-            for key in self.analyte_dict:
-                # print(self.analyte_dict[key].time_vector)
-                t.append(self.analyte_dict[key]._time_vector)
-
-                # print(t)
-            for i in range(len(t) - 1):
-                if (t[i] != t[i + 1]).all():
-                    index = i
-                    flag = 1
-
-            if flag == 1:
-                # print(t)
-                warnings.warn("Deprecated. New pandas functinality will enable analysis with differently sized data", DeprecationWarning)
-                # raise Exception(
-                #     "Time vectors within an experiment don't match, must implement new methods to deal with this type of data (if even possible)")
-            else:
-                self._t = t[0]
+    # def check_time_vectors_match(self):
+    #     """
+    #     Ensure that the time vectors match between :class:`~AnalyteData` objects. Functionality to deal with missing data or
+    #     data with different sizes is not implemented.
+    #     """
+    #     checkTimeVectorsFlag = 1
+    #     if checkTimeVectorsFlag == 1:
+    #         t = []
+    #         flag = 0
+    #
+    #         for key in self.analyte_dict:
+    #             # print(self.analyte_dict[key].time_vector)
+    #             t.append(self.analyte_dict[key]._time_vector)
+    #
+    #             # print(t)
+    #         for i in range(len(t) - 1):
+    #             if (t[i] != t[i + 1]).all():
+    #                 index = i
+    #                 flag = 1
+    #
+    #         if flag == 1:
+    #             warnings.warn("Deprecated. New pandas functinality will enable analysis with differently sized data", DeprecationWarning)
+    #         else:
+    #             self._t = t[0]
 
     def get_unique_timepoint_id(self):
         return self.substrate.trial_identifier.strain_id + self.substrate.trial_identifier.id_1 + self.substrate.trial_identifier.id_2 + str(
@@ -492,65 +537,32 @@ class SingleTrial(object):
         else:
             return self.t
 
-    def get_yields(self, stage=None):
-        if stage is not None:
-            self.calculate_substrate_consumed(stage=stage)
-            self.calculate_yield(stage=stage)
-            # print(stage)
-            # print(self.yields)
-            return self.yields
-        else:
+    def get_yields(self):
             return self.yields
 
     def calculate_substrate_consumed(self):
-        stage = None
-        if stage is None:
-            self.substrateConsumed = np.array(
-                [(self.analyte_dict[self.substrate_name].data_vector[0] - dataPoint) for dataPoint in
-                 self.analyte_dict[self.substrate_name].data_vector])
-        else:
-            raise Exception('Unimplemented functionality')
-            # print(self.substrate_name)
-            # print(stage)
-            # print(self.stages)
-            self.substrateConsumed = np.array(
-                [(self.analyte_dict[self.substrate_name].data_vector[self.stages[stage][0]] - dataPoint) for dataPoint in
-                 self.analyte_dict[self.substrate_name].data_vector[self.stages[stage][0]:self.stages[stage][1]]])
-            # print(self.substrateConsumed)
-            # print(np.array(
-            #     [(self.titer_dict[self.substrate_name].data_vector[0] - dataPoint) for dataPoint in
-            #      self.titer_dict[self.substrate_name].data_vector]))
+        self.substrateConsumed = np.array(
+            [(self.analyte_dict[self.substrate_name].data_vector[0] - dataPoint) for dataPoint in
+             self.analyte_dict[self.substrate_name].data_vector])
 
-    def calculate_yield(self, stage=None):
-        if stage is None:
-            self.yields = dict()
-            for productKey in [key for key in self.analyte_dict if
-                               self.analyte_dict[key].trial_identifier.analyte_type == 'product']:
-                try:
-                    self.yields[productKey] = np.divide(
-                        [(dataPoint - self.analyte_dict[productKey].data_vector[0]) for dataPoint in
-                         self.analyte_dict[productKey].data_vector],
-                        self.substrateConsumed)
-                except Exception as e:
-                    print(productKey)
-                    print(self.analyte_dict[productKey].data_vector)
-                    print(e)
-        else:
-            raise Exception('Unimplemented functionality')
-            self.yields = dict()
-            for productKey in [key for key in self.analyte_dict if
-                               self.analyte_dict[key].trial_identifier.analyte_type == 'product']:
-                # print(self.stages)
-                # print(stage)
+    def calculate_yield(self):
+        self.yields = dict()
+        for productKey in [key for key in self.analyte_dict if
+                           self.analyte_dict[key].trial_identifier.analyte_type == 'product']:
+            try:
                 self.yields[productKey] = np.divide(
-                    self.analyte_dict[productKey].data_vector[self.stages[stage][0]:self.stages[stage][1]] -
-                    self.analyte_dict[productKey].data_vector[self.stages[stage][0]],
-                    self.substrateConsumed
-                )
+                    [(dataPoint - self.analyte_dict[productKey].data_vector[0]) for dataPoint in
+                     self.analyte_dict[productKey].data_vector],
+                    self.substrateConsumed)
+            except Exception as e:
+                print(productKey)
+                print(self.analyte_dict[productKey].data_vector)
+                print(e)
 
-class TimeCourseStage(TimeCourse):
-    def __init__(self):
-        TimeCourse().__init__()
+
+# class TimeCourseStage(TimeCourse):
+#     def __init__(self):
+#         TimeCourse().__init__()
         #
         # @TimeCourse.stage_indices.setter
         # def

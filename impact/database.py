@@ -1,6 +1,62 @@
 # coding=utf-8
 import sqlite3 as sql
 
+# from sqlalchemy.ext.declarative import declarative_base
+# Base = declarative_base()
+#
+# from sqlalchemy import create_engine
+#
+#
+#
+#
+# engine = create_engine('sqlite:///:memory:', echo=True)
+
+
+from django.db import models
+import pandas as pd
+import json
+
+from sqlalchemy.ext.declarative import declarative_base
+Base = declarative_base()
+
+# class PandasField(models.TextField):
+#     description = 'Field to save pandas objects (df or series) as serialized JSON strings'
+#
+#     def __init__(self, *args, **kwargs):
+#         super(PandasField, self).__init__(*args, **kwargs)
+#
+#     def from_db_value(self, value, expression, connection, context):
+#         return pd.read_json(value)
+#
+#     def value_to_string(self, obj):
+#         return str(obj.to_json())
+#
+#
+# class JSONSerializableField(models.TextField):
+#     description = 'Field to save pandas objects (df or series) as serialized JSON strings'
+#
+#     def __init__(self, *args, **kwargs):
+#         super(JSONSerializableField, self).__init__(*args, **kwargs)
+#
+#     def from_db_value(self, value, expression, connection, context):
+#         return json.loads(value)
+#
+#     def value_to_string(self, obj):
+#         return str(obj.dumps())
+#
+# class PandasField(models.TextField):
+#     description = 'Field to save pandas objects (df or series) as serialized JSON strings'
+#
+#     def __init__(self, *args, **kwargs):
+#         super(PandasField, self).__init__(*args, **kwargs)
+#
+#     def from_db_value(self, value, expression, connection, context):
+#         return pd.read_json()
+#
+#     def value_to_string(self, obj):
+#         return str(obj.to_json())
+
+
 def init_db(db_name):
     """
     Initialize the database given a database file path.
