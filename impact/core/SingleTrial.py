@@ -493,12 +493,8 @@ class SingleTrial(Base):
         temp_analyte_df[titerObject.trial_identifier.analyte_name] = titerObject.pd_series
 
         # Merging the dataframes this way will allow different time indices for different analytes
-        # print(temp_analyte_df)
-        # print(vars(self.trial_identifier))
-        # str
         self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
         self.t = self.analyte_df.index
-        # print(self.analyte_df.tail())
 
     # def check_time_vectors_match(self):
     #     """

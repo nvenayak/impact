@@ -354,16 +354,13 @@ class Experiment(Base):
         t0 = time.time()
         titer_dict = {}
         for timePoint in timePointList:
-            print(timePoint.get_unique_timepoint_id())
             flag = 0
             if timePoint.get_unique_timepoint_id() in titer_dict:
                 titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
             else:
                 titer_dict[timePoint.get_unique_timepoint_id()] = TimeCourse()
                 titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
-            print(titer_dict[timePoint.get_unique_timepoint_id()].time_vector)
-            if len(titer_dict[timePoint.get_unique_timepoint_id()].time_vector) > 16:
-                a=1
+
         tf = time.time()
         print("Parsed %i titer objects in %0.1fs\n" % (len(titer_dict), (tf - t0)))
         self.parse_analyte_data(titer_dict, stage_indices=stage_indices)
