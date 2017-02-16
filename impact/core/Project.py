@@ -95,9 +95,9 @@ class Project(object):
     #         if attrName == 'replicate_experiment_dict':
     #             for key in getattr(experiment, attrName):
     #                 c.execute(
-    #                     "INSERT INTO replicateExperiment (experiment_id, strain_id, id_1, id_2) VALUES (?, ?,?,?)",
+    #                     "INSERT INTO replicateExperiment (experiment_id, strain.name, id_1, id_2) VALUES (?, ?,?,?)",
     #                     (len(self.experimentList),
-    #                      getattr(experiment, attrName)[key].trial_identifier.strain_id,
+    #                      getattr(experiment, attrName)[key].trial_identifier.strain.name,
     #                      getattr(experiment, attrName)[key].trial_identifier.id_1,
     #                      getattr(experiment, attrName)[key].trial_identifier.id_2)
     #                 )
@@ -125,7 +125,7 @@ class Project(object):
     #     # c = conn.cursor()
     #     # c.execute("""INSERT INTO timeCourseTable VALUES (?,?,?,?,?,?,?,?,?)""" ,
     #     #           (datetime.datetime.now().strftime("%Y%m%d %H:%M"),
-    #     #           self.TrialIdentifier.strain_id,
+    #     #           self.TrialIdentifier.strain.name,
     #     #           self.TrialIdentifier.id_1,
     #     #           self.TrialIdentifier.id_2,
     #     #           self.trial_identifier.replicate_id,
@@ -171,7 +171,7 @@ class Project(object):
     #     conn = sql.connect(dbName)
     #     c = conn.cursor()
     #     c.execute(
-    #         "SELECT experiment_id, strain_id, id_1, id_2 FROM replicateExperiment order by experiment_id ASC, strain_id ASC, id_1 ASC, id_2 ASC")
+    #         "SELECT experiment_id, strain.name, id_1, id_2 FROM replicateExperiment order by experiment_id ASC, strain.name ASC, id_1 ASC, id_2 ASC")
     #     data = list(c.fetchall())
     #     dataList = []
     #     for row in data:
@@ -222,7 +222,7 @@ class Project(object):
     #     conn = sql.connect(self.dbName)
     #     c = conn.cursor()
     #     experiment_id += 1
-    #     c.execute("SELECT strain_id, id_1, id_2 FROM replicateExperiment  WHERE (experiment_id = ?)",
+    #     c.execute("SELECT strain.name, id_1, id_2 FROM replicateExperiment  WHERE (experiment_id = ?)",
     #               (experiment_id,))
     #     data = c.fetchall()
     #     c.close()
@@ -232,7 +232,7 @@ class Project(object):
     # def getReplicateExperimentFromID(self, id):
     #     conn = sql.connect(self.dbName)
     #     c = conn.cursor()
-    #     c.execute("SELECT experiment_id, strain_id, id_1, id_2 FROM replicateExperiment WHERE (rowid = ?)",
+    #     c.execute("SELECT experiment_id, strain.name, id_1, id_2 FROM replicateExperiment WHERE (rowid = ?)",
     #               (id,))
     #     data = c.fetchall()
     #     c.close()
@@ -320,12 +320,12 @@ class Project(object):
     #         # Gather some information about the data
     #         uniques = dict()
     #         numUniques = dict()
-    #         for identifier, col in zip(['experiment', 'strain_id', 'id_1', 'id_2'], [0, 1, 2, 3]):
+    #         for identifier, col in zip(['experiment', 'strain.name', 'id_1', 'id_2'], [0, 1, 2, 3]):
     #             uniques[identifier] = set(row[col] for row in strainsToPlot)
     #             numUniques[identifier] = len(uniques[identifier])
     #
     #         # Check number of unique id_1s for each of the two id_2s
-    #         for identifier, col in zip(['experiment', 'strain_id', 'id_1', 'id_2'], [0, 1, 2, 3]):
+    #         for identifier, col in zip(['experiment', 'strain.name', 'id_1', 'id_2'], [0, 1, 2, 3]):
     #             if identifier == 'id_1':
     #                 uniques[identifier]
     #

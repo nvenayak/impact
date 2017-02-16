@@ -23,7 +23,7 @@ from sqlalchemy import event
 class AnalyteData(object):
     # class Meta:
     #     app_label = 'impact'
-    # __tablename__ = 'analyte_data'
+    # __tablename__ = 'analyte_datas'
     # id = Column(Integer,primary_key=True)
     # trial_identifier = relationship(TrialIdentifier)
 
@@ -48,20 +48,22 @@ class AnalyteData(object):
     def add_timepoint(self, timePoint):
         raise (Exception("No addTimePoint method defined in the child"))
 
+    # TODO replace this
     def getTimeCourseID(self):
         if len(self.timePointList) > 0:
             return ''.join([str(getattr(self.timePointList[0].trial_identifier,attr))
-                            for attr in ['strain_id','id_1','id_2','replicate_id']])
-        elif self.trial_identifier.strain_id != '':
-            return self.trial_identifier.strain_id + \
+                            for attr in ['strain','id_1','id_2','replicate_id']])
+        elif self.trial_identifier.strain.name != '':
+            return self.trial_identifier.strain.name + \
                    self.trial_identifier.id_1 + \
                    self.trial_identifier.id_2 + \
                    str(self.trial_identifier.replicate_id)
         else:
             raise Exception("No unique ID or time points in AnalyteData")
 
+    # TODO replace this
     def getReplicateID(self):
-        return self.trial_identifier.strain_id + self.trial_identifier.id_1 + self.trial_identifier.id_2
+        return self.trial_identifier.strain.name + self.trial_identifier.id_1 + self.trial_identifier.id_2
 
 # class TimeDataTuple(Base):
 #     __tablename__ = 'time_data_pair'
@@ -103,7 +105,7 @@ class TimePoint(Base):
                       'titer': 'g'}
 
     def get_unique_timepoint_id(self):
-        return self.trial_identifier.strain_id + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
+        return str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
             self.trial_identifier.replicate_id) + self.trial_identifier.analyte_name
 
 class TimeCourse(AnalyteData, Base):
@@ -198,6 +200,11 @@ class TimeCourse(AnalyteData, Base):
         # Declare the default curve fit
         self.fit_type = 'gompertz'
 
+    @property
+    def unique_id(self):
+        return ','.join([self.trial_identifier.strain,self.trial_identifier.media,self.trial_identifier.id_1,
+                         self.trial_identifier.id_2, self.trial_identifier.id_3, self.trial_identifier.replicate_id])
+
     def serialize(self):
         serialized_dict = {}
         # serialized_dict['time_vector'] = self.time_vector
@@ -254,9 +261,11 @@ class TimeCourse(AnalyteData, Base):
     def trial_identifier(self, trial_identifier):
         self._trial_identifier = trial_identifier
 
-        if trial_identifier.analyte_type == 'product':
+        self.analyte_name = trial_identifier.analyte_name
+        self.analyte_type = trial_identifier.analyte_type
+        if self.analyte_type == 'product':
             self.fit_type = 'productionEquation_generalized_logistic'
-        if trial_identifier.analyte_type == 'biomass':
+        if self.analyte_type == 'biomass':
             self.fit_type = 'janoschek'#'gompertz'#'richard_5','growthEquation_generalized_logistic'
 
     @property
@@ -313,9 +322,11 @@ class TimeCourse(AnalyteData, Base):
             self.curve_fit_data()
 
     def find_death_phase(self, data_vector):
+        from .settings import settings
+
         self.deathPhaseStart = self.find_death_phase_static(data_vector,
                                                             use_filtered_data_flag = self.useFilteredDataFlag,
-                                                            verbose = verbose)
+                                                            verbose = settings.verbose)
 
     @staticmethod
     def find_death_phase_static(data_vector, use_filtered_data_flag=False, verbose=False, hyper_parameter = 1):
@@ -372,7 +383,7 @@ class TimeCourse(AnalyteData, Base):
         summary['time_vector'] = self.time_vector
         summary['data_vector'] = self.data_vector
         summary['number_of_data_points'] = len(self.time_vector)
-        summary['trial_identifier'] = self.trial_identifier.summary(['strain_id', 'id_1', 'id_2',
+        summary['trial_identifier'] = self.trial_identifier.summary(['strain.name', 'id_1', 'id_2',
                                                                 'analyte_name', 'titerType', 'replicate_id'])
 
         if print:
@@ -431,30 +442,14 @@ class TimeCourse(AnalyteData, Base):
         if len(self.timePointList) > 6 and live_calculations:
             self.gradient = np.gradient(self._data_vector) / np.gradient(self.time_vector)
 
-            # self.data_vector = np.array([timePoint.titer for timePoint in self.timepoint_list])
-            # pass
-            # print('Skipping exponential fit_params calculation')
-            # print(self._time_vector)
-            # print(self._data_vector)
-            #
-            # print(self.pd_series)
-            # print(self.pd_series.index)
-            # self.curve_fit_data()
-
     def curve_fit_data(self):
         from .settings import settings
         verbose = settings.verbose
 
         if self.trial_identifier.analyte_type == 'titer' or self.trial_identifier.analyte_type in ['substrate', 'product']:
-            pass
             print(
                 'Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py')
-            # gmod.set_param_hint('A', value=np.min(self.data_vector))
-            # gmod.set_param_hint('B',value=2)
-            # gmod.set_param_hint('C', value=1, vary=False)
-            # gmod.set_param_hint('Q', value=0.1)#, max = 10)
-            # gmod.set_param_hint('K', value = max(self.data_vector))#, max=5)
-            # gmod.set_param_hint('nu', value=1, vary=False)
+
         elif self.trial_identifier.analyte_type in ['biomass']:
             # from scipy.interpolate import InterpolatedUnivariateSpline
             # spl = InterpolatedUnivariateSpline(self.time_vector, self.data_vector)
@@ -470,20 +465,14 @@ class TimeCourse(AnalyteData, Base):
             # return max(spl_grad)
 
 
-            # print('DPS: ',self.deathPhaseStart)
-            # print(self.data_vector)
-            # print(self.time_vector[0:self.deathPhaseStart])
-            # print(self.data_vector[0:self.deathPhaseStart])
+
             if verbose: print('Started fit')
-            # print(self.fit_type)
             if verbose: print('Death phase start: ',self.deathPhaseStart)
             result = curve_fit_dict[self.fit_type].calcFit(self.time_vector[0:self.deathPhaseStart],
                                                                     self.data_vector[0:self.deathPhaseStart])#,fit_kws = {'xatol':1E-10, 'fatol':1E-10})  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
             if verbose: print('Finished fit')
-            # self.fit_params = [0, 0, 0, 0, 0, 0]
             for key in result.best_values:
                 self.fit_params[key] = result.best_values[key]
-            # print(result.fit_report())
 
             if verbose:
                 import matplotlib.pyplot as plt
@@ -491,7 +480,7 @@ class TimeCourse(AnalyteData, Base):
                 plt.plot(self.time_vector[0:self.deathPhaseStart], self.data_vector[0:self.deathPhaseStart],         'bo')
                 plt.plot(self.time_vector[0:self.deathPhaseStart], result.best_fit, 'r-')
 
-            print(result.fit_report())
+            if verbose: print(result.fit_report())
         else:
             print('Unidentified titer type:' + self.trial_identifier.analyte_type)
             print('Ensure that the trial identifier is described before adding data. This will allow curve fitting'
@@ -500,7 +489,6 @@ class TimeCourse(AnalyteData, Base):
     def get_fit_parameters(self):
         return [[param['name'], self.fit_params[i]] for i, param in
                 enumerate(curve_fit_dict[self.fit_type].paramList)]
-
 
 # class TimeCourseStage(TimeCourse):
 #     time_course = Column(Integer, ForeignKey('time_course.id'))

@@ -43,7 +43,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     dbName : str
         The name/path of the db if you will be loading data
     strainsToPlot : list
-        A list of the strain identifiers, a concatenation of the strain_id+id_1+id_2
+        A list of the strain identifiers, a concatenation of the strain.name+id_1+id_2
     titersToPlot : list
         A list of the titers to plot
     output_type : str
@@ -61,7 +61,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     endpointFlag : bool
         True to plot endpoint, otherwise plot timecourse
     sortBy : str
-        Identifier to plot by (strain_id, id_1, id_2, None)
+        Identifier to plot by (strain.name, id_1, id_2, None)
     img_scale : int
         The output scale of the image
     fig_height : float
@@ -200,7 +200,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     prepped_y_avg = dict()
     prepped_y_std = dict()
     prepped_legendgroup = dict()
-    for name in [replicate.trial_identifier.strain_id + '+'
+    for name in [replicate.trial_identifier.strain.name + '+'
                  + replicate.trial_identifier.id_1 + ','
                  + replicate.trial_identifier.id_2 for replicate in replicateTrialList]:
         prepped_x[name] = []
@@ -253,7 +253,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     label = ' titer (g/L)'
 
                 # legendgroup = ''
-                # for attribute in ['strain_id', 'id_1', 'id_2']:
+                # for attribute in ['strain.name', 'id_1', 'id_2']:
                 #     if attribute != sortBy:
                 #         legendgroup += getattr(replicateTrialList[0].trial_identifier, attribute)
 
@@ -268,13 +268,13 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                              if getattr(replicate.trial_identifier, sortBy)
                              == unique or sort_by_flag is False]
                     if sortBy == 'id_1':
-                        x = [replicate.trial_identifier.strain_id + ',' +
+                        x = [replicate.trial_identifier.strain.name + ',' +
                              replicate.trial_identifier.id_2
                              for replicate in replicateTrialList
                              if getattr(replicate.trial_identifier, sortBy)
                              == unique or sort_by_flag is False]
                     if sortBy == 'id_2':
-                        x = [replicate.trial_identifier.strain_id
+                        x = [replicate.trial_identifier.strain.name
                              + '+'
                              + replicate.trial_identifier.id_1
                              for replicate in replicateTrialList
@@ -284,12 +284,12 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                 else:
                     if sort_by_product_in_legend_flag:
                         x = [product for _ in replicateTrialList]
-                        legendgroup = [replicate.trial_identifier.strain_id + '+' +
+                        legendgroup = [replicate.trial_identifier.strain.name + '+' +
                                        replicate.trial_identifier.id_1 + ',' +
                                        replicate.trial_identifier.id_2 for replicate in replicateTrialList]
                     else:
                         legendgroup = None
-                        x = [(replicate.trial_identifier.strain_id + '+' +
+                        x = [(replicate.trial_identifier.strain.name + '+' +
                               replicate.trial_identifier.id_1 +
                               replicate.trial_identifier.id_2).split('LMSE')[-1]
                              for replicate in replicateTrialList
@@ -477,10 +477,10 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
                                    'color': colors[color_index]},
                                line={'color': colors[color_index]},
                                showlegend=showlegend_flag,
-                               legendgroup=(replicate.trial_identifier.strain_id + '+' +
+                               legendgroup=(replicate.trial_identifier.strain.name + '+' +
                                             replicate.trial_identifier.id_1 +
                                             replicate.trial_identifier.id_2).split('LMSE')[-1],
-                               name=(replicate.trial_identifier.strain_id + '+' +
+                               name=(replicate.trial_identifier.strain.name + '+' +
                                      replicate.trial_identifier.id_1 +
                                      replicate.trial_identifier.id_2).split('LMSE')[-1])  # ,
 
@@ -494,10 +494,10 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
                                    marker={
                                        'color': colors[color_index]},
                                    line={'color': colors[color_index]},
-                                   legendgroup=(replicate.trial_identifier.strain_id + '+' +
+                                   legendgroup=(replicate.trial_identifier.strain.name + '+' +
                                                 replicate.trial_identifier.id_1 +
                                                 replicate.trial_identifier.id_2).split('LMSE')[-1],
-                                   name=(replicate.trial_identifier.strain_id + '+' +
+                                   name=(replicate.trial_identifier.strain.name + '+' +
                                          replicate.trial_identifier.id_1 +
                                          replicate.trial_identifier.id_2).split('LMSE')[-1])  # ,
 
@@ -520,10 +520,10 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
             #                        mode='markers',
             #                        marker={
             #                            'color': colors[color_index]},
-            #                        legendgroup=replicate_id.trial_identifier.strain_id + '\t' +
+            #                        legendgroup=replicate_id.trial_identifier.strain.name + '\t' +
             #                                    replicate_id.trial_identifier.id_1 + '\t' +
             #                                    replicate_id.trial_identifier.id_2,
-            #                        name=replicate_id.trial_identifier.strain_id + replicate_id.trial_identifier.id_1 + replicate_id.trial_identifier.id_2)
+            #                        name=replicate_id.trial_identifier.strain.name + replicate_id.trial_identifier.id_1 + replicate_id.trial_identifier.id_2)
             #     dataLabel = 'AnalyteData g/L'
             # elif replicate_id.avg.titer_dict[
             #     product].trial_identifier.titerType == 'product' and dataType == 'yields':
@@ -538,10 +538,10 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
             #                        mode='markers',
             #                        marker={
             #                            'color': colors[color_index]},
-            #                        legendgroup=replicate_id.trial_identifier.strain_id + '\t' +
+            #                        legendgroup=replicate_id.trial_identifier.strain.name + '\t' +
             #                                    replicate_id.trial_identifier.id_1 + '\t' +
             #                                    replicate_id.trial_identifier.id_2,
-            #                        name=replicate_id.trial_identifier.strain_id + replicate_id.trial_identifier.id_1 + replicate_id.trial_identifier.id_2)
+            #                        name=replicate_id.trial_identifier.strain.name + replicate_id.trial_identifier.id_1 + replicate_id.trial_identifier.id_2)
             #     dataLabel = 'Yield mmol/mmol'
             # else:
             #     trace = go.Scatter(x=t[::removePointFraction],
@@ -557,10 +557,10 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
             #                            'color': colors[color_index]},
             #                        line={'color': colors[color_index]},
             #                        showlegend=showlegend_flag,
-            #                        legendgroup=replicate_id.trial_identifier.strain_id + '\t' +
+            #                        legendgroup=replicate_id.trial_identifier.strain.name + '\t' +
             #                                    replicate_id.trial_identifier.id_1 + '\t' +
             #                                    replicate_id.trial_identifier.id_2,
-            #                        name=replicate_id.trial_identifier.strain_id + replicate_id.trial_identifier.id_1 + replicate_id.trial_identifier.id_2)  # ,
+            #                        name=replicate_id.trial_identifier.strain.name + replicate_id.trial_identifier.id_1 + replicate_id.trial_identifier.id_2)  # ,
             #     #                    label = '$\mu$ = '+'{:.2f}'.format(replicate_id.avg.OD.fit_params[1]) + ' $\pm$ ' + '{:.2f}'.format(replicate_id.std.OD.fit_params[1])+', n='+str(len(replicate_id.replicate_ids)-len(replicate_id.bad_replicates)))
             #     dataLabel = 'AnalyteData g/L'
 

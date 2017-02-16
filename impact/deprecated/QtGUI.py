@@ -538,7 +538,7 @@ class Window(QtGui.QDialog):
         # self.button.clicked.connect(self.plot)
 
         comboBox = QtGui.QComboBox(self)
-        comboBox.addItem('strain_id')
+        comboBox.addItem('strain.name')
         comboBox.addItem('id_1')
         comboBox.addItem('id_2')
         comboBox.activated[str].connect(self.updateSortBy)

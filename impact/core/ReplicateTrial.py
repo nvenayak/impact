@@ -4,7 +4,7 @@ import numpy as np
 import dill as pickle
 import pandas as pd
 from .SingleTrial import SingleTrial
-from .AnalyteData import TimeCourseShell
+from .AnalyteData import TimeCourse
 from .TrialIdentifier import TrialIdentifier
 import copy
 from scipy import stats
@@ -145,7 +145,7 @@ class ReplicateTrial(Base):
                 c.execute("""\
                    INSERT INTO replicateTable(experiment_id, strain_id, id_1, id_2, id_3)
                    VALUES (?, ?, ?, ?, ?)""",
-                          (experiment_id, self.trial_identifier.strain_id, self.trial_identifier.id_1,
+                          (experiment_id, self.trial_identifier.strain.name, self.trial_identifier.id_1,
                            self.trial_identifier.id_2, id_3)
                           )
                 c.execute("""SELECT MAX(replicateID) FROM replicateTable""")
@@ -185,12 +185,12 @@ class ReplicateTrial(Base):
         for row in c.fetchall():
             # for stat in ['avg', 'std']:
             #     temp_trial_identifier = TrialIdentifier()
-            #     temp_trial_identifier.strain_id = row[2]
+            #     temp_trial_identifier.strain.name = row[2]
             #     temp_trial_identifier.id_1 = row[3]
             #     temp_trial_identifier.id_2 = row[4]
             #     getattr(self, stat).trial_identifier = temp_trial_identifier
             self.trial_identifier = TrialIdentifier()
-            self.trial_identifier.strain_id = row[2]
+            self.trial_identifier.strain.name = row[2]
             self.trial_identifier.id_1 = row[3]
             self.trial_identifier.id_2 = row[4]
             self.db_replicate_id = row[0]
@@ -277,7 +277,7 @@ class ReplicateTrial(Base):
                     self.single_trial_dict[list(self.single_trial_dict.keys())[0]].product_names
                 getattr(self, stat).biomass_name = \
                     self.single_trial_dict[list(self.single_trial_dict.keys())[0]].biomass_name
-                # for attr in ['strain_id','id_1','id_2']
+                # for attr in ['strain.name','id_1','id_2']
                 # getattr(self, stat).stages = self.single_trial_list[0].stages
 
         self.check_replicate_unique_id_match()
@@ -333,7 +333,7 @@ class ReplicateTrial(Base):
 
         for analyte in unique_analytes:
             for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
-                getattr(self, stat).analyte_dict[analyte] = TimeCourseShell()
+                getattr(self, stat).analyte_dict[analyte] = TimeCourse()
 
                 # Deprecated since v0.5.0
                 # getattr(self, stat).analyte_dict[analyte].time_vector = self.t

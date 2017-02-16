@@ -33,6 +33,7 @@ class SingleTrial(Base):
                                 collection_class = attribute_mapped_collection('keyword'),
                                 cascade = 'save-update, delete')
 
+
     analyte_df = Column(PickleType)
     yields = Column(PickleType)
     yields_df = Column(PickleType)
@@ -49,8 +50,6 @@ class SingleTrial(Base):
     stages = relationship('SingleTrial', foreign_keys = 'SingleTrial.stage_parent_id')
 
     normalized_data = Column(PickleType)
-
-
 
     def __init__(self):
         # Trial identifier with relevant features common to the trial
@@ -82,7 +81,7 @@ class SingleTrial(Base):
         serialized_dict = {}
 
         if self.trial_identifier:
-            serialized_dict['strain_id'] = self.trial_identifier.strain_id
+            serialized_dict['strain_id'] = self.trial_identifier.strain.name
             serialized_dict['id_1'] = self.trial_identifier.id_1
             serialized_dict['id_2'] = self.trial_identifier.id_2
 
@@ -163,7 +162,7 @@ class SingleTrial(Base):
     def create_stage(self, stage_bounds):
         stage = SingleTrial()
         for titer in self.analyte_dict:
-            stage.add_titer(self.analyte_dict[titer].create_stage(stage_bounds))
+            stage.add_analyte_data(self.analyte_dict[titer].create_stage(stage_bounds))
         stage.calculate_yield()
 
         return stage
@@ -237,7 +236,7 @@ class SingleTrial(Base):
         for row in c.fetchall():
             # product = row[3]
             temp_titer_object = TimeCourse()
-            for attribute in ['strain_id', 'id_1', 'id_2']:
+            for attribute in ['strain', 'id_1', 'id_2']:
                 setattr(temp_titer_object.trial_identifier, attribute, getattr(self.trial_identifier, attribute))
             temp_titer_object.trial_identifier.id_1 = self.trial_identifier.id_1
             temp_titer_object.trial_identifier.id_2 = self.trial_identifier.id_2
@@ -262,7 +261,7 @@ class SingleTrial(Base):
 
             # self._t = self.titer_dict[product].time_vector
 
-            self.add_titer(temp_titer_object)
+            self.add_analyte_data(temp_titer_object)
 
 
         # The yields get recalculated when the titers are added, when in reality. A quick solution is to set the yield
@@ -400,7 +399,7 @@ class SingleTrial(Base):
             # Parameters for E. coli
             OD_gdw = 0.33  # Correlation for OD to gdw for mass balance
 
-        # self.substrateConsumed
+        # self.substrate_consumed
 
         if self.OD is not None:
             # Calc mass of biomass
@@ -413,15 +412,15 @@ class SingleTrial(Base):
 
         # Calculate the mass balance (input-output)
         if biomass_gdw is None:   biomass_gdw = np.zeros(
-            [len(self.substrateConsumed)])  # If this isn't defined, set biomass to zero
-        massBalance = self.substrateConsumed - totalProductMass - biomass_gdw
+            [len(self.substrate_consumed)])  # If this isn't defined, set biomass to zero
+        massBalance = self.substrate_consumed - totalProductMass - biomass_gdw
 
-        return {'substrateConsumed': self.substrateConsumed,
+        return {'substrate_consumed': self.substrate_consumed,
                 'totalProductMass' : totalProductMass,
                 'biomass_gdw'      : biomass_gdw,
                 'massBalance'      : massBalance}
 
-    def add_titer(self, titerObject):
+    def add_analyte_data(self, titerObject):
         """
         Add a :class:`~TiterObject`
 
@@ -472,17 +471,17 @@ class SingleTrial(Base):
         # check if trial identifiers match
         if self.trial_identifier is None:
             self.trial_identifier = TrialIdentifier()
-            for attr in ['strain_id', 'id_1', 'id_2', 'replicate_id']:
+            for attr in ['strain', 'id_1', 'id_2', 'replicate_id']:
                 setattr(self.trial_identifier, attr, getattr(titerObject.trial_identifier, attr))
 
-        for attr in ['strain_id','id_1','id_2','replicate_id']:
-            if getattr(self.trial_identifier,attr) != getattr(titerObject.trial_identifier,attr):
+        for attr in ['strain','id_1','id_2','replicate_id']:
+            if str(getattr(self.trial_identifier,attr)) != str(getattr(titerObject.trial_identifier,attr)):
                 raise Exception('Trial identifiers do not match at the following attribute: '
                                 +attr
                                 +' val 1: '
-                                +getattr(self.trial_identifier,attr)
+                                +str(getattr(self.trial_identifier,attr))
                                 +' val 2: '
-                                +getattr(titerObject.trial_identifier,attr))
+                                +str(getattr(titerObject.trial_identifier,attr)))
             else:
                 setattr(self.trial_identifier, attr, getattr(titerObject.trial_identifier, attr))
 
@@ -494,10 +493,12 @@ class SingleTrial(Base):
         temp_analyte_df[titerObject.trial_identifier.analyte_name] = titerObject.pd_series
 
         # Merging the dataframes this way will allow different time indices for different analytes
-        # print(self.analyte_df)
         # print(temp_analyte_df)
+        # print(vars(self.trial_identifier))
+        # str
         self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
         self.t = self.analyte_df.index
+        # print(self.analyte_df.tail())
 
     # def check_time_vectors_match(self):
     #     """
@@ -525,8 +526,8 @@ class SingleTrial(Base):
     #             self._t = t[0]
 
     def get_unique_timepoint_id(self):
-        return self.substrate.trial_identifier.strain_id + self.substrate.trial_identifier.id_1 + self.substrate.trial_identifier.id_2 + str(
-            self.substrate.trial_identifier.replicate_id)
+        return str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
+            self.trial_identifier.replicate_id)
 
     def get_unique_replicate_id(self):
         return self.analyte_dict[list(self.analyte_dict.keys())[0]].getReplicateID()

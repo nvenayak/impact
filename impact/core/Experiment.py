@@ -176,7 +176,7 @@ class Experiment(Base):
                 WHERE experiment_id == ?""", (experiment_id,))
         for row in c.fetchall():
             self.replicate_experiment_dict[row[0] + row[1] + row[2]] = ReplicateTrial()
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.strain_id = row[0]
+            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.strain.name = row[0]
             self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_1 = row[1]
             self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_2 = row[2]
             self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.identifier3 = row[3]
@@ -205,7 +205,7 @@ class Experiment(Base):
                 WHERE experiment_id == ?""", (experiment_id,))
         for row in c.fetchall():
             self.replicate_experiment_dict[row[0] + row[1] + row[2]] = ReplicateTrial()
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.strain_id = row[0]
+            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.strain.name = row[0]
             self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_1 = row[1]
             self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_2 = row[2]
             self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.identifier3 = row[3]
@@ -354,19 +354,24 @@ class Experiment(Base):
         t0 = time.time()
         titer_dict = {}
         for timePoint in timePointList:
+            print(timePoint.get_unique_timepoint_id())
             flag = 0
             if timePoint.get_unique_timepoint_id() in titer_dict:
                 titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
             else:
                 titer_dict[timePoint.get_unique_timepoint_id()] = TimeCourse()
                 titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
+            print(titer_dict[timePoint.get_unique_timepoint_id()].time_vector)
+            if len(titer_dict[timePoint.get_unique_timepoint_id()].time_vector) > 16:
+                a=1
         tf = time.time()
         print("Parsed %i titer objects in %0.1fs\n" % (len(titer_dict), (tf - t0)))
-        self.parse_analyte_data_dict(titer_dict, stage_indices=stage_indices)
+        self.parse_analyte_data(titer_dict, stage_indices=stage_indices)
 
     def parse_titers(self, titer_list):
         print('Parsing titer object list...')
         t0 = time.time()
+
         uniques = list(set([titer.getTimeCourseID() for titer in titer_list]))
 
         single_trial_list = []
@@ -374,7 +379,7 @@ class Experiment(Base):
             single_trial = SingleTrial()
             for titer in titer_list:
                 if titer.getTimeCourseID() == unique:
-                    single_trial.add_titer(titer)
+                    single_trial.add_analyte_data(titer)
             single_trial_list.append(single_trial)
 
         tf = time.time()
@@ -397,17 +402,20 @@ class Experiment(Base):
         for replicate_trial in replicate_trial_list:
             self.add_replicate_trial(replicate_trial)
 
-    def parse_analyte_data_dict(self, analyte_dict, stage_indices=None):
+    def parse_analyte_data(self, analyte_dict, stage_indices=None):
         print('Parsing titer object list...')
         t0 = time.time()
         single_experiment_dict = {}
+        count = 0
         for analyte_dictKey in analyte_dict:
+            count += 1
+            print(count)
             if analyte_dict[analyte_dictKey].getTimeCourseID() in single_experiment_dict:
-                single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()].add_titer(
+                single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()].add_analyte_data(
                     analyte_dict[analyte_dictKey])
             else:
                 single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()] = SingleTrial()
-                single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()].add_titer(
+                single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()].add_analyte_data(
                     analyte_dict[analyte_dictKey])
         tf = time.time()
         print("Parsed %i single trials in %0.1fms\n" % (len(single_experiment_dict), (tf - t0) * 1000))
@@ -537,20 +545,20 @@ class Experiment(Base):
         ax.xaxis.set_ticks_position('bottom')
         plt.ylabel('Growth Rate ($\mu$, h$^{-1}$)')
         xticklabel = ''
-        for attribute in ['strain_id', 'id_1', 'id_2']:
+        for attribute in ['strain', 'id_1', 'id_2']:
             if attribute != sortBy:
                 xticklabel = xticklabel + attribute
 
-        if 'strain_id' == sortBy:
+        if 'strain' == sortBy:
             tempticks = [self.replicate_experiment_dict[key].trial_identifier.id_1 + '+' +
                          self.replicate_experiment_dict[key].trial_identifier.id_2 for key in strainsToPlot
                          if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
         if 'id_1' == sortBy:
-            tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain_id + '+' +
+            tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain.name + '+' +
                          self.replicate_experiment_dict[key].trial_identifier.id_2 for key in strainsToPlot
                          if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
         if 'id_2' == sortBy:
-            tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain_id + '+' +
+            tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain.name + '+' +
                          self.replicate_experiment_dict[key].trial_identifier.id_1 for key in strainsToPlot
                          if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
         tempticks.sort()
@@ -685,7 +693,7 @@ class Experiment(Base):
                 endPointTiterLabel.sort()
 
                 xticklabel = ''
-                for attribute in ['strain_id', 'id_1', 'id_2']:
+                for attribute in ['strain', 'id_1', 'id_2']:
                     if attribute != sortBy:
                         xticklabel = xticklabel + attribute
 
@@ -695,12 +703,12 @@ class Experiment(Base):
                                  strainsToPlot
                                  if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
                 if 'id_1' == sortBy:
-                    tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain_id + '+' +
+                    tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain.name + '+' +
                                  self.replicate_experiment_dict[key].trial_identifier.id_2 for key in
                                  strainsToPlot
                                  if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
                 if 'id_2' == sortBy:
-                    tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain_id + '+' +
+                    tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain.name + '+' +
                                  self.replicate_experiment_dict[key].trial_identifier.id_1 for key in
                                  strainsToPlot
                                  if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
@@ -853,7 +861,7 @@ class Experiment(Base):
 
         self.blank_key_list = [replicate_key
                       for replicate_key in self.replicate_experiment_dict
-                      if self.replicate_experiment_dict[replicate_key].trial_identifier.strain_id
+                      if self.replicate_experiment_dict[replicate_key].trial_identifier.strain.name
                       in ['Blank','blank']]
 
         if common_id:
@@ -871,7 +879,7 @@ class Experiment(Base):
 
 
         # for replicate_key in self.replicate_experiment_dict:
-        #     if self.replicate_experiment_dict[replicate_key].trial_identifier.strain_id in ['Blank','blank']:
+        #     if self.replicate_experiment_dict[replicate_key].trial_identifier.strain.name in ['Blank','blank']:
         #         blank_list.append(replicate_key)
         if mode == 'auto':
             pass

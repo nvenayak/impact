@@ -26,31 +26,32 @@ class Strain(Base):
     __tablename__ = 'strain'
 
     id = Column(Integer, primary_key=True)
-    strain = Column(String)
+    name = Column(String)
     plasmid_1 = Column(String)
     plasmid_2 = Column(String)
     plasmid_3 = Column(String)
 
     def __init__(self, *args, **kwargs):
         # models.Model.__init__(self, *args, **kwargs)
-        self.summary_elements = ['strain_name','plasmid_1','plasmid_2','plasmid_3']
 
-        self.strain_name = None     # 'E. coli MG1655'
+        self.name = ''    # 'E. coli MG1655'
         self.plasmid_1 = None       # ptrc99a
         self.plasmid_2 = None       # ptrc99a
         self.plasmid_3 = None       # ptrc99a
 
     def __str__(self):
-        summary_string = self.strain_name
+        plasmid_summ = '+'.join([plasmid
+                                 for plasmid in [self.plasmid_1,self.plasmid_2,self.plasmid_3]
+                                 if plasmid is not None])
+        if plasmid_summ :
+            return self.name+'+'+plasmid_summ
+        else:
+            return self.name
 
-        flag = True
-        for plasmid in [self.plasmid_1,self.plasmid_2,self.plasmid_3]:
-            if plasmid:
-                if flag:
-                    summary_string = summary_string + '+'
-                summary_string = summary_string + getattr(self,plasmid)
-            flag = False
-        return summary_string
+
+    @property
+    def unique_id(self):
+        return self.name
 
 class MediaComponent(Base):
     """
@@ -96,7 +97,7 @@ class Media(Base):
     component_concentrations = relationship('ComponentConcentration', cascade = 'all')
     parent = Column(Integer,ForeignKey('media.name'))
 
-    def __init__(self, name = None, concentration=None, unit=None):
+    def __init__(self, name = 'NA', concentration=None, unit=None):
         self.components = []
         self.component_concentrations = []
         self.name = name  # M9
@@ -118,7 +119,9 @@ class Media(Base):
             parent_name = ''
         return '+'.join([item for item in component_names+parent_name])
 
-
+    @property
+    def unique_id(self):
+        return self.name
 
 
     # @property
@@ -139,14 +142,13 @@ class Analyte(Base):
 
     name = Column(String, primary_key=True)
 
-
 class TrialIdentifier(Base):
     """
     Carries information about the run through all the objects
 
     Attributes
     -----------
-    strain_id : str
+    strain.name : str
         Strain name e.g. 'MG1655 del(adh,pta)'
     id_1 : str, optional
         First identifier, plasmid e.g. 'pTrc99a'
@@ -168,7 +170,7 @@ class TrialIdentifier(Base):
     # first_name = models.CharField(max_length=30)
     # last_name = models.CharField(max_length=30)
     #
-    # strain_id = models.CharField(max_length=30)
+    # strain.name = models.CharField(max_length=30)
     # id_1 = models.CharField(max_length=30)
     # id_2 = models.CharField(max_length=30)
     # id_3 = models.CharField(max_length=30)
@@ -197,14 +199,6 @@ class TrialIdentifier(Base):
     media_name = Column(String, ForeignKey('media.name'))
     media = relationship("Media")
 
-
-    # general
-
-
-    # id_1 = Column(String)
-    # id_2 = Column(String)
-    # id_3 = Column(String)
-
     # trial specific
     replicate_id = Column(Integer)
 
@@ -223,23 +217,25 @@ class TrialIdentifier(Base):
         self.strain = strain       # e.g. MG1655 dlacI
         self.media = media
         self.strain.name = strain_name
-        # self.strain_id = strain_id
 
-        self.id_1 = id_1                    # e.g. pTOG009
-        self.id_2 = id_2                    # e.g. IPTG
-        self.id_3 = id_3                    # e.g. 37C
+        self.id_1 = id_1
+        self.id_2 = id_2
+        self.id_3 = id_3
+
         self.replicate_id = replicate_id    # e.g. 1
+
         self.time = time                    # e.g. 0
+
         self.analyte_name = analyte_name    # BiGG id preferred. E.g. ac, succ, pyr, glc__D
         self._analyte_type = analyte_type   # e.g. substrate, product, biomass
 
     # @property
-    # def strain_id(self):
-    #     return self._strain_id# .__str__()#summary()
+    # def strain.name(self):
+    #     return self._strain.name# .__str__()#summary()
     #
-    # @strain_id.setter
-    # def strain_id(self, strain_id):
-    #     self._strain_id.name = strain_id
+    # @strain.name.setter
+    # def strain.name(self, strain.name):
+    #     self._strain.name.name = strain.name
 
     @property
     def analyte_type(self):
@@ -262,7 +258,7 @@ class TrialIdentifier(Base):
     #     """
     #
     #     self.media_id.save()
-    #     self.strain_id.save()
+    #     self.strain.name.save()
     #     models.Model.save(self, *args, **kwargs)
 
     def summary(self, items):
@@ -278,14 +274,15 @@ class TrialIdentifier(Base):
         Parameters
         ----------
         csv_trial_identifier : str
-            a comma-separated string containing a TrialIdentifier in standard form - strain_id,id_1,id_2,replicate_id
+            a comma-separated string containing a TrialIdentifier in standard form - strain.name,id_1,id_2,replicate_id
         """
         if type(csv_trial_identifier) is str:
             tempParsedIdentifier = csv_trial_identifier.split(',')
             if len(tempParsedIdentifier) == 0:
                 print(tempParsedIdentifier, " <-- not processed")
             if len(tempParsedIdentifier) > 0:
-                self.strain_id = tempParsedIdentifier[0]
+                print(tempParsedIdentifier[0])
+                self.strain.name = tempParsedIdentifier[0]
             if len(tempParsedIdentifier) > 1:
                 self.id_1 = tempParsedIdentifier[1]
             if len(tempParsedIdentifier) > 2:
@@ -299,7 +296,7 @@ class TrialIdentifier(Base):
                 self.time = float(tempParsedIdentifier[4])
 
     def get_unique_for_SingleTrial(self):
-        return self.strain_id + self.id_1 + self.id_1 + str(self.replicate_id) + self.analyte_name + self.analyte_type
+        return str(self.strain) + self.id_1 + self.id_1 + str(self.replicate_id) + self.analyte_name + self.analyte_type
 
     def get_unique_id_for_ReplicateTrial(self):
         """
@@ -309,8 +306,9 @@ class TrialIdentifier(Base):
         unique_id : str
             Unique id defining a replicate_id.
         """
-        return self.strain_id + self.id_1 + self.id_2
+        return str(self.strain) + self.id_1 + self.id_2
 
         # def return_unique_experiment_id(self):
-        #     return self.strain_id + self.id_1 + self.id_2 + str(self.replicate_id)
+        #     return self.strain.name + self.id_1 + self.id_2 + str(self.replicate_id)
 
+str

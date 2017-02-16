@@ -123,7 +123,7 @@ def HPLC_titer_parser(experiment, data, fileName):
             temp_run_identifier_object = TrialIdentifier()
             temp_run_identifier_object.parse_trial_identifier_from_csv(data['titers'][i][0])
 
-            # temp_run_identifier_object.strain_id = strain_rename_dict[temp_run_identifier_object.strain_id]
+            # temp_run_identifier_object.strain.name = strain_rename_dict[temp_run_identifier_object.strain.name]
 
             for key in tempTimePointCollection:
                 temp_run_identifier_object.analyte_name = key
@@ -138,8 +138,9 @@ def HPLC_titer_parser(experiment, data, fileName):
                 # print(temp_run_identifier_object.time,' ',data['titers'][i][analyte_nameColumn[key]])
                 if data['titers'][i][analyte_nameColumn[key]] == 'nan':
                     data['titers'][i][analyte_nameColumn[key]] = np.nan
+                print(temp_run_identifier_object.strain)
                 timepoint_list.append(
-                    TimePoint(copy.copy(temp_run_identifier_object),
+                    TimePoint(copy.deepcopy(temp_run_identifier_object),
                               temp_run_identifier_object.time,
                               data['titers'][i][analyte_nameColumn[key]]))
 
@@ -183,5 +184,5 @@ def tecan_OD(experiment, data, fileName, t0):
             experiment.titer_dict[temp_time_course.getTimeCourseID()] = copy.copy(temp_time_course)
     tf = sys_time.time()
     print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(experiment.titer_dict), tf - t0))
-    experiment.parse_analyte_data_dict(experiment.titer_dict)
+    experiment.parse_analyte_data(experiment.titer_dict)
     return data, t0

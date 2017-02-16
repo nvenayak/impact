@@ -17,7 +17,7 @@ class Settings(Base):
     # database
     db_name = os.path.join(os.path.dirname(__file__), '../db/impact_db.sqlite3')
 
-    # analyte_data
+    # analyte_datas
     remove_death_phase_flag = Column(Boolean)
     use_filtered_data = Column(Boolean)
     minimum_points_for_curve_fit = Column(Integer)
@@ -37,7 +37,7 @@ class Settings(Base):
         # database
         self.db_name = os.path.join(os.path.dirname(__file__), '../db/impact_db.sqlite3')
 
-        # analyte_data
+        # analyte_datas
         self.remove_death_phase_flag = False
         self.use_filtered_data = False
         self.minimum_points_for_curve_fit = 5

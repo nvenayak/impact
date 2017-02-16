@@ -32,14 +32,14 @@ class CoreTestCase(unittest.TestCase):
         self.expt.parse_raw_data('default_titers', fileName='sample_input_data.xlsx')
 
         # Commit to the db
-        experiment_id = self.expt.db_commit(db_name=self.db_name)
+        # experiment_id = self.expt.db_commit(db_name=self.db_name)
 
         # Reinstantiate and import from db
-        expt = impact.Experiment()
-        expt.db_load(db_name = self.db_name, experiment_id = experiment_id)
+        # expt = impact.Experiment()
+        # expt.db_load(db_name = self.db_name, experiment_id = experiment_id)
 
         # Plot
-        expt.printGenericTimeCourse(titersToPlot=['pyruvate', 'acetate', '1,3-butanediol', 'acetaldehyde',
+        self.expt.printGenericTimeCourse(titersToPlot=['pyruvate', 'acetate', '1,3-butanediol', 'acetaldehyde',
                                                   'ethanol', 'meso-2,3-butanediol', 'acetoin'],
                                     output_type='file')
 
@@ -51,14 +51,14 @@ class CoreTestCase(unittest.TestCase):
         self.expt.parse_raw_data('default_titers', fileName='sample_input_data_missing_data.xlsx')
 
         # Commit to the db
-        experiment_id = self.expt.db_commit(db_name=self.db_name)
+        # experiment_id = self.expt.db_commit(db_name=self.db_name)
 
         # Reinstantiate and import from db
-        expt = impact.Experiment()
-        expt.db_load(db_name=self.db_name, experiment_id=experiment_id)
+        # expt = impact.Experiment()
+        # expt.db_load(db_name=self.db_name, experiment_id=experiment_id)
 
         # Plot
-        expt.printGenericTimeCourse(titersToPlot=['pyruvate', 'acetate', '1,3-butanediol', 'acetaldehyde',
+        self.expt.printGenericTimeCourse(titersToPlot=['pyruvate', 'acetate', '1,3-butanediol', 'acetaldehyde',
                                                   'ethanol', 'meso-2,3-butanediol', 'acetoin'],
                                     output_type='file', titerFlag = False, yieldFlag = True)
 
