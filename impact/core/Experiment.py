@@ -45,9 +45,6 @@ class Experiment(Base):
     replicate_trials = relationship('ReplicateTrial')
     stages = relationship('Stage')
 
-
-
-
     def __init__(self, info=None):
         # Initialize variables
         self.blank_key_list = []
@@ -65,6 +62,9 @@ class Experiment(Base):
 
         self.stage_indices = []
         self.blank = None
+
+    def __str__(self):
+        return '\n'.join(['Trials','-----']+self.strains+['\n','Analytes','-----']+self.analyte_names)
 
     def __add__(self, experiment):
         """
@@ -306,13 +306,12 @@ class Experiment(Base):
         for replicate_key in self.replicate_experiment_dict:
             self.replicate_experiment_dict[replicate_key].summary()
 
-    def get_strains(self):
-        temp = [key for key in self.replicate_experiment_dict if
-                self.replicate_experiment_dict[key].trial_identifier.id_1 != '']
-        temp.sort()
-        return temp
+    @property
+    def strains(self):
+        return sorted([key for key in self.replicate_experiment_dict])
 
-    def get_titers(self):
+    @property
+    def analyte_names(self):
         titers_to_plot = list(set([titer for key in self.replicate_experiment_dict
                         for replicate_id in self.replicate_experiment_dict[key].single_trial_dict
                         for titer in self.replicate_experiment_dict[key].single_trial_dict[replicate_id].analyte_dict]
@@ -354,7 +353,6 @@ class Experiment(Base):
         t0 = time.time()
         titer_dict = {}
         for timePoint in timePointList:
-            flag = 0
             if timePoint.get_unique_timepoint_id() in titer_dict:
                 titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
             else:
@@ -369,13 +367,13 @@ class Experiment(Base):
         print('Parsing titer object list...')
         t0 = time.time()
 
-        uniques = list(set([titer.getTimeCourseID() for titer in titer_list]))
+        uniques = list(set([titer.trial_identifier.unique_single_trial() for titer in titer_list]))
 
         single_trial_list = []
         for unique in uniques:
             single_trial = SingleTrial()
             for titer in titer_list:
-                if titer.getTimeCourseID() == unique:
+                if titer.trial_identifier.unique_single_trial() == unique:
                     single_trial.add_analyte_data(titer)
             single_trial_list.append(single_trial)
 
@@ -406,13 +404,12 @@ class Experiment(Base):
         count = 0
         for analyte_dictKey in analyte_dict:
             count += 1
-            print(count)
-            if analyte_dict[analyte_dictKey].getTimeCourseID() in single_experiment_dict:
-                single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()].add_analyte_data(
+            if analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial() in single_experiment_dict:
+                single_experiment_dict[analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
                     analyte_dict[analyte_dictKey])
             else:
-                single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()] = SingleTrial()
-                single_experiment_dict[analyte_dict[analyte_dictKey].getTimeCourseID()].add_analyte_data(
+                single_experiment_dict[analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()] = SingleTrial()
+                single_experiment_dict[analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
                     analyte_dict[analyte_dictKey])
         tf = time.time()
         print("Parsed %i single trials in %0.1fms\n" % (len(single_experiment_dict), (tf - t0) * 1000))
@@ -424,15 +421,15 @@ class Experiment(Base):
         for key in singleExperimentObjectList:
             flag = 0
             for key2 in self.replicate_experiment_dict:
-                if key2 == singleExperimentObjectList[key].get_unique_replicate_id():
+                if key2 == singleExperimentObjectList[key].trial_identifier.unique_replicate_trial():
                     self.replicate_experiment_dict[key2].add_replicate(singleExperimentObjectList[key])
                     flag = 1
                     break
             if flag == 0:
                 self.replicate_experiment_dict[
-                    singleExperimentObjectList[key].get_unique_replicate_id()] = ReplicateTrial()
+                    singleExperimentObjectList[key].trial_identifier.unique_replicate_trial()] = ReplicateTrial()
                 self.replicate_experiment_dict[
-                    singleExperimentObjectList[key].get_unique_replicate_id()].add_replicate(
+                    singleExperimentObjectList[key].trial_identifier.unique_replicate_trial()].add_replicate(
                     singleExperimentObjectList[key])
         tf = time.time()
         print("Parsed %i replicates in %0.1fs\n" % (len(self.replicate_experiment_dict), (tf - t0)))
@@ -445,7 +442,7 @@ class Experiment(Base):
         ----------
         replicateTrial : :class:`~ReplicateTrial`
         """
-        self.replicate_experiment_dict[replicateTrial.single_trial_dict[list(replicateTrial.single_trial_dict.keys())[0]].get_unique_replicate_id()] = replicateTrial
+        self.replicate_experiment_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
 
     def pickle(self, fileName):
         """
@@ -471,11 +468,11 @@ class Experiment(Base):
         Wrapper for impact.printGenericTimeCourse_plotly
         """
         if strainsToPlot == []:
-            strainsToPlot = self.get_strains()
+            strainsToPlot = self.strains
 
         # Plot all product titers if none specified TODO: Add an option to plot OD as well
         if titersToPlot == []:
-            titersToPlot = self.get_titers()
+            titersToPlot = self.analyte_names
 
         replicateTrialList = [self.replicate_experiment_dict[key] for key in strainsToPlot]
 
@@ -580,7 +577,7 @@ class Experiment(Base):
             strainsToPlot = self.get_strains()
 
         if titersToPlot == []:
-            titersToPlot = self.get_titers()
+            titersToPlot = self.analyte_names
 
         # Clear the plot and set some aesthetics
         plt.cla()
@@ -851,7 +848,7 @@ class Experiment(Base):
             strainToPlot = self.get_strains()[0]
         for singleExperiment in self.replicate_experiment_dict[strainToPlot[0]].single_trial_list:
             plt.plot(singleExperiment.OD.time_vector, singleExperiment.OD.data_vector)
-        plt.ylabel(singleExperiment.trial_identifier.get_unique_id_for_ReplicateTrial())
+        plt.ylabel(singleExperiment.trial_identifier.unique_replicate_trial())
 
 
     def set_blanks(self,mode='auto',common_id='id_2'):

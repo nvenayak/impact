@@ -3,18 +3,16 @@ import dill as pickle
 import pandas as pd
 import sqlite3 as sql
 import warnings
+import copy
 
 from .TrialIdentifier import TrialIdentifier
-from .AnalyteData import TimeCourse
+from .AnalyteData import TimeCourse, TimePoint
 
 from django.db import models
 from ..database import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-
-class Yield(object):
-    pass
 
 class SingleTrial(Base):
     """
@@ -30,18 +28,18 @@ class SingleTrial(Base):
     _trial_identifier = relationship('TrialIdentifier')
 
     analyte_dict = relationship('TimeCourse',
-                                collection_class = attribute_mapped_collection('keyword'),
+                                collection_class = attribute_mapped_collection('analyte_name'),
                                 cascade = 'save-update, delete')
 
 
-    analyte_df = Column(PickleType)
-    yields = Column(PickleType)
-    yields_df = Column(PickleType)
+    # analyte_df = Column(PickleType)
+    # yield_time_points = relationship('YieldTimePoint')
+    # normalized_data_time_points = relationship('NormalizedTimePoint')
+    # yields_df = Column(PickleType)
 
     _substrate_name = Column(PickleType)
     product_names = Column(PickleType)
     biomass_name = Column(PickleType)
-
     stage_indices = Column(PickleType)
 
     parent_id = Column(Integer, ForeignKey('replicate_trial.id'))
@@ -66,9 +64,9 @@ class SingleTrial(Base):
         self.yields_df = pd.DataFrame()
 
         # Contains the names of different analyte types
-        self._substrate_name = None
-        self.product_names = []
-        self.biomass_name = None
+        # self._substrate_name = None
+        # self.product_names = []
+        # self.biomass_name = None
 
         # Contains information about the stages used in the experiment, TODO
         self.stage_indices = None
@@ -76,6 +74,24 @@ class SingleTrial(Base):
 
         # Data normalized to different features, not serialized
         self.normalized_data = dict()
+
+        self.features = []
+        self.analytes_to_features = {}
+        self.analyte_types = ['biomass','substrate','product']
+        for analyte_type in self.analyte_types:
+            self.analytes_to_features[analyte_type] = []
+
+        self.register_feature(ProductYieldFactory())
+        self.register_feature(SpecificProductivityFactory())
+        # self.register_feature()
+
+    def register_feature(self, feature):
+        self.features.append(feature)
+        analyte_types = ['biomass','substrate','product']
+        for analyte_type in analyte_types:
+            if analyte_type in feature.requires:
+                self.analytes_to_features[analyte_type].append(feature)
+
 
     def serialize(self):
         serialized_dict = {}
@@ -115,15 +131,28 @@ class SingleTrial(Base):
 
     @property
     def substrate_name(self):
-        return self._substrate_name
+        return [str(self.analyte_dict[key].trial_identifier.analyte_name)
+                for key in self.analyte_dict
+                if self.analyte_dict[key].trial_identifier.analyte_type == 'substrate'][0]
 
-    @substrate_name.setter
-    def substrate_name(self, substrate_name):
-        self._substrate_name = substrate_name
-        # self.check_time_vectors_match()
-        self.calculate_substrate_consumed()
-        if len(self.product_names) > 0:
-            self.calculate_yield()
+    @property
+    def product_names(self):
+        return [str(self.analyte_dict[key].trial_identifier.analyte_name)
+                for key in self.analyte_dict
+                if self.analyte_dict[key].trial_identifier.analyte_type == 'product'][0]
+
+    @property
+    def biomass_name(self):
+        return [str(self.analyte_dict[key].trial_identifier.analyte_name)
+                for key in self.analyte_dict
+                if self.analyte_dict[key].trial_identifier.analyte_type == 'biomass'][0]
+
+    # @substrate_name.setter
+    # def substrate_name(self, substrate_name):
+    #     self._substrate_name = substrate_name
+    #     self.calculate_substrate_consumed()
+    #     if len(self.product_names) > 0:
+    #         self.calculate_yield()
 
     @property
     def t(self):
@@ -133,15 +162,15 @@ class SingleTrial(Base):
     def t(self, t):
         self._t = t
 
-    @property
-    def products(self):
-        return self._products
-
-    @products.setter
-    def products(self, products):
-        self._products = products
-        if self._substrate:
-            self.calculate_yield()
+    # @property
+    # def products(self):
+    #     return self._products
+    #
+    # @products.setter
+    # def products(self, products):
+    #     self._products = products
+    #     if self._substrate:
+    #         self.calculate_yield()
 
     @property
     def trial_identifier(self):
@@ -150,6 +179,8 @@ class SingleTrial(Base):
     @trial_identifier.setter
     def trial_identifier(self, trial_identifier):
         self._trial_identifier = trial_identifier
+
+        self.analyte_name = trial_identifier.analyte_name
 
     def calculate(self):
         for analyte_key in self.analyte_dict:
@@ -163,116 +194,14 @@ class SingleTrial(Base):
         stage = SingleTrial()
         for titer in self.analyte_dict:
             stage.add_analyte_data(self.analyte_dict[titer].create_stage(stage_bounds))
-        stage.calculate_yield()
 
         return stage
 
-    def db_commit(self, replicateID, c=None, stat=None):
-        """
-        Commit object to database.
-
-        Parameters
-        ----------
-        replicateID : int
-            replicateID to commit to
-        c : sql cursor
-        stat : str
-            If this is a statistic (avg, std), which statistic? None is used for raw data.
-        """
-        if stat is None:
-            stat_prefix = ''
-        else:
-            # Trial identifier not required for storing replicates, here's a temp one
-            self.trial_identifier = TrialIdentifier()
-            stat_prefix = '_' + stat
-
-        c.execute(
-            """INSERT INTO singleTrialTable""" + stat_prefix + """(replicateID, replicate_id, yieldsDict) VALUES (?, ?, ?)""",
-            (replicateID, self.trial_identifier.replicate_id, pickle.dumps(self.yields)))
-
-        c.execute("""SELECT MAX(singleTrialID""" + stat_prefix + """) from singleTrialTable""" + stat_prefix + """""")
-        singleTrialID = c.fetchall()[0][0]
-
-        for key in self.analyte_dict:
-            self.analyte_dict[key].db_commit(singleTrialID, c=c, stat=stat)
-
-    def db_load(self, singleTrialID=None, c=None, stat=None):
-        """
-        Load object from database.
-
-        Parameters
-        ----------
-        singleTrialID : int
-            The singleTrialID to load
-        c : SQL cursor
-        stat : str
-            If this is a statistic (avg, std), which statistic? None is used for raw data.
-
-        Returns
-        -------
-
-        """
-        c.execute("""SELECT yieldsDict FROM singleTrialTable WHERE singleTrialID == ?""", (singleTrialID,))
-        data = c.fetchall()[0][0]
-        self.yields = pickle.loads(data)
-
-        if stat is None:
-            stat_prefix = ''
-        else:
-            stat_prefix = '_' + stat
-
-        c.execute(
-            """SELECT yieldsDict FROM singleTrialTable""" + stat_prefix + """ WHERE singleTrialID""" + stat_prefix + """ == ?""",
-            (singleTrialID,))
-        temp = c.fetchall()
-
-        data = temp[0][0]
-
-        self.yields = pickle.loads(data)
-
-        c.execute("""SELECT timeCourseID, singleTrial""" + stat_prefix + """ID, titerType, analyte_name, time_vector, data_vector, fit_params FROM
-                timeCourseTable""" + stat_prefix + """ WHERE singleTrial""" + stat_prefix + """ID == ? """,
-                  (singleTrialID,))
-        for row in c.fetchall():
-            # product = row[3]
-            temp_titer_object = TimeCourse()
-            for attribute in ['strain', 'id_1', 'id_2']:
-                setattr(temp_titer_object.trial_identifier, attribute, getattr(self.trial_identifier, attribute))
-            temp_titer_object.trial_identifier.id_1 = self.trial_identifier.id_1
-            temp_titer_object.trial_identifier.id_2 = self.trial_identifier.id_2
-            temp_titer_object.trial_identifier.analyte_type = row[2]
-            temp_titer_object.trial_identifier.analyte_name = row[3]
-
-            if stat_prefix == '':
-                temp_titer_object.trial_identifier.replicate_id = self.trial_identifier.replicate_id
-                temp_titer_object._time_vector = np.loads(row[4])
-                temp_titer_object.pd_series = pd.Series(np.loads(row[5]), index=np.loads(row[4]))
-                # print(temp_titer_object._time_vector)
-            else:
-                temp_titer_object.pd_series = pd.Series(np.loads(row[5]))
-            temp_titer_object._data_vector = np.loads(row[5])
-            # try:
-            #     temp_titer_object.pd_series = pd.Series(np.loads(row[5]), index=np.loads(row[4]))
-            # except Exception as e:
-            #     print(np.loads(row[5]))
-            #     print(np.loads(row[4]))
-            #     raise Exception(e)
-            temp_titer_object.fit_params = pickle.loads(row[6])
-
-            # self._t = self.titer_dict[product].time_vector
-
-            self.add_analyte_data(temp_titer_object)
-
-
-        # The yields get recalculated when the titers are added, when in reality. A quick solution is to set the yield
-        # to the correct values after adding all the titer objects (the std of the yield is not the ratio of the stds)
-        self.yields = pickle.loads(data)
-
     def summary(self, print=False):
         summary = dict()
-        summary['substrate'] = self._substrate_name
-        summary['products'] = self.product_names
-        summary['biomass'] = self.biomass_name
+
+        for analyte_type in ['substrate','products','biomass']:
+            summary[analyte_type] = [str(analyte_data) for analyte_data in self.analyte_dict if analyte_data.trial_identifier.analyte_type == analyte_type]
         summary['number_of_data_points'] = len(self._t)
         summary['run_identifier'] = self.trial_identifier.summary(['strain_id', 'id_1', 'id_2',
                                                                 'replicate_id'])
@@ -281,76 +210,6 @@ class SingleTrial(Base):
             print(summary)
 
         return summary
-
-    def calculate_specific_productivity(self):
-        """
-        Calculate the specific productivity (dP/dt) given :math:`dP/dt = k_{Product} * X`
-        """
-        if self.biomass_name is None:
-            return 'Biomass not defined'
-
-        for product in self.product_names + [self.biomass_name] + [self.substrate_name]:
-            self.analyte_dict[product].specific_productivity = self.analyte_dict[product].gradient / \
-                                                               self.analyte_dict[self.biomass_name].data_vector
-
-    def calculate_ODE_fit(self):
-        """
-        WIP to fit the data to ODEs
-        """
-        biomass = self.analyte_dict[self.biomass_name].data_vector
-        biomass_rate = np.gradient(self.analyte_dict[self.biomass_name].data_vector) / np.gradient(
-            self.analyte_dict[self.biomass_name].time_vector)
-        self.analyte_dict[self.substrate_name]
-        self.analyte_dict[self.product_names]
-
-        def dFBA_functions(y, t, rate):
-            # Append biomass, substrate and products in one list
-            exchange_reactions = biomass_flux + substrate_flux + product_flux
-            # y[0]           y[1]
-            dydt = []
-            for exchange_reaction in exchange_reactions:
-                if y[1] > 0:  # If there is substrate
-                    dydt.append(exchange_reaction * y[0])
-                else:  # If there is not substrate
-                    dydt.append(0)
-            return dydt
-
-        import numpy as np
-        from scipy.integrate import odeint
-
-        # Let's assign the data to these variables
-        biomass_flux = []
-        biomass_flux.append(model.solution.x_dict[biomass_keys[0]])
-
-        substrate_flux = []
-        substrate_flux.append(model.solution.x_dict[substrate_keys[0]])
-
-        product_flux = [model.solution.x_dict[key] for key in product_keys]
-
-        exchange_keys = biomass_keys + substrate_keys + product_keys
-
-        # Now, let's build our model for the dFBA
-        def dFBA_functions(y, t, biomass_flux, substrate_flux, product_flux):
-            # Append biomass, substrate and products in one list
-            exchange_reactions = biomass_flux + substrate_flux + product_flux
-            # y[0]           y[1]
-            dydt = []
-            for exchange_reaction in exchange_reactions:
-                if y[1] > 0:  # If there is substrate
-                    dydt.append(exchange_reaction * y[0])
-                else:  # If there is not substrate
-                    dydt.append(0)
-            return dydt
-
-        # Now let's generate the data
-        sol = odeint(dFBA_functions, y0, t,
-                     args=([flux * np.random.uniform(1 - noise, 1 + noise) for flux in biomass_flux],
-                           [flux * np.random.uniform(1 - noise, 1 + noise) for flux in
-                            substrate_flux],
-                           [flux * np.random.uniform(1 - noise, 1 + noise) for flux in
-                            product_flux]))
-
-        dFBA_profile = {key: [row[i] for row in sol] for i, key in enumerate(exchange_keys)}
 
     def calculate_mass_balance(self, OD_gdw=None, calculateFBACO2=False):
         """
@@ -420,167 +279,328 @@ class SingleTrial(Base):
                 'biomass_gdw'      : biomass_gdw,
                 'massBalance'      : massBalance}
 
-    def add_analyte_data(self, titerObject):
+    def calculate_ODE_fit(self):
+        """
+        WIP to fit the data to ODEs
+        """
+        biomass = self.analyte_dict[self.biomass_name].data_vector
+        biomass_rate = np.gradient(self.analyte_dict[self.biomass_name].data_vector) / np.gradient(
+            self.analyte_dict[self.biomass_name].time_vector)
+        self.analyte_dict[self.substrate_name]
+        self.analyte_dict[self.product_names]
+
+        def dFBA_functions(y, t, rate):
+            # Append biomass, substrate and products in one list
+            exchange_reactions = biomass_flux + substrate_flux + product_flux
+            # y[0]           y[1]
+            dydt = []
+            for exchange_reaction in exchange_reactions:
+                if y[1] > 0:  # If there is substrate
+                    dydt.append(exchange_reaction * y[0])
+                else:  # If there is not substrate
+                    dydt.append(0)
+            return dydt
+
+        import numpy as np
+        from scipy.integrate import odeint
+
+        # Let's assign the data to these variables
+        biomass_flux = []
+        biomass_flux.append(model.solution.x_dict[biomass_keys[0]])
+
+        substrate_flux = []
+        substrate_flux.append(model.solution.x_dict[substrate_keys[0]])
+
+        product_flux = [model.solution.x_dict[key] for key in product_keys]
+
+        exchange_keys = biomass_keys + substrate_keys + product_keys
+
+        # Now, let's build our model for the dFBA
+        def dFBA_functions(y, t, biomass_flux, substrate_flux, product_flux):
+            # Append biomass, substrate and products in one list
+            exchange_reactions = biomass_flux + substrate_flux + product_flux
+            # y[0]           y[1]
+            dydt = []
+            for exchange_reaction in exchange_reactions:
+                if y[1] > 0:  # If there is substrate
+                    dydt.append(exchange_reaction * y[0])
+                else:  # If there is not substrate
+                    dydt.append(0)
+            return dydt
+
+        # Now let's generate the data
+        sol = odeint(dFBA_functions, y0, t,
+                     args=([flux * np.random.uniform(1 - noise, 1 + noise) for flux in biomass_flux],
+                           [flux * np.random.uniform(1 - noise, 1 + noise) for flux in
+                            substrate_flux],
+                           [flux * np.random.uniform(1 - noise, 1 + noise) for flux in
+                            product_flux]))
+
+        dFBA_profile = {key: [row[i] for row in sol] for i, key in enumerate(exchange_keys)}
+
+    def add_analyte_data(self, analyte_data):
         """
         Add a :class:`~TiterObject`
 
         Parameters
         ----------
-        titerObject : :class:`~TiterObject`
+        analyte_data : :class:`~TiterObject`
             A titer object to be added
 
         """
         from .settings import settings
         live_calculations = settings.live_calculations
 
-        # Check if this titer already exists
-        if titerObject.trial_identifier.analyte_name in self.analyte_dict:
-            raise Exception('A duplicate titer was added to the singleTiterObject,\n'
+        # Check if this analyte already exists
+        if analyte_data.trial_identifier.analyte_name in self.analyte_dict:
+            raise Exception('A duplicate titer was added to the single trial,\n'
                             'Make sure replicates are defined properly,\n'
                             'Duplicate TrialIdentifier: ',
-                            vars(titerObject.trial_identifier))
+                            vars(analyte_data.trial_identifier))
 
         # Set the parent
-        titerObject.parent = self
+        analyte_data.parent = self
 
-        self.analyte_dict[titerObject.trial_identifier.analyte_name] = titerObject
+        self.analyte_dict[analyte_data.trial_identifier.analyte_name] = analyte_data
 
-        if titerObject.trial_identifier.analyte_type == 'substrate':
-            if self.substrate_name is None:
-                self.substrate_name = titerObject.trial_identifier.analyte_name
-            else:
-                raise Exception('No support for Multiple substrates: ', self.substrate_name, ' ',
-                                titerObject.trial_identifier.analyte_name)
-            self.calculate_substrate_consumed()
+        # Add relevant analyte types to calculate features
+        for feature in self.features:
+            if analyte_data.trial_identifier.analyte_type in feature.requires:
+                feature.add_analyte_data(analyte_data)
 
-        if titerObject.trial_identifier.analyte_type in ['biomass','OD']:
-            if self.biomass_name is None:
-                self.biomass_name = titerObject.trial_identifier.analyte_name
-            else:
-                raise Exception('No support for Multiple biomasses: ', self.biomass_name, ' ',
-                                titerObject.trial_identifier.analyte_name)
-
-        if titerObject.trial_identifier.analyte_type == 'product':
-            self.product_names.append(titerObject.trial_identifier.analyte_name)
-
-            if self.substrate_name is not None:
-                self.calculate_yield()
-
-        # self.check_time_vectors_match()
-
-        # check if trial identifiers match
+        # check if trial identifiers match TODO This needs updating.
         if self.trial_identifier is None:
             self.trial_identifier = TrialIdentifier()
+
             for attr in ['strain', 'id_1', 'id_2', 'replicate_id']:
-                setattr(self.trial_identifier, attr, getattr(titerObject.trial_identifier, attr))
+                setattr(self.trial_identifier, attr, getattr(analyte_data.trial_identifier, attr))
 
         for attr in ['strain','id_1','id_2','replicate_id']:
-            if str(getattr(self.trial_identifier,attr)) != str(getattr(titerObject.trial_identifier,attr)):
+            if str(getattr(self.trial_identifier,attr)) != str(getattr(analyte_data.trial_identifier, attr)):
                 raise Exception('Trial identifiers do not match at the following attribute: '
-                                +attr
+                                + attr
                                 +' val 1: '
-                                +str(getattr(self.trial_identifier,attr))
+                                + str(getattr(self.trial_identifier,attr))
                                 +' val 2: '
-                                +str(getattr(titerObject.trial_identifier,attr)))
-            else:
-                setattr(self.trial_identifier, attr, getattr(titerObject.trial_identifier, attr))
+                                + str(getattr(analyte_data.trial_identifier, attr)))
+            # else:
+            #     setattr(self.trial_identifier, attr, getattr(analyte_data.trial_identifier, attr))
 
 
         self.trial_identifier.time = None
 
         # Pandas support
         temp_analyte_df = pd.DataFrame()
-        temp_analyte_df[titerObject.trial_identifier.analyte_name] = titerObject.pd_series
+        temp_analyte_df[analyte_data.trial_identifier.analyte_name] = analyte_data.pd_series
 
         # Merging the dataframes this way will allow different time indices for different analytes
         self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
         self.t = self.analyte_df.index
 
-    # def check_time_vectors_match(self):
-    #     """
-    #     Ensure that the time vectors match between :class:`~AnalyteData` objects. Functionality to deal with missing data or
-    #     data with different sizes is not implemented.
-    #     """
-    #     checkTimeVectorsFlag = 1
-    #     if checkTimeVectorsFlag == 1:
-    #         t = []
-    #         flag = 0
-    #
-    #         for key in self.analyte_dict:
-    #             # print(self.analyte_dict[key].time_vector)
-    #             t.append(self.analyte_dict[key]._time_vector)
-    #
-    #             # print(t)
-    #         for i in range(len(t) - 1):
-    #             if (t[i] != t[i + 1]).all():
-    #                 index = i
-    #                 flag = 1
-    #
-    #         if flag == 1:
-    #             warnings.warn("Deprecated. New pandas functinality will enable analysis with differently sized data", DeprecationWarning)
-    #         else:
-    #             self._t = t[0]
 
-    def get_unique_timepoint_id(self):
-        return str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
-            self.trial_identifier.replicate_id)
+# Features
+class MultiAnalyteFeature(object):
+    """
+    Base multi analyte feature. Use this to create new features.
+    """
+    def __init__(self):
+        self.analyte_list = []
+        self.name = ''
 
-    def get_unique_replicate_id(self):
-        return self.analyte_dict[list(self.analyte_dict.keys())[0]].getReplicateID()
+    @property
+    def data(self):
+        return 'Not implemented'
 
-    def get_time(self, stage=None):
-        if stage is not None:
-            return self.t[self.stages[stage][0]:self.stages[stage][1]]
-        else:
-            return self.t
+# class YieldTimePoint(object):
+#     __tablename__ = 'yield_time_point'
+#
+#     id = Column(Integer, primary_key=True)
+#     time = Column(Float)
+#     data = Column(Float)
 
-    def get_yields(self):
-            return self.yields
+
+
+class ProductYield(MultiAnalyteFeature):
+    # parent = relationship
+    # yield_points = relationship('YieldTimePoint')
+
+    def __init__(self, substrate, product):
+        # self.parent = single_trial
+        # self.name = 'yields_dict'
+        self.requires = ['product','substrate','biomass']
+        self.substrate = substrate
+        self.product = product
+
+    @property
+    def data(self):
+        self.calculate()
+        return self.product_yield
+
+    def calculate(self):
+        self.calculate_substrate_consumed()
+        try:
+            self.product_yield = np.divide(
+                [(dataPoint - self.product.data_vector[0]) for dataPoint in self.product.data_vector],
+                self.substrate_consumed
+            )
+        except Exception as e:
+            print(self.product)
+            print(self.product.data_vector)
+            raise Exception(e)
 
     def calculate_substrate_consumed(self):
-        self.substrateConsumed = np.array(
-            [(self.analyte_dict[self.substrate_name].data_vector[0] - dataPoint) for dataPoint in
-             self.analyte_dict[self.substrate_name].data_vector])
+        self.substrate_consumed = np.array(
+            [(self.substrate.data_vector[0] - dataPoint)
+             for dataPoint in self.substrate.data_vector]
+        )
 
-    def calculate_yield(self):
-        self.yields = dict()
-        for productKey in [key for key in self.analyte_dict if
-                           self.analyte_dict[key].trial_identifier.analyte_type == 'product']:
-            try:
-                self.yields[productKey] = np.divide(
-                    [(dataPoint - self.analyte_dict[productKey].data_vector[0]) for dataPoint in
-                     self.analyte_dict[productKey].data_vector],
-                    self.substrateConsumed)
-            except Exception as e:
-                print(productKey)
-                print(self.analyte_dict[productKey].data_vector)
-                print(e)
 
+class ProductYieldFactory(object):
+    def __init__(self):
+        self.products = []
+        self.requires = ['substrate','product', 'biomass']
+        self.name = 'product_yield'
+        self.substrate = None
+
+    def add_analyte_data(self, analyte_data):
+        if analyte_data.trial_identifier.analyte_type == 'substrate':
+            if self.substrate is None:
+                self.substrate = analyte_data
+
+                if len(self.products) > 0:
+                    for product in self.products:
+                        product.product_yield = ProductYield(substrate=self.substrate, product=analyte_data)
+
+                # Once we've processed the waiting products we can delete them
+                del self.products
+            else:
+                raise Exception('No support for Multiple substrates: ',
+                                self.substrate_name,
+                                ' ',
+                                analyte_data.trial_identifier.analyte_name)
+
+        if analyte_data.trial_identifier.analyte_type in ['biomass','product']:
+            if self.substrate is not None:
+                analyte_data.product_yield = ProductYield(substrate=self.substrate, product=analyte_data)
+            else:
+                # Hold on to the product until a substrate is defined
+                self.products.append(analyte_data)
+
+class SpecificProductivityFactory(object):
+    def __init__(self):
+        self.requires = ['substrate','product','biomass']
+        self.name = 'specific_productivity'
+        self.biomass = None
+        self.pending_analytes = []
+
+    def add_analyte_data(self, analyte_data):
+        if analyte_data.trial_identifier.analyte_type == 'biomass':
+            self.biomass = analyte_data
+
+            if len(self.pending_analytes) > 0:
+                for analyte in self.pending_analytes:
+                    analyte_data.specific_productivity = SpecificProductivity(biomass=self.biomass,
+                                                                              analyte=analyte_data)
+
+        if analyte_data.trial_identifier.analyte_type in ['substrate','productivity']:
+            if self.biomass is not None:
+                analyte_data.specific_productivity = SpecificProductivity(biomass=self.biomass, analyte=analyte_data)
+            else:
+                self.pending_analytes.append(analyte_data)
+
+class SpecificProductivity(MultiAnalyteFeature):
+    def __init__(self, biomass, analyte):
+        self.biomass = biomass
+        self.analyte = analyte
+
+    @property
+    def data(self):
+        if not self.specific_productivity:
+            self.calculate()
+
+        return self.specific_productivity
+
+
+
+    def calculate(self):
+        """
+        Calculate the specific productivity (dP/dt) given :math:`dP/dt = k_{Product} * X`
+        """
+        if self.biomass_name is None:
+            return 'Biomass not defined'
+
+        self.analyte.calculate()    # Need gradient calculated before accessing
+        self.specific_productivity = self.analyte.gradient / self.biomass.data_vector
+
+class NormalizedData(MultiAnalyteFeature):
+    def __init__(self, numerator, denominator):
+        pass
+
+class COBRAModelFactory(MultiAnalyteFeature):
+    def __init__(self):
+        self.requires = ['biomass','substrate','product']
+
+    def calculate(self):
+        import cameo
+        iJO = cameo.models.iJO1366
+
+class MassBalanceFactory(MultiAnalyteFeature):
+    def __init__(self):
+        self.requires = ['biomass','substrate','product']
+
+
+
+# class FeaturesToAnalyteData(Base):
+#     feature = Column(String, 'feature.id')
+#     time_course = Column(Integer,'time_course.id')
+
+class FeatureManager(object):
+    def __init__(self):
+        self.features = []
+        self.analytes_to_features = {}
+        self.analyte_types = ['biomass','substrate','product']
+        for analyte_type in self.analyte_types:
+            self.analytes_to_features[analyte_type] = []
+
+    def register_feature(self, feature):
+        self.features.append(feature)
+
+        analyte_types = ['biomass','substrate','product']
+        for analyte_type in analyte_types:
+            if analyte_type in feature.requires:
+                self.analytes_to_features[analyte_type].append(feature)
+        setattr(self,feature.name,feature)
+
+    def add_analyte(self, analyte_data):
+        for analyte_type in self.analyte_types:
+            for feature in self.features:
+                if feature in self.analyte_types[analyte_type]:
+                    feature.add_analyte(analyte_data)
 
 # class TimeCourseStage(TimeCourse):
 #     def __init__(self):
 #         TimeCourse().__init__()
-        #
-        # @TimeCourse.stage_indices.setter
-        # def
+#
+# @TimeCourse.stage_indices.setter
+# def
 
-        # class SingleTrialDataShell(SingleTrial):
-        #     """
-        #     Object which overwrites the SingleTrial objects setters and getters, acts as a shell of data with the
-        #     same structure as SingleTrial
-        #     """
-        #
-        #     def __init__(self):
-        #         SingleTrial.__init__(self)
-        #
-        #     @SingleTrial.substrate.setter
-        #     def substrate(self, substrate):
-        #         self._substrate = substrate
-        #
-        #     @SingleTrial.OD.setter
-        #     def OD(self, OD):
-        #         self._OD = OD
-        #
-        #     @SingleTrial.products.setter
-        #     def products(self, products):
-        #         self._products = products
+# class SingleTrialDataShell(SingleTrial):
+#     """
+#     Object which overwrites the SingleTrial objects setters and getters, acts as a shell of data with the
+#     same structure as SingleTrial
+#     """
+#
+#     def __init__(self):
+#         SingleTrial.__init__(self)
+#
+#     @SingleTrial.substrate.setter
+#     def substrate(self, substrate):
+#         self._substrate = substrate
+#
+#     @SingleTrial.OD.setter
+#     def OD(self, OD):
+#         self._OD = OD
+#
+#     @SingleTrial.products.setter
+#     def products(self, products):
+#         self._products = products

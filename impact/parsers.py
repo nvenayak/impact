@@ -6,6 +6,9 @@ import numpy as np
 import copy
 import datetime
 
+import time
+from pyexcel_xlsx import get_data
+
 # "strain_ko=adh,pta;strain_gen1=D1;plasmid_name=pKDL071;inducer=IPTG"
 #
 # 'var_val_delim ='
@@ -72,8 +75,7 @@ def spectromax_OD(experiment, data, fileName = None):
                         temp_trial_identifier.parse_trial_identifier_from_csv(identifiers[i][j])
                         temp_trial_identifier.analyte_type = 'biomass'
                         temp_trial_identifier.analyte_name = 'OD600'
-                        temp_timepoint = TimePoint(temp_trial_identifier, 'OD600', time, float(data))
-
+                        temp_timepoint = TimePoint(temp_trial_identifier, time, float(data))
                         timepoint_list.append(temp_timepoint)
                     else:
                         print('Skipped time point')
@@ -138,7 +140,6 @@ def HPLC_titer_parser(experiment, data, fileName):
                 # print(temp_run_identifier_object.time,' ',data['titers'][i][analyte_nameColumn[key]])
                 if data['titers'][i][analyte_nameColumn[key]] == 'nan':
                     data['titers'][i][analyte_nameColumn[key]] = np.nan
-                print(temp_run_identifier_object.strain)
                 timepoint_list.append(
                     TimePoint(copy.deepcopy(temp_run_identifier_object),
                               temp_run_identifier_object.time,
@@ -153,7 +154,7 @@ def HPLC_titer_parser(experiment, data, fileName):
     experiment.calculate()
 
 def tecan_OD(experiment, data, fileName, t0):
-    from .AnalyteData import TimeCourse
+    from .core.AnalyteData import TimeCourse
 
     t0 = sys_time.time()
     if fileName:
@@ -181,8 +182,37 @@ def tecan_OD(experiment, data, fileName, t0):
             temp_time_course.time_vector = np.array(np.divide(data[0][1:], 3600))
 
             temp_time_course.data_vector = np.array(row[1:])
-            experiment.titer_dict[temp_time_course.getTimeCourseID()] = copy.copy(temp_time_course)
+            experiment.titer_dict[temp_time_course.trial_identifier.unique_single_trial()] = copy.copy(temp_time_course)
     tf = sys_time.time()
     print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(experiment.titer_dict), tf - t0))
     experiment.parse_analyte_data(experiment.titer_dict)
     return data, t0
+
+
+
+def parse_raw_data(data_format, data = None, file_name = None, experiment = None):
+    if experiment is None:
+        from .core.Experiment import Experiment
+        experiment = Experiment()
+
+    t0 = time.time()
+
+    if data == None:
+        if file_name == None:
+            raise Exception('No data or file name given to load data from')
+
+        # Get data from xlsx file
+        data = get_data(file_name)
+        print('Imported data from %s' % (file_name))
+
+    # Import parsers
+    parser_case_dict = {'spectromax_OD':spectromax_OD,
+                        'tecan_OD': tecan_OD,
+                        'default_titers':HPLC_titer_parser
+                        }
+    if data_format in parser_case_dict.keys():
+        parser_case_dict[data_format](experiment,data,file_name)
+    else:
+        raise Exception('Parser %s not found', data_format)
+
+    return experiment

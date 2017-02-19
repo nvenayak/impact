@@ -141,3 +141,81 @@ def dynamic_model_integration(t, y0, model, single_trial, biomass_keys, substrat
         plt.plot(synthetic_t, dFBA_profile[key])
     # plt.ylim([0, 250])
     plt.legend(analyte_keys, loc=2)
+
+def generate_replicate_trial():
+    from impact.helpers.synthetic_data import generate_data
+    import cobra.test
+    import numpy as np
+
+    import impact as impt
+    # Let's grab the iJO1366 E. coli model, cobra's test module has a copy
+    model = cobra.test.create_test_model("ecoli")
+
+    # Optimize the model after simulating anaerobic conditions, we don't get many products aerobically
+    model.reactions.get_by_id('EX_o2_e').lower_bound = 0
+    model.reactions.get_by_id('EX_o2_e').upper_bound = 0
+
+    # Optimize the model
+    model.optimize()
+
+    # Print a summary of the fluxes
+    model.summary()
+
+    biomass_keys = ['Ec_biomass_iJO1366_core_53p95M']
+    substrate_keys = ['EX_glc_e']
+    product_keys = ['EX_for_e','EX_ac_e','EX_etoh_e','EX_succ_e']
+
+    # The initial conditions (mM) [biomass, substrate, product1, product2, ..., product_n]
+    y0 = [0.05, 100, 0, 0, 0, 0]
+    t = np.linspace(0,20,1000)
+
+    replicateList = []
+    for i in range(4):
+        # Let's add some noise to the data to simulate experimental error and generate some more data
+        dFBA_profiles = generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, noise = 0.1, plot = False)
+        replicateList.append(dFBA_profiles)
+
+    # import matplotlib.pyplot as plt
+    # for i, exchange in enumerate(biomass_keys+substrate_keys+product_keys):
+    #     plt.figure(figsize=[12,6])
+    #     for replicate in replicateList:
+    #         plt.plot(t,replicate[exchange])
+    #     plt.legend(['Replicate #'+repNum for repNum in ['1','2','3','4']],loc=2)
+    #     plt.title(exchange)
+
+    singleTrialList = []
+    for replicate_id, replicate in enumerate(replicateList):
+        timeCourseList = []
+        for exchange in biomass_keys + substrate_keys + product_keys:
+            trial_identifier = impt.TrialIdentifier()
+            trial_identifier.strain_id = 'iJO1366'
+            trial_identifier.id_1 = 'Anaerobic'
+            trial_identifier.replicate_id = replicate_id
+            if exchange in biomass_keys:
+                trial_identifier.analyte_name = exchange
+                trial_identifier.analyte_type = 'biomass'
+            if exchange in substrate_keys:
+                trial_identifier.analyte_name = exchange
+                trial_identifier.analyte_type = 'substrate'
+            if exchange in product_keys:
+                trial_identifier.analyte_name = exchange
+                trial_identifier.analyte_type = 'product'
+
+            tempTimeCourse = impt.TimeCourse()
+            tempTimeCourse.trial_identifier = trial_identifier
+            tempTimeCourse.time_vector = t
+            tempTimeCourse.data_vector = replicate[exchange]
+            timeCourseList.append(tempTimeCourse)
+
+            # Now we can build a singleTrial object and load all the data
+            singleTrial = impt.SingleTrial()
+            for timeCourse in timeCourseList:
+                singleTrial.add_analyte_data(timeCourse)
+
+        singleTrialList.append(singleTrial)
+
+        replicateTrial = impt.ReplicateTrial()
+        for singleTrial in singleTrialList:
+            replicateTrial.add_replicate(singleTrial)
+
+        return replicateTrial

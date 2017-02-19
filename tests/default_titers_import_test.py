@@ -41,7 +41,7 @@ class CoreTestCase(unittest.TestCase):
         # Plot
         self.expt.printGenericTimeCourse(titersToPlot=['pyruvate', 'acetate', '1,3-butanediol', 'acetaldehyde',
                                                   'ethanol', 'meso-2,3-butanediol', 'acetoin'],
-                                    output_type='file')
+                                    output_type='image')
 
     def test_default_titers_missing_data(self):
         """
@@ -60,7 +60,16 @@ class CoreTestCase(unittest.TestCase):
         # Plot
         self.expt.printGenericTimeCourse(titersToPlot=['pyruvate', 'acetate', '1,3-butanediol', 'acetaldehyde',
                                                   'ethanol', 'meso-2,3-butanediol', 'acetoin'],
-                                    output_type='file', titerFlag = False, yieldFlag = True)
+                                    output_type='image', titerFlag = False, yieldFlag = True)
+
+class BasicTestCase(unittest.TestCase):
+    def test_create_trial_identifier(self):
+        pass
+
+    def test_create_analyte_data(self):
+        pass
+
+
 
 if __name__ == '__main__':
     unittest.main()

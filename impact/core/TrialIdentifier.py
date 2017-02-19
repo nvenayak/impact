@@ -9,7 +9,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
 from ..database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-
+from warnings import warn
 
 class Strain(Base):
     """
@@ -58,7 +58,7 @@ class MediaComponent(Base):
     Media component many-to-many relationship
     """
 
-    __tablename__ = 'media_components'
+    __tablename__ = 'media_component'
     name = Column(String,primary_key=True)
     # BiGG_id = Column(String,primary_key=True)
 
@@ -72,7 +72,7 @@ class ComponentConcentration(Base):
     __tablename__ = 'comp_conc'
 
     media_name = Column(String, ForeignKey('media.name'), primary_key=True)
-    component_name = Column(String, ForeignKey('media_components.name'), primary_key=True,)
+    component_name = Column(String, ForeignKey('media_component.name'), primary_key=True)
     # media_component = relationship("")
     concentration = Column(Float)
     media_component = relationship("MediaComponent", cascade='all')
@@ -98,7 +98,7 @@ class Media(Base):
     parent = Column(Integer,ForeignKey('media.name'))
 
     def __init__(self, name = 'NA', concentration=None, unit=None):
-        self.components = []
+        # self.components = []
         self.component_concentrations = []
         self.name = name  # M9
 
@@ -110,14 +110,20 @@ class Media(Base):
 
         if concentration and unit:
             self._convert_units()
+    @property
+    def components(self):
+        return [compconc.media_component.name for compconc in self.component_concentrations]
 
     def __str__(self):
-        component_names = [compconc.component_name for compconc in self.component_concentrations]
+
         if self.parent:
-            parent_name = self.parent.name
+            return '+'.join([item for item in
+                             [compconc.concentration + 'g/L ' + compconc.media_component.name for compconc in
+                              self.component_concentrations] + self.parent_name])
         else:
-            parent_name = ''
-        return '+'.join([item for item in component_names+parent_name])
+            return '+'.join([item for item in
+                             [compconc.concentration + 'g/L ' + compconc.media_component.name for compconc in
+                              self.component_concentrations]])
 
     @property
     def unique_id(self):
@@ -141,6 +147,7 @@ class Analyte(Base):
     __tablename__ = 'analyte'
 
     name = Column(String, primary_key=True)
+    default_type = Column(String)
 
 class TrialIdentifier(Base):
     """
@@ -207,15 +214,15 @@ class TrialIdentifier(Base):
     analyte_type = Column(String)
 
     # relationships = relationship('TimeCourse', back_populates='_trial_identifier', uselist=False)
-
-    def __init__(self, strain=Strain(), media=Media(), strain_name='', id_1='', id_2='', id_3='',
+    def __init__(self, strain=None, media=None, strain_name='', id_1='', id_2='', id_3='',
                  replicate_id = None, time = -1, analyte_name = 'None',
                  analyte_type = 'None', *args, **kwargs):
+        self.strain = Strain() if strain is None else strain
+        self.media = Media() if media is None else media
 
         # models.Model.__init__(self, *args, **kwargs)
-
-        self.strain = strain       # e.g. MG1655 dlacI
-        self.media = media
+        if strain is not None and strain_name != '':
+            warn('Strain() and strain_name provided, only strain_name used')
         self.strain.name = strain_name
 
         self.id_1 = id_1
@@ -237,29 +244,23 @@ class TrialIdentifier(Base):
     # def strain.name(self, strain.name):
     #     self._strain.name.name = strain.name
 
+    def __str__(self):
+        return "%s %s %s t=%s rep=%s " % (self.strain,self.media,self.analyte_name,self.time,self.replicate_id)
+
     @property
     def analyte_type(self):
         return self._analyte_type
 
     @analyte_type.setter
-    def analyte_type(self, titerType):
-        if titerType in ['biomass', 'OD', 'OD600']:
+    def analyte_type(self, analyte_type):
+        if analyte_type in ['biomass', 'OD', 'OD600']:
             self._analyte_type = 'biomass'
-            if titerType in ['OD', 'OD600']:
-                print('Please use biomass titerType instead of: ', titerType)
-        elif titerType in ['product', 'substrate']:
-            self._analyte_type = titerType
+            if analyte_type in ['OD', 'OD600']:
+                warn('Please use biomass analyte_type instead of: ', analyte_type)
+        elif analyte_type in ['product', 'substrate']:
+            self._analyte_type = analyte_type
         else:
-            raise Exception('AnalyteData type is not supported: ', titerType)
-
-    # def save(self, *args, **kwargs):
-    #     """
-    #     Overrides the save function to also save all children to the db.
-    #     """
-    #
-    #     self.media_id.save()
-    #     self.strain.name.save()
-    #     models.Model.save(self, *args, **kwargs)
+            raise Exception('AnalyteData type is not supported: ', analyte_type)
 
     def summary(self, items):
         summary = dict()
@@ -281,7 +282,6 @@ class TrialIdentifier(Base):
             if len(tempParsedIdentifier) == 0:
                 print(tempParsedIdentifier, " <-- not processed")
             if len(tempParsedIdentifier) > 0:
-                print(tempParsedIdentifier[0])
                 self.strain.name = tempParsedIdentifier[0]
             if len(tempParsedIdentifier) > 1:
                 self.id_1 = tempParsedIdentifier[1]
@@ -295,10 +295,13 @@ class TrialIdentifier(Base):
             if len(tempParsedIdentifier) > 4:
                 self.time = float(tempParsedIdentifier[4])
 
-    def get_unique_for_SingleTrial(self):
-        return str(self.strain) + self.id_1 + self.id_1 + str(self.replicate_id) + self.analyte_name + self.analyte_type
+    def unique_single_trial(self):
+        return self.unique_replicate_trial() + ' ' \
+               + ' '.join([str(getattr(self, attr))
+                           for attr in ['replicate_id']
+                           if str(getattr(self, attr) != '')])
 
-    def get_unique_id_for_ReplicateTrial(self):
+    def unique_replicate_trial(self):
         """
         Get the unique information for a single replicate_id
         Returns
@@ -306,9 +309,11 @@ class TrialIdentifier(Base):
         unique_id : str
             Unique id defining a replicate_id.
         """
+        return ' '.join([str(getattr(self,attr))
+                         for attr in ['strain','media','id_1',
+                                      'id_2','id_3']
+                         if str(getattr(self,attr) != '') ])
         return str(self.strain) + self.id_1 + self.id_2
 
-        # def return_unique_experiment_id(self):
-        #     return self.strain.name + self.id_1 + self.id_2 + str(self.replicate_id)
 
-str
+# class SingleTrialidentifier(TrialIdentifier):

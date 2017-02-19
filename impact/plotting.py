@@ -4,17 +4,29 @@ import matplotlib.pyplot as plt
 from .core.ReplicateTrial import ReplicateTrial
 from .core.settings import plotly_username, plotly_api_key
 
-
-
 # If in the iPython environment, initialize notebook mode
 try:
     temp = __IPYTHON__
 except NameError:
     from plotly.offline import plot
 else:
-    import plotly
-    from plotly.offline import iplot
-    plotly.offline.init_notebook_mode()
+    print('Injected plotly')
+    from plotly.offline import init_notebook_mode
+    init_notebook_mode()
+    from plotly.offline import iplot as plot
+    from IPython.display import HTML
+    HTML(
+    """
+    <script>
+        var waitForPlotly = setInterval( function() {
+            if( typeof(window.Plotly) !== "undefined" ){
+                MathJax.Hub.Config({ SVG: { font: "STIX-Web" }, displayAlign: "center" });
+                MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
+                clearInterval(waitForPlotly);
+            }}, 250 );
+    </script>
+    """
+    )
 
 from plotly import tools
 import plotly.graph_objs as go

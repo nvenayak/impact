@@ -43,10 +43,6 @@ class ReplicateTrial(Base):
     trial_identifier_id = Column(Integer,ForeignKey('trial_identifier.id'))
     trial_identifier = relationship('TrialIdentifier')
 
-    bad_replicates = Column(PickleType)
-    replicate_ids = Column(PickleType)
-    replicate_df = Column(PickleType)
-
     stage_parent_id = Column(Integer,ForeignKey('replicate_trial.id'))
     stages = relationship('ReplicateTrial')
 
@@ -55,6 +51,10 @@ class ReplicateTrial(Base):
 
     parent = relationship('Experiment')
     parent_id = Column(Integer,ForeignKey('experiment.id'))
+
+    bad_replicates = Column(PickleType)
+    replicate_ids = Column(PickleType)
+    # replicate_df = Column(PickleType)
 
     def __init__(self):
         self.avg = SingleTrial()
@@ -125,101 +125,6 @@ class ReplicateTrial(Base):
             new_replicate.add_replicate(single_trial)
         self = new_replicate
 
-    def db_commit(self, experiment_id=None, c=None, db_backend = 'sqlite3'):
-        """
-        Commit to the database
-
-        Parameters
-        ----------
-        experiment_id : int
-        c : database cursor
-        """
-
-        if db_backend == 'sql_alchemy':
-            pass
-        else:
-            if experiment_id == None:
-                print('No experiment ID selected')
-            else:
-                id_3 = ''
-                c.execute("""\
-                   INSERT INTO replicateTable(experiment_id, strain_id, id_1, id_2, id_3)
-                   VALUES (?, ?, ?, ?, ?)""",
-                          (experiment_id, self.trial_identifier.strain.name, self.trial_identifier.id_1,
-                           self.trial_identifier.id_2, id_3)
-                          )
-                c.execute("""SELECT MAX(replicateID) FROM replicateTable""")
-                replicateID = c.fetchall()[0][0]
-
-                for replicate_id in self.single_trial_dict:
-                    single_trial = self.single_trial_dict[replicate_id]
-                    single_trial.db_commit(replicateID, c=c)
-                self.avg.db_commit(replicateID, c=c, stat='avg')
-                self.std.db_commit(replicateID, c=c, stat='std')
-
-    def db_load(self, c=None, db_name = None, replicateID='all'):
-        """
-        Load from the database.
-
-        Parameters
-        ----------
-        c : sql cursor
-        replicateID : int
-        """
-
-        if c is None:
-            if db_name is None:
-                raise Exception('Need either a cursor or db name')
-            import sqlite3 as sql
-            conn = sql.connect(db_name)
-            c = conn.cursor()
-            close_conn = True
-        else:
-            close_conn = False
-
-        if type(replicateID) is not (int):
-            raise Exception(
-                'Cannot load multiple replicates in a single call to this function, load from parent instead')
-
-        c.execute("""SELECT * FROM replicateTable WHERE replicateID = ?""", (replicateID,))
-        for row in c.fetchall():
-            # for stat in ['avg', 'std']:
-            #     temp_trial_identifier = TrialIdentifier()
-            #     temp_trial_identifier.strain.name = row[2]
-            #     temp_trial_identifier.id_1 = row[3]
-            #     temp_trial_identifier.id_2 = row[4]
-            #     getattr(self, stat).trial_identifier = temp_trial_identifier
-            self.trial_identifier = TrialIdentifier()
-            self.trial_identifier.strain.name = row[2]
-            self.trial_identifier.id_1 = row[3]
-            self.trial_identifier.id_2 = row[4]
-            self.db_replicate_id = row[0]
-
-        c.execute(
-            """SELECT singleTrialID, replicateID, replicate_id, yieldsDict FROM singleTrialTable WHERE replicateID = ?""",
-            (replicateID,))
-        for row in c.fetchall():
-            temp_single_trial = SingleTrial()
-            temp_single_trial.yields = pickle.loads(row[3])
-            temp_single_trial.trial_identifier = self.trial_identifier
-            temp_single_trial.trial_identifier.replicate_id = row[2]
-            temp_single_trial.db_load(c=c, singleTrialID=row[0])
-            self.add_replicate(temp_single_trial)
-
-        # Deprecated since v0.6.0, will calculate this data on the fly instead of from db
-        # for stat in ['_avg', '_std']:
-        #     c.execute(
-        #         """SELECT singleTrialID""" + stat + """,  replicate_id, yieldsDict FROM singleTrialTable""" + stat + """ WHERE replicateID = ?""",
-        #         (replicateID,))
-        #     row = c.fetchall()[0]
-        #     print(row[0:2])
-        #     getattr(self, stat.replace('_', '')).db_load(c=c, singleTrialID=row[0], stat=stat.replace('_', ''))
-
-        # self.t = self.single_trial_list[0].t
-
-        if close_conn:
-            conn.close()
-
     def check_replicate_unique_id_match(self):
         """
         Ensures that the uniqueIDs match for all te replicate_id experiments
@@ -227,8 +132,8 @@ class ReplicateTrial(Base):
         replicate_ids = list(self.single_trial_dict.keys())
         replicate_ids.sort()
         for i in range(len(self.single_trial_dict) - 1):
-            if self.single_trial_dict[replicate_ids[i]].get_unique_replicate_id() \
-                    != self.single_trial_dict[replicate_ids[i + 1]].get_unique_replicate_id():
+            if self.single_trial_dict[replicate_ids[i]].trial_identifier.unique_replicate_trial() \
+                    != self.single_trial_dict[replicate_ids[i + 1]].trial_identifier.unique_replicate_trial():
                 raise Exception(
                     "the replicates do not have the same uniqueID, either the uniqueID includes too much information or the strains don't match")
 
@@ -265,22 +170,12 @@ class ReplicateTrial(Base):
         if singleTrial.trial_identifier.replicate_id is None:
             singleTrial.trial_identifier.replicate_id = 1
 
+        # Get info from single trial
         self.single_trial_dict[str(singleTrial.trial_identifier.replicate_id)] = singleTrial
         if len(self.single_trial_dict) == 1:
             self.t = self.single_trial_dict[str(singleTrial.trial_identifier.replicate_id)].t
-            # self.stage_indices = self.single_trial_list[0].stage_indices
-
-            for stat in ['avg', 'std']:
-                getattr(self, stat)._substrate_name = \
-                    self.single_trial_dict[list(self.single_trial_dict.keys())[0]].substrate_name
-                getattr(self, stat).product_names = \
-                    self.single_trial_dict[list(self.single_trial_dict.keys())[0]].product_names
-                getattr(self, stat).biomass_name = \
-                    self.single_trial_dict[list(self.single_trial_dict.keys())[0]].biomass_name
-                # for attr in ['strain.name','id_1','id_2']
-                # getattr(self, stat).stages = self.single_trial_list[0].stages
-
         self.check_replicate_unique_id_match()
+
 
         self.trial_identifier = copy.copy(singleTrial.trial_identifier)
         self.trial_identifier.time = None
@@ -297,7 +192,7 @@ class ReplicateTrial(Base):
         except Exception as e:
             print(e)
             print(self.replicate_ids)
-
+            raise Exception(e)
         if live_calculations:
             self.calculate_statistics()
 
@@ -305,10 +200,67 @@ class ReplicateTrial(Base):
         """
         Calculates the statistics on the SingleTrial objects
         """
+        # Features
+            # yield
+            # specific_productivity
+            # raw
+
+
+
 
         unique_analytes = self.get_analytes()
 
-        # Build the combined vectors
+
+
+
+        # Calculate single trial statistics (mass balance)
+
+
+        # Calculate analyte statistics
+            # for feature in features
+                # for analyte in unique_analytes:
+                    # combined_df = pd.DataFrame()
+                    # Build a df
+                    # Add the dfs
+
+            # pd_series
+            # yields
+            # specific productivity
+
+        # feature_list = []
+        # for feature in feature_list:
+        #     for analyte in unique_analytes:
+        #         self.replicate_df[analyte] = pd.DataFrame()
+        #
+        #         # Only iterate through single trials with the analyte of interest
+        #         temp_single_trial_dict = {str(replicate_id):self.single_trial_dict[replicate_id]
+        #                                   for replicate_id in self.single_trial_dict
+        #                                   if analyte in self.single_trial_dict[replicate_id].analyte_dict}
+        #
+        #         try:
+        #             temp_analyte_df = pd.DataFrame(
+        #                 {replicate_id: getattr(temp_single_trial_dict[replicate_id].analyte_dict[analyte],feature.name)
+        #                  for replicate_id in temp_single_trial_dict})
+        #         except ValueError as e:
+        #             print({replicate_id: getattr(temp_single_trial_dict[replicate_id].analyte_dict[analyte],feature.name)
+        #                  for replicate_id in temp_single_trial_dict})
+        #             raise ValueError(e)
+        #
+        #     for analyte in unique_analytes:
+        #         for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
+        #             getattr(self, stat).analyte_dict[analyte] = TimeCourse()
+        #
+        #             # Save the mean or std
+        #             if stat == 'avg':
+        #                 getattr(self, stat).analyte_dict[analyte].pd_series = self.replicate_df[analyte].mean(
+        #                     axis=1)
+        #             elif stat == 'std':
+        #                 getattr(self, stat).analyte_dict[analyte].pd_series = self.replicate_df[analyte].std(axis=1)
+        #             else:
+        #                 raise Exception('Unknown statistic type')
+
+
+        # Build a df for all analytes on the same index
         for analyte in unique_analytes:
             # Build the df from all the replicates
             self.replicate_df[analyte] = pd.DataFrame()
@@ -318,9 +270,14 @@ class ReplicateTrial(Base):
                                       for replicate_id in self.single_trial_dict
                                       if analyte in self.single_trial_dict[replicate_id].analyte_dict}
 
-            temp_analyte_df = pd.DataFrame(
-                {replicate_id: temp_single_trial_dict[replicate_id].analyte_dict[analyte].pd_series
-                 for replicate_id in temp_single_trial_dict})
+            try:
+                temp_analyte_df = pd.DataFrame(
+                    {replicate_id: temp_single_trial_dict[replicate_id].analyte_dict[analyte].pd_series
+                     for replicate_id in temp_single_trial_dict})
+            except ValueError as e:
+                print({replicate_id: temp_single_trial_dict[replicate_id].analyte_dict[analyte].pd_series
+                     for replicate_id in temp_single_trial_dict})
+                raise ValueError(e)
 
             # Merging the dataframes this way will allow different time indices for different analytes
             self.replicate_df[analyte] = pd.merge(self.replicate_df[analyte],
@@ -335,23 +292,13 @@ class ReplicateTrial(Base):
             for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
                 getattr(self, stat).analyte_dict[analyte] = TimeCourse()
 
-                # Deprecated since v0.5.0
-                # getattr(self, stat).analyte_dict[analyte].time_vector = self.t
-
-                # try:
-                    # Save the mean or std
+                # Save the mean or std
                 if stat == 'avg':
                     getattr(self, stat).analyte_dict[analyte].pd_series = self.replicate_df[analyte].mean(axis=1)
                 elif stat == 'std':
                     getattr(self, stat).analyte_dict[analyte].pd_series = self.replicate_df[analyte].std(axis=1)
                 else:
                     raise Exception('Unknown statistic type')
-
-                # To maintain backward compatabaility
-                getattr(self, stat).analyte_dict[analyte]._time_vector = \
-                    np.array(getattr(self, stat).analyte_dict[analyte].pd_series.index)
-                getattr(self, stat).analyte_dict[analyte]._data_vector = \
-                    np.array(getattr(self, stat).analyte_dict[analyte].pd_series)
 
                 # If a fit_params exists, calculate the mean
                 if None not in [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
@@ -368,8 +315,7 @@ class ReplicateTrial(Base):
                     print([self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
                                 for replicate_id in self.single_trial_dict])
 
-                if self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].trial_identifier is None:
-                    print('yolo')
+
                 getattr(self, stat).analyte_dict[analyte].trial_identifier = \
                     self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].trial_identifier
 
@@ -426,7 +372,6 @@ class ReplicateTrial(Base):
             outlier_removal_method = 'iterative_removal'
             # Method one for outlier removal
             if outlier_removal_method == 'z_score':
-                # print(col_names)
                 fraction_outlier_pts = np.sum(np.abs(stats.zscore(df)) < 1, axis=0) / len(df)
                 print(fraction_outlier_pts)
                 bad_replicates = [col_name for i, col_name in enumerate(col_names) if fraction_outlier_pts[i] < 0.8]
@@ -480,7 +425,7 @@ class ReplicateTrial(Base):
                         plt.plot(backup[good_replicate_cols], 'r')
                     if bad_replicate_cols != []:
                         plt.plot(backup[bad_replicate_cols], 'b')
-                    plt.title(self.trial_identifier.get_unique_id_for_ReplicateTrial())
+                    plt.title(self.trial_identifier.unique_replicate_trial())
                 except Exception as e:
                     print(e)
             del backup

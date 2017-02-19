@@ -449,7 +449,7 @@ class mainWindow(QtGui.QDialog):
 
 
         # Populate list of titers and add to layout
-        self.titersToPlot = self.newProjectContainer.get_titers()
+        self.titersToPlot = self.newProjectContainer.get_analyte_names()
         #
         #
         #
@@ -518,7 +518,7 @@ class Window(QtGui.QDialog):
         # a figure instance to plot on
         self.figure = plt.figure()
         self.strainsToPlot = self.newProjectContainer.get_strains()
-        self.titersToPlot = self.newProjectContainer.get_titers()
+        self.titersToPlot = self.newProjectContainer.get_analyte_names()
         self.sortBy = 'id_1'
         self.plotType = 'printGenericTimeCourse'
         self.showGrowthRates = True

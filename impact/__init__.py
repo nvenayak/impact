@@ -3,13 +3,12 @@ __author__ = 'Naveen Venayak'
 import sys
 import os
 
-
-try:
-    from pyexcel_xlsx import get_data
-except ImportError as e:
-    print('Could not import pyexcel')
-    print(e)
-    pass
+# try:
+#     from pyexcel_xlsx import get_data
+# except ImportError as e:
+#     print('Could not import pyexcel')
+#     print(e)
+#     pass
 
 if sys.version_info.major < 3:
     raise Exception('Require Python >= 3.5')
@@ -25,28 +24,7 @@ elif sys.version_info.minor < 5:
 #     os.environ["DJANGO_SETTINGS_MODULE"] = "impact_main_site.settings"
 #     django.setup()
 
-# If in the iPython environment, initialize notebook mode
-try:
-    temp = __IPYTHON__
-except NameError:
-    from plotly.offline import plot
-    from IPython.display import HTML
-    HTML(
-    """
-    <script>
-        var waitForPlotly = setInterval( function() {
-            if( typeof(window.Plotly) !== "undefined" ){
-                MathJax.Hub.Config({ SVG: { font: "STIX-Web" }, displayAlign: "center" });
-                MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
-                clearInterval(waitForPlotly);
-            }}, 250 );
-    </script>
-    """
-    )
-else:
-    import plotly
-    plotly.offline.init_notebook_mode()
-    from plotly.offline import iplot as plot
+
 
 try:
     os.remove('../test_impact.db')
@@ -62,7 +40,7 @@ from .core.SingleTrial import SingleTrial
 from .core.ReplicateTrial import ReplicateTrial
 from .core.Experiment import Experiment
 from .core.Project import Project
-from .plotting import *
+# from .plotting import *
 
 
 from .core.settings import settings
@@ -71,8 +49,8 @@ from sqlalchemy import create_engine
 
 
 
-def bind_engine():
-    engine = create_engine('sqlite:///../test_impact.db',echo=settings.verbose)
+def bind_engine(echo=False):
+    engine = create_engine('sqlite:///test_impact.db',echo=echo)
     return engine
 
 def create_session():

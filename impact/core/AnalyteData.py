@@ -16,7 +16,6 @@ from ..database import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import event
 
@@ -48,23 +47,6 @@ class AnalyteData(object):
     def add_timepoint(self, timePoint):
         raise (Exception("No addTimePoint method defined in the child"))
 
-    # TODO replace this
-    def getTimeCourseID(self):
-        if len(self.timePointList) > 0:
-            return ''.join([str(getattr(self.timePointList[0].trial_identifier,attr))
-                            for attr in ['strain','id_1','id_2','replicate_id']])
-        elif self.trial_identifier.strain.name != '':
-            return self.trial_identifier.strain.name + \
-                   self.trial_identifier.id_1 + \
-                   self.trial_identifier.id_2 + \
-                   str(self.trial_identifier.replicate_id)
-        else:
-            raise Exception("No unique ID or time points in AnalyteData")
-
-    # TODO replace this
-    def getReplicateID(self):
-        return self.trial_identifier.strain.name + self.trial_identifier.id_1 + self.trial_identifier.id_2
-
 # class TimeDataTuple(Base):
 #     __tablename__ = 'time_data_pair'
 #     time = 0.
@@ -88,6 +70,13 @@ class FitParameter(Base):
 class TimePoint(Base):
     __tablename__ = 'time_point'
 
+    time_point_type = Column(String)
+
+    __mapper_args__ = {
+        'polymorphic_on': time_point_type,
+        'polymorphic_identity':'raw'
+    }
+
     id = Column(Integer, primary_key=True)
     trial_identifier_id = Column(Integer,ForeignKey('trial_identifier.id'))
     trial_identifier = relationship('TrialIdentifier')
@@ -95,7 +84,8 @@ class TimePoint(Base):
     data = Column(Float)
     parent_id = Column(Integer,ForeignKey('time_course.id'))
     parent = relationship('TimeCourse')
-    # gradient_id = ForeignKey('TimeCourse.id')
+
+    use_in_analysis = Column(Boolean)
 
     def __init__(self, trial_identifier = TrialIdentifier(), time=None, data=None):
         self.trial_identifier = trial_identifier
@@ -103,10 +93,21 @@ class TimePoint(Base):
         self.data = data
         self.units = {'t'    : 'h',
                       'titer': 'g'}
+        self.use_in_analysis = True
 
     def get_unique_timepoint_id(self):
         return str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
             self.trial_identifier.replicate_id) + self.trial_identifier.analyte_name
+
+class GradientTimePoint(TimePoint):
+    __mapper_args__ = {
+        'polymorphic_identity':'gradient'
+    }
+
+class SpecificProductivityTimePoint(TimePoint):
+    __mapper_args__ = {
+        'polymorphic_identity':'specific_productivity'
+    }
 
 class TimeCourse(AnalyteData, Base):
     """
@@ -133,21 +134,21 @@ class TimeCourse(AnalyteData, Base):
     trial_identifier_id = Column(Integer, ForeignKey('trial_identifier.id'))
     _trial_identifier = relationship('TrialIdentifier')
     time_points = relationship('TimePoint')
-    gradient_points = relationship('TimePoint')
+    gradient_points = relationship('GradientTimePoint')
     calculations_uptodate = Column(Boolean)
     fit_params = relationship('FitParameter',
                               collection_class=attribute_mapped_collection('keyword'),
                               cascade="all, delete-orphan") # Column(PickleType())
 
-    # pd_series = Column(PickleType)
-    # gradient = Column(PickleType)
-    # specific_productivity = Column(PickleType)
+    specific_productivity_points = relationship('SpecificProductivityTimePoint')
 
-    stage_parent_id = Column(Integer, ForeignKey('time_course.id'))
-    stages = relationship('TimeCourse')
+    stages = relationship('TimeCourseStage')
 
     parent_id = Column(Integer, ForeignKey('single_trial.id'))
     parent = relationship('SingleTrial')
+
+    analyte_name = Column(String)
+    analyte_type = Column(String)
 
     def __init__(self, **kwargs):
         # Get the default parameters
@@ -172,10 +173,6 @@ class TimeCourse(AnalyteData, Base):
         self.calculations_uptodate = False
 
         self.pd_series = None
-        self._time_vector = None    # Not stored in db
-        self.time_vector = None # Error thrown if deleted, # Not stored in db
-        self._data_vector = None    # Not stored in db
-        self.pd_series = None
 
 
         self.fit_params = dict()
@@ -183,15 +180,15 @@ class TimeCourse(AnalyteData, Base):
         #               'data': 'None'}
 
         self.gradient = []
-        self._specific_productivity = None
+        # self._specific_productivity = None
 
         # Options
         self.removeDeathPhaseFlag = remove_death_phase_flag
-        self.useFilteredDataFlag = use_filtered_data
+        self.use_filtered_data_flag = use_filtered_data
         self.minimum_points_for_curve_fit = minimum_points_for_curve_fit
         self.savgolFilterWindowSize = savgolFilterWindowSize
 
-        self.deathPhaseStart = None
+        self.death_phase_start = None
         self.blankSubtractionFlag = True
 
         self.stages = []
@@ -199,6 +196,9 @@ class TimeCourse(AnalyteData, Base):
 
         # Declare the default curve fit
         self.fit_type = 'gompertz'
+
+    def __str__(self):
+        return 'strain_name: '+str(self.trial_identifier.strain)+' media_name: '+str(self.trial_identifier.media)
 
     @property
     def unique_id(self):
@@ -222,26 +222,11 @@ class TimeCourse(AnalyteData, Base):
         serialized_dict['analyte_type'] = self.trial_identifier.analyte_type
 
         options = {}
-        for option in ['removeDeathPhaseFlag', 'useFilteredDataFlag', 'minimum_points_for_curve_fit']:
+        for option in ['removeDeathPhaseFlag', 'use_filtered_data_flag', 'minimum_points_for_curve_fit']:
             options[option] = getattr(self,option)
         serialized_dict['options'] = options
 
         return serialized_dict
-
-    @property
-    def specific_productivity(self):
-        if self._specific_productivity is None:
-            if not self.parent:
-                raise Exception('Cannot calculate productivity automatically because no parent single_trial '
-                                'is defined')
-            self.parent.calculate_specific_productivity()
-            return self._specific_productivity
-        else:
-            return self._specific_productivity
-
-    @specific_productivity.setter
-    def specific_productivity(self, specific_productivity):
-        self._specific_productivity = specific_productivity
 
     @property
     def stage_indices(self):
@@ -253,7 +238,7 @@ class TimeCourse(AnalyteData, Base):
         for stage_bounds in stage_indices:
             self.stages.append(self.create_stage(stage_bounds))
 
-    @hybrid_property
+    @property
     def trial_identifier(self):
         return self._trial_identifier
 
@@ -270,7 +255,9 @@ class TimeCourse(AnalyteData, Base):
 
     @property
     def time_vector(self):
-        return self._time_vector
+        if self.pd_series is not None:
+            return np.array(self.pd_series.index)
+        return None
 
     @time_vector.setter
     def time_vector(self, time_vector):
@@ -279,42 +266,52 @@ class TimeCourse(AnalyteData, Base):
         else:
             self.pd_series.index = time_vector
 
-        self._time_vector = np.array(self.pd_series.index)
+        if sum(self.pd_series.index.duplicated()) > 0:
+            print(self.pd_series.index)
+            raise Exception('Duplicate time points found, this is not supported')
+
+        # Fill time point list
+        self.generate_time_point_list()
 
     @property
     def data_vector(self):
-        self._data_vector = np.array(self.pd_series)
+        from .settings import settings
 
-        if self.useFilteredDataFlag == True:
-            return savgol_filter(self._data_vector, self.savgolFilterWindowSize, 3)
+        # Filter data to smooth noise from the siganl
+        if settings.use_filtered_data:
+            return savgol_filter(np.array(self.pd_series), self.savgolFilterWindowSize, 3)
         else:
-            return self._data_vector
+            return np.array(self.pd_series)
 
     @data_vector.setter
-    def data_vector(self, dataVec):
+    def data_vector(self, data_vector):
         from .settings import settings
         live_calculations = settings.live_calculations
-        perform_curve_fit = settings.perform_curve_fit
 
+        # Check if an index has already been added
         if self.pd_series is None:
-            self.pd_series = pd.Series(dataVec)
+            self.pd_series = pd.Series(data_vector)
         else:
-            self.pd_series = pd.Series(dataVec,index=self.pd_series.index)
+            self.pd_series = pd.Series(data_vector, index=self.pd_series.index)
 
-        # To maintain backwards compatability
-        self._data_vector = np.array(self.pd_series)
+        # Convert vectors to list format (for db)
+        self.generate_time_point_list()
 
-        self.deathPhaseStart = len(dataVec)
+        # Instantiate death phase to be not detected (last point of the vector)
+        self.death_phase_start = len(data_vector)
 
         if live_calculations:   self.calculate()
+
+    def generate_time_point_list(self):
+        self.time_points = [TimePoint(time=time, data=data)
+                            for time, data in zip(self.pd_series.index, self.pd_series)]
 
     def calculate(self):
         from .settings import settings
         perform_curve_fit = settings.perform_curve_fit
 
-        if self._time_vector is not None:
-            self.gradient = np.gradient(self._data_vector) / np.gradient(self.time_vector)
-
+        if self.time_vector is not None and len(self.time_vector) > 2:
+            self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
         if self.removeDeathPhaseFlag:
             self.find_death_phase(self.data_vector)
 
@@ -324,9 +321,9 @@ class TimeCourse(AnalyteData, Base):
     def find_death_phase(self, data_vector):
         from .settings import settings
 
-        self.deathPhaseStart = self.find_death_phase_static(data_vector,
-                                                            use_filtered_data_flag = self.useFilteredDataFlag,
-                                                            verbose = settings.verbose)
+        self.death_phase_start = self.find_death_phase_static(data_vector,
+                                                              use_filtered_data_flag = settings.use_filtered_data_flag,
+                                                              verbose = settings.verbose)
 
     @staticmethod
     def find_death_phase_static(data_vector, use_filtered_data_flag=False, verbose=False, hyper_parameter = 1):
@@ -366,18 +363,6 @@ class TimeCourse(AnalyteData, Base):
 
         return death_phase_start
 
-    def db_commit(self, singleTrialID, c=None, stat=None):
-        if stat is None:
-            stat_prefix = ''
-        else:
-            stat_prefix = '_' + stat
-        c.execute(
-            """INSERT INTO timeCourseTable""" + stat_prefix + """(singleTrial""" + stat_prefix
-            + """ID, titerType, analyte_name, time_vector, data_vector, fit_params) VALUES (?, ?, ?, ?, ?, ?)""",
-            (singleTrialID, self.trial_identifier.analyte_type, self.trial_identifier.analyte_name,
-             self.time_vector.dumps(), self.data_vector.dumps(), pickle.dumps(self.fit_params)))
-
-
     def summary(self, print=False):
         summary = dict()
         summary['time_vector'] = self.time_vector
@@ -385,22 +370,20 @@ class TimeCourse(AnalyteData, Base):
         summary['number_of_data_points'] = len(self.time_vector)
         summary['trial_identifier'] = self.trial_identifier.summary(['strain.name', 'id_1', 'id_2',
                                                                 'analyte_name', 'titerType', 'replicate_id'])
-
         if print:
             print(summary)
 
         return summary
 
     def create_stage(self, stage_bounds):
-        stage = TimeCourse()
+        stage = TimeCourseStage(self, bounds = stage_bounds)
         stage.trial_identifier = self.trial_identifier
-        stage.time_vector = self.time_vector[stage_bounds[0]:stage_bounds[1] + 1]
-        stage.data_vector = self.data_vector[stage_bounds[0]:stage_bounds[1] + 1]
-        if len(self.gradient) > 0:
-            stage.gradient = self.gradient[stage_bounds[0]:stage_bounds[1] + 1]
-        if self._specific_productivity is not None:
-            # Set the private variable to prevent any calculations
-            stage._specific_productivity = self._specific_productivity[stage_bounds[0]:stage_bounds[1] + 1]
+        stage.pd_series = self.pd_series[stage_bounds[0]:stage_bounds[1] + 1]
+        # if len(self.gradient) > 0:
+        #     stage.gradient = self.gradient[stage_bounds[0]:stage_bounds[1] + 1]
+        # if self._specific_productivity is not None:
+        #     # Set the private variable to prevent any calculations
+        #     stage._specific_productivity = self._specific_productivity[stage_bounds[0]:stage_bounds[1] + 1]
 
         return stage
 
@@ -408,39 +391,36 @@ class TimeCourse(AnalyteData, Base):
         return curve_fit_dict[self.fit_type].growthEquation(np.array(t), **self.fit_params)
 
     @event.listens_for(TimePoint, 'load')
-    def add_timepoint(self, timePoint):
+    def add_timepoint(self, time_point):
         from .settings import settings
         live_calculations = settings.live_calculations
 
-        self.timePointList.append(timePoint)
+        time_point.parent = self
 
+        self.timePointList.append(time_point)
         if len(self.timePointList) == 1:
-            self.trial_identifier = timePoint.trial_identifier
-            self._time_vector = np.array([timePoint.time])
-            self._data_vector = np.array([timePoint.data])
+            self.trial_identifier = time_point.trial_identifier
+            self.pd_series = pd.Series([time_point.data],index=[time_point.time])
         else:
-            if self.timePointList[-1].trial_identifier.get_unique_for_SingleTrial() \
-                    != self.timePointList[-2].trial_identifier.get_unique_for_SingleTrial():
+            if self.timePointList[-1].trial_identifier.unique_single_trial() \
+                    != self.timePointList[-2].trial_identifier.unique_single_trial():
                 raise Exception("trial_identifiers don't match within the timeCourse object")
 
             # Check if ordering is broken
             if self.timePointList[-1].time < self.timePointList[-2].time:
                 self.timePointList.sort(key=lambda timePoint: timePoint.time)
-                self._time_vector = np.array([timePoint.time for timePoint in self.timePointList])
-                self._data_vector = np.array([timePoint.data for timePoint in self.timePointList])
+                self.pd_series = pd.Series([timePoint.data for timePoint in self.timePointList],
+                                           index=[timePoint.time for timePoint in self.timePointList])
             else:
                 # Otherwise simply append
-                self._time_vector = np.append(self._time_vector, timePoint.time)
-                self._data_vector = np.append(self._data_vector, timePoint.data)
+                self.pd_series = self.pd_series.append(pd.Series([time_point.data],index=[time_point.time]))
 
-        if self.pd_series is None:
-            self.pd_series = pd.Series()
-        pd_timepoint = pd.Series([timePoint.data], index=[timePoint.time])
-        self.pd_series = self.pd_series.append(pd_timepoint)
-        timePoint.parent = self
+        if sum(self.pd_series.index.duplicated()) > 0:
+            print(self.pd_series)
+            raise Exception('Duplicate time points found, this is not supported')
 
         if len(self.timePointList) > 6 and live_calculations:
-            self.gradient = np.gradient(self._data_vector) / np.gradient(self.time_vector)
+            self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
 
     def curve_fit_data(self):
         from .settings import settings
@@ -466,19 +446,23 @@ class TimeCourse(AnalyteData, Base):
 
 
 
-            if verbose: print('Started fit')
-            if verbose: print('Death phase start: ',self.deathPhaseStart)
-            result = curve_fit_dict[self.fit_type].calcFit(self.time_vector[0:self.deathPhaseStart],
-                                                                    self.data_vector[0:self.deathPhaseStart])#,fit_kws = {'xatol':1E-10, 'fatol':1E-10})  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
+            if verbose:
+                print('Started fit')
+                print('Death phase start: ', self.death_phase_start)
+
+            result = curve_fit_dict[self.fit_type].calcFit(self.time_vector[0:self.death_phase_start],
+                                                           self.data_vector[0:self.death_phase_start])
+            #,fit_kws = {'xatol':1E-10, 'fatol':1E-10})  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
             if verbose: print('Finished fit')
+
             for key in result.best_values:
                 self.fit_params[key] = result.best_values[key]
 
             if verbose:
                 import matplotlib.pyplot as plt
                 plt.figure()
-                plt.plot(self.time_vector[0:self.deathPhaseStart], self.data_vector[0:self.deathPhaseStart],         'bo')
-                plt.plot(self.time_vector[0:self.deathPhaseStart], result.best_fit, 'r-')
+                plt.plot(self.time_vector[0:self.death_phase_start], self.data_vector[0:self.death_phase_start], 'bo')
+                plt.plot(self.time_vector[0:self.death_phase_start], result.best_fit, 'r-')
 
             if verbose: print(result.fit_report())
         else:
@@ -486,37 +470,13 @@ class TimeCourse(AnalyteData, Base):
             print('Ensure that the trial identifier is described before adding data. This will allow curve fitting'
                   'to be appropriate to the analyte type.')
 
-    def get_fit_parameters(self):
-        return [[param['name'], self.fit_params[i]] for i, param in
-                enumerate(curve_fit_dict[self.fit_type].paramList)]
+class TimeCourseStage(TimeCourse):
+    stage_parent_id = Column(Integer, ForeignKey('time_course.id'))
+    parent = relationship('TimeCourse')
 
-# class TimeCourseStage(TimeCourse):
-#     time_course = Column(Integer, ForeignKey('time_course.id'))
-#
-#     def __init__(self):
-#         TimeCourse.__init__()
-
-class TimeCourseShell(TimeCourse):
-    """
-    This is a shell of :class:`~AnalyteData` with an overidden setter to be used as a container
-    """
-    # class Meta:
-    #     app_label = 'impact'
-
-    # __mapper_args__ = {'polymorphic_identity': 'shell'}
-    #
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-
-    @TimeCourse.data_vector.setter
-    def data_vector(self, dataVec):
-        if self.pd_series is None:
-            self.pd_series = pd.Series(dataVec)
-        else:
-            self.pd_series = pd.Series(dataVec,index=self.pd_series.index)
-
-        # To maintain backwards compatability
-        self._data_vector = np.array(self.pd_series)
+    def __init__(self, parent):
+        TimeCourse.__init__()
+        self.parent = parent
 
 class EndPoint(TimeCourse):
     """
@@ -530,12 +490,11 @@ class EndPoint(TimeCourse):
     def __init__(self, runID, t, data):
         AnalyteData.__init__(self, runID, t, data)
 
-    def add_timepoint(self, timePoint):
+    def add_timepoint(self, time_point):
         if len(self.timePointList) < 2:
-            self.timePointList.append(timePoint)
+            self.timePointList.append(time_point)
         else:
             raise Exception("Cannot have more than two timePoints for an endPoint Object")
 
         if len(self.timePointList) == 2:
             self.timePointList.sort(key=lambda timePoint: timePoint.time)
-
