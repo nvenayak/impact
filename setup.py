@@ -24,5 +24,6 @@ setup(
                       'sphinx_bootstrap_theme',
                       'nbsphinx',
                       'numpydoc',
-                      'pandas']
+                      'pandas',
+                      'sqlalchemy']
 )

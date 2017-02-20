@@ -398,6 +398,8 @@ class SingleTrial(Base):
         self.t = self.analyte_df.index
 
 
+
+
 # Features
 class MultiAnalyteFeature(object):
     """
@@ -497,12 +499,12 @@ class SpecificProductivityFactory(object):
         if analyte_data.trial_identifier.analyte_type == 'biomass':
             self.biomass = analyte_data
 
-            if len(self.pending_analytes) > 0:
-                for analyte in self.pending_analytes:
+            if len(self.pending_analytes) > 1:
+                for analyte_data in self.pending_analytes:
                     analyte_data.specific_productivity = SpecificProductivity(biomass=self.biomass,
                                                                               analyte=analyte_data)
 
-        if analyte_data.trial_identifier.analyte_type in ['substrate','productivity']:
+        if analyte_data.trial_identifier.analyte_type in ['substrate','product']:
             if self.biomass is not None:
                 analyte_data.specific_productivity = SpecificProductivity(biomass=self.biomass, analyte=analyte_data)
             else:
@@ -512,21 +514,20 @@ class SpecificProductivity(MultiAnalyteFeature):
     def __init__(self, biomass, analyte):
         self.biomass = biomass
         self.analyte = analyte
+        self.specific_productivity = None
 
     @property
     def data(self):
-        if not self.specific_productivity:
+        if self.specific_productivity is None:
             self.calculate()
 
         return self.specific_productivity
-
-
 
     def calculate(self):
         """
         Calculate the specific productivity (dP/dt) given :math:`dP/dt = k_{Product} * X`
         """
-        if self.biomass_name is None:
+        if self.biomass is None:
             return 'Biomass not defined'
 
         self.analyte.calculate()    # Need gradient calculated before accessing

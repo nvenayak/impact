@@ -1,14 +1,10 @@
-from .AnalyteData import TimeCourse, TimePoint
-from .TrialIdentifier import TrialIdentifier
-from .SingleTrial import SingleTrial
-from .ReplicateTrial import ReplicateTrial
-
-from .. import parsers
-
 import sqlite3 as sql
-
 import time
-import copy
+
+from .AnalyteData import TimeCourse
+from .ReplicateTrial import ReplicateTrial
+from .SingleTrial import SingleTrial
+from .. import parsers
 
 try:
     from pyexcel_xlsx import get_data
@@ -23,9 +19,9 @@ import numpy as np
 from warnings import warn
 
 from ..database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
+from sqlalchemy import Column, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm.collections import attribute_mapped_collection
+
 
 class Stage(Base):
     __tablename__ = 'stage'
@@ -35,7 +31,8 @@ class Stage(Base):
     end_time = Column(Float)
 
     parent = relationship('Experiment')
-    parent_id = Column(Integer,ForeignKey('experiment.id'))
+    parent_id = Column(Integer, ForeignKey('experiment.id'))
+
 
 class Experiment(Base):
     # colorMap = 'Set2'
@@ -46,25 +43,21 @@ class Experiment(Base):
     stages = relationship('Stage')
 
     def __init__(self, info=None):
-        # Initialize variables
         self.blank_key_list = []
-        # self.timepoint_list = []  # dict()
-        # self.titer_dict = dict()
-        # self.single_experiment_dict = dict()
-
         self.replicate_experiment_dict = dict()
-        self.info_keys = ['import_date', 'experiment_start_date', 'experiment_end_date', 'experiment_title', 'primary_scientist_name',
-                          'secondary_scientist_name', 'medium_base', 'medium_supplements', 'notes']
+        self.stage_indices = []
+        self.blank = None
+
+        self.info_keys = ['import_date', 'experiment_start_date', 'experiment_end_date', 'experiment_title',
+                          'primary_scientist_name', 'secondary_scientist_name', 'medium_base', 'medium_supplements',
+                          'notes']
         if info is not None:
             self.info = {key: info[key] for key in self.info_keys if key in info}
         else:
             self.info = dict()
 
-        self.stage_indices = []
-        self.blank = None
-
     def __str__(self):
-        return '\n'.join(['Trials','-----']+self.strains+['\n','Analytes','-----']+self.analyte_names)
+        return '\n'.join(['Trials', '-----'] + self.strains + ['\n', 'Analytes', '-----'] + self.analyte_names)
 
     def __add__(self, experiment):
         """
@@ -83,8 +76,10 @@ class Experiment(Base):
 
         for replicateExperiment in experiment.replicate_experiment_dict:
             for replicate_id in experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict:
-                for titer in experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict[replicate_id].analyte_dict:
-                    titer_list.append(experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict[replicate_id].analyte_dict[titer])
+                for titer in experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict[
+                    replicate_id].analyte_dict:
+                    titer_list.append(experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict[
+                                          replicate_id].analyte_dict[titer])
 
         combined_experiment = Experiment()
         combined_experiment.info = self.info
@@ -96,160 +91,66 @@ class Experiment(Base):
         t0 = time.time()
         print('Analyzing data..')
 
-        #Precalculate the blank stats, otherwise they won't be available for subtraction
+        # Precalculate the blank stats, otherwise they won't be available for subtraction
         if self.blank_key_list:
             for replicate_key in self.blank_key_list:
                 self.replicate_experiment_dict[replicate_key].calculate()
                 if self.stage_indices:
                     self.replicate_experiment_dict[replicate_key].calculate_stages(self.stage_indices)
 
-        for replicate_key in [replicate_key for replicate_key in self.replicate_experiment_dict if replicate_key not in self.blank_key_list]:
+        for replicate_key in [replicate_key for replicate_key in self.replicate_experiment_dict if
+                              replicate_key not in self.blank_key_list]:
             self.replicate_experiment_dict[replicate_key].calculate()
             if self.stage_indices:
                 self.replicate_experiment_dict[replicate_key].calculate_stages(self.stage_indices)
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
 
-    def db_commit(self, db_name, overwrite_experiment_id = None, db_backend = 'sqlite3'):
-        """
-        Commit the experiment to the database
-
-        Parameters
-        ----------
-        db_name : str
-            Path to the database, must be initialized prior (impact.init_db())
-        """
-
-        if db_backend == 'sql_alchemy':
-            pass
-        else:
-            conn = sql.connect(db_name)
-            c = conn.cursor()
-
-            # Ensure the experiment_id is not explicitely defined (may have been defined in a form via django)
-            if 'experiment_id' in self.info.keys():
-                del self.info['experiment_id']
-
-            prepared_columns = list(self.info.keys())
-            prepped_column_query = ', '.join(col for col in prepared_columns)
-            prepped_column_data = [self.info[key] for key in prepared_columns]
-
-
-            if overwrite_experiment_id is None:
-                c.execute("""INSERT INTO experimentTable (""" + prepped_column_query + \
-                          """) VALUES (""" + ', '.join('?' for a in prepped_column_data) + """)""", prepped_column_data)
-                c.execute("SELECT MAX(experiment_id) FROM experimentTable")
-                experiment_id = c.fetchall()[0][0]
-            elif type(overwrite_experiment_id) is int:
-                experiment_id = overwrite_experiment_id
-                for i, col in enumerate(prepared_columns):
-                    c.execute("""UPDATE experimentTable SET """
-                              + col + """ = ? WHERE experiment_id = ?""", (prepped_column_data[i],experiment_id)
-                              )
-
-            for key in self.replicate_experiment_dict:
-                self.replicate_experiment_dict[key].db_commit(experiment_id, c=c)
-
-            conn.commit()
-            c.close()
-
-            print('Committed experiment #', experiment_id, ' to DB ', db_name)
-            return experiment_id
-
-    def json_serialize(self):
-        """
-        Load an experiment from the database.
-
-        Parameters
-        ----------
-        db_name : str
-            Path to the database, must be initialized prior (impact.init_db())
-        experiment_id : int
-            id of experiment to load
-        """
-        conn = sql.connect(db_name)
-        c = conn.cursor()
-        c.execute("""SELECT * FROM experimentTable WHERE (experiment_id == ?)""", (experiment_id,))
-        self.info = {key: data for data, key in zip(c.fetchall()[0], [elem[0] for elem in c.description])}
-
-        # Build the replicate_id experiment objects
-        c.execute("""SELECT  strain_id, id_1, id_2, id_3, replicateID FROM replicateTable
-                WHERE experiment_id == ?""", (experiment_id,))
-        for row in c.fetchall():
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]] = ReplicateTrial()
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.strain.name = row[0]
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_1 = row[1]
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_2 = row[2]
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.identifier3 = row[3]
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].db_load(c=c, replicateID=row[4])
-
-        c.close()
-
-    def db_load(self, db_name, experiment_id):
-        """
-        Load an experiment from the database.
-
-        Parameters
-        ----------
-        db_name : str
-            Path to the database, must be initialized prior (impact.init_db())
-        experiment_id : int
-            id of experiment to load
-        """
-        conn = sql.connect(db_name)
-        c = conn.cursor()
-        c.execute("""SELECT * FROM experimentTable WHERE (experiment_id == ?)""", (experiment_id,))
-        self.info = {key: data for data, key in zip(c.fetchall()[0], [elem[0] for elem in c.description])}
-
-        # Build the replicate_id experiment objects
-        c.execute("""SELECT  strain_id, id_1, id_2, id_3, replicateID FROM replicateTable
-                WHERE experiment_id == ?""", (experiment_id,))
-        for row in c.fetchall():
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]] = ReplicateTrial()
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.strain.name = row[0]
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_1 = row[1]
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_2 = row[2]
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.identifier3 = row[3]
-            self.replicate_experiment_dict[row[0] + row[1] + row[2]].db_load(c=c, replicateID=row[4])
-
-        c.close()
-        self.calculate()
-
-    def db_delete(self, db_name, experiment_id):
-        """
-        Delete an experiment from the database.
-
-        Parameters
-        ----------
-        db_name : str
-            Path to the database, must be initialized prior (impact.init_db())
-        experiment_id : int
-            id of experiment to load
-        """
-        conn = sql.connect(db_name)
-
-        # This is required to propogate deletions
-        conn.execute("PRAGMA FOREIGN_KEYS = ON")
-
-        c = conn.cursor()
-        c.execute("""DELETE FROM experimentTable WHERE (experiment_id == ?)""", (experiment_id,))
-        conn.commit()
-        c.close()
+    # def json_serialize(self):
+    #     """
+    #     Load an experiment from the database.
+    #
+    #     Parameters
+    #     ----------
+    #     db_name : str
+    #         Path to the database, must be initialized prior (impact.init_db())
+    #     experiment_id : int
+    #         id of experiment to load
+    #     """
+    #     conn = sql.connect(db_name)
+    #     c = conn.cursor()
+    #     c.execute("""SELECT * FROM experimentTable WHERE (experiment_id == ?)""", (experiment_id,))
+    #     self.info = {key: data for data, key in zip(c.fetchall()[0], [elem[0] for elem in c.description])}
+    #
+    #     # Build the replicate_id experiment objects
+    #     c.execute("""SELECT  strain_id, id_1, id_2, id_3, replicateID FROM replicateTable
+    #             WHERE experiment_id == ?""", (experiment_id,))
+    #     for row in c.fetchall():
+    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]] = ReplicateTrial()
+    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.strain.name = row[0]
+    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_1 = row[1]
+    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_2 = row[2]
+    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.identifier3 = row[3]
+    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]].db_load(c=c, replicateID=row[4])
+    #
+    #     c.close()
 
     def data(self):
         data = []
         for replicate_key in self.replicate_experiment_dict:
             data.append([replicate_key])
-            single_trial = self.replicate_experiment_dict[replicate_key].single_trial_dict[list(self.replicate_experiment_dict[replicate_key].single_trial_dict.keys())[0]]
+            single_trial = self.replicate_experiment_dict[replicate_key].single_trial_dict[
+                list(self.replicate_experiment_dict[replicate_key].single_trial_dict.keys())[0]]
             for titer_key in [single_trial.biomass_name] + \
                     [single_trial.substrate_name] + \
                     single_trial.product_names:
                 data.append([titer_key])
 
-                data.append(['Time (hours)'] + list(self.replicate_experiment_dict[replicate_key].replicate_df[titer_key].index))
+                data.append(['Time (hours)'] + list(
+                    self.replicate_experiment_dict[replicate_key].replicate_df[titer_key].index))
                 for col in self.replicate_experiment_dict[replicate_key].replicate_df[titer_key]:
                     data.append(['rep #'
                                  + str(col)]
-                                 + list(self.replicate_experiment_dict[replicate_key].replicate_df[titer_key][col]))
+                                + list(self.replicate_experiment_dict[replicate_key].replicate_df[titer_key][col]))
                 data.append(['Average'] + list(
                     self.replicate_experiment_dict[replicate_key].avg.analyte_dict[titer_key].pd_series))
                 data.append(['Std'] + list(
@@ -298,10 +199,6 @@ class Experiment(Base):
         c.close()
         return strainDescriptions
 
-    def serialize(self):
-        pass
-        # for replicate replicate_experiment_dict
-
     def summary(self, level=None):
         for replicate_key in self.replicate_experiment_dict:
             self.replicate_experiment_dict[replicate_key].summary()
@@ -313,12 +210,20 @@ class Experiment(Base):
     @property
     def analyte_names(self):
         titers_to_plot = list(set([titer for key in self.replicate_experiment_dict
-                        for replicate_id in self.replicate_experiment_dict[key].single_trial_dict
-                        for titer in self.replicate_experiment_dict[key].single_trial_dict[replicate_id].analyte_dict]
+                                   for replicate_id in self.replicate_experiment_dict[key].single_trial_dict
+                                   for titer in
+                                   self.replicate_experiment_dict[key].single_trial_dict[replicate_id].analyte_dict]
                                   )
                               )
 
         return titers_to_plot
+
+    def parseRawData(self, *args, **kwargs):
+        """
+        Wrapper for parse_raw_data to maintain legacy support
+        """
+        warn('Please use parse_raw_data instead')
+        self.parse_raw_data(self, *args, **kwargs)
 
     def parse_raw_data(self, dataFormat, fileName=None, data=None, stage_indices=None, substrate_name=None):
         t0 = time.time()
@@ -332,21 +237,14 @@ class Experiment(Base):
             print('Imported data from %s' % (fileName))
 
         # Import parsers
-        parser_case_dict = {'spectromax_OD':parsers.spectromax_OD,
-                            'tecan_OD': parsers.tecan_OD,
-                            'default_titers':parsers.HPLC_titer_parser
+        parser_case_dict = {'spectromax_OD' : parsers.spectromax_OD,
+                            'tecan_OD'      : parsers.tecan_OD,
+                            'default_titers': parsers.HPLC_titer_parser
                             }
         if dataFormat in parser_case_dict.keys():
-            parser_case_dict[dataFormat](self,data,fileName)
+            parser_case_dict[dataFormat](self, data, fileName)
         else:
             raise Exception('Parser %s not found', dataFormat)
-
-    def parseRawData(self, *args, **kwargs):
-        """
-        Wrapper for parse_raw_data to maintain legacy support
-        """
-        warn('Please use parse_raw_data instead')
-        self.parse_raw_data(self, *args, **kwargs)
 
     def parse_time_point_dict(self, timePointList, stage_indices=None):
         print('Parsing time point list...')
@@ -405,11 +303,14 @@ class Experiment(Base):
         for analyte_dictKey in analyte_dict:
             count += 1
             if analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial() in single_experiment_dict:
-                single_experiment_dict[analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
+                single_experiment_dict[
+                    analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
                     analyte_dict[analyte_dictKey])
             else:
-                single_experiment_dict[analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()] = SingleTrial()
-                single_experiment_dict[analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
+                single_experiment_dict[
+                    analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()] = SingleTrial()
+                single_experiment_dict[
+                    analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
                     analyte_dict[analyte_dictKey])
         tf = time.time()
         print("Parsed %i single trials in %0.1fms\n" % (len(single_experiment_dict), (tf - t0) * 1000))
@@ -443,23 +344,6 @@ class Experiment(Base):
         replicateTrial : :class:`~ReplicateTrial`
         """
         self.replicate_experiment_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
-
-    def pickle(self, fileName):
-        """
-        Pickle experiment. Not commonly used since 2016/06/14
-        """
-        pickle.dump([self.timepoint_list, self.titer_dict, self.single_experiment_dict,
-                     self.replicate_experiment_dict], open(fileName, 'wb'))
-
-    def unpickle(self, fileName):
-        """
-        Unpickle pickled experiments. Not commonly used since 2016/06/14
-        """
-        t0 = time.time()
-        with open(fileName, 'rb') as data:
-            self.timepoint_list, self.titer_dict, self.single_experiment_dict, self.replicate_experiment_dict = pickle.load(
-                data)
-        print('Read data from %s in %0.3fs' % (fileName, time.time() - t0))
 
     def printGenericTimeCourse(self, figHandle=[], strainsToPlot=[], titersToPlot=[], removePointFraction=1,
                                shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True, output_type='iPython',
@@ -850,27 +734,28 @@ class Experiment(Base):
             plt.plot(singleExperiment.OD.time_vector, singleExperiment.OD.data_vector)
         plt.ylabel(singleExperiment.trial_identifier.unique_replicate_trial())
 
-
-    def set_blanks(self,mode='auto',common_id='id_2'):
+    def set_blanks(self, mode='auto', common_id='id_2'):
 
         self.blank_key_list = [replicate_key
-                      for replicate_key in self.replicate_experiment_dict
-                      if self.replicate_experiment_dict[replicate_key].trial_identifier.strain.name
-                      in ['Blank','blank']]
+                               for replicate_key in self.replicate_experiment_dict
+                               if self.replicate_experiment_dict[replicate_key].trial_identifier.strain.name
+                               in ['Blank', 'blank']]
 
         if common_id:
-            blank_ids = {getattr(self.replicate_experiment_dict[replicate_key].trial_identifier,common_id):replicate_key
-                         for replicate_key in self.blank_key_list}
+            blank_ids = {
+            getattr(self.replicate_experiment_dict[replicate_key].trial_identifier, common_id): replicate_key
+            for replicate_key in self.blank_key_list}
 
-        for replicate_key in [replicate_key for replicate_key in self.replicate_experiment_dict if replicate_key not in self.blank_key_list]:
+        for replicate_key in [replicate_key for replicate_key in self.replicate_experiment_dict if
+                              replicate_key not in self.blank_key_list]:
             if common_id:
                 self.replicate_experiment_dict[replicate_key].set_blank(
-                    self.replicate_experiment_dict[blank_ids[getattr(self.replicate_experiment_dict[replicate_key].trial_identifier, common_id)]]
+                    self.replicate_experiment_dict[
+                        blank_ids[getattr(self.replicate_experiment_dict[replicate_key].trial_identifier, common_id)]]
                 )
             else:
-                self.replicate_experiment_dict[replicate_key].set_blank(self.replicate_experiment_dict[self.blank_key_list[0]])
-
-
+                self.replicate_experiment_dict[replicate_key].set_blank(
+                    self.replicate_experiment_dict[self.blank_key_list[0]])
 
         # for replicate_key in self.replicate_experiment_dict:
         #     if self.replicate_experiment_dict[replicate_key].trial_identifier.strain.name in ['Blank','blank']:
@@ -892,7 +777,7 @@ class Experiment(Base):
         stage_indices
 
         """
-        if all([stage_indices,stage_times]):
+        if all([stage_indices, stage_times]):
             raise Exception('Cannot define both stage_indices and stage_times')
 
         if stage_times:

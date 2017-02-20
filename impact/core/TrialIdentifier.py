@@ -295,7 +295,16 @@ class TrialIdentifier(Base):
             if len(tempParsedIdentifier) > 4:
                 self.time = float(tempParsedIdentifier[4])
 
+    def unique_analyte_data(self):
+        """
+        Returns a string identifying the unique attribute of a single trial
+        """
+        return self.unique_single_trial() + ' ' + self.analyte_name
+
     def unique_single_trial(self):
+        """
+        Returns a string identifying the unique attribute of a single trial
+        """
         return self.unique_replicate_trial() + ' ' \
                + ' '.join([str(getattr(self, attr))
                            for attr in ['replicate_id']
@@ -303,17 +312,15 @@ class TrialIdentifier(Base):
 
     def unique_replicate_trial(self):
         """
-        Get the unique information for a single replicate_id
-        Returns
-        -------
-        unique_id : str
-            Unique id defining a replicate_id.
+        Returns a string identifying the unique attribute of a replicate trial
         """
         return ' '.join([str(getattr(self,attr))
                          for attr in ['strain','media','id_1',
                                       'id_2','id_3']
                          if str(getattr(self,attr) != '') ])
-        return str(self.strain) + self.id_1 + self.id_2
 
-
-# class SingleTrialidentifier(TrialIdentifier):
+    def get_analyte_data_statistic_identifier(self):
+        ti = TrialIdentifier()
+        for attr in ['strain','media','id_1','id_2','id_3','analyte_name','analyte_type']:
+            setattr(ti,attr,getattr(self,attr))
+        return ti

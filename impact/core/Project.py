@@ -1,12 +1,9 @@
-from .TrialIdentifier import TrialIdentifier
 from .Experiment import Experiment
 from .settings import settings
 db_name = settings.db_name
-from ..database import init_db
+# from ..database import init_db
 
 import sqlite3 as sql
-
-
 
 class Identifier(object):
     def __init__(self):

@@ -11,8 +11,9 @@ included in the core package as much as possible.
 
 ## Quick Start Guide
 ### Install
-Download a [Python 3 installation](https://www.python.org/downloads/) for your platform, or you can use [Anaconda](https://www.continuum.io/downloads). Anaconda has many of the dependencies pre-installed,
-and is an easy option to get off the ground quickly. 
+Download a [Python 3 installation](https://www.python.org/downloads/) for your platform, 
+or you can use [Anaconda](https://www.continuum.io/downloads). If you are on windows, you will need a way to install
+numpy, scipy, matplotlib - packaged with Anaconda.
 
 #### Fresh install
 First, clone the repository. You will need your github username and password but if you are here presumably you are logged in.

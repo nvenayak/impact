@@ -2,7 +2,7 @@ __author__ = 'Naveen Venayak'
 
 import sys
 import os
-
+from warnings import warn
 # try:
 #     from pyexcel_xlsx import get_data
 # except ImportError as e:
@@ -11,9 +11,9 @@ import os
 #     pass
 
 if sys.version_info.major < 3:
-    raise Exception('Require Python >= 3.5')
+    warn(Exception('Require Python >= 3.5'))
 elif sys.version_info.minor < 5:
-    raise Exception('Require Python >= 3.5')
+    warn(Exception('Require Python >= 3.5'))
 
 # Django ORM support
 # # Add impact_cloud path and init django
@@ -33,7 +33,7 @@ except FileNotFoundError:
 
 
 # Import the core classes
-from .database import Base, init_db
+from .database import Base #, init_db
 from .core.TrialIdentifier import TrialIdentifier
 from .core.AnalyteData import TimeCourse, TimePoint
 from .core.SingleTrial import SingleTrial

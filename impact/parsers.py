@@ -1,13 +1,15 @@
-from .core.AnalyteData import TimePoint
-from .core.TrialIdentifier import TrialIdentifier, Strain
-from collections import OrderedDict
-import time as sys_time
-import numpy as np
 import copy
 import datetime
-
 import time
+import time as sys_time
+from collections import OrderedDict
+
+import numpy as np
 from pyexcel_xlsx import get_data
+
+from .core.AnalyteData import TimePoint
+from .core.TrialIdentifier import TrialIdentifier, Strain
+
 
 # "strain_ko=adh,pta;strain_gen1=D1;plasmid_name=pKDL071;inducer=IPTG"
 #
@@ -187,8 +189,6 @@ def tecan_OD(experiment, data, fileName, t0):
     print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(experiment.titer_dict), tf - t0))
     experiment.parse_analyte_data(experiment.titer_dict)
     return data, t0
-
-
 
 def parse_raw_data(data_format, data = None, file_name = None, experiment = None):
     if experiment is None:

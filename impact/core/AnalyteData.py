@@ -198,7 +198,7 @@ class TimeCourse(AnalyteData, Base):
         self.fit_type = 'gompertz'
 
     def __str__(self):
-        return 'strain_name: '+str(self.trial_identifier.strain)+' media_name: '+str(self.trial_identifier.media)
+        return str(self.trial_identifier.unique_analyte_data())#'strain_name: '+str(self.trial_identifier.strain)+' media_name: '+str(self.trial_identifier.media)
 
     @property
     def unique_id(self):

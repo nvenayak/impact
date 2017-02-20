@@ -489,12 +489,8 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
                                    'color': colors[color_index]},
                                line={'color': colors[color_index]},
                                showlegend=showlegend_flag,
-                               legendgroup=(replicate.trial_identifier.strain.name + '+' +
-                                            replicate.trial_identifier.id_1 +
-                                            replicate.trial_identifier.id_2).split('LMSE')[-1],
-                               name=(replicate.trial_identifier.strain.name + '+' +
-                                     replicate.trial_identifier.id_1 +
-                                     replicate.trial_identifier.id_2).split('LMSE')[-1])  # ,
+                               legendgroup=(replicate.trial_identifier.unique_replicate_trial()).split('LMSE')[-1],
+                               name=(replicate.trial_identifier.unique_replicate_trial()).split('LMSE')[-1])  # ,
 
             # Plot the fit curve
             if plot_curve_fit and len(replicate.avg.analyte_dict[product].fit_params.keys()) > 0:

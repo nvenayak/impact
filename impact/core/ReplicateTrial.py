@@ -1,22 +1,24 @@
 # coding=utf-8
 
-import numpy as np
-import dill as pickle
-import pandas as pd
-from .SingleTrial import SingleTrial
-from .AnalyteData import TimeCourse
-from .TrialIdentifier import TrialIdentifier
 import copy
-from scipy import stats
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+from .AnalyteData import TimeCourse
+from .SingleTrial import SingleTrial, SpecificProductivityFactory, ProductYieldFactory
+from .TrialIdentifier import TrialIdentifier
 from .settings import settings
+
 default_outlier_cleaning_flag = settings.default_outlier_cleaning_flag
 max_fraction_replicates_to_remove = settings.max_fraction_replicates_to_remove
 verbose = settings.verbose
 
 
 from ..database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
+from sqlalchemy import Column, Integer, ForeignKey, PickleType
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
@@ -65,7 +67,7 @@ class ReplicateTrial(Base):
 
         self.trial_identifier = TrialIdentifier()
         self.bad_replicates = []
-        self.replicate_ids = []
+        # self.replicate_ids = []
         self.replicate_df = dict()
 
         self.outlier_cleaning_flag = default_outlier_cleaning_flag
@@ -137,62 +139,36 @@ class ReplicateTrial(Base):
                 raise Exception(
                     "the replicates do not have the same uniqueID, either the uniqueID includes too much information or the strains don't match")
 
-            # Deprecated as of v0.5.0, pandas allows dealing with data with different shapes
-            # if (self.single_trial_list[i].t != self.single_trial_list[i + 1].t).all():
-            #     print(self.single_trial_list[i].t, self.single_trial_list[i + 1].t)
-            #     raise Exception("time vectors don't match within replicates")
-            # else:
-            #     self.t = self.single_trial_list[i].t
-
-                # if len(self.single_trial_list[i].t) != len(self.single_trial_list[i + 1].t):  # TODO
-                #     print("Time Vector 1: ", self.single_trial_list[i].t, "\nTime Vector 2: ", self.single_trial_list[i + 1].t)
-                #     print("Vector 1: ", self.single_trial_list[i].substrate.data_vector, "\nVector 2: ",
-                #           self.single_trial_list[i + 1].substrate.data_vector)
-                #     raise (Exception("length of substrate vectors do not match"))
-                #
-                # for key in self.single_trial_list[i].products:
-                #     if len(self.single_trial_list[i].products[key].data_vector) != len(
-                #             self.single_trial_list[i + 1].products[key].data_vector):
-                #         raise (Exception("length of product vector " + str(key) + " do not match"))
-
-    def add_replicate(self, singleTrial):
+    def add_replicate(self, single_trial):
         """
         Add a SingleTrial object to this list of replicates
 
         Parameters
         ----------
-        singleTrial : :class:`~SingleTrial`
+        single_trial : :class:`~SingleTrial`
             Add a SingleTrial
         """
         from .settings import settings
         live_calculations = settings.live_calculations
 
-        if singleTrial.trial_identifier.replicate_id is None:
-            singleTrial.trial_identifier.replicate_id = 1
+        if str(single_trial.trial_identifier.replicate_id) in self.single_trial_dict.keys():
+            raise Exception('Duplicate replicate id: '
+                            + str(single_trial.trial_identifier.replicate_id)
+                            + '.\nCurrent ids: '
+                            + str(self.single_trial_dict.keys()))
+
+        if single_trial.trial_identifier.replicate_id is None:
+            single_trial.trial_identifier.replicate_id = 1
 
         # Get info from single trial
-        self.single_trial_dict[str(singleTrial.trial_identifier.replicate_id)] = singleTrial
+        self.single_trial_dict[str(single_trial.trial_identifier.replicate_id)] = single_trial
         if len(self.single_trial_dict) == 1:
-            self.t = self.single_trial_dict[str(singleTrial.trial_identifier.replicate_id)].t
+            self.t = self.single_trial_dict[str(single_trial.trial_identifier.replicate_id)].t
         self.check_replicate_unique_id_match()
 
 
-        self.trial_identifier = copy.copy(singleTrial.trial_identifier)
-        self.trial_identifier.time = None
-        if singleTrial.trial_identifier.replicate_id not in self.replicate_ids:
-            self.replicate_ids.append(
-                singleTrial.trial_identifier.replicate_id)  # TODO remove this redundant functionality
-        else:
-            raise Exception('Duplicate replicate id: '
-                            + str(singleTrial.trial_identifier.replicate_id)
-                            + '.\nCurrent ids: '
-                            + str(self.replicate_ids))
-        try:
-            self.replicate_ids.sort()
-        except Exception as e:
-            print(e)
-            print(self.replicate_ids)
-            raise Exception(e)
+        self.trial_identifier = copy.copy(single_trial.trial_identifier)
+
         if live_calculations:
             self.calculate_statistics()
 
@@ -200,64 +176,7 @@ class ReplicateTrial(Base):
         """
         Calculates the statistics on the SingleTrial objects
         """
-        # Features
-            # yield
-            # specific_productivity
-            # raw
-
-
-
-
         unique_analytes = self.get_analytes()
-
-
-
-
-        # Calculate single trial statistics (mass balance)
-
-
-        # Calculate analyte statistics
-            # for feature in features
-                # for analyte in unique_analytes:
-                    # combined_df = pd.DataFrame()
-                    # Build a df
-                    # Add the dfs
-
-            # pd_series
-            # yields
-            # specific productivity
-
-        # feature_list = []
-        # for feature in feature_list:
-        #     for analyte in unique_analytes:
-        #         self.replicate_df[analyte] = pd.DataFrame()
-        #
-        #         # Only iterate through single trials with the analyte of interest
-        #         temp_single_trial_dict = {str(replicate_id):self.single_trial_dict[replicate_id]
-        #                                   for replicate_id in self.single_trial_dict
-        #                                   if analyte in self.single_trial_dict[replicate_id].analyte_dict}
-        #
-        #         try:
-        #             temp_analyte_df = pd.DataFrame(
-        #                 {replicate_id: getattr(temp_single_trial_dict[replicate_id].analyte_dict[analyte],feature.name)
-        #                  for replicate_id in temp_single_trial_dict})
-        #         except ValueError as e:
-        #             print({replicate_id: getattr(temp_single_trial_dict[replicate_id].analyte_dict[analyte],feature.name)
-        #                  for replicate_id in temp_single_trial_dict})
-        #             raise ValueError(e)
-        #
-        #     for analyte in unique_analytes:
-        #         for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
-        #             getattr(self, stat).analyte_dict[analyte] = TimeCourse()
-        #
-        #             # Save the mean or std
-        #             if stat == 'avg':
-        #                 getattr(self, stat).analyte_dict[analyte].pd_series = self.replicate_df[analyte].mean(
-        #                     axis=1)
-        #             elif stat == 'std':
-        #                 getattr(self, stat).analyte_dict[analyte].pd_series = self.replicate_df[analyte].std(axis=1)
-        #             else:
-        #                 raise Exception('Unknown statistic type')
 
 
         # Build a df for all analytes on the same index
@@ -317,35 +236,32 @@ class ReplicateTrial(Base):
 
 
                 getattr(self, stat).analyte_dict[analyte].trial_identifier = \
-                    self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].trial_identifier
+                    self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].trial_identifier.get_analyte_data_statistic_identifier()
 
 
-        # Get all unique yields
-        unique_yields = []
-        for replicate_id in self.single_trial_dict:
-            single_trial = self.single_trial_dict[replicate_id]
-            for analyte in single_trial.yields:
-                unique_yields.append(analyte)
-        unique_yields = list(set(unique_analytes))
+        # Calculate statistics on features
+        feature_list = [SpecificProductivityFactory(), ProductYieldFactory()]
 
-        # Calculate statistics for each yield
-        for analyte in unique_yields:
-            temp_single_trial_dict = {replicate_id: self.single_trial_dict[replicate_id] for replicate_id in self.single_trial_dict if
-                                      analyte in self.single_trial_dict[replicate_id].yields}
-            yield_df = pd.DataFrame()
+        # Loop through features
+        for feature in feature_list:
+            # Loop through analytes
+            for analyte in unique_analytes:
+                # Get all the analytes with the feature
+                trial_list = [self.single_trial_dict[replicate_id] for replicate_id in self.single_trial_dict
+                                if feature.name in self.single_trial_dict[replicate_id].analyte_dict[analyte].__dict__]
 
-            for replicate_id in temp_single_trial_dict:
-                single_trial = temp_single_trial_dict[replicate_id]
-                temp_yield_df = pd.DataFrame({single_trial.trial_identifier.replicate_id: single_trial.yields[analyte]})
-                yield_df = pd.merge(yield_df,
-                                    temp_yield_df,
-                                      left_index=True,
-                                      right_index=True,
-                                      how='outer')
+                # Merge them all, in case they don't share the same index (missing data)
+                df = pd.DataFrame()
+                for trial in trial_list:
+                    df = df.merge(pd.DataFrame({
+                        str(trial.trial_identifier.replicate_id):
+                            pd.Series(getattr(trial.analyte_dict[analyte], feature.name).data,
+                                      index=trial.analyte_dict[analyte].time_vector)}),
+                                  left_index=True,right_index=True,how='outer')
 
-            # Save the mean or std
-            self.avg.yields[analyte] = np.array(yield_df.mean(axis=1))
-            self.std.yields[analyte] = np.array(yield_df.std(axis=1))
+                # Calculate and set the feature statistics
+                setattr(self.avg.analyte_dict[analyte],feature.name, pd.Series(df.mean(axis=1)))
+                setattr(self.std.analyte_dict[analyte], feature.name, pd.Series(df.std(axis=1)))
 
     def get_analytes(self):
         # Get all unique analytes
