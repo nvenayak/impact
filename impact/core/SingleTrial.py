@@ -59,15 +59,6 @@ class SingleTrial(Base):
         # Dataframe containing all of the analytes with a common index
         self.analyte_df = pd.DataFrame()
 
-        # Dict and df containing yields for each product
-        self.yields = dict()
-        self.yields_df = pd.DataFrame()
-
-        # Contains the names of different analyte types
-        # self._substrate_name = None
-        # self.product_names = []
-        # self.biomass_name = None
-
         # Contains information about the stages used in the experiment, TODO
         self.stage_indices = None
         self.stage_list = None
@@ -83,7 +74,6 @@ class SingleTrial(Base):
 
         self.register_feature(ProductYieldFactory())
         self.register_feature(SpecificProductivityFactory())
-        # self.register_feature()
 
     def register_feature(self, feature):
         self.features.append(feature)
@@ -397,9 +387,6 @@ class SingleTrial(Base):
         self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
         self.t = self.analyte_df.index
 
-
-
-
 # Features
 class MultiAnalyteFeature(object):
     """
@@ -442,7 +429,7 @@ class ProductYield(MultiAnalyteFeature):
         self.calculate_substrate_consumed()
         try:
             self.product_yield = np.divide(
-                [(dataPoint - self.product.data_vector[0]) for dataPoint in self.product.data_vector],
+                self.product.data_vector - np.tile(self.product.data_vector[0],[len(self.product.data_vector)]),
                 self.substrate_consumed
             )
         except Exception as e:
@@ -455,7 +442,6 @@ class ProductYield(MultiAnalyteFeature):
             [(self.substrate.data_vector[0] - dataPoint)
              for dataPoint in self.substrate.data_vector]
         )
-
 
 class ProductYieldFactory(object):
     def __init__(self):

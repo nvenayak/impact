@@ -1,7 +1,5 @@
 # coding=utf-8
 
-import copy
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -56,7 +54,6 @@ class ReplicateTrial(Base):
 
     bad_replicates = Column(PickleType)
     replicate_ids = Column(PickleType)
-    # replicate_df = Column(PickleType)
 
     def __init__(self):
         self.avg = SingleTrial()
@@ -73,6 +70,8 @@ class ReplicateTrial(Base):
         self.outlier_cleaning_flag = default_outlier_cleaning_flag
 
         self.stages = []
+
+        self.features = []
 
         # self.blank = SingleTrial()
 
@@ -166,8 +165,14 @@ class ReplicateTrial(Base):
             self.t = self.single_trial_dict[str(single_trial.trial_identifier.replicate_id)].t
         self.check_replicate_unique_id_match()
 
+        self.trial_identifier = single_trial.trial_identifier.get_replicate_trial_trial_identifier()
 
-        self.trial_identifier = copy.copy(single_trial.trial_identifier)
+        # Extract features from single trial
+        for feature in single_trial.features:
+            if len(self.features) == 0:
+                self.features.append(feature)
+            elif not isinstance(feature,tuple(type(feature) for feature in self.features)):
+                self.features.append(feature)
 
         if live_calculations:
             self.calculate_statistics()
@@ -178,74 +183,46 @@ class ReplicateTrial(Base):
         """
         unique_analytes = self.get_analytes()
 
-
-        # Build a df for all analytes on the same index
         for analyte in unique_analytes:
-            # Build the df from all the replicates
+            self.avg.analyte_dict[analyte] = TimeCourse()
+            self.std.analyte_dict[analyte] = TimeCourse()
+
+            # Copy a relevant trial identifier
+            self.avg.analyte_dict[analyte].trial_identifier = \
+                self.single_trial_dict[list(self.single_trial_dict.keys())[0]]\
+                    .analyte_dict[analyte]\
+                    .trial_identifier.\
+                    get_analyte_data_statistic_identifier()
+
+            self.std.analyte_dict[analyte].trial_identifier = \
+                self.single_trial_dict[list(self.single_trial_dict.keys())[0]]\
+                    .analyte_dict[analyte]\
+                    .trial_identifier.\
+                    get_analyte_data_statistic_identifier()
+
             self.replicate_df[analyte] = pd.DataFrame()
 
-            # Only iterate through single trials with the analyte of interest
-            temp_single_trial_dict = {str(replicate_id):self.single_trial_dict[replicate_id]
-                                      for replicate_id in self.single_trial_dict
-                                      if analyte in self.single_trial_dict[replicate_id].analyte_dict}
+            # Get all the trials with the analyte
+            trial_list = [self.single_trial_dict[replicate_id] for replicate_id in self.single_trial_dict
+                          if analyte in self.single_trial_dict[replicate_id].analyte_dict]
 
-            try:
-                temp_analyte_df = pd.DataFrame(
-                    {replicate_id: temp_single_trial_dict[replicate_id].analyte_dict[analyte].pd_series
-                     for replicate_id in temp_single_trial_dict})
-            except ValueError as e:
-                print({replicate_id: temp_single_trial_dict[replicate_id].analyte_dict[analyte].pd_series
-                     for replicate_id in temp_single_trial_dict})
-                raise ValueError(e)
-
-            # Merging the dataframes this way will allow different time indices for different analytes
-            self.replicate_df[analyte] = pd.merge(self.replicate_df[analyte],
-                                                  temp_analyte_df,
-                                                  left_index=True,
-                                                  right_index=True,
-                                                  how='outer')
-
+            # Merge the dataframes for relevant trials
+            for trial in trial_list:
+                self.replicate_df[analyte] = pd.merge(self.replicate_df[analyte],
+                                                      pd.DataFrame({str(trial.trial_identifier.replicate_id):
+                                                                        trial.analyte_dict[analyte].pd_series}),
+                                                      left_index=True,
+                                                      right_index=True,
+                                                      how='outer')
+            # Remove outliers
             self.prune_bad_replicates(analyte)
 
-        for analyte in unique_analytes:
-            for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
-                getattr(self, stat).analyte_dict[analyte] = TimeCourse()
+            # Set statistics
+            self.avg.analyte_dict[analyte].pd_series = self.replicate_df[analyte].mean(axis=1)
+            self.std.analyte_dict[analyte].pd_series = self.replicate_df[analyte].std(axis=1)
 
-                # Save the mean or std
-                if stat == 'avg':
-                    getattr(self, stat).analyte_dict[analyte].pd_series = self.replicate_df[analyte].mean(axis=1)
-                elif stat == 'std':
-                    getattr(self, stat).analyte_dict[analyte].pd_series = self.replicate_df[analyte].std(axis=1)
-                else:
-                    raise Exception('Unknown statistic type')
-
-                # If a fit_params exists, calculate the mean
-                if None not in [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
-                                for replicate_id in self.single_trial_dict]:
-                    temp = dict()
-                    for param in self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].fit_params:
-                        temp[param] = calc(
-                            [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params[param]
-                             for replicate_id in self.single_trial_dict
-                             if self.single_trial_dict[replicate_id].trial_identifier.replicate_id not in self.bad_replicates])
-
-                    getattr(self, stat).analyte_dict[analyte].fit_params = temp
-                else:
-                    print([self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
-                                for replicate_id in self.single_trial_dict])
-
-
-                getattr(self, stat).analyte_dict[analyte].trial_identifier = \
-                    self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].trial_identifier.get_analyte_data_statistic_identifier()
-
-
-        # Calculate statistics on features
-        feature_list = [SpecificProductivityFactory(), ProductYieldFactory()]
-
-        # Loop through features
-        for feature in feature_list:
-            # Loop through analytes
-            for analyte in unique_analytes:
+            # Calculate statistics for features
+            for feature in self.features:
                 # Get all the analytes with the feature
                 trial_list = [self.single_trial_dict[replicate_id] for replicate_id in self.single_trial_dict
                                 if feature.name in self.single_trial_dict[replicate_id].analyte_dict[analyte].__dict__]
@@ -262,6 +239,24 @@ class ReplicateTrial(Base):
                 # Calculate and set the feature statistics
                 setattr(self.avg.analyte_dict[analyte],feature.name, pd.Series(df.mean(axis=1)))
                 setattr(self.std.analyte_dict[analyte], feature.name, pd.Series(df.std(axis=1)))
+
+        # Calculate fit param stats
+        for analyte in unique_analytes:
+            for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
+                # If a fit_params exists, calculate the mean
+                if None not in [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
+                                for replicate_id in self.single_trial_dict]:
+                    temp = dict()
+                    for param in self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].fit_params:
+                        temp[param] = calc(
+                            [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params[param]
+                             for replicate_id in self.single_trial_dict
+                             if self.single_trial_dict[replicate_id].trial_identifier.replicate_id not in self.bad_replicates])
+
+                    getattr(self, stat).analyte_dict[analyte].fit_params = temp
+                else:
+                    print([self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
+                                for replicate_id in self.single_trial_dict])
 
     def get_analytes(self):
         # Get all unique analytes

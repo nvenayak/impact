@@ -1,10 +1,3 @@
-# from django.db import models
-
-# class BaseClass(models.Model):
-#     class Meta:
-#         app_label = 'impact'
-
-
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
 from ..database import Base
 from sqlalchemy.orm import relationship
@@ -322,5 +315,11 @@ class TrialIdentifier(Base):
     def get_analyte_data_statistic_identifier(self):
         ti = TrialIdentifier()
         for attr in ['strain','media','id_1','id_2','id_3','analyte_name','analyte_type']:
+            setattr(ti,attr,getattr(self,attr))
+        return ti
+
+    def get_replicate_trial_trial_identifier(self):
+        ti = TrialIdentifier()
+        for attr in ['strain','media','id_1','id_2','id_3']:
             setattr(ti,attr,getattr(self,attr))
         return ti

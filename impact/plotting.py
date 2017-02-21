@@ -456,8 +456,8 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
         if yieldFlag:
             if product != 'OD600':
                 dataLabel = '<br>yield (g/g)'
-            y_avg = replicate.avg.yields[product][::removePointFraction]
-            y_std = replicate.std.yields[product][::removePointFraction]
+            y_avg = replicate.avg.analyte_dict[product].product_yield[::removePointFraction]
+            y_std = replicate.std.analyte_dict[product].product_yield[::removePointFraction]
         elif titerFlag:
             if product != 'OD600':
                 dataLabel = '<br>titer (g/L)'
