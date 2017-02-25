@@ -23,13 +23,12 @@ class MultiAnalyteFeature(object):
 
 
 class ProductYield(MultiAnalyteFeature):
-    # parent = relationship
-    # yield_points = relationship('YieldTimePoint')
+
 
     def __init__(self, substrate, product):
         # self.parent = single_trial
         # self.name = 'yields_dict'
-        self.requires = ['product','substrate','biomass']
+        # self.requires = ['product','substrate','biomass']
         self.substrate = substrate
         self.product = product
 
@@ -57,10 +56,11 @@ class ProductYield(MultiAnalyteFeature):
         )
 
 class ProductYieldFactory(object):
+    requires = ['substrate','product', 'biomass']
+    name = 'product_yield'
+
     def __init__(self):
         self.products = []
-        self.requires = ['substrate','product', 'biomass']
-        self.name = 'product_yield'
         self.substrate = None
 
     def add_analyte_data(self, analyte_data):
@@ -72,13 +72,13 @@ class ProductYieldFactory(object):
                     for product in self.products:
                         product.product_yield = ProductYield(substrate=self.substrate, product=analyte_data)
 
-                # Once we've processed the waiting products we can delete them
-                del self.products
+                    # Once we've processed the waiting products we can delete them
+                    self.product = []
             else:
                 raise Exception('No support for Multiple substrates: ',
-                                self.substrate_name,
+                                str(self.substrate.trial_identifier),
                                 ' ',
-                                analyte_data.trial_identifier.analyte_name)
+                                str(analyte_data.trial_identifier))
 
         if analyte_data.trial_identifier.analyte_type in ['biomass','product']:
             if self.substrate is not None:
@@ -88,9 +88,10 @@ class ProductYieldFactory(object):
                 self.products.append(analyte_data)
 
 class SpecificProductivityFactory(object):
+    requires = ['substrate', 'product', 'biomass']
+    name = 'specific_productivity'
+
     def __init__(self):
-        self.requires = ['substrate','product','biomass']
-        self.name = 'specific_productivity'
         self.biomass = None
         self.pending_analytes = []
 
@@ -149,12 +150,6 @@ class COBRAModelFactory(MultiAnalyteFeature):
 class MassBalanceFactory(MultiAnalyteFeature):
     def __init__(self):
         self.requires = ['biomass','substrate','product']
-
-
-
-# class FeaturesToAnalyteData(Base):
-#     feature = Column(String, 'feature.id')
-#     time_course = Column(Integer,'time_course.id')
 
 class FeatureManager(object):
     def __init__(self):

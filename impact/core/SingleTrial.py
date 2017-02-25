@@ -32,12 +32,6 @@ class SingleTrial(Base):
                                 collection_class = attribute_mapped_collection('analyte_name'),
                                 cascade = 'save-update, delete')
 
-
-    # analyte_df = Column(PickleType)
-    # yield_time_points = relationship('YieldTimePoint')
-    # normalized_data_time_points = relationship('NormalizedTimePoint')
-    # yields_df = Column(PickleType)
-
     _substrate_name = Column(PickleType)
     product_names = Column(PickleType)
     biomass_name = Column(PickleType)
@@ -48,22 +42,12 @@ class SingleTrial(Base):
     stage_parent_id = Column(Integer, ForeignKey('single_trial.id'))
     stages = relationship('SingleTrial', foreign_keys = 'SingleTrial.stage_parent_id')
 
-    normalized_data = Column(PickleType)
-
-    features = []
-    analytes_to_features = {}
+    class_features = []
     analyte_types = ['biomass','substrate','product']
-
-    for analyte_type in analyte_types:
-        analytes_to_features[analyte_type] = []
 
     @classmethod
     def register_feature(cls, feature):
-        cls.features.append(feature)
-        analyte_types = ['biomass','substrate','product']
-        for analyte_type in analyte_types:
-            if analyte_type in feature.requires:
-                cls.analytes_to_features[analyte_type].append(feature)
+        cls.class_features.append(feature)
 
     def __init__(self):
         # Trial identifier with relevant features common to the trial
@@ -82,21 +66,19 @@ class SingleTrial(Base):
         # Data normalized to different features, not serialized
         self.normalized_data = dict()
 
-    #     self.features = []
-    #     self.analytes_to_features = {}
-    #     self.analyte_types = ['biomass','substrate','product']
-    #     for analyte_type in self.analyte_types:
-    #         self.analytes_to_features[analyte_type] = []
-    #
-    #     self.register_feature(ProductYieldFactory())
-    #     self.register_feature(SpecificProductivityFactory())
-    #
-    # def register_feature(self, feature):
-    #     self.features.append(feature)
-    #     analyte_types = ['biomass','substrate','product']
-    #     for analyte_type in analyte_types:
-    #         if analyte_type in feature.requires:
-    #             self.analytes_to_features[analyte_type].append(feature)
+
+        # Register instances of feeatures
+        self.features = []
+        self.analytes_to_features = {}
+        for analyte_type in SingleTrial.analyte_types:
+            self.analytes_to_features[analyte_type] = []
+
+        for feature in SingleTrial.class_features:
+            self.features.append(feature())
+            for analyte_type in SingleTrial.analyte_types:
+                if analyte_type in feature.requires:
+                    self.analytes_to_features[analyte_type].append(self.features[-1])
+
 
 
     def serialize(self):
@@ -404,5 +386,5 @@ class SingleTrial(Base):
         self.t = self.analyte_df.index
 
 # Register known features
-for feature in [ProductYieldFactory(),SpecificProductivityFactory()]:
+for feature in [ProductYieldFactory,SpecificProductivityFactory]:
     SingleTrial.register_feature(feature)
