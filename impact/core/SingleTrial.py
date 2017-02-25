@@ -7,6 +7,7 @@ import copy
 
 from .TrialIdentifier import TrialIdentifier
 from .AnalyteData import TimeCourse, TimePoint
+from .features import *
 
 from django.db import models
 from ..database import Base
@@ -49,6 +50,21 @@ class SingleTrial(Base):
 
     normalized_data = Column(PickleType)
 
+    features = []
+    analytes_to_features = {}
+    analyte_types = ['biomass','substrate','product']
+
+    for analyte_type in analyte_types:
+        analytes_to_features[analyte_type] = []
+
+    @classmethod
+    def register_feature(cls, feature):
+        cls.features.append(feature)
+        analyte_types = ['biomass','substrate','product']
+        for analyte_type in analyte_types:
+            if analyte_type in feature.requires:
+                cls.analytes_to_features[analyte_type].append(feature)
+
     def __init__(self):
         # Trial identifier with relevant features common to the trial
         self._trial_identifier = None
@@ -66,21 +82,21 @@ class SingleTrial(Base):
         # Data normalized to different features, not serialized
         self.normalized_data = dict()
 
-        self.features = []
-        self.analytes_to_features = {}
-        self.analyte_types = ['biomass','substrate','product']
-        for analyte_type in self.analyte_types:
-            self.analytes_to_features[analyte_type] = []
-
-        self.register_feature(ProductYieldFactory())
-        self.register_feature(SpecificProductivityFactory())
-
-    def register_feature(self, feature):
-        self.features.append(feature)
-        analyte_types = ['biomass','substrate','product']
-        for analyte_type in analyte_types:
-            if analyte_type in feature.requires:
-                self.analytes_to_features[analyte_type].append(feature)
+    #     self.features = []
+    #     self.analytes_to_features = {}
+    #     self.analyte_types = ['biomass','substrate','product']
+    #     for analyte_type in self.analyte_types:
+    #         self.analytes_to_features[analyte_type] = []
+    #
+    #     self.register_feature(ProductYieldFactory())
+    #     self.register_feature(SpecificProductivityFactory())
+    #
+    # def register_feature(self, feature):
+    #     self.features.append(feature)
+    #     analyte_types = ['biomass','substrate','product']
+    #     for analyte_type in analyte_types:
+    #         if analyte_type in feature.requires:
+    #             self.analytes_to_features[analyte_type].append(feature)
 
 
     def serialize(self):
@@ -387,207 +403,6 @@ class SingleTrial(Base):
         self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
         self.t = self.analyte_df.index
 
-# Features
-class MultiAnalyteFeature(object):
-    """
-    Base multi analyte feature. Use this to create new features.
-    """
-    def __init__(self):
-        self.analyte_list = []
-        self.name = ''
-
-    @property
-    def data(self):
-        return 'Not implemented'
-
-# class YieldTimePoint(object):
-#     __tablename__ = 'yield_time_point'
-#
-#     id = Column(Integer, primary_key=True)
-#     time = Column(Float)
-#     data = Column(Float)
-
-
-
-class ProductYield(MultiAnalyteFeature):
-    # parent = relationship
-    # yield_points = relationship('YieldTimePoint')
-
-    def __init__(self, substrate, product):
-        # self.parent = single_trial
-        # self.name = 'yields_dict'
-        self.requires = ['product','substrate','biomass']
-        self.substrate = substrate
-        self.product = product
-
-    @property
-    def data(self):
-        self.calculate()
-        return self.product_yield
-
-    def calculate(self):
-        self.calculate_substrate_consumed()
-        try:
-            self.product_yield = np.divide(
-                self.product.data_vector - np.tile(self.product.data_vector[0],[len(self.product.data_vector)]),
-                self.substrate_consumed
-            )
-        except Exception as e:
-            print(self.product)
-            print(self.product.data_vector)
-            raise Exception(e)
-
-    def calculate_substrate_consumed(self):
-        self.substrate_consumed = np.array(
-            [(self.substrate.data_vector[0] - dataPoint)
-             for dataPoint in self.substrate.data_vector]
-        )
-
-class ProductYieldFactory(object):
-    def __init__(self):
-        self.products = []
-        self.requires = ['substrate','product', 'biomass']
-        self.name = 'product_yield'
-        self.substrate = None
-
-    def add_analyte_data(self, analyte_data):
-        if analyte_data.trial_identifier.analyte_type == 'substrate':
-            if self.substrate is None:
-                self.substrate = analyte_data
-
-                if len(self.products) > 0:
-                    for product in self.products:
-                        product.product_yield = ProductYield(substrate=self.substrate, product=analyte_data)
-
-                # Once we've processed the waiting products we can delete them
-                del self.products
-            else:
-                raise Exception('No support for Multiple substrates: ',
-                                self.substrate_name,
-                                ' ',
-                                analyte_data.trial_identifier.analyte_name)
-
-        if analyte_data.trial_identifier.analyte_type in ['biomass','product']:
-            if self.substrate is not None:
-                analyte_data.product_yield = ProductYield(substrate=self.substrate, product=analyte_data)
-            else:
-                # Hold on to the product until a substrate is defined
-                self.products.append(analyte_data)
-
-class SpecificProductivityFactory(object):
-    def __init__(self):
-        self.requires = ['substrate','product','biomass']
-        self.name = 'specific_productivity'
-        self.biomass = None
-        self.pending_analytes = []
-
-    def add_analyte_data(self, analyte_data):
-        if analyte_data.trial_identifier.analyte_type == 'biomass':
-            self.biomass = analyte_data
-
-            if len(self.pending_analytes) > 1:
-                for analyte_data in self.pending_analytes:
-                    analyte_data.specific_productivity = SpecificProductivity(biomass=self.biomass,
-                                                                              analyte=analyte_data)
-
-        if analyte_data.trial_identifier.analyte_type in ['substrate','product']:
-            if self.biomass is not None:
-                analyte_data.specific_productivity = SpecificProductivity(biomass=self.biomass, analyte=analyte_data)
-            else:
-                self.pending_analytes.append(analyte_data)
-
-class SpecificProductivity(MultiAnalyteFeature):
-    def __init__(self, biomass, analyte):
-        self.biomass = biomass
-        self.analyte = analyte
-        self.specific_productivity = None
-
-    @property
-    def data(self):
-        if self.specific_productivity is None:
-            self.calculate()
-
-        return self.specific_productivity
-
-    def calculate(self):
-        """
-        Calculate the specific productivity (dP/dt) given :math:`dP/dt = k_{Product} * X`
-        """
-        if self.biomass is None:
-            return 'Biomass not defined'
-
-        self.analyte.calculate()    # Need gradient calculated before accessing
-        self.specific_productivity = self.analyte.gradient / self.biomass.data_vector
-
-class NormalizedData(MultiAnalyteFeature):
-    def __init__(self, numerator, denominator):
-        pass
-
-class COBRAModelFactory(MultiAnalyteFeature):
-    def __init__(self):
-        self.requires = ['biomass','substrate','product']
-
-    def calculate(self):
-        import cameo
-        iJO = cameo.models.iJO1366
-
-class MassBalanceFactory(MultiAnalyteFeature):
-    def __init__(self):
-        self.requires = ['biomass','substrate','product']
-
-
-
-# class FeaturesToAnalyteData(Base):
-#     feature = Column(String, 'feature.id')
-#     time_course = Column(Integer,'time_course.id')
-
-class FeatureManager(object):
-    def __init__(self):
-        self.features = []
-        self.analytes_to_features = {}
-        self.analyte_types = ['biomass','substrate','product']
-        for analyte_type in self.analyte_types:
-            self.analytes_to_features[analyte_type] = []
-
-    def register_feature(self, feature):
-        self.features.append(feature)
-
-        analyte_types = ['biomass','substrate','product']
-        for analyte_type in analyte_types:
-            if analyte_type in feature.requires:
-                self.analytes_to_features[analyte_type].append(feature)
-        setattr(self,feature.name,feature)
-
-    def add_analyte(self, analyte_data):
-        for analyte_type in self.analyte_types:
-            for feature in self.features:
-                if feature in self.analyte_types[analyte_type]:
-                    feature.add_analyte(analyte_data)
-
-# class TimeCourseStage(TimeCourse):
-#     def __init__(self):
-#         TimeCourse().__init__()
-#
-# @TimeCourse.stage_indices.setter
-# def
-
-# class SingleTrialDataShell(SingleTrial):
-#     """
-#     Object which overwrites the SingleTrial objects setters and getters, acts as a shell of data with the
-#     same structure as SingleTrial
-#     """
-#
-#     def __init__(self):
-#         SingleTrial.__init__(self)
-#
-#     @SingleTrial.substrate.setter
-#     def substrate(self, substrate):
-#         self._substrate = substrate
-#
-#     @SingleTrial.OD.setter
-#     def OD(self, OD):
-#         self._OD = OD
-#
-#     @SingleTrial.products.setter
-#     def products(self, products):
-#         self._products = products
+# Register known features
+for feature in [ProductYieldFactory(),SpecificProductivityFactory()]:
+    SingleTrial.register_feature(feature)
