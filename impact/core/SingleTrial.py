@@ -32,9 +32,7 @@ class SingleTrial(Base):
                                 collection_class = attribute_mapped_collection('analyte_name'),
                                 cascade = 'save-update, delete')
 
-    _substrate_name = Column(PickleType)
-    product_names = Column(PickleType)
-    biomass_name = Column(PickleType)
+
     stage_indices = Column(PickleType)
 
     parent_id = Column(Integer, ForeignKey('replicate_trial.id'))
@@ -116,49 +114,6 @@ class SingleTrial(Base):
         for stage in stages:
             stage = self.create_stage(stage)
             self.stage_list.append(stage)
-
-    @property
-    def substrate_name(self):
-        return [str(self.analyte_dict[key].trial_identifier.analyte_name)
-                for key in self.analyte_dict
-                if self.analyte_dict[key].trial_identifier.analyte_type == 'substrate'][0]
-
-    @property
-    def product_names(self):
-        return [str(self.analyte_dict[key].trial_identifier.analyte_name)
-                for key in self.analyte_dict
-                if self.analyte_dict[key].trial_identifier.analyte_type == 'product'][0]
-
-    @property
-    def biomass_name(self):
-        return [str(self.analyte_dict[key].trial_identifier.analyte_name)
-                for key in self.analyte_dict
-                if self.analyte_dict[key].trial_identifier.analyte_type == 'biomass'][0]
-
-    # @substrate_name.setter
-    # def substrate_name(self, substrate_name):
-    #     self._substrate_name = substrate_name
-    #     self.calculate_substrate_consumed()
-    #     if len(self.product_names) > 0:
-    #         self.calculate_yield()
-
-    @property
-    def t(self):
-        return self._t
-
-    @t.setter
-    def t(self, t):
-        self._t = t
-
-    # @property
-    # def products(self):
-    #     return self._products
-    #
-    # @products.setter
-    # def products(self, products):
-    #     self._products = products
-    #     if self._substrate:
-    #         self.calculate_yield()
 
     @property
     def trial_identifier(self):

@@ -1,6 +1,7 @@
 import sqlite3 as sql
+
 import numpy as np
-import matplotlib.pyplot as plt
+
 from .core.ReplicateTrial import ReplicateTrial
 from .core.settings import plotly_username, plotly_api_key
 
@@ -10,7 +11,6 @@ try:
 except NameError:
     from plotly.offline import plot
 else:
-    print('Injected plotly')
     from plotly.offline import init_notebook_mode
     init_notebook_mode()
     from plotly.offline import iplot as plot
@@ -27,6 +27,7 @@ else:
     </script>
     """
     )
+    print('Injected plotly')
 
 from plotly import tools
 import plotly.graph_objs as go
@@ -36,7 +37,6 @@ import math
 
 import colorlover as cl
 
-# def print_generic_timecourse_plotly(replicate_trial_list = replicate_trial_list, )
 
 def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[],
                                   secondary_y_axis_titers=None, pts_per_hour = 4,
@@ -395,8 +395,8 @@ def render_output_ploty(output_type, fig, number_of_columns = None, column_width
     elif output_type == 'file':
         plot(fig, show_link=True)
     elif output_type == 'iPython':
-        from plotly.offline import iplot
-        iplot(fig, show_link=False)
+        # from plotly.offline import iplot
+        plot(fig, show_link=False)
         # return fig
     elif output_type == 'image':
         import random

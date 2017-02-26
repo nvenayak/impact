@@ -4,6 +4,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from warnings import warn
 
+# Base = object
+
+from django.db import models
+
 class Strain(Base):
     """
     Identifies the strain used
@@ -24,10 +28,10 @@ class Strain(Base):
     plasmid_2 = Column(String)
     plasmid_3 = Column(String)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name=''):
         # models.Model.__init__(self, *args, **kwargs)
 
-        self.name = ''    # 'E. coli MG1655'
+        self.name = name    # 'E. coli MG1655'
         self.plasmid_1 = None       # ptrc99a
         self.plasmid_2 = None       # ptrc99a
         self.plasmid_3 = None       # ptrc99a
@@ -86,7 +90,8 @@ class ComponentConcentration(Base):
 
 class Media(Base):
     __tablename__ = 'media'
-    name = Column(String, primary_key=True)
+    id = Column(Integer,primary_key=True)
+    name = Column(String)
     component_concentrations = relationship('ComponentConcentration', cascade = 'all')
     parent = Column(Integer,ForeignKey('media.name'))
 
@@ -115,7 +120,7 @@ class Media(Base):
                               self.component_concentrations] + self.parent_name])
         else:
             return '+'.join([item for item in
-                             [compconc.concentration + 'g/L ' + compconc.media_component.name for compconc in
+                             [str(compconc.concentration) + 'g/L ' + compconc.media_component.name for compconc in
                               self.component_concentrations]])
 
     @property
@@ -139,6 +144,7 @@ class Media(Base):
 class Analyte(Base):
     __tablename__ = 'analyte'
 
+    # If
     name = Column(String, primary_key=True)
     default_type = Column(String)
 
@@ -182,7 +188,7 @@ class TrialIdentifier(Base):
     #
     #
     # class Meta:
-    #     app_label = 'impact'
+    #     app_label = 'impact_core'
     #     db_table = 'trial_identifier'
     #     _DATABASE = 'impact'
     ###########################
@@ -298,10 +304,10 @@ class TrialIdentifier(Base):
         """
         Returns a string identifying the unique attribute of a single trial
         """
-        return self.unique_replicate_trial() + ' ' \
-               + ' '.join([str(getattr(self, attr))
-                           for attr in ['replicate_id']
-                           if str(getattr(self, attr) != '')])
+        return self.unique_replicate_trial() + ' ' + str(self.replicate_id)
+               # + ' '.join([str(getattr(self, attr))
+               #             for attr in ['replicate_id']
+               #             if str(getattr(self, attr) != '')])
 
     def unique_replicate_trial(self):
         """

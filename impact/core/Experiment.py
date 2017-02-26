@@ -21,6 +21,7 @@ from warnings import warn
 from ..database import Base
 from sqlalchemy import Column, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
 
 
 class Stage(Base):
@@ -35,16 +36,17 @@ class Stage(Base):
 
 
 class Experiment(Base):
-    # colorMap = 'Set2'
     __tablename__ = 'experiment'
 
     id = Column(Integer, primary_key=True)
     replicate_trials = relationship('ReplicateTrial')
     stages = relationship('Stage')
+    replicate_trial_dict = relationship('ReplicateTrial',
+                                        collection_class=attribute_mapped_collection('unique_id'))
 
     def __init__(self, info=None):
         self.blank_key_list = []
-        self.replicate_experiment_dict = dict()
+        self.replicate_trial_dict = dict()
         self.stage_indices = []
         self.blank = None
 
@@ -69,8 +71,8 @@ class Experiment(Base):
         """
         # Break the experiment into its base analytes
         titer_list = []
-        for replicateExperiment in self.replicate_experiment_dict:
-            for singleTrial in self.replicate_experiment_dict[replicateExperiment].single_trial_list:
+        for replicateExperiment in self.replicate_trial_dict:
+            for singleTrial in self.replicate_trial_dict[replicateExperiment].single_trial_list:
                 for titer in singleTrial.analyte_dict:
                     titer_list.append(singleTrial.analyte_dict[titer])
 
@@ -94,15 +96,15 @@ class Experiment(Base):
         # Precalculate the blank stats, otherwise they won't be available for subtraction
         if self.blank_key_list:
             for replicate_key in self.blank_key_list:
-                self.replicate_experiment_dict[replicate_key].calculate()
+                self.replicate_trial_dict[replicate_key].calculate()
                 if self.stage_indices:
-                    self.replicate_experiment_dict[replicate_key].calculate_stages(self.stage_indices)
+                    self.replicate_trial_dict[replicate_key].calculate_stages(self.stage_indices)
 
-        for replicate_key in [replicate_key for replicate_key in self.replicate_experiment_dict if
+        for replicate_key in [replicate_key for replicate_key in self.replicate_trial_dict if
                               replicate_key not in self.blank_key_list]:
-            self.replicate_experiment_dict[replicate_key].calculate()
+            self.replicate_trial_dict[replicate_key].calculate()
             if self.stage_indices:
-                self.replicate_experiment_dict[replicate_key].calculate_stages(self.stage_indices)
+                self.replicate_trial_dict[replicate_key].calculate_stages(self.stage_indices)
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
 
     # def json_serialize(self):
@@ -125,36 +127,34 @@ class Experiment(Base):
     #     c.execute("""SELECT  strain_id, id_1, id_2, id_3, replicateID FROM replicateTable
     #             WHERE experiment_id == ?""", (experiment_id,))
     #     for row in c.fetchall():
-    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]] = ReplicateTrial()
-    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.strain.name = row[0]
-    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_1 = row[1]
-    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.id_2 = row[2]
-    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]].trial_identifier.identifier3 = row[3]
-    #         self.replicate_experiment_dict[row[0] + row[1] + row[2]].db_load(c=c, replicateID=row[4])
+    #         self.replicate_trial_dict[row[0] + row[1] + row[2]] = ReplicateTrial()
+    #         self.replicate_trial_dict[row[0] + row[1] + row[2]].trial_identifier.strain.name = row[0]
+    #         self.replicate_trial_dict[row[0] + row[1] + row[2]].trial_identifier.id_1 = row[1]
+    #         self.replicate_trial_dict[row[0] + row[1] + row[2]].trial_identifier.id_2 = row[2]
+    #         self.replicate_trial_dict[row[0] + row[1] + row[2]].trial_identifier.identifier3 = row[3]
+    #         self.replicate_trial_dict[row[0] + row[1] + row[2]].db_load(c=c, replicateID=row[4])
     #
     #     c.close()
 
     def data(self):
         data = []
-        for replicate_key in self.replicate_experiment_dict:
+        for replicate_key in self.replicate_trial_dict:
             data.append([replicate_key])
-            single_trial = self.replicate_experiment_dict[replicate_key].single_trial_dict[
-                list(self.replicate_experiment_dict[replicate_key].single_trial_dict.keys())[0]]
-            for titer_key in [single_trial.biomass_name] + \
-                    [single_trial.substrate_name] + \
-                    single_trial.product_names:
+            single_trial = self.replicate_trial_dict[replicate_key].single_trial_dict[
+                list(self.replicate_trial_dict[replicate_key].single_trial_dict.keys())[0]]
+            for titer_key in single_trial.analyte_dict.keys():
                 data.append([titer_key])
 
                 data.append(['Time (hours)'] + list(
-                    self.replicate_experiment_dict[replicate_key].replicate_df[titer_key].index))
-                for col in self.replicate_experiment_dict[replicate_key].replicate_df[titer_key]:
+                    self.replicate_trial_dict[replicate_key].replicate_df[titer_key].index))
+                for col in self.replicate_trial_dict[replicate_key].replicate_df[titer_key]:
                     data.append(['rep #'
                                  + str(col)]
-                                + list(self.replicate_experiment_dict[replicate_key].replicate_df[titer_key][col]))
+                                + list(self.replicate_trial_dict[replicate_key].replicate_df[titer_key][col]))
                 data.append(['Average'] + list(
-                    self.replicate_experiment_dict[replicate_key].avg.analyte_dict[titer_key].pd_series))
+                    self.replicate_trial_dict[replicate_key].avg.analyte_dict[titer_key].pd_series))
                 data.append(['Std'] + list(
-                    self.replicate_experiment_dict[replicate_key].std.analyte_dict[titer_key].pd_series))
+                    self.replicate_trial_dict[replicate_key].std.analyte_dict[titer_key].pd_series))
 
                 # Add spacing between the titers
                 data.append([])
@@ -200,19 +200,19 @@ class Experiment(Base):
         return strainDescriptions
 
     def summary(self, level=None):
-        for replicate_key in self.replicate_experiment_dict:
-            self.replicate_experiment_dict[replicate_key].summary()
+        for replicate_key in self.replicate_trial_dict:
+            self.replicate_trial_dict[replicate_key].summary()
 
     @property
     def strains(self):
-        return sorted([key for key in self.replicate_experiment_dict])
+        return sorted([key for key in self.replicate_trial_dict])
 
     @property
     def analyte_names(self):
-        titers_to_plot = list(set([titer for key in self.replicate_experiment_dict
-                                   for replicate_id in self.replicate_experiment_dict[key].single_trial_dict
+        titers_to_plot = list(set([titer for key in self.replicate_trial_dict
+                                   for replicate_id in self.replicate_trial_dict[key].single_trial_dict
                                    for titer in
-                                   self.replicate_experiment_dict[key].single_trial_dict[replicate_id].analyte_dict]
+                                   self.replicate_trial_dict[key].single_trial_dict[replicate_id].analyte_dict]
                                   )
                               )
 
@@ -291,7 +291,7 @@ class Experiment(Base):
                     replicate_trial.add_replicate(single_trial)
                     replicate_trial_list.append(replicate_trial)
 
-        self.replicate_experiment_dict = dict()
+        self.replicate_trial_dict = dict()
         for replicate_trial in replicate_trial_list:
             self.add_replicate_trial(replicate_trial)
 
@@ -321,19 +321,19 @@ class Experiment(Base):
         t0 = time.time()
         for key in singleExperimentObjectList:
             flag = 0
-            for key2 in self.replicate_experiment_dict:
+            for key2 in self.replicate_trial_dict:
                 if key2 == singleExperimentObjectList[key].trial_identifier.unique_replicate_trial():
-                    self.replicate_experiment_dict[key2].add_replicate(singleExperimentObjectList[key])
+                    self.replicate_trial_dict[key2].add_replicate(singleExperimentObjectList[key])
                     flag = 1
                     break
             if flag == 0:
-                self.replicate_experiment_dict[
+                self.replicate_trial_dict[
                     singleExperimentObjectList[key].trial_identifier.unique_replicate_trial()] = ReplicateTrial()
-                self.replicate_experiment_dict[
+                self.replicate_trial_dict[
                     singleExperimentObjectList[key].trial_identifier.unique_replicate_trial()].add_replicate(
                     singleExperimentObjectList[key])
         tf = time.time()
-        print("Parsed %i replicates in %0.1fs\n" % (len(self.replicate_experiment_dict), (tf - t0)))
+        print("Parsed %i replicates in %0.1fs\n" % (len(self.replicate_trial_dict), (tf - t0)))
 
     def add_replicate_trial(self, replicateTrial):
         """
@@ -343,7 +343,7 @@ class Experiment(Base):
         ----------
         replicateTrial : :class:`~ReplicateTrial`
         """
-        self.replicate_experiment_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
+        self.replicate_trial_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
 
     def printGenericTimeCourse(self, figHandle=[], strainsToPlot=[], titersToPlot=[], removePointFraction=1,
                                shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True, output_type='iPython',
@@ -358,7 +358,7 @@ class Experiment(Base):
         if titersToPlot == []:
             titersToPlot = self.analyte_names
 
-        replicateTrialList = [self.replicate_experiment_dict[key] for key in strainsToPlot]
+        replicateTrialList = [self.replicate_trial_dict[key] for key in strainsToPlot]
 
         from ..plotting import printGenericTimeCourse_plotly
         printGenericTimeCourse_plotly(replicateTrialList=replicateTrialList, titersToPlot=titersToPlot,
@@ -372,7 +372,7 @@ class Experiment(Base):
             figHandle = plt.figure(figsize=(9, 5))
 
         if strainsToPlot == []:
-            strainsToPlot = [key for key in self.replicate_experiment_dict]
+            strainsToPlot = [key for key in self.replicate_trial_dict]
 
         # Sort the strains to plot to HELP ensure that things are in the same order
         # TODO should find a better way to ensure this is the case
@@ -387,16 +387,16 @@ class Experiment(Base):
 
         # Find all the unique identifier based on which identifier to 'sortBy'
         uniques = list(
-            set([getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) for key in strainsToPlot]))
+            set([getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) for key in strainsToPlot]))
         uniques.sort()
 
         # Find max number of samples (in case they all aren't the same)
         maxSamples = 0
         for unique in uniques:
-            if len([self.replicate_experiment_dict[key].avg.OD.rate[1] for key in strainsToPlot if
-                    getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == unique]) > maxSamples:
-                maxSamples = len([self.replicate_experiment_dict[key].avg.OD.rate[1] for key in strainsToPlot if
-                                  getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == unique])
+            if len([self.replicate_trial_dict[key].avg.OD.rate[1] for key in strainsToPlot if
+                    getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique]) > maxSamples:
+                maxSamples = len([self.replicate_trial_dict[key].avg.OD.rate[1] for key in strainsToPlot if
+                                  getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique])
                 maxIndex = unique
 
         barWidth = 0.9 / len(uniques)
@@ -407,13 +407,13 @@ class Experiment(Base):
         handle = dict()
         for unique in uniques:
             handle[unique] = plt.bar(index[0:len(
-                [self.replicate_experiment_dict[key].avg.OD.rate[1] for key in strainsToPlot if
-                 getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == unique])],
-                                     [self.replicate_experiment_dict[key].avg.OD.rate[1] for key in strainsToPlot if
-                                      getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == unique],
-                                     barWidth, yerr=[self.replicate_experiment_dict[key].std.OD.rate[1] for key in
+                [self.replicate_trial_dict[key].avg.OD.rate[1] for key in strainsToPlot if
+                 getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique])],
+                                     [self.replicate_trial_dict[key].avg.OD.rate[1] for key in strainsToPlot if
+                                      getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique],
+                                     barWidth, yerr=[self.replicate_trial_dict[key].std.OD.rate[1] for key in
                                                      strainsToPlot if
-                                                     getattr(self.replicate_experiment_dict[key].trial_identifier,
+                                                     getattr(self.replicate_trial_dict[key].trial_identifier,
                                                              sortBy) == unique],
                                      color=colors[i], ecolor='k', capsize=5, error_kw=dict(elinewidth=1, capthick=1))
             i += 1
@@ -428,17 +428,17 @@ class Experiment(Base):
                 xticklabel = xticklabel + attribute
 
         if 'strain' == sortBy:
-            tempticks = [self.replicate_experiment_dict[key].trial_identifier.id_1 + '+' +
-                         self.replicate_experiment_dict[key].trial_identifier.id_2 for key in strainsToPlot
-                         if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
+            tempticks = [self.replicate_trial_dict[key].trial_identifier.id_1 + '+' +
+                         self.replicate_trial_dict[key].trial_identifier.id_2 for key in strainsToPlot
+                         if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
         if 'id_1' == sortBy:
-            tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain.name + '+' +
-                         self.replicate_experiment_dict[key].trial_identifier.id_2 for key in strainsToPlot
-                         if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
+            tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.name + '+' +
+                         self.replicate_trial_dict[key].trial_identifier.id_2 for key in strainsToPlot
+                         if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
         if 'id_2' == sortBy:
-            tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain.name + '+' +
-                         self.replicate_experiment_dict[key].trial_identifier.id_1 for key in strainsToPlot
-                         if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
+            tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.name + '+' +
+                         self.replicate_trial_dict[key].trial_identifier.id_1 for key in strainsToPlot
+                         if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
         tempticks.sort()
 
         plt.xticks(index - 0.4, tempticks, rotation='45', ha='right', va='top')
@@ -470,17 +470,17 @@ class Experiment(Base):
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
 
-        # uniques = list(set([getattr(self.replicate_experiment_dict[key].TrialIdentifier,sortBy) for key in strainsToPlot]))
+        # uniques = list(set([getattr(self.replicate_trial_dict[key].TrialIdentifier,sortBy) for key in strainsToPlot]))
         # uniques.sort()
         #
         # # Find max number of samples (in case they all aren't the same)
         # maxSamples = 0
         # for unique in uniques:
-        #     if len([self.replicate_experiment_dict[key].avg.OD.fit_params[1] for key in strainsToPlot if getattr(self.replicate_experiment_dict[key].TrialIdentifier,sortBy) == unique]) > maxSamples:
-        #         maxSamples = len([self.replicate_experiment_dict[key].avg.OD.fit_params[1] for key in strainsToPlot if getattr(self.replicate_experiment_dict[key].TrialIdentifier,sortBy) == unique])
+        #     if len([self.replicate_trial_dict[key].avg.OD.fit_params[1] for key in strainsToPlot if getattr(self.replicate_trial_dict[key].TrialIdentifier,sortBy) == unique]) > maxSamples:
+        #         maxSamples = len([self.replicate_trial_dict[key].avg.OD.fit_params[1] for key in strainsToPlot if getattr(self.replicate_trial_dict[key].TrialIdentifier,sortBy) == unique])
         #         maxIndex = unique
 
-        replicateExperimentObjectList = self.replicate_experiment_dict
+        replicateExperimentObjectList = self.replicate_trial_dict
         handle = dict()
         colors = plt.get_cmap('Set2')(np.linspace(0, 1.0, len(strainsToPlot)))
 
@@ -497,19 +497,19 @@ class Experiment(Base):
 
             for product in titersToPlot:
                 uniques = list(set(
-                    [getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) for key in strainsToPlot]))
+                    [getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) for key in strainsToPlot]))
                 uniques.sort()
 
                 # Find max number of samples (in case they all aren't the same)
                 maxSamples = 0
                 for unique in uniques:
-                    if len([self.replicate_experiment_dict[key].avg.products[product] for key in strainsToPlot if
-                            getattr(self.replicate_experiment_dict[key].trial_identifier,
+                    if len([self.replicate_trial_dict[key].avg.products[product] for key in strainsToPlot if
+                            getattr(self.replicate_trial_dict[key].trial_identifier,
                                     sortBy) == unique]) > maxSamples:
-                        # if len([self.replicate_experiment_dict[key].avg.products[prodKey] for prodkey in self.replicate_experiment_dict[key] for key in strainsToPlot if getattr(self.replicate_experiment_dict[key].TrialIdentifier,sortBy) == unique]) > maxSamples:
+                        # if len([self.replicate_trial_dict[key].avg.products[prodKey] for prodkey in self.replicate_trial_dict[key] for key in strainsToPlot if getattr(self.replicate_trial_dict[key].TrialIdentifier,sortBy) == unique]) > maxSamples:
                         maxSamples = len(
-                            [self.replicate_experiment_dict[key].avg.products[product] for key in strainsToPlot if
-                             getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == unique])
+                            [self.replicate_trial_dict[key].avg.products[product] for key in strainsToPlot if
+                             getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique])
                         maxIndex = unique
 
                 # Create empty arrays to store data
@@ -526,7 +526,7 @@ class Experiment(Base):
 
                 # Prepare data for plotting
                 for key in strainsToPlot:
-                    if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == unique:
+                    if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique:
                         endPointTiterLabel.append(key)
                         endPointTiterAvg.append(replicateExperimentObjectList[key].avg.yields[product][-1])
                         endPointTiterStd.append(replicateExperimentObjectList[key].std.yields[product][-1])
@@ -537,26 +537,26 @@ class Experiment(Base):
 
                 i = 0
                 for unique in uniques:
-                    print([self.replicate_experiment_dict[key].avg.yields[product][-1] for key in strainsToPlot if
-                           getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == unique])
+                    print([self.replicate_trial_dict[key].avg.yields[product][-1] for key in strainsToPlot if
+                           getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique])
                     print(len(
-                        [self.replicate_experiment_dict[key].avg.yields[product][-1] for key in strainsToPlot if
-                         getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == unique]))
+                        [self.replicate_trial_dict[key].avg.yields[product][-1] for key in strainsToPlot if
+                         getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique]))
                     print(
-                        [getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) for key in strainsToPlot
-                         if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == unique])
+                        [getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) for key in strainsToPlot
+                         if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique])
                     print()
                     handle[unique] = plt.bar(index[0:len(
-                        [self.replicate_experiment_dict[key].avg.products[product] for key in strainsToPlot if
-                         getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == unique])],
-                                             [self.replicate_experiment_dict[key].avg.yields[product][-1] for key in
+                        [self.replicate_trial_dict[key].avg.products[product] for key in strainsToPlot if
+                         getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique])],
+                                             [self.replicate_trial_dict[key].avg.yields[product][-1] for key in
                                               strainsToPlot if
-                                              getattr(self.replicate_experiment_dict[key].trial_identifier,
+                                              getattr(self.replicate_trial_dict[key].trial_identifier,
                                                       sortBy) == unique],
                                              barWidth,
-                                             yerr=[self.replicate_experiment_dict[key].std.yields[product][-1] for
+                                             yerr=[self.replicate_trial_dict[key].std.yields[product][-1] for
                                                    key in strainsToPlot if
-                                                   getattr(self.replicate_experiment_dict[key].trial_identifier,
+                                                   getattr(self.replicate_trial_dict[key].trial_identifier,
                                                            sortBy) == unique],
                                              color=colors[i], ecolor='k', capsize=5,
                                              error_kw=dict(elinewidth=1, capthick=1)
@@ -576,20 +576,20 @@ class Experiment(Base):
                         xticklabel = xticklabel + attribute
 
                 if 'strain_id' == sortBy:
-                    tempticks = [self.replicate_experiment_dict[key].trial_identifier.id_1 + '+' +
-                                 self.replicate_experiment_dict[key].trial_identifier.id_2 for key in
+                    tempticks = [self.replicate_trial_dict[key].trial_identifier.id_1 + '+' +
+                                 self.replicate_trial_dict[key].trial_identifier.id_2 for key in
                                  strainsToPlot
-                                 if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
+                                 if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
                 if 'id_1' == sortBy:
-                    tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain.name + '+' +
-                                 self.replicate_experiment_dict[key].trial_identifier.id_2 for key in
+                    tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.name + '+' +
+                                 self.replicate_trial_dict[key].trial_identifier.id_2 for key in
                                  strainsToPlot
-                                 if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
+                                 if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
                 if 'id_2' == sortBy:
-                    tempticks = [self.replicate_experiment_dict[key].trial_identifier.strain.name + '+' +
-                                 self.replicate_experiment_dict[key].trial_identifier.id_1 for key in
+                    tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.name + '+' +
+                                 self.replicate_trial_dict[key].trial_identifier.id_1 for key in
                                  strainsToPlot
-                                 if getattr(self.replicate_experiment_dict[key].trial_identifier, sortBy) == maxIndex]
+                                 if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
                 tempticks.sort()
 
                 plt.xticks(index - 0.4, tempticks, rotation='45', ha='right', va='top')
@@ -681,7 +681,7 @@ class Experiment(Base):
         """
         MPL plotting function, deprecated since 2016/06/14 due to switch to plotly
         """
-        replicateExperimentObjectList = self.replicate_experiment_dict
+        replicateExperimentObjectList = self.replicate_trial_dict
         # You typically want your plot to be ~1.33x wider than tall. This plot is a rare
         # exception because of the number of lines being plotted on it.
         # Common sizes: (10, 7.5) and (12, 9)
@@ -730,35 +730,35 @@ class Experiment(Base):
         plt.clf()
         if len(strainToPlot) > 1:
             strainToPlot = self.get_strains()[0]
-        for singleExperiment in self.replicate_experiment_dict[strainToPlot[0]].single_trial_list:
+        for singleExperiment in self.replicate_trial_dict[strainToPlot[0]].single_trial_list:
             plt.plot(singleExperiment.OD.time_vector, singleExperiment.OD.data_vector)
         plt.ylabel(singleExperiment.trial_identifier.unique_replicate_trial())
 
     def set_blanks(self, mode='auto', common_id='id_2'):
 
         self.blank_key_list = [replicate_key
-                               for replicate_key in self.replicate_experiment_dict
-                               if self.replicate_experiment_dict[replicate_key].trial_identifier.strain.name
+                               for replicate_key in self.replicate_trial_dict
+                               if self.replicate_trial_dict[replicate_key].trial_identifier.strain.name
                                in ['Blank', 'blank']]
 
         if common_id:
             blank_ids = {
-            getattr(self.replicate_experiment_dict[replicate_key].trial_identifier, common_id): replicate_key
+            getattr(self.replicate_trial_dict[replicate_key].trial_identifier, common_id): replicate_key
             for replicate_key in self.blank_key_list}
 
-        for replicate_key in [replicate_key for replicate_key in self.replicate_experiment_dict if
+        for replicate_key in [replicate_key for replicate_key in self.replicate_trial_dict if
                               replicate_key not in self.blank_key_list]:
             if common_id:
-                self.replicate_experiment_dict[replicate_key].set_blank(
-                    self.replicate_experiment_dict[
-                        blank_ids[getattr(self.replicate_experiment_dict[replicate_key].trial_identifier, common_id)]]
+                self.replicate_trial_dict[replicate_key].set_blank(
+                    self.replicate_trial_dict[
+                        blank_ids[getattr(self.replicate_trial_dict[replicate_key].trial_identifier, common_id)]]
                 )
             else:
-                self.replicate_experiment_dict[replicate_key].set_blank(
-                    self.replicate_experiment_dict[self.blank_key_list[0]])
+                self.replicate_trial_dict[replicate_key].set_blank(
+                    self.replicate_trial_dict[self.blank_key_list[0]])
 
-        # for replicate_key in self.replicate_experiment_dict:
-        #     if self.replicate_experiment_dict[replicate_key].trial_identifier.strain.name in ['Blank','blank']:
+        # for replicate_key in self.replicate_trial_dict:
+        #     if self.replicate_trial_dict[replicate_key].trial_identifier.strain.name in ['Blank','blank']:
         #         blank_list.append(replicate_key)
         if mode == 'auto':
             pass
@@ -787,6 +787,6 @@ class Experiment(Base):
         self.stage_indices = stage_indices
 
         if live_calculations:
-            for replicate_key in self.replicate_experiment_dict:
-                replicate = self.replicate_experiment_dict[replicate_key]
+            for replicate_key in self.replicate_trial_dict:
+                replicate = self.replicate_trial_dict[replicate_key]
                 replicate.calculate_stages(stage_indices)

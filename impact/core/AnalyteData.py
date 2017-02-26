@@ -27,7 +27,7 @@ class AnalyteData(object):
     # trial_identifier = relationship(TrialIdentifier)
 
     def __init__(self):
-        self.timePointList = []
+        self.time_points = []
         self._trial_identifier = TrialIdentifier()
 
         # self.strain =
@@ -397,20 +397,20 @@ class TimeCourse(AnalyteData, Base):
 
         time_point.parent = self
 
-        self.timePointList.append(time_point)
-        if len(self.timePointList) == 1:
+        self.time_points.append(time_point)
+        if len(self.time_points) == 1:
             self.trial_identifier = time_point.trial_identifier
             self.pd_series = pd.Series([time_point.data],index=[time_point.time])
         else:
-            if self.timePointList[-1].trial_identifier.unique_single_trial() \
-                    != self.timePointList[-2].trial_identifier.unique_single_trial():
-                raise Exception("trial_identifiers don't match within the timeCourse object")
+            if self.time_points[-1].trial_identifier.unique_single_trial() \
+                    != self.time_points[-2].trial_identifier.unique_single_trial():
+                raise Exception("Attempted to add time point with non-matching identifier")
 
             # Check if ordering is broken
-            if self.timePointList[-1].time < self.timePointList[-2].time:
-                self.timePointList.sort(key=lambda timePoint: timePoint.time)
-                self.pd_series = pd.Series([timePoint.data for timePoint in self.timePointList],
-                                           index=[timePoint.time for timePoint in self.timePointList])
+            if self.time_points[-1].time < self.time_points[-2].time:
+                self.time_points.sort(key=lambda timePoint: timePoint.time)
+                self.pd_series = pd.Series([timePoint.data for timePoint in self.time_points],
+                                           index=[timePoint.time for timePoint in self.time_points])
             else:
                 # Otherwise simply append
                 self.pd_series = self.pd_series.append(pd.Series([time_point.data],index=[time_point.time]))
@@ -419,7 +419,7 @@ class TimeCourse(AnalyteData, Base):
             print(self.pd_series)
             raise Exception('Duplicate time points found, this is not supported')
 
-        if len(self.timePointList) > 6 and live_calculations:
+        if len(self.time_points) > 6 and live_calculations:
             self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
 
     def curve_fit_data(self):
@@ -491,10 +491,12 @@ class EndPoint(TimeCourse):
         AnalyteData.__init__(self, runID, t, data)
 
     def add_timepoint(self, time_point):
-        if len(self.timePointList) < 2:
-            self.timePointList.append(time_point)
+        if len(self.time_points) < 2:
+            self.time_points.append(time_point)
         else:
             raise Exception("Cannot have more than two timePoints for an endPoint Object")
 
-        if len(self.timePointList) == 2:
-            self.timePointList.sort(key=lambda timePoint: timePoint.time)
+        if len(self.time_points) == 2:
+            self.time_points.sort(key=lambda timePoint: timePoint.time)
+
+# class AnalyteFeature(object):

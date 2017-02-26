@@ -115,7 +115,7 @@ def HPLC_titer_parser(experiment, data, fileName):
         analyte_nameColumn[data[titerDataSheetName][row_with_titer_names][i]] = i
         titer_type[data[titerDataSheetName][row_with_titer_names][i]] = \
             data[titerDataSheetName][row_with_titer_types][i]
-    # print(titer_type)
+
     # Initialize a timepoint_collection for each titer type (column)
     tempTimePointCollection = dict()
     for names in analyte_nameColumn:
@@ -124,14 +124,15 @@ def HPLC_titer_parser(experiment, data, fileName):
     timepoint_list = []
     for i in range(first_data_row, len(data['titers'])):
         if type(data['titers'][i][0]) is str:
-            temp_run_identifier_object = TrialIdentifier()
-            temp_run_identifier_object.parse_trial_identifier_from_csv(data['titers'][i][0])
+
 
             # temp_run_identifier_object.strain.name = strain_rename_dict[temp_run_identifier_object.strain.name]
 
             for key in tempTimePointCollection:
-                temp_run_identifier_object.analyte_name = key
-                temp_run_identifier_object.analyte_type = titer_type[key]
+                trial_identifier = TrialIdentifier()
+                trial_identifier.parse_trial_identifier_from_csv(data['titers'][i][0])
+                trial_identifier.analyte_name = key
+                trial_identifier.analyte_type = titer_type[key]
                 # if key == substrate_name:
                 #     temp_run_identifier_object.titerType = 'substrate'
                 # else:
@@ -143,8 +144,8 @@ def HPLC_titer_parser(experiment, data, fileName):
                 if data['titers'][i][analyte_nameColumn[key]] == 'nan':
                     data['titers'][i][analyte_nameColumn[key]] = np.nan
                 timepoint_list.append(
-                    TimePoint(copy.deepcopy(temp_run_identifier_object),
-                              temp_run_identifier_object.time,
+                    TimePoint(trial_identifier,
+                              trial_identifier.time,
                               data['titers'][i][analyte_nameColumn[key]]))
 
         else:
