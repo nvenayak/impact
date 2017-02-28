@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from sqlite3 import OperationalError
 
-from impact.settings import db_name
+from impact.core.settings import settings
+db_name = settings.db_name
 import impact
 
 @login_required

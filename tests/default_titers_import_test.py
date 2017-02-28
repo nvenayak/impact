@@ -20,16 +20,17 @@ class CoreTestCase(unittest.TestCase):
         self.expt = impact.Experiment(info = info)
 
         # Init a temp db
-        impact.init_db(db_name=self.db_name)
+        # impact.init_db(db_name=self.db_name)
 
     def tearDown(self):
         # Delete the temp db
-        import os
-        os.remove(self.db_name)
+        pass
+        # import os
+        # os.remove(self.db_name)
 
     def test_default_titers_parse(self):
         # Parse the data
-        self.expt.parse_raw_data('default_titers', fileName='sample_input_data.xlsx')
+        self.expt.parse_raw_data('default_titers', fileName='test_data/sample_input_data.xlsx')
 
         # Commit to the db
         # experiment_id = self.expt.db_commit(db_name=self.db_name)
@@ -48,7 +49,7 @@ class CoreTestCase(unittest.TestCase):
         Test importing data with missing data
         """
         # Parse the data
-        self.expt.parse_raw_data('default_titers', fileName='sample_input_data_missing_data.xlsx')
+        self.expt.parse_raw_data('default_titers', fileName='test_data/sample_input_data_missing_data.xlsx')
 
         # Commit to the db
         # experiment_id = self.expt.db_commit(db_name=self.db_name)

@@ -35,7 +35,9 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    # 'impact',
     'impact_cloud',
+    'impact_core',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     'bootstrap3',
     'rest_framework',
     'account',
+    # 'impact.TrialIdentifier.TrialIdentifier'
     # 'rest_framework.authtoken'
 ]
 
@@ -91,14 +94,15 @@ WSGI_APPLICATION = 'impact_main_site.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
+    'impact_db': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME'  : os.path.join(BASE_DIR, '../db/test_impact.db'),
+    },
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, '../db/django_db.sqlite3'),
     },
-    'impact': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME'  : os.path.join(BASE_DIR, '../db/impact_db.sqlite3'),
-    }
+
 }
 
 

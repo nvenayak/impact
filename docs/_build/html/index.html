@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>impact Documentation &mdash; impact 0.4.0 documentation</title>
+    <title>impact documentation &mdash; impact 0.4.0 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -29,8 +29,9 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="top" title="impact 0.4.0 documentation" href="#" />
-    <link rel="next" title="Quick Start Guide" href="quickstart.html" />
+    <link rel="next" title="Quick Install" href="quick_install.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -68,8 +69,13 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html#docker">Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_install.html">Quick Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_install.html#docker">Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Quickstart.html#Import-data">Import data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="0_getting_started.html">Building data from time point to visualization</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="0_getting_started.html#TrialIdentifier">TrialIdentifier</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_getting_started.html#TimePoint">TimePoint</a></li>
@@ -93,6 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3_import_experiment_data.html">Importing Raw Analyte Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#module-impact">Module contents</a></li>
 </ul>
@@ -110,7 +117,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">impact Documentation</a></li>
+<li><a class="reference internal" href="#">impact documentation</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </ul>
@@ -121,7 +128,7 @@
               
                 
   <li>
-    <a href="quickstart.html" title="Next Chapter: Quick Start Guide"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Quick Start G... &raquo;</span>
+    <a href="quick_install.html" title="Next Chapter: Quick Install"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Quick Install &raquo;</span>
     </a>
   </li>
               
@@ -156,12 +163,17 @@
     <div class="col-md-12 content">
       
   <div class="section" id="impact-documentation">
-<h1>impact Documentation<a class="headerlink" href="#impact-documentation" title="Permalink to this headline">¶</a></h1>
+<h1>impact documentation<a class="headerlink" href="#impact-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html#docker">Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_install.html">Quick Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_install.html#docker">Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Quickstart.html#Import-data">Import data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="0_getting_started.html">Building data from time point to visualization</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="0_getting_started.html#TrialIdentifier">TrialIdentifier</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_getting_started.html#TimePoint">TimePoint</a></li>
@@ -185,6 +197,7 @@
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3_import_experiment_data.html">Importing Raw Analyte Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#module-impact">Module contents</a></li>
 </ul>

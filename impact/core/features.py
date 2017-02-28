@@ -23,12 +23,7 @@ class MultiAnalyteFeature(object):
 
 
 class ProductYield(MultiAnalyteFeature):
-
-
     def __init__(self, substrate, product):
-        # self.parent = single_trial
-        # self.name = 'yields_dict'
-        # self.requires = ['product','substrate','biomass']
         self.substrate = substrate
         self.product = product
 

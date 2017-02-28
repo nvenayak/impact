@@ -29,6 +29,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="top" title="impact 0.4.0 documentation" href="index.html" />
 
 <meta charset='utf-8'>
@@ -70,8 +71,13 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html#docker">Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_install.html">Quick Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_install.html#docker">Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Quickstart.html#Import-data">Import data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="0_getting_started.html">Building data from time point to visualization</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="0_getting_started.html#TrialIdentifier">TrialIdentifier</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_getting_started.html#TimePoint">TimePoint</a></li>
@@ -95,6 +101,7 @@
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3_import_experiment_data.html">Importing Raw Analyte Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#module-impact">Module contents</a></li>
 </ul>
@@ -165,7 +172,52 @@
      <tr class="cg-1">
        <td></td>
        <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.AnalyteData.html#module-impact.AnalyteData"><code class="xref">impact.AnalyteData</code></a></td><td>
+       <a href="impact.core.html#module-impact.core"><code class="xref">impact.core</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.core.AnalyteData.html#module-impact.core.AnalyteData"><code class="xref">impact.core.AnalyteData</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.core.Experiment.html#module-impact.core.Experiment"><code class="xref">impact.core.Experiment</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.core.Project.html#module-impact.core.Project"><code class="xref">impact.core.Project</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.core.ReplicateTrial.html#module-impact.core.ReplicateTrial"><code class="xref">impact.core.ReplicateTrial</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.core.secrets.html#module-impact.core.secrets"><code class="xref">impact.core.secrets</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.core.settings.html#module-impact.core.settings"><code class="xref">impact.core.settings</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.core.SingleTrial.html#module-impact.core.SingleTrial"><code class="xref">impact.core.SingleTrial</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.core.TimePoint.html#module-impact.core.TimePoint"><code class="xref">impact.core.TimePoint</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.core.TrialIdentifier.html#module-impact.core.TrialIdentifier"><code class="xref">impact.core.TrialIdentifier</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
@@ -175,22 +227,32 @@
      <tr class="cg-1">
        <td></td>
        <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.curve_fitting.core.html#module-impact.curve_fitting.core"><code class="xref">impact.curve_fitting.core</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.curve_fitting.methods.html#module-impact.curve_fitting.methods"><code class="xref">impact.curve_fitting.methods</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
+       <a href="impact.custom_parsers.html#module-impact.custom_parsers"><code class="xref">impact.custom_parsers</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&nbsp;&nbsp;&nbsp;
        <a href="impact.database.html#module-impact.database"><code class="xref">impact.database</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.django_models.html#module-impact.django_models"><code class="xref">impact.django_models</code></a></td><td>
+       <a href="impact.helpers.html#module-impact.helpers"><code class="xref">impact.helpers</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.Experiment.html#module-impact.Experiment"><code class="xref">impact.Experiment</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.Options.html#module-impact.Options"><code class="xref">impact.Options</code></a></td><td>
+       <a href="impact.helpers.synthetic_data.html#module-impact.helpers.synthetic_data"><code class="xref">impact.helpers.synthetic_data</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
@@ -205,47 +267,7 @@
      <tr class="cg-1">
        <td></td>
        <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.Project.html#module-impact.Project"><code class="xref">impact.Project</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.QtGUI.html#module-impact.QtGUI"><code class="xref">impact.QtGUI</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.ReplicateTrial.html#module-impact.ReplicateTrial"><code class="xref">impact.ReplicateTrial</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.secrets.html#module-impact.secrets"><code class="xref">impact.secrets</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.settings.html#module-impact.settings"><code class="xref">impact.settings</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.SingleTrial.html#module-impact.SingleTrial"><code class="xref">impact.SingleTrial</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.synthetic_data.html#module-impact.synthetic_data"><code class="xref">impact.synthetic_data</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.TimePoint.html#module-impact.TimePoint"><code class="xref">impact.TimePoint</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="impact.TrialIdentifier.html#module-impact.TrialIdentifier"><code class="xref">impact.TrialIdentifier</code></a></td><td>
+       <a href="impact.test_analyte_data.html#module-impact.test_analyte_data"><code class="xref">impact.test_analyte_data</code></a></td><td>
        <em></em></td></tr>
    </table>
 

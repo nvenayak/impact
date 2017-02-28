@@ -4,6 +4,7 @@ import os.path
 from ..database import Base
 
 from sqlalchemy import Column, Boolean, Float, Integer
+Base = object
 
 class Settings(Base):
     __tablename__ = 'settings'

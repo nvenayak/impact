@@ -29,6 +29,7 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="top" title="impact 0.4.0 documentation" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -67,8 +68,13 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html#docker">Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_install.html">Quick Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_install.html#docker">Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Quickstart.html#Import-data">Import data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="0_getting_started.html">Building data from time point to visualization</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="0_getting_started.html#TrialIdentifier">TrialIdentifier</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0_getting_started.html#TimePoint">TimePoint</a></li>
@@ -92,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3_import_experiment_data.html">Importing Raw Analyte Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#module-impact">Module contents</a></li>
 </ul>
@@ -154,42 +161,30 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="impact.core.html">impact.core package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="impact.core.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="impact.core.html#module-impact.core">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="impact.curve_fitting.html">impact.curve_fitting package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="impact.curve_fitting.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="impact.curve_fitting.html#module-impact.curve_fitting">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="impact.helpers.html">impact.helpers package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="impact.helpers.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="impact.helpers.html#module-impact.helpers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="impact.AnalyteData.html">impact.AnalyteData module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="impact.Experiment.html">impact.Experiment module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="impact.Options.html">impact.Options module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="impact.Project.html">impact.Project module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="impact.QtGUI.html">impact.QtGUI module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="impact.ReplicateTrial.html">impact.ReplicateTrial module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="impact.SingleTrial.html">impact.SingleTrial module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="impact.TimePoint.html">impact.TimePoint module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="impact.TrialIdentifier.html">impact.TrialIdentifier module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="impact.curve_fitting.html">impact.curve_fitting module</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="impact.custom_parsers.html">impact.custom_parsers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="impact.database.html">impact.database module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="impact.django_models.html">impact.django_models module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="impact.parsers.html">impact.parsers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="impact.plotting.html">impact.plotting module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="impact.secrets.html">impact.secrets module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="impact.settings.html">impact.settings module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="impact.synthetic_data.html">impact.synthetic_data module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="impact.test_sql_alchemy.html">impact.test_sql_alchemy module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#module-impact">Module contents</a></li>

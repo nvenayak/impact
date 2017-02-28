@@ -2,9 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from impact.settings import db_name
+from impact.core.settings import settings
+db_name = settings.db_name
 import impact
-from impact import printGenericTimeCourse_plotly
+# from impact import printGenericTimeCourse_plotly
 
 from .tools import update_experiments_from_db, modifyMainPageSessionData
 from .plot import updateFigure

@@ -87,9 +87,9 @@ class Project(object):
     #               (datetime.datetime.now().strftime("%Y%m%d %H:%M"), dateStamp, description))
     #
     #     for attrName, tableName in zip(
-    #             ['timepoint_list', 'titer_dict', 'single_experiment_dict', 'replicate_experiment_dict'],
+    #             ['timepoint_list', 'titer_dict', 'single_experiment_dict', 'replicate_trial_dict'],
     #             ['TimePoint', 'AnalyteData', 'singleExperiment', 'replicateExperiment']):
-    #         if attrName == 'replicate_experiment_dict':
+    #         if attrName == 'replicate_trial_dict':
     #             for key in getattr(experiment, attrName):
     #                 c.execute(
     #                     "INSERT INTO replicateExperiment (experiment_id, strain.name, id_1, id_2) VALUES (?, ?,?,?)",
@@ -114,7 +114,7 @@ class Project(object):
     #     # self.timepoint_list = []#dict()
     #     # self.titer_dict = dict()
     #     # self.single_experiment_dict = dict()
-    #     # self.replicate_experiment_dict = dict()
+    #     # self.replicate_trial_dict = dict()
     #
     #     # SQLite stuff
     #     # Initialize database

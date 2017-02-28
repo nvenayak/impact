@@ -1,3 +1,8 @@
+# coding=utf-8
+"""
+Logic for input.html
+"""
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -5,10 +10,12 @@ from django.http import HttpResponse
 from .tools import update_experiments_from_db
 from ..forms import newExperimentForm, analysis_options_form, UploadFileForm
 
-from impact.settings import db_name
 import impact
+from impact.core.settings import settings
+db_name = settings.db_name
 
 from io import StringIO
+
 import sys
 import ast
 
@@ -200,7 +207,7 @@ def process_input_data(request):
 
             try:
                 # Parse the new data and combine the experiments. The info from the original experiment will be maintained
-                new_expt.parseRawData(input_format, data = converted_data) # Convert strings to floats
+                new_expt.parse_raw_data(input_format, data = converted_data) # Convert strings to floats
                 expt = expt + new_expt
 
                 experiment_id = expt.db_commit(db_name, overwrite_experiment_id=request.session['experiment_id'])

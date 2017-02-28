@@ -4,7 +4,8 @@ from django.shortcuts import render
 from .tools import modifyMainPageSessionData, update_experiments_from_db
 from ..forms import newExperimentForm
 
-from impact.settings import db_name
+from impact.core.settings import settings
+db_name = settings.db_name
 import impact
 
 
@@ -93,8 +94,8 @@ def experimentSelect_analyze(request, experiment_id):
     # print(vars(experiment))
     # print(experiment.titer_dict)
     replicate_info = []
-    for key in experiment.replicate_experiment_dict:
-        replicate = experiment.replicate_experiment_dict[key]
+    for key in experiment.replicate_trial_dict:
+        replicate = experiment.replicate_trial_dict[key]
         temp = {}
         for attr in ['strain_id','id_1','id_2']:
             temp[attr] = getattr(replicate.trial_identifier,attr)

@@ -21,14 +21,14 @@ from django.contrib.auth.signals import user_logged_in
 # Add the toolbox path
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../'))
 
-import impact.settings
-
+from impact.core.settings import settings
+db_name = settings.db_name
 
 # Set the default db_name, stored in the root directory
 db_name = impact.settings.db_name   # os.path.join(os.path.dirname(__file__),"../../default_impact_db.sqlite3")
 
 
-impact.init_db(db_name=db_name)
+# impact.init_db(db_name=db_name)
 
 def logged_in_message(sender, user, request, **kwargs):
     """

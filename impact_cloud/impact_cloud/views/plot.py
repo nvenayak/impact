@@ -5,7 +5,8 @@ from django.http import HttpResponse
 from .tools import modifyMainPageSessionData, update_experiments_from_db
 from ..forms import plot_options_form
 
-from impact.settings import db_name
+from impact.core.settings import settings
+db_name = settings.db_name
 import impact
 import copy
 import ast

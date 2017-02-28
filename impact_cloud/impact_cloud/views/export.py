@@ -5,7 +5,8 @@ from .tools import modifyMainPageSessionData
 
 import numpy as np
 
-from impact.settings import db_name
+from impact.core.settings import settings
+db_name = settings.db_name
 import impact
 
 @login_required

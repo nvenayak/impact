@@ -16,7 +16,7 @@ verbose = settings.verbose
 
 
 from ..database import Base
-from sqlalchemy import Column, Integer, ForeignKey, PickleType
+from sqlalchemy import Column, Integer, ForeignKey, PickleType, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
@@ -55,6 +55,8 @@ class ReplicateTrial(Base):
     bad_replicates = Column(PickleType)
     replicate_ids = Column(PickleType)
 
+    unique_id = Column(String)
+
     def __init__(self):
         self.avg = SingleTrial()
         self.std = SingleTrial()
@@ -64,16 +66,14 @@ class ReplicateTrial(Base):
 
         self.trial_identifier = TrialIdentifier()
         self.bad_replicates = []
-        # self.replicate_ids = []
         self.replicate_df = dict()
 
-        self.outlier_cleaning_flag = default_outlier_cleaning_flag
-
         self.stages = []
-
         self.features = []
 
-        # self.blank = SingleTrial()
+    @property
+    def unique_id(self):
+        return self.trial_identifier.unique_replicate_trial()
 
     def calculate(self):
         for single_trial_key in self.single_trial_dict:
