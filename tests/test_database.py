@@ -4,9 +4,9 @@ import os
 
 class TestDatabase(unittest.TestCase):
     def setUp(self):
-        self.session = impt.create_session()
-        engine = impt.bind_engine()
-        impt.Base.metadata.create_all(engine)
+        self.session = impt.database.create_session()
+        engine = impt.database.bind_engine()
+        impt.database.Base.metadata.create_all(engine)
 
     def tearDown(self):
         self.session.close()
@@ -32,7 +32,7 @@ class TestDatabase(unittest.TestCase):
 
         ti = self.session.query(impt.TrialIdentifier).all()[0]
 
-        self.assertEqual(ti.strain.name,'test strain')
+        self.assertEqual(ti.strain.nickname,'test strain')
         self.trial_identifier = ti
 
     def test_time_course(self):
