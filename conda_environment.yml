@@ -1,0 +1,9 @@
+# This environment allows some packages to be managed by conda.
+# This is not necessary on unix environment
+
+name: impact_conda_venv
+dependencies:
+  - numpy
+  - scipy
+  - matplotlib
+  - pandas
