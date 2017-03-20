@@ -19,20 +19,11 @@ import numpy as np
 from warnings import warn
 
 from ..database import Base
-from sqlalchemy import Column, Integer, ForeignKey, Float
+from sqlalchemy import Column, Integer, ForeignKey, Float, Date, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
 
-class Stage(Base):
-    __tablename__ = 'stage'
-
-    id = Column(Integer, primary_key=True)
-    start_time = Column(Float)
-    end_time = Column(Float)
-
-    parent = relationship('Experiment')
-    parent_id = Column(Integer, ForeignKey('experiment.id'))
 
 
 class Experiment(Base):
@@ -43,20 +34,30 @@ class Experiment(Base):
     stages = relationship('Stage')
     replicate_trial_dict = relationship('ReplicateTrial',
                                         collection_class=attribute_mapped_collection('unique_id'))
+    import_date = Column(Date)
+    start_date = Column(Date)
+    end_date = Column(Date)
+    title = Column(String)
+    scientist_1 = Column(String)
+    scientist_2 = Column(String)
+    notes = Column(String)
 
-    def __init__(self, info=None):
+    def __init__(self, **kwargs):
+        for key in kwargs:
+            if key in ['import_date','start_date','end_date','title','scientist_1','scientist_2','notes']:
+                setattr(self,key,kwargs[key])
         self.blank_key_list = []
         self.replicate_trial_dict = dict()
         self.stage_indices = []
         self.blank = None
 
-        self.info_keys = ['import_date', 'experiment_start_date', 'experiment_end_date', 'experiment_title',
-                          'primary_scientist_name', 'secondary_scientist_name', 'medium_base', 'medium_supplements',
-                          'notes']
-        if info is not None:
-            self.info = {key: info[key] for key in self.info_keys if key in info}
-        else:
-            self.info = dict()
+        # self.info_keys = ['import_date', 'experiment_start_date', 'experiment_end_date', 'experiment_title',
+        #                   'primary_scientist_name', 'secondary_scientist_name', 'medium_base', 'medium_supplements',
+        #                   'notes']
+        # if info is not None:
+        #     self.info = {key: info[key] for key in self.info_keys if key in info}
+        # else:
+        #     self.info = dict()
 
     def __str__(self):
         return '\n'.join(['Trials', '-----'] + self.strains + ['\n', 'Analytes', '-----'] + self.analyte_names)
@@ -76,18 +77,36 @@ class Experiment(Base):
                 for titer in singleTrial.analyte_dict:
                     titer_list.append(singleTrial.analyte_dict[titer])
 
-        for replicateExperiment in experiment.replicate_experiment_dict:
-            for replicate_id in experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict:
-                for titer in experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict[
+        for replicateExperiment in experiment.replicate_trial_dict:
+            for replicate_id in experiment.replicate_trial_dict[replicateExperiment].single_trial_dict:
+                for titer in experiment.replicate_trial_dict[replicateExperiment].single_trial_dict[
                     replicate_id].analyte_dict:
-                    titer_list.append(experiment.replicate_experiment_dict[replicateExperiment].single_trial_dict[
+                    titer_list.append(experiment.replicate_trial_dict[replicateExperiment].single_trial_dict[
                                           replicate_id].analyte_dict[titer])
 
         combined_experiment = Experiment()
-        combined_experiment.info = self.info
+        for attr in ['title','scientist_1','scientist_2','notes',
+                                                     'import_date','start_date','end_date']:
+            setattr(combined_experiment,attr,getattr(self,attr))
+        # combined_experiment.info = self.info
         combined_experiment.parse_titers(titer_list)
 
         return combined_experiment
+
+    @property
+    def strains(self):
+        return [str(replicate) for replicate in self.replicate_trial_dict.values()]
+
+    @property
+    def analyte_names(self):
+        titers_to_plot = list(set([titer for key in self.replicate_trial_dict
+                                   for replicate_id in self.replicate_trial_dict[key].single_trial_dict
+                                   for titer in
+                                   self.replicate_trial_dict[key].single_trial_dict[replicate_id].analyte_dict]
+                                  )
+                              )
+
+        return titers_to_plot
 
     def calculate(self):
         t0 = time.time()
@@ -106,35 +125,6 @@ class Experiment(Base):
             if self.stage_indices:
                 self.replicate_trial_dict[replicate_key].calculate_stages(self.stage_indices)
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
-
-    # def json_serialize(self):
-    #     """
-    #     Load an experiment from the database.
-    #
-    #     Parameters
-    #     ----------
-    #     db_name : str
-    #         Path to the database, must be initialized prior (impact.init_db())
-    #     experiment_id : int
-    #         id of experiment to load
-    #     """
-    #     conn = sql.connect(db_name)
-    #     c = conn.cursor()
-    #     c.execute("""SELECT * FROM experimentTable WHERE (experiment_id == ?)""", (experiment_id,))
-    #     self.info = {key: data for data, key in zip(c.fetchall()[0], [elem[0] for elem in c.description])}
-    #
-    #     # Build the replicate_id experiment objects
-    #     c.execute("""SELECT  strain_id, id_1, id_2, id_3, replicateID FROM replicateTable
-    #             WHERE experiment_id == ?""", (experiment_id,))
-    #     for row in c.fetchall():
-    #         self.replicate_trial_dict[row[0] + row[1] + row[2]] = ReplicateTrial()
-    #         self.replicate_trial_dict[row[0] + row[1] + row[2]].trial_identifier.strain.name = row[0]
-    #         self.replicate_trial_dict[row[0] + row[1] + row[2]].trial_identifier.id_1 = row[1]
-    #         self.replicate_trial_dict[row[0] + row[1] + row[2]].trial_identifier.id_2 = row[2]
-    #         self.replicate_trial_dict[row[0] + row[1] + row[2]].trial_identifier.identifier3 = row[3]
-    #         self.replicate_trial_dict[row[0] + row[1] + row[2]].db_load(c=c, replicateID=row[4])
-    #
-    #     c.close()
 
     def data(self):
         data = []
@@ -169,63 +159,23 @@ class Experiment(Base):
 
         return data
 
-    def get_strains_django(self, dbName, experiment_id):
-        """
-        Get info for all the strains in the database, used by django front end
-
-        Parameters
-        ----------
-        dbName : str
-            Path to the database, must be initialized prior (impact.init_db())
-        experiment_id : int
-            id of experiment to load
-
-        Returns
-        -------
-        strainDescriptions : list
-            List of strain info for each strain
-        """
-        conn = sql.connect(dbName)
-        c = conn.cursor()
-        c.execute("""SELECT * FROM experimentTable WHERE (experiment_id == ?)""", (experiment_id,))
-        exptDescription = {key: data for data, key in zip(c.fetchall()[0], [elem[0] for elem in c.description])}
-
-        # Build the replicate_id experiment objects
-        c.execute("""SELECT  strain_id, id_1, id_2, id_3, replicateID, experiment_id FROM replicateTable
-                WHERE experiment_id == ? ORDER BY strain_id DESC, id_1 DESC, id_2 DESC""", (experiment_id,))
-        strainDescriptions = []
-        for row in c.fetchall():
-            strainDescriptions.append({key: data for data, key in zip(row, [elem[0] for elem in c.description])})
-        c.close()
-        return strainDescriptions
-
     def summary(self, level=None):
         for replicate_key in self.replicate_trial_dict:
             self.replicate_trial_dict[replicate_key].summary()
 
-    @property
-    def strains(self):
-        return sorted([key for key in self.replicate_trial_dict])
-
-    @property
-    def analyte_names(self):
-        titers_to_plot = list(set([titer for key in self.replicate_trial_dict
-                                   for replicate_id in self.replicate_trial_dict[key].single_trial_dict
-                                   for titer in
-                                   self.replicate_trial_dict[key].single_trial_dict[replicate_id].analyte_dict]
-                                  )
-                              )
-
-        return titers_to_plot
-
-    def parseRawData(self, *args, **kwargs):
+    def add_replicate_trial(self, replicateTrial):
         """
-        Wrapper for parse_raw_data to maintain legacy support
-        """
-        warn('Please use parse_raw_data instead')
-        self.parse_raw_data(self, *args, **kwargs)
+        Add a :class:`~ReplicateTrial` to the experiment.
 
-    def parse_raw_data(self, dataFormat, fileName=None, data=None, stage_indices=None, substrate_name=None):
+        Parameters
+        ----------
+        replicateTrial : :class:`~ReplicateTrial`
+        """
+        self.replicate_trial_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
+
+
+    ## Parsing
+    def parse_raw_data(self, dataFormat, fileName=None, data=None):
         t0 = time.time()
 
         if data == None:
@@ -239,18 +189,20 @@ class Experiment(Base):
         # Import parsers
         parser_case_dict = {'spectromax_OD' : parsers.spectromax_OD,
                             'tecan_OD'      : parsers.tecan_OD,
-                            'default_titers': parsers.HPLC_titer_parser
+                            'default_titers': parsers.HPLC_titer_parser,
+                            'spectromax_OD_triplicate': parsers.spectromax_OD_triplicate
                             }
         if dataFormat in parser_case_dict.keys():
             parser_case_dict[dataFormat](self, data, fileName)
         else:
             raise Exception('Parser %s not found', dataFormat)
 
-    def parse_time_point_dict(self, timePointList, stage_indices=None):
+    # Dicts
+    def parse_time_point_dict(self, time_point_list):
         print('Parsing time point list...')
         t0 = time.time()
         titer_dict = {}
-        for timePoint in timePointList:
+        for timePoint in time_point_list:
             if timePoint.get_unique_timepoint_id() in titer_dict:
                 titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
             else:
@@ -258,9 +210,50 @@ class Experiment(Base):
                 titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
 
         tf = time.time()
-        print("Parsed %i titer objects in %0.1fs\n" % (len(titer_dict), (tf - t0)))
-        self.parse_analyte_data(titer_dict, stage_indices=stage_indices)
+        print("Parsed %i time points in %0.1fs\n" % (len(time_point_list), (tf - t0)))
+        self.parse_single_trial_dict(titer_dict)
 
+    def parse_single_trial_dict(self, single_trial_dict):
+        print('Parsing titer object list...')
+        t0 = time.time()
+        replicate_trial_dict = {}
+        count = 0
+        for analyte_dictKey in single_trial_dict:
+            count += 1
+            if single_trial_dict[analyte_dictKey].trial_identifier.unique_single_trial() in replicate_trial_dict:
+                replicate_trial_dict[
+                    single_trial_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
+                    single_trial_dict[analyte_dictKey])
+            else:
+                replicate_trial_dict[
+                    single_trial_dict[analyte_dictKey].trial_identifier.unique_single_trial()] = SingleTrial()
+                replicate_trial_dict[
+                    single_trial_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
+                    single_trial_dict[analyte_dictKey])
+        tf = time.time()
+        print("Parsed %i single trials in %0.1fms\n" % (len(replicate_trial_dict), (tf - t0) * 1000))
+        self.parse_replicate_trials(replicate_trial_dict)
+
+    def parse_replicate_trials(self, replicate_trial_dict):
+        print('Parsing single experiment object list...')
+        t0 = time.time()
+        for key in replicate_trial_dict:
+            flag = 0
+            for key2 in self.replicate_trial_dict:
+                if key2 == replicate_trial_dict[key].trial_identifier.unique_replicate_trial():
+                    self.replicate_trial_dict[key2].add_replicate(replicate_trial_dict[key])
+                    flag = 1
+                    break
+            if flag == 0:
+                self.replicate_trial_dict[
+                    replicate_trial_dict[key].trial_identifier.unique_replicate_trial()] = ReplicateTrial()
+                self.replicate_trial_dict[
+                    replicate_trial_dict[key].trial_identifier.unique_replicate_trial()].add_replicate(
+                    replicate_trial_dict[key])
+        tf = time.time()
+        print("Parsed %i replicates in %0.1fs\n" % (len(self.replicate_trial_dict), (tf - t0)))
+
+    # Lists
     def parse_titers(self, titer_list):
         print('Parsing titer object list...')
         t0 = time.time()
@@ -281,13 +274,13 @@ class Experiment(Base):
         self.parse_single_trial_list(single_trial_list)
 
     def parse_single_trial_list(self, single_trial_list):
-        uniques = list(set([single_trial.get_unique_replicate_id() for single_trial in single_trial_list]))
+        uniques = list(set([single_trial.trial_identifier.unique_replicate_trial() for single_trial in single_trial_list]))
 
         replicate_trial_list = []
         for unique in uniques:
             replicate_trial = ReplicateTrial()
             for single_trial in single_trial_list:
-                if single_trial.get_unique_replicate_id() == unique:
+                if single_trial.trial_identifier.unique_replicate_trial() == unique:
                     replicate_trial.add_replicate(single_trial)
                     replicate_trial_list.append(replicate_trial)
 
@@ -295,56 +288,74 @@ class Experiment(Base):
         for replicate_trial in replicate_trial_list:
             self.add_replicate_trial(replicate_trial)
 
-    def parse_analyte_data(self, analyte_dict, stage_indices=None):
-        print('Parsing titer object list...')
-        t0 = time.time()
-        single_experiment_dict = {}
-        count = 0
-        for analyte_dictKey in analyte_dict:
-            count += 1
-            if analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial() in single_experiment_dict:
-                single_experiment_dict[
-                    analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
-                    analyte_dict[analyte_dictKey])
+
+    ## Analysis details
+    def set_blanks(self, mode='auto', common_id='id_2'):
+
+        self.blank_key_list = [replicate_key
+                               for replicate_key in self.replicate_trial_dict
+                               if self.replicate_trial_dict[replicate_key].trial_identifier.strain.nickname
+                               in ['Blank', 'blank']]
+
+        if common_id:
+            blank_ids = {
+            getattr(self.replicate_trial_dict[replicate_key].trial_identifier, common_id): replicate_key
+            for replicate_key in self.blank_key_list}
+
+        for replicate_key in [replicate_key for replicate_key in self.replicate_trial_dict if
+                              replicate_key not in self.blank_key_list]:
+            if common_id:
+                self.replicate_trial_dict[replicate_key].set_blank(
+                    self.replicate_trial_dict[
+                        blank_ids[getattr(self.replicate_trial_dict[replicate_key].trial_identifier, common_id)]]
+                )
             else:
-                single_experiment_dict[
-                    analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()] = SingleTrial()
-                single_experiment_dict[
-                    analyte_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
-                    analyte_dict[analyte_dictKey])
-        tf = time.time()
-        print("Parsed %i single trials in %0.1fms\n" % (len(single_experiment_dict), (tf - t0) * 1000))
-        self.parse_single_experiment_dict(single_experiment_dict)
+                self.replicate_trial_dict[replicate_key].set_blank(
+                    self.replicate_trial_dict[self.blank_key_list[0]])
 
-    def parse_single_experiment_dict(self, singleExperimentObjectList):
-        print('Parsing single experiment object list...')
-        t0 = time.time()
-        for key in singleExperimentObjectList:
-            flag = 0
-            for key2 in self.replicate_trial_dict:
-                if key2 == singleExperimentObjectList[key].trial_identifier.unique_replicate_trial():
-                    self.replicate_trial_dict[key2].add_replicate(singleExperimentObjectList[key])
-                    flag = 1
-                    break
-            if flag == 0:
-                self.replicate_trial_dict[
-                    singleExperimentObjectList[key].trial_identifier.unique_replicate_trial()] = ReplicateTrial()
-                self.replicate_trial_dict[
-                    singleExperimentObjectList[key].trial_identifier.unique_replicate_trial()].add_replicate(
-                    singleExperimentObjectList[key])
-        tf = time.time()
-        print("Parsed %i replicates in %0.1fs\n" % (len(self.replicate_trial_dict), (tf - t0)))
+        # for replicate_key in self.replicate_trial_dict:
+        #     if self.replicate_trial_dict[replicate_key].trial_identifier.strain.name in ['Blank','blank']:
+        #         blank_list.append(replicate_key)
+        if mode == 'auto':
+            pass
+        else:
+            raise Exception('Unimplemented')
 
-    def add_replicate_trial(self, replicateTrial):
+    def set_stages(self, stage_indices=None, stage_times=None):
         """
-        Add a :class:`~ReplicateTrial` to the experiment.
 
         Parameters
         ----------
-        replicateTrial : :class:`~ReplicateTrial`
-        """
-        self.replicate_trial_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
+        stage_times
+        stage_indices
 
+        """
+        from .settings import settings
+        live_calculations = settings.live_calculations
+
+        if all([stage_indices, stage_times]):
+            raise Exception('Cannot define both stage_indices and stage_times')
+
+        if stage_times:
+            # Find the closest time that matches
+            raise Exception('stage times not implemented')
+
+        # self.stage_indices = stage_indices
+        for stage_tuple in stage_indices:
+            stage = Stage()
+            stage.start_time = stage_tuple[0]
+            stage.end_time = stage_tuple[1]
+            for replicate in self.replicate_trial_dict.values():
+                stage.add_replicate_trial(replicate.create_stage(stage_tuple))
+            self.stages.append()
+
+        if live_calculations:
+            for replicate_key in self.replicate_trial_dict:
+                replicate = self.replicate_trial_dict[replicate_key]
+                replicate.calculate_stages(stage_indices)
+
+
+    ### Plotting - Deprecated
     def printGenericTimeCourse(self, figHandle=[], strainsToPlot=[], titersToPlot=[], removePointFraction=1,
                                shadeErrorRegion=False, showGrowthRates=True, plotCurveFit=True, output_type='iPython',
                                **kwargs):
@@ -432,11 +443,11 @@ class Experiment(Base):
                          self.replicate_trial_dict[key].trial_identifier.id_2 for key in strainsToPlot
                          if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
         if 'id_1' == sortBy:
-            tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.name + '+' +
+            tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.nickname + '+' +
                          self.replicate_trial_dict[key].trial_identifier.id_2 for key in strainsToPlot
                          if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
         if 'id_2' == sortBy:
-            tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.name + '+' +
+            tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.nickname + '+' +
                          self.replicate_trial_dict[key].trial_identifier.id_1 for key in strainsToPlot
                          if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
         tempticks.sort()
@@ -581,12 +592,12 @@ class Experiment(Base):
                                  strainsToPlot
                                  if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
                 if 'id_1' == sortBy:
-                    tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.name + '+' +
+                    tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.nickname + '+' +
                                  self.replicate_trial_dict[key].trial_identifier.id_2 for key in
                                  strainsToPlot
                                  if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
                 if 'id_2' == sortBy:
-                    tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.name + '+' +
+                    tempticks = [self.replicate_trial_dict[key].trial_identifier.strain.nickname + '+' +
                                  self.replicate_trial_dict[key].trial_identifier.id_1 for key in
                                  strainsToPlot
                                  if getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == maxIndex]
@@ -734,59 +745,12 @@ class Experiment(Base):
             plt.plot(singleExperiment.OD.time_vector, singleExperiment.OD.data_vector)
         plt.ylabel(singleExperiment.trial_identifier.unique_replicate_trial())
 
-    def set_blanks(self, mode='auto', common_id='id_2'):
+class Stage(Experiment):
+    __tablename__ = 'stage'
 
-        self.blank_key_list = [replicate_key
-                               for replicate_key in self.replicate_trial_dict
-                               if self.replicate_trial_dict[replicate_key].trial_identifier.strain.name
-                               in ['Blank', 'blank']]
+    id = Column(Integer, primary_key=True)
+    start_time = Column(Float)
+    end_time = Column(Float)
 
-        if common_id:
-            blank_ids = {
-            getattr(self.replicate_trial_dict[replicate_key].trial_identifier, common_id): replicate_key
-            for replicate_key in self.blank_key_list}
-
-        for replicate_key in [replicate_key for replicate_key in self.replicate_trial_dict if
-                              replicate_key not in self.blank_key_list]:
-            if common_id:
-                self.replicate_trial_dict[replicate_key].set_blank(
-                    self.replicate_trial_dict[
-                        blank_ids[getattr(self.replicate_trial_dict[replicate_key].trial_identifier, common_id)]]
-                )
-            else:
-                self.replicate_trial_dict[replicate_key].set_blank(
-                    self.replicate_trial_dict[self.blank_key_list[0]])
-
-        # for replicate_key in self.replicate_trial_dict:
-        #     if self.replicate_trial_dict[replicate_key].trial_identifier.strain.name in ['Blank','blank']:
-        #         blank_list.append(replicate_key)
-        if mode == 'auto':
-            pass
-        else:
-            raise Exception('Unimplemented')
-
-    def set_stages(self, stage_indices=None, stage_times=None):
-        from .settings import settings
-        live_calculations = settings.live_calculations
-
-        """
-
-        Parameters
-        ----------
-        stage_times
-        stage_indices
-
-        """
-        if all([stage_indices, stage_times]):
-            raise Exception('Cannot define both stage_indices and stage_times')
-
-        if stage_times:
-            # Find the closest time that matches
-            raise Exception('stage times not implemented')
-
-        self.stage_indices = stage_indices
-
-        if live_calculations:
-            for replicate_key in self.replicate_trial_dict:
-                replicate = self.replicate_trial_dict[replicate_key]
-                replicate.calculate_stages(stage_indices)
+    parent = relationship('Experiment')
+    parent_id = Column(Integer, ForeignKey('experiment.id'))

@@ -7,7 +7,7 @@ from .core.settings import plotly_username, plotly_api_key
 
 # If in the iPython environment, initialize notebook mode
 try:
-    temp = __IPYTHON__
+    _ = __IPYTHON__
 except NameError:
     from plotly.offline import plot
 else:
@@ -15,6 +15,8 @@ else:
     init_notebook_mode()
     from plotly.offline import iplot as plot
     from IPython.display import HTML
+
+    # This is required for correct mathjax (latex) rendering
     HTML(
     """
     <script>
@@ -36,6 +38,12 @@ import plotly.plotly as py
 import math
 
 import colorlover as cl
+
+
+def generic_timecourse(impact_core_instance_list=None):
+    if impact_core_instance_list is None:
+        raise ValueError('No data')
+
 
 
 def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[],
@@ -212,7 +220,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     prepped_y_avg = dict()
     prepped_y_std = dict()
     prepped_legendgroup = dict()
-    for name in [replicate.trial_identifier.strain.name + '+'
+    for name in [replicate.trial_identifier.strain.nickname + '+'
                  + replicate.trial_identifier.id_1 + ','
                  + replicate.trial_identifier.id_2 for replicate in replicateTrialList]:
         prepped_x[name] = []
@@ -280,13 +288,13 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                              if getattr(replicate.trial_identifier, sortBy)
                              == unique or sort_by_flag is False]
                     if sortBy == 'id_1':
-                        x = [replicate.trial_identifier.strain.name + ',' +
+                        x = [replicate.trial_identifier.strain.nickname + ',' +
                              replicate.trial_identifier.id_2
                              for replicate in replicateTrialList
                              if getattr(replicate.trial_identifier, sortBy)
                              == unique or sort_by_flag is False]
                     if sortBy == 'id_2':
-                        x = [replicate.trial_identifier.strain.name
+                        x = [replicate.trial_identifier.strain.nickname
                              + '+'
                              + replicate.trial_identifier.id_1
                              for replicate in replicateTrialList
@@ -296,12 +304,12 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                 else:
                     if sort_by_product_in_legend_flag:
                         x = [product for _ in replicateTrialList]
-                        legendgroup = [replicate.trial_identifier.strain.name + '+' +
+                        legendgroup = [replicate.trial_identifier.strain.nickname + '+' +
                                        replicate.trial_identifier.id_1 + ',' +
                                        replicate.trial_identifier.id_2 for replicate in replicateTrialList]
                     else:
                         legendgroup = None
-                        x = [(replicate.trial_identifier.strain.name + '+' +
+                        x = [(replicate.trial_identifier.strain.nickname + '+' +
                               replicate.trial_identifier.id_1 +
                               replicate.trial_identifier.id_2).split('LMSE')[-1]
                              for replicate in replicateTrialList
@@ -502,10 +510,10 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
                                    marker={
                                        'color': colors[color_index]},
                                    line={'color': colors[color_index]},
-                                   legendgroup=(replicate.trial_identifier.strain.name + '+' +
+                                   legendgroup=(replicate.trial_identifier.strain.nickname + '+' +
                                                 replicate.trial_identifier.id_1 +
                                                 replicate.trial_identifier.id_2).split('LMSE')[-1],
-                                   name=(replicate.trial_identifier.strain.name + '+' +
+                                   name=(replicate.trial_identifier.strain.nickname + '+' +
                                          replicate.trial_identifier.id_1 +
                                          replicate.trial_identifier.id_2).split('LMSE')[-1])  # ,
 

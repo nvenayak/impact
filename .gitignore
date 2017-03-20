@@ -92,3 +92,14 @@ ENV/
 docs/WIPdocs/
 
 *secrets.py
+/impact/custom_parsers.py
+/impact/rest.py
+/impact/dynamic_productivity/*
+/impact/deprecated/*
+/impact/core/OmicsData.py
+/other_docs/*
+/tests/models/*
+/tests/profiler*
+/tests/Untitled*
+*Untitled*
+

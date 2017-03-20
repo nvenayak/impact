@@ -4,46 +4,47 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from warnings import warn
 
-# Base = object
-
-from django.db import models
-
 class Strain(Base):
     """
     Identifies the strain used
     """
-    # django orm declarations
-    # class Meta:
-    #     app_label = 'impact'
-    #
-    # strain_name = models.CharField(max_length=30)
-    # plasmid_1 = models.CharField(max_length=15)
-    # plasmid_2 = models.CharField(max_length=15)
-    # plasmid_3 = models.CharField(max_length=15)
+
     __tablename__ = 'strain'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    nickname = Column(String)
+    formal_name = Column(String)
     plasmid_1 = Column(String)
     plasmid_2 = Column(String)
     plasmid_3 = Column(String)
+    parent = Column(Integer,ForeignKey('strain.id'))
 
-    def __init__(self, name=''):
+    def __init__(self, name='',**kwargs):
+        for key in kwargs:
+            if key in ['nickname','formal_name', 'plasmid_1','plasmid_2','plasmid_3']:
+                setattr(self,key,kwargs[key])
+            else:
+                setattr(self,key,None)
+
+        if name != '':
+            self.nickname = name
         # models.Model.__init__(self, *args, **kwargs)
 
-        self.name = name    # 'E. coli MG1655'
-        self.plasmid_1 = None       # ptrc99a
-        self.plasmid_2 = None       # ptrc99a
-        self.plasmid_3 = None       # ptrc99a
+        # Init uninitiali
+        # self.nickname = name    # 'E. coli MG1655'
+        # self.formal_name = None # 'Escherichia coli MG1655
+        # self.plasmid_1 = None       # ptrc99a
+        # self.plasmid_2 = None       # ptrc99a
+        # self.plasmid_3 = None       # ptrc99a
 
     def __str__(self):
         plasmid_summ = '+'.join([plasmid
                                  for plasmid in [self.plasmid_1,self.plasmid_2,self.plasmid_3]
                                  if plasmid is not None])
         if plasmid_summ :
-            return self.name+'+'+plasmid_summ
+            return self.nickname+'+'+plasmid_summ
         else:
-            return self.name
+            return self.nickname
 
 
     @property
@@ -56,7 +57,8 @@ class MediaComponent(Base):
     """
 
     __tablename__ = 'media_component'
-    name = Column(String,primary_key=True)
+    id = Column(Integer,primary_key=True)
+    name = Column(String,unique=True)
     # BiGG_id = Column(String,primary_key=True)
 
     def __init__(self, name):
@@ -68,14 +70,21 @@ class ComponentConcentration(Base):
     """
     __tablename__ = 'comp_conc'
 
-    media_name = Column(String, ForeignKey('media.name'), primary_key=True)
-    component_name = Column(String, ForeignKey('media_component.name'), primary_key=True)
-    # media_component = relationship("")
-    concentration = Column(Float)
-    media_component = relationship("MediaComponent", cascade='all')
+    id = Column(Integer, primary_key=True)
+
+    media_id = Column(String, ForeignKey('media.id'))
     media = relationship("Media", cascade='all')
 
-    def __init__(self, component, concentration, unit=None):
+    component_name = Column(String, ForeignKey('media_component.name'))
+    media_component = relationship("MediaComponent", cascade='all')
+
+    concentration = Column(Float)
+
+    def __init__(self, component, concentration, unit=None, **kwargs):
+        for key in kwargs:
+            if key in ['media']:
+                setattr(self,key,kwargs[key])
+
         self.media_component = component
         self.concentration = concentration
 
@@ -91,14 +100,17 @@ class ComponentConcentration(Base):
 class Media(Base):
     __tablename__ = 'media'
     id = Column(Integer,primary_key=True)
+    nickname = Column(String)
     name = Column(String)
     component_concentrations = relationship('ComponentConcentration', cascade = 'all')
     parent = Column(Integer,ForeignKey('media.name'))
 
-    def __init__(self, name = 'NA', concentration=None, unit=None):
-        # self.components = []
+    def __init__(self, concentration=None, unit=None, **kwargs):
+        for key in kwargs:
+            if key in ['parent','nickname','name']:
+                setattr(self,key,kwargs[key])
+
         self.component_concentrations = []
-        self.name = name  # M9
 
         self._concentration = concentration
         self._unit = unit
@@ -212,6 +224,10 @@ class TrialIdentifier(Base):
     analyte_name = Column(String,ForeignKey('analyte.name'))
     analyte_type = Column(String)
 
+    id_1 = Column(String)
+    id_2 = Column(String)
+    id_3 = Column(String)
+
     # relationships = relationship('TimeCourse', back_populates='_trial_identifier', uselist=False)
     def __init__(self, strain=None, media=None, strain_name='', id_1='', id_2='', id_3='',
                  replicate_id = None, time = -1, analyte_name = 'None',
@@ -222,7 +238,7 @@ class TrialIdentifier(Base):
         # models.Model.__init__(self, *args, **kwargs)
         if strain is not None and strain_name != '':
             warn('Strain() and strain_name provided, only strain_name used')
-        self.strain.name = strain_name
+        self.strain.nickname = strain_name
 
         self.id_1 = id_1
         self.id_2 = id_2
@@ -281,7 +297,7 @@ class TrialIdentifier(Base):
             if len(tempParsedIdentifier) == 0:
                 print(tempParsedIdentifier, " <-- not processed")
             if len(tempParsedIdentifier) > 0:
-                self.strain.name = tempParsedIdentifier[0]
+                self.strain.nickname = tempParsedIdentifier[0]
             if len(tempParsedIdentifier) > 1:
                 self.id_1 = tempParsedIdentifier[1]
             if len(tempParsedIdentifier) > 2:

@@ -1,29 +1,22 @@
 from setuptools import setup
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
+extras = {}
+for extra in ['docs','plotting','modeling']:
+    with open('requirements'+'_'+extra+'.txt') as f:
+        extras[extra] = f.read().splitlines()
+
 setup(
     name='impact',
-    version='0.5.0',
+    version='0.1',
     packages=['impact'],
     url='www.github.com/nvenayak/impact',
     license='',
     author='Naveen Venayak',
     author_email='naveen.venayak@gmail.com',
-    description='Framework for the analysis of microbial physiology experiental data.',
-    install_requires=[
-        'scipy>=0.17.0',
-        'numpy>=1.10.4',
-        'pandas',
-        'lmfit==0.8.3',
-        'pyexcel-xlsx>=0.1.0',
-
-        'dill>=0.2.4',
-        'Django>=1.9.5',
-        'django-bootstrap-form',
-        'django-bootstrap3',
-
-        'sqlalchemy'],
-    extras_require={
-        'docs'              : ['sphinx_bootstrap_theme', 'nbsphinx', 'numpydoc'],
-        'plotting'          : ['plotly>=1.9.10', 'colorlover', 'matplotlib>=1.5.1'],
-        'metabolic_modeling': ['cobra>=0.4.1', 'cameo']}
+    description='Framework for the analysis of microbial physiology experimental data.',
+    install_requires=requirements,
+    extras_require=extras
 )
