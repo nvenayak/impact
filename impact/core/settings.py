@@ -1,5 +1,3 @@
-from .secrets import *
-
 import os.path
 from ..database import Base
 
