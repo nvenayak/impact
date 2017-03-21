@@ -1,4 +1,6 @@
-#Impact: a framework for analyzing microbial physiology
+[![Build Status](https://travis-ci.com/nvenayak/impact.svg?token=V3Kqb5fkhiSEid1A8oyf&branch=master)](https://travis-ci.com/nvenayak/impact)
+
+# Impact: a framework for analyzing microbial physiology
 
 Impact assists scientists and engineers to interpret data describing microbial physiology.
 Impact parses raw data from common equipment such as chromatography (HPLC), 

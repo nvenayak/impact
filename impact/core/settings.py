@@ -4,6 +4,12 @@ from ..database import Base
 from sqlalchemy import Column, Boolean, Float, Integer
 Base = object
 
+try:
+    from .secrets import *
+except:
+    plotly_username = ''
+    plotly_api_key = ''
+
 class Settings(Base):
     __tablename__ = 'settings'
 
