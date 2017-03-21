@@ -1,7 +1,9 @@
-Impact: an integrated microbial physiology toolbox
-==================================================
-Impact is designed to help scientists parse, analyze, plot and store data for fermentation experiments.
-There are two parts to the package:
+#Impact: a framework for analyzing microbial physiology
+
+Impact assists scientists and engineers to interpret data describing microbial physiology.
+Impact parses raw data from common equipment such as chromatography (HPLC), 
+and plate readers. Data is automatically interpreted and built into hierarchical objects
+which describe the experiments and extract features.
 
 ## Quick Start Guide
 ### Install
