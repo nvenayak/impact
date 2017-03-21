@@ -1,10 +1,12 @@
 import unittest
 import impact
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class TestParsers(unittest.TestCase):
     def test_default_HPLC_parser(self):
         expt = impact.Experiment()
-        expt.parse_raw_data('default_titers', fileName='test_data/sample_input_data.xlsx')
+        expt.parse_raw_data('default_titers', fileName=os.path.join(BASE_DIR,'test_data/sample_input_data.xlsx'))
 
         num_replicates = (len(expt.replicate_trial_dict.keys()))
 
