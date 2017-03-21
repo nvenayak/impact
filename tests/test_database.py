@@ -10,11 +10,14 @@ class TestDatabase(unittest.TestCase):
 
     def tearDown(self):
         self.session.close()
-        os.remove('test_impact.db')
+        try:
+            os.remove('default_impt.db')
+        except FileNotFoundError:
+            pass
 
     def test_trial_identifier(self):
-        LIMS = impt.core.TrialIdentifier.Media('LIMS')
-        LIMS.component_concentrations = [impt.core.TrialIdentifier.ComponentConcentration(impt.core.TrialIdentifier.MediaComponent(name), concentration, unit)
+        LIMS = impt.Media('LIMS')
+        LIMS.component_concentrations = [impt.ComponentConcentration(impt.MediaComponent(name), concentration, unit)
                                          for name, concentration, unit in [
                                              ['cAA', 0.02, '%'],
                                              ['IPTG', 1, 'M']
@@ -24,7 +27,7 @@ class TestDatabase(unittest.TestCase):
         ti.media = LIMS
         ti.analyte_type = 'biomass'
         ti.analyte_name = 'OD600'
-        strain = impt.core.TrialIdentifier.Strain(name='test strain')
+        strain = impt.Strain(name='test strain')
         ti.strain = strain
 
         self.session.add(ti)
@@ -36,8 +39,8 @@ class TestDatabase(unittest.TestCase):
         self.trial_identifier = ti
 
     def test_time_course(self):
-        LIMS = impt.core.TrialIdentifier.Media('LIMS')
-        LIMS.component_concentrations = [impt.core.TrialIdentifier.ComponentConcentration(impt.core.TrialIdentifier.MediaComponent(name), concentration, unit)
+        LIMS = impt.Media('LIMS')
+        LIMS.component_concentrations = [impt.ComponentConcentration(impt.MediaComponent(name), concentration, unit)
                                          for name, concentration, unit in [
                                              ['cAA', 0.02, '%'],
                                              ['IPTG', 1, 'M']
@@ -47,7 +50,7 @@ class TestDatabase(unittest.TestCase):
         ti.media = LIMS
         ti.analyte_type = 'biomass'
         ti.analyte_name = 'OD600'
-        strain = impt.core.TrialIdentifier.Strain(name='test strain')
+        strain = impt.Strain(name='test strain')
         ti.strain = strain
 
         self.session.add(ti)
@@ -67,22 +70,18 @@ class TestDatabase(unittest.TestCase):
         self.assertCountEqual(tc.time_vector,[0,1,2])
 
     def test_single_trial(self):
-        LIMS = impt.core.TrialIdentifier.Media('LIMS')
-        LIMS.component_concentrations = [
-            impt.core.TrialIdentifier.ComponentConcentration(
-                impt.core.TrialIdentifier.MediaComponent(name), concentration, unit
-            )
-            for name, concentration, unit in [
-                ['cAA', 0.02, '%'],
-                ['IPTG', 1, 'M']
-            ]
-            ]
+        LIMS = impt.Media('LIMS')
+        LIMS.component_concentrations = [impt.ComponentConcentration(impt.MediaComponent(name), concentration, unit)
+                                         for name, concentration, unit in [
+                                             ['cAA', 0.02, '%'],
+                                             ['IPTG', 1, 'M']
+                                         ]]
 
         ti = impt.TrialIdentifier(strain_name='MG1655 WT')
         ti.media = LIMS
         ti.analyte_type = 'biomass'
         ti.analyte_name = 'OD600'
-        strain = impt.core.TrialIdentifier.Strain(name='test strain')
+        strain = impt.Strain(name='test strain')
         ti.strain = strain
 
         self.session.add(ti)
