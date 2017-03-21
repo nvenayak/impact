@@ -2,7 +2,7 @@ import impact
 import datetime
 import unittest
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 
 class CoreTestCase(unittest.TestCase):
@@ -43,7 +43,7 @@ class CoreTestCase(unittest.TestCase):
 
     def test_default_titers_parse(self):
         # Parse the data
-        self.expt.parse_raw_data('default_titers', fileName=os.path.join(BASE_DIR,'test_data/sample_input_data.xlsx'))
+        self.expt.parse_raw_data('default_titers', fileName=os.path.join(BASE_DIR,'tests/test_data/sample_input_data.xlsx'))
 
         # Commit to the db
         # experiment_id = self.expt.db_commit(db_name=self.db_name)
