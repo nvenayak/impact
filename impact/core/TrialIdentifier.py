@@ -1,12 +1,12 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
 from ..database import Base
+
+from sqlalchemy import Column, Integer, String, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm.collections import attribute_mapped_collection
 from warnings import warn
 
 class Strain(Base):
     """
-    Identifies the strain used
+    Model for a strain
     """
 
     __tablename__ = 'strain'
@@ -30,13 +30,6 @@ class Strain(Base):
             self.nickname = name
         # models.Model.__init__(self, *args, **kwargs)
 
-        # Init uninitiali
-        # self.nickname = name    # 'E. coli MG1655'
-        # self.formal_name = None # 'Escherichia coli MG1655
-        # self.plasmid_1 = None       # ptrc99a
-        # self.plasmid_2 = None       # ptrc99a
-        # self.plasmid_3 = None       # ptrc99a
-
     def __str__(self):
         plasmid_summ = '+'.join([plasmid
                                  for plasmid in [self.plasmid_1,self.plasmid_2,self.plasmid_3]
@@ -45,7 +38,6 @@ class Strain(Base):
             return self.nickname+'+'+plasmid_summ
         else:
             return self.nickname
-
 
     @property
     def unique_id(self):
@@ -59,7 +51,6 @@ class MediaComponent(Base):
     __tablename__ = 'media_component'
     id = Column(Integer,primary_key=True)
     name = Column(String,unique=True)
-    # BiGG_id = Column(String,primary_key=True)
 
     def __init__(self, name):
         self.name = name
@@ -91,7 +82,7 @@ class ComponentConcentration(Base):
     def _convert_units(self):
         if not self.units_converted:
             if self._unit == '%':
-                self._concentration = self._concentration*10
+                self._concentration *= 10
             elif self._unit == 'g/L':
                 pass
             else:
@@ -120,12 +111,12 @@ class Media(Base):
 
         if concentration and unit:
             self._convert_units()
+
     @property
     def components(self):
         return [compconc.media_component.name for compconc in self.component_concentrations]
 
     def __str__(self):
-
         if self.parent:
             return '+'.join([item for item in
                              [compconc.concentration + 'g/L ' + compconc.media_component.name for compconc in
@@ -139,24 +130,9 @@ class Media(Base):
     def unique_id(self):
         return self.name
 
-    ##
-    # @property
-    # def unit(self):
-    #     return self._unit
-    #
-    # @unit.setter
-    # def unit(self, unit):
-    #     if self._
-    #     if self._concentration:
-    #         self._unit = unit
-    #         self._convert_units()
-    #     else:
-    #
-
 class Analyte(Base):
     __tablename__ = 'analyte'
 
-    # If
     name = Column(String, primary_key=True)
     default_type = Column(String)
 
@@ -181,32 +157,7 @@ class TrialIdentifier(Base):
     titerType : str
         The type of titer, three acceptable values e.g. 'biomass','substrate','product'
     """
-    ###########################
-    # Django ORM stuff
-    # id = models.AutoField(primary_key=True)
-    #
-    # first_name = models.CharField(max_length=30)
-    # last_name = models.CharField(max_length=30)
-    #
-    # strain.name = models.CharField(max_length=30)
-    # id_1 = models.CharField(max_length=30)
-    # id_2 = models.CharField(max_length=30)
-    # id_3 = models.CharField(max_length=30)
-    #
-    # replicate_id = models.IntegerField()
-    #
-    # analyte_name = models.CharField(max_length=30)
-    # _analyte_type = models.CharField(max_length=30)
-    #
-    #
-    # class Meta:
-    #     app_label = 'impact_core'
-    #     db_table = 'trial_identifier'
-    #     _DATABASE = 'impact'
-    ###########################
 
-
-    # SQL alchemy
     __tablename__ = 'trial_identifier'
 
     id = Column(Integer, primary_key=True)
@@ -321,9 +272,7 @@ class TrialIdentifier(Base):
         Returns a string identifying the unique attribute of a single trial
         """
         return self.unique_replicate_trial() + ' ' + str(self.replicate_id)
-               # + ' '.join([str(getattr(self, attr))
-               #             for attr in ['replicate_id']
-               #             if str(getattr(self, attr) != '')])
+
 
     def unique_replicate_trial(self):
         """

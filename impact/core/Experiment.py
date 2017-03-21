@@ -178,8 +178,8 @@ class Experiment(Base):
     def parse_raw_data(self, dataFormat, fileName=None, data=None):
         t0 = time.time()
 
-        if data == None:
-            if fileName == None:
+        if data is None:
+            if fileName is None:
                 raise Exception('No data or file name given to load data from')
 
             # Get data from xlsx file
@@ -362,11 +362,11 @@ class Experiment(Base):
         """
         Wrapper for impact.printGenericTimeCourse_plotly
         """
-        if strainsToPlot == []:
+        if not strainsToPlot:
             strainsToPlot = self.strains
 
         # Plot all product titers if none specified TODO: Add an option to plot OD as well
-        if titersToPlot == []:
+        if not titersToPlot:
             titersToPlot = self.analyte_names
 
         replicateTrialList = [self.replicate_trial_dict[key] for key in strainsToPlot]
@@ -379,10 +379,10 @@ class Experiment(Base):
         """
         MPL plotting function, deprecated since 2016/06/14 due to switch to plotly
         """
-        if figHandle == []:
+        if not figHandle:
             figHandle = plt.figure(figsize=(9, 5))
 
-        if strainsToPlot == []:
+        if not strainsToPlot:
             strainsToPlot = [key for key in self.replicate_trial_dict]
 
         # Sort the strains to plot to HELP ensure that things are in the same order
@@ -428,7 +428,7 @@ class Experiment(Base):
                                                              sortBy) == unique],
                                      color=colors[i], ecolor='k', capsize=5, error_kw=dict(elinewidth=1, capthick=1))
             i += 1
-            index = index + barWidth
+            index += barWidth
 
         ax.yaxis.set_ticks_position('left')
         ax.xaxis.set_ticks_position('bottom')
@@ -436,7 +436,7 @@ class Experiment(Base):
         xticklabel = ''
         for attribute in ['strain', 'id_1', 'id_2']:
             if attribute != sortBy:
-                xticklabel = xticklabel + attribute
+                xticklabel += attribute
 
         if 'strain' == sortBy:
             tempticks = [self.replicate_trial_dict[key].trial_identifier.id_1 + '+' +
@@ -465,13 +465,13 @@ class Experiment(Base):
         """
         MPL plotting function, deprecated since 2016/06/14 due to switch to plotly
         """
-        if figHandle == []:
+        if not figHandle:
             figHandle = plt.figure(figsize=(9, 5))
 
-        if strainsToPlot == []:
+        if not strainsToPlot:
             strainsToPlot = self.get_strains()
 
-        if titersToPlot == []:
+        if not titersToPlot:
             titersToPlot = self.analyte_names
 
         # Clear the plot and set some aesthetics
@@ -572,7 +572,7 @@ class Experiment(Base):
                                              color=colors[i], ecolor='k', capsize=5,
                                              error_kw=dict(elinewidth=1, capthick=1)
                                              )
-                    index = index + barWidth
+                    index += barWidth
                     i += 1
 
                 plt.ylabel(product + " Yield (g/g)")
@@ -584,7 +584,7 @@ class Experiment(Base):
                 xticklabel = ''
                 for attribute in ['strain', 'id_1', 'id_2']:
                     if attribute != sortBy:
-                        xticklabel = xticklabel + attribute
+                        xticklabel += attribute
 
                 if 'strain_id' == sortBy:
                     tempticks = [self.replicate_trial_dict[key].trial_identifier.id_1 + '+' +
@@ -735,7 +735,7 @@ class Experiment(Base):
 
     def printAllReplicateTimeCourse(self, figHandle=[], strainToPlot=[]):
 
-        if figHandle == []:
+        if not figHandle:
             figHandle = plt.figure(figsize=(9, 5))
 
         plt.clf()

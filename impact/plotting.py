@@ -140,7 +140,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         print('Ignoring stages, no stage_indices provided')
 
     # Check if titers provided
-    if titersToPlot == []:
+    if not titersToPlot:
         raise Exception('No titers defined to plot')
 
     if colors is None:
@@ -318,11 +318,11 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
 
                 if sort_by_product_in_legend_flag:
                     showlegend_flag = True
-                    for i, name in enumerate(legendgroup):
-                        prepped_x[name].append(x[i])
-                        prepped_y_avg[name].append(y_avg[i][-1])
-                        prepped_y_std[name].append(y_std[i][-1])
-                        prepped_legendgroup[name].append(legendgroup[i])
+                    for i2, name in enumerate(legendgroup):
+                        prepped_x[name].append(x[i2])
+                        prepped_y_avg[name].append(y_avg[i2][-1])
+                        prepped_y_std[name].append(y_std[i2][-1])
+                        prepped_legendgroup[name].append(legendgroup[i2])
                 else:
                     trace = go.Bar(x=x,
                                    y=[y[-1] for y in y_avg],

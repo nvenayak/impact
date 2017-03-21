@@ -197,7 +197,7 @@ class SingleTrial(Base):
         #     # Run the FBA and return the CO2
         #     ...
 
-        if type(OD_gdw) == None:
+        if type(OD_gdw) is None:
             # Parameters for E. coli
             OD_gdw = 0.33  # Correlation for OD to gdw for mass balance
 
@@ -248,11 +248,9 @@ class SingleTrial(Base):
         from scipy.integrate import odeint
 
         # Let's assign the data to these variables
-        biomass_flux = []
-        biomass_flux.append(model.solution.x_dict[biomass_keys[0]])
+        biomass_flux = [model.solution.x_dict[biomass_keys[0]]]
 
-        substrate_flux = []
-        substrate_flux.append(model.solution.x_dict[substrate_keys[0]])
+        substrate_flux = [model.solution.x_dict[substrate_keys[0]]]
 
         product_flux = [model.solution.x_dict[key] for key in product_keys]
 

@@ -108,7 +108,14 @@ class TestDatabase(unittest.TestCase):
         self.session.commit()
         del expt
 
-        self.session.query(impt.Experiment).all()[0]
+        expt = self.session.query(impt.Experiment).all()[0]
+        tc = [time_course
+               for replicate in expt.replicate_trial_dict.values()
+               for single_trial in replicate.single_trial_dict.values()
+               for time_course in single_trial.analyte_dict.values()
+                ][0]
+        self.assertCountEqual(tc.data_vector,[0,5,10])
+        self.assertCountEqual(tc.time_vector,[0,1,2])
 
 if __name__ == 'main':
     unittest.main()

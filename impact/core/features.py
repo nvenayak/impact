@@ -26,6 +26,8 @@ class ProductYield(MultiAnalyteFeature):
     def __init__(self, substrate, product):
         self.substrate = substrate
         self.product = product
+        self.product_yield = None
+        self.substrate_consumed = None
 
     @property
     def data(self):

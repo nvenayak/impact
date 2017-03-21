@@ -37,7 +37,7 @@ class ReplicateTrial(Base):
     std = relationship('SingleTrial', uselist=False, foreign_keys=[std_id])
 
     single_trial_dict = relationship('SingleTrial',
-                                     collection_class = attribute_mapped_collection('keyword'),
+                                     collection_class = attribute_mapped_collection('trial_identifier.replicate_id'),
                                      foreign_keys = 'SingleTrial.parent_id')
 
     trial_identifier_id = Column(Integer,ForeignKey('trial_identifier.id'))
@@ -289,7 +289,7 @@ class ReplicateTrial(Base):
                 # good_replicates = (np.abs(stats.zscore(df)) < 3).all(axis=0)  # Find any values > 3 std from mean
                 # if bad_replicates.any():
                 print(bad_replicates)
-                if bad_replicates != []:
+                if bad_replicates:
                     good_replicate_cols = [col_names[x] for x, col_name in enumerate(bad_replicates)
                                            if col_name not in bad_replicates]
                 else:
@@ -332,9 +332,9 @@ class ReplicateTrial(Base):
             if verbose:
                 plt.figure()
                 try:
-                    if good_replicate_cols != []:
+                    if good_replicate_cols:
                         plt.plot(backup[good_replicate_cols], 'r')
-                    if bad_replicate_cols != []:
+                    if bad_replicate_cols:
                         plt.plot(backup[bad_replicate_cols], 'b')
                     plt.title(self.trial_identifier.unique_replicate_trial())
                 except Exception as e:

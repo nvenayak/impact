@@ -62,7 +62,7 @@ def spectromax_OD(experiment, data, fileName = None):
             else:
                 time = int(parsed_time[0]) * 60 + int(parsed_time[1])
 
-            time = time / 3600  # convert to hours
+            time /= 3600  # convert to hours
 
             # Define the data for a single plate, single timepoint
             plate_data = [row[2:14] for row in raw_data[start_row_index:start_row_index+8]]
@@ -125,13 +125,12 @@ def spectromax_OD_triplicate(experiment, data, fileName=None):
             else:
                 time = int(parsed_time[0]) * 60 + int(parsed_time[1])
 
-            time = time / 3600  # convert to hours
+            time /= 3600  # convert to hours
 
             # Define the data for each of the replicates
-            replicate_plate_data = []
-            replicate_plate_data.append([row[2:14] for row in raw_data[start_row_index:start_row_index + 8]])
-            replicate_plate_data.append([row[15:27] for row in raw_data[start_row_index:start_row_index + 8]])
-            replicate_plate_data.append([row[28:40] for row in raw_data[start_row_index:start_row_index + 8]])
+            replicate_plate_data = [[row[2:14] for row in raw_data[start_row_index:start_row_index + 8]],
+                                    [row[15:27] for row in raw_data[start_row_index:start_row_index + 8]],
+                                    [row[28:40] for row in raw_data[start_row_index:start_row_index + 8]]]
 
             # convert to strings to floats
             converted_data = []
@@ -277,8 +276,8 @@ def parse_raw_data(data_format, data = None, file_name = None, experiment = None
 
     t0 = time.time()
 
-    if data == None:
-        if file_name == None:
+    if data is None:
+        if file_name is None:
             raise Exception('No data or file name given to load data from')
 
         # Get data from xlsx file

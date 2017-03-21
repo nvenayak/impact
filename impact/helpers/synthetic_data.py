@@ -33,11 +33,9 @@ def generate_data(y0, t, model, biomass_keys, substrate_keys, product_keys, nois
     """""
 
     # Let's assign the data to these variables
-    biomass_flux = []
-    biomass_flux.append(model.solution.x_dict[biomass_keys[0]])
+    biomass_flux = [model.solution.x_dict[biomass_keys[0]]]
 
-    substrate_flux = []
-    substrate_flux.append(model.solution.x_dict[substrate_keys[0]])
+    substrate_flux = [model.solution.x_dict[substrate_keys[0]]]
 
     product_flux = [model.solution.x_dict[key] for key in product_keys]
 
@@ -96,11 +94,9 @@ def dynamic_model_integration(t, y0, model, single_trial, biomass_keys, substrat
             return [0]*len(exchange_keys)
         else:
             # Let's assign the data to these variables
-            biomass_flux = []
-            biomass_flux.append(model.solution.x_dict[biomass_keys[0]])
+            biomass_flux = [model.solution.x_dict[biomass_keys[0]]]
 
-            substrate_flux = []
-            substrate_flux.append(model.solution.x_dict[substrate_keys[0]])
+            substrate_flux = [model.solution.x_dict[substrate_keys[0]]]
 
             product_flux = [model.solution.x_dict[key] for key in product_keys]
 

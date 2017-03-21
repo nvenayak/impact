@@ -5,36 +5,19 @@ from .TrialIdentifier import TrialIdentifier, Strain, Media
 from ..curve_fitting import *
 
 import pandas as pd
-import dill as pickle
 
 from scipy.signal import savgol_filter
-
-# from django.db import models
-# from .database import PandasField, JSONSerializableField
 
 from ..database import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import event
 
 class AnalyteData(object):
-    # class Meta:
-    #     app_label = 'impact'
-    # __tablename__ = 'analyte_datas'
-    # id = Column(Integer,primary_key=True)
-    # trial_identifier = relationship(TrialIdentifier)
-
     def __init__(self):
         self.time_points = []
         self._trial_identifier = TrialIdentifier()
-
-        # self.strain =
-        # self.media =
-        # self.generic_id_1 =
-        # self.generic_id_2 =
-        # self.generic_id_3 =
 
     @property
     def trial_identifier(self):
@@ -47,14 +30,6 @@ class AnalyteData(object):
     def add_timepoint(self, timePoint):
         raise (Exception("No addTimePoint method defined in the child"))
 
-# class TimeDataTuple(Base):
-#     __tablename__ = 'time_data_pair'
-#     time = 0.
-#     data = 0.
-#
-# class Array(Base):
-#     array = ForeignKey(Integer,'time_data_tuple')
-
 class FitParameter(Base):
     __tablename__ = 'fit_parameters'
 
@@ -66,6 +41,7 @@ class FitParameter(Base):
     def __init__(self, name, value):
         self.parameter_name = name
         self.parameter_value = value
+
 
 class TimePoint(Base):
     __tablename__ = 'time_point'
@@ -99,31 +75,23 @@ class TimePoint(Base):
         return str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
             self.trial_identifier.replicate_id) + self.trial_identifier.analyte_name
 
+
 class GradientTimePoint(TimePoint):
     __mapper_args__ = {
         'polymorphic_identity':'gradient'
     }
+
 
 class SpecificProductivityTimePoint(TimePoint):
     __mapper_args__ = {
         'polymorphic_identity':'specific_productivity'
     }
 
+
 class TimeCourse(AnalyteData, Base):
     """
     Child of :class:`~AnalyteData` which contains curve fitting relevant to time course data
     """
-    # class Meta:
-    #     app_label = 'impact'
-    #
-    # parent = models.ForeignKey('impact.SingleTrial', on_delete=models.CASCADE, blank=True, null=True)
-    # calculations_uptodate = models.BooleanField()
-    # pd_series = PandasField()
-    # fit_params = JSONSerializableField()
-    # gradient = JSONSerializableField()
-    # specific_productivity = JSONSerializableField()
-    # stages = models.ManyToManyField('self')
-
     __tablename__ = 'time_course'
 
     discriminator = Column(String(50))
@@ -138,7 +106,7 @@ class TimeCourse(AnalyteData, Base):
     calculations_uptodate = Column(Boolean)
     fit_params = relationship('FitParameter',
                               collection_class=attribute_mapped_collection('keyword'),
-                              cascade="all, delete-orphan") # Column(PickleType())
+                              cascade="all, delete-orphan")
 
     specific_productivity_points = relationship('SpecificProductivityTimePoint')
 
@@ -206,12 +174,10 @@ class TimeCourse(AnalyteData, Base):
                          self.trial_identifier.id_2, self.trial_identifier.id_3, self.trial_identifier.replicate_id])
 
     def serialize(self):
-        serialized_dict = {}
+        serialized_dict = {'data'    : self.pd_series.to_json(), 'fit_params': self.fit_params,
+                           'gradient': list(self.gradient)}
         # serialized_dict['time_vector'] = self.time_vector
         # serialized_dict['data_vector'] = self.data_vector
-        serialized_dict['data'] = self.pd_series.to_json()
-        serialized_dict['fit_params'] = self.fit_params
-        serialized_dict['gradient'] = list(self.gradient)
 
         try:
             serialized_dict['specific_productivity'] = list(self.specific_productivity)
