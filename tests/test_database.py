@@ -23,7 +23,7 @@ class TestDatabase(unittest.TestCase):
                                              ['IPTG', 1, 'M']
                                          ]]
 
-        ti = impt.TrialIdentifier(strain_name='MG1655 WT')
+        ti = impt.TrialIdentifier(strain=impt.Strain(nickname='MG1655 WT'))
         ti.media = LIMS
         ti.analyte_type = 'biomass'
         ti.analyte_name = 'OD600'
@@ -46,7 +46,7 @@ class TestDatabase(unittest.TestCase):
                                              ['IPTG', 1, 'M']
                                          ]]
 
-        ti = impt.TrialIdentifier(strain_name='MG1655 WT')
+        ti = impt.TrialIdentifier(strain=impt.Strain(nickname='MG1655 WT'))
         ti.media = LIMS
         ti.analyte_type = 'biomass'
         ti.analyte_name = 'OD600'
@@ -77,7 +77,7 @@ class TestDatabase(unittest.TestCase):
                                              ['IPTG', 1, 'M']
                                          ]]
 
-        ti = impt.TrialIdentifier(strain_name='MG1655 WT')
+        ti = impt.TrialIdentifier(strain=impt.Strain(nickname='MG1655 WT'))
         ti.media = LIMS
         ti.analyte_type = 'biomass'
         ti.analyte_name = 'OD600'

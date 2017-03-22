@@ -130,6 +130,23 @@ class Media(Base):
     def unique_id(self):
         return self.name
 
+class Environment(Base):
+    __tablename__ = 'environment'
+
+    id = Column(Integer, primary_key=True)
+    labware_id = Column(Integer, ForeignKey('labware.id'))
+    labware = relationship('Labware')
+    shaking_speed = Column(Float)
+    shaking_diameter = Column(Float,nullable=True)
+    temperature = Column(Float)
+
+class Labware(Base):
+    __tablename__ = 'labware'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String,unique=True)
+
+
 class Analyte(Base):
     __tablename__ = 'analyte'
 
@@ -179,54 +196,8 @@ class TrialIdentifier(Base):
     id_2 = Column(String)
     id_3 = Column(String)
 
-    # relationships = relationship('TimeCourse', back_populates='_trial_identifier', uselist=False)
-    def __init__(self, strain=None, media=None, strain_name='', id_1='', id_2='', id_3='',
-                 replicate_id = None, time = -1, analyte_name = 'None',
-                 analyte_type = 'None', *args, **kwargs):
-        self.strain = Strain() if strain is None else strain
-        self.media = Media() if media is None else media
-
-        # models.Model.__init__(self, *args, **kwargs)
-        if strain is not None and strain_name != '':
-            warn('Strain() and strain_name provided, only strain_name used')
-        self.strain.nickname = strain_name
-
-        self.id_1 = id_1
-        self.id_2 = id_2
-        self.id_3 = id_3
-
-        self.replicate_id = replicate_id    # e.g. 1
-
-        self.time = time                    # e.g. 0
-
-        self.analyte_name = analyte_name    # BiGG id preferred. E.g. ac, succ, pyr, glc__D
-        self._analyte_type = analyte_type   # e.g. substrate, product, biomass
-
-    # @property
-    # def strain.name(self):
-    #     return self._strain.name# .__str__()#summary()
-    #
-    # @strain.name.setter
-    # def strain.name(self, strain.name):
-    #     self._strain.name.name = strain.name
-
     def __str__(self):
         return "%s %s %s t=%s rep=%s " % (self.strain,self.media,self.analyte_name,self.time,self.replicate_id)
-
-    @property
-    def analyte_type(self):
-        return self._analyte_type
-
-    @analyte_type.setter
-    def analyte_type(self, analyte_type):
-        if analyte_type in ['biomass', 'OD', 'OD600']:
-            self._analyte_type = 'biomass'
-            if analyte_type in ['OD', 'OD600']:
-                warn('Please use biomass analyte_type instead of: ', analyte_type)
-        elif analyte_type in ['product', 'substrate']:
-            self._analyte_type = analyte_type
-        else:
-            raise Exception('AnalyteData type is not supported: ', analyte_type)
 
     def summary(self, items):
         summary = dict()
@@ -248,7 +219,7 @@ class TrialIdentifier(Base):
             if len(tempParsedIdentifier) == 0:
                 print(tempParsedIdentifier, " <-- not processed")
             if len(tempParsedIdentifier) > 0:
-                self.strain.nickname = tempParsedIdentifier[0]
+                self.strain = Strain(nickname=tempParsedIdentifier[0])
             if len(tempParsedIdentifier) > 1:
                 self.id_1 = tempParsedIdentifier[1]
             if len(tempParsedIdentifier) > 2:

@@ -211,20 +211,13 @@ def HPLC_titer_parser(experiment, data, fileName):
                 trial_identifier.parse_trial_identifier_from_csv(data['titers'][i][0])
                 trial_identifier.analyte_name = key
                 trial_identifier.analyte_type = titer_type[key]
-                # if key == substrate_name:
-                #     temp_run_identifier_object.titerType = 'substrate'
-                # else:
-                #     temp_run_identifier_object.titerType = 'product'
 
-                # Remove these time points
-                # if temp_run_identifier_object.time not in [12, 72, 84]:
-                # print(temp_run_identifier_object.time,' ',data['titers'][i][analyte_nameColumn[key]])
                 if data['titers'][i][analyte_nameColumn[key]] == 'nan':
                     data['titers'][i][analyte_nameColumn[key]] = np.nan
                 timepoint_list.append(
-                    TimePoint(trial_identifier,
-                              trial_identifier.time,
-                              data['titers'][i][analyte_nameColumn[key]]))
+                    TimePoint(trial_identifier = trial_identifier,
+                              time = trial_identifier.time,
+                              data = data['titers'][i][analyte_nameColumn[key]]))
 
         else:
             skipped_lines += 1
