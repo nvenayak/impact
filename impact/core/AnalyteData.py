@@ -14,21 +14,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy import event
 
-class AnalyteData(object):
-    def __init__(self):
-        self.time_points = []
-        self._trial_identifier = TrialIdentifier()
-
-    @property
-    def trial_identifier(self):
-        return self._trial_identifier
-
-    @trial_identifier.setter
-    def trial_identifier(self, trial_identifier):
-        self._trial_identifier = trial_identifier
-
-    def add_timepoint(self, timePoint):
-        raise (Exception("No addTimePoint method defined in the child"))
 
 class FitParameter(Base):
     __tablename__ = 'fit_parameters'
@@ -63,14 +48,6 @@ class TimePoint(Base):
 
     use_in_analysis = Column(Boolean)
 
-    def __init__(self, trial_identifier = TrialIdentifier(), time=None, data=None):
-        self.trial_identifier = trial_identifier
-        self.time = time
-        self.data = data
-        self.units = {'t'    : 'h',
-                      'titer': 'g'}
-        self.use_in_analysis = True
-
     def get_unique_timepoint_id(self):
         return str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
             self.trial_identifier.replicate_id) + self.trial_identifier.analyte_name
@@ -88,7 +65,7 @@ class SpecificProductivityTimePoint(TimePoint):
     }
 
 
-class TimeCourse(AnalyteData, Base):
+class TimeCourse(Base):
     """
     Child of :class:`~AnalyteData` which contains curve fitting relevant to time course data
     """
@@ -131,8 +108,15 @@ class TimeCourse(AnalyteData, Base):
         for arg in kwargs:
             setattr(self,arg,kwargs[arg])
 
+        if 'time_points' in kwargs:
+            for time_point in kwargs['time_points']:
+                self.add_timepoint(time_point)
+                print(self.pd_series)
+        else:
+            self.pd_series = None
+
         # Parent constructor
-        AnalyteData.__init__(self)
+        # AnalyteData.__init__(self)
 
         # Used to store the single_trial to which each analyte instance belongs
         self.parent = None  # type SingleTrial
@@ -208,7 +192,7 @@ class TimeCourse(AnalyteData, Base):
     def trial_identifier(self):
         return self._trial_identifier
 
-    @AnalyteData.trial_identifier.setter
+    @trial_identifier.setter
     def trial_identifier(self, trial_identifier):
         self._trial_identifier = trial_identifier
 
@@ -243,7 +227,7 @@ class TimeCourse(AnalyteData, Base):
     def data_vector(self):
         from .settings import settings
 
-        # Filter data to smooth noise from the siganl
+        # Filter data to smooth noise from the signal
         if settings.use_filtered_data:
             return savgol_filter(np.array(self.pd_series), self.savgolFilterWindowSize, 3)
         else:
@@ -329,17 +313,17 @@ class TimeCourse(AnalyteData, Base):
 
         return death_phase_start
 
-    def summary(self, print=False):
-        summary = dict()
-        summary['time_vector'] = self.time_vector
-        summary['data_vector'] = self.data_vector
-        summary['number_of_data_points'] = len(self.time_vector)
-        summary['trial_identifier'] = self.trial_identifier.summary(['strain.name', 'id_1', 'id_2',
-                                                                'analyte_name', 'titerType', 'replicate_id'])
-        if print:
-            print(summary)
-
-        return summary
+    # def summary(self, print=False):
+    #     summary = dict()
+    #     summary['time_vector'] = self.time_vector
+    #     summary['data_vector'] = self.data_vector
+    #     summary['number_of_data_points'] = len(self.time_vector)
+    #     summary['trial_identifier'] = self.trial_identifier.summary(['strain.name', 'id_1', 'id_2',
+    #                                                             'analyte_name', 'titerType', 'replicate_id'])
+    #     if print:
+    #         print(summary)
+    #
+    #     return summary
 
     def create_stage(self, stage_bounds):
         stage = TimeCourseStage(self, bounds = stage_bounds)

@@ -34,10 +34,15 @@ class Strain(Base):
         plasmid_summ = '+'.join([plasmid
                                  for plasmid in [self.plasmid_1,self.plasmid_2,self.plasmid_3]
                                  if plasmid is not None])
-        if plasmid_summ :
-            return self.nickname+'+'+plasmid_summ
+
+        if self.nickname is None:
+            nick = ''
         else:
-            return self.nickname
+            nick = self.nickname
+        if plasmid_summ :
+            return nick+'+'+plasmid_summ
+        else:
+            return nick
 
     @property
     def unique_id(self):
@@ -140,12 +145,17 @@ class Environment(Base):
     shaking_diameter = Column(Float,nullable=True)
     temperature = Column(Float)
 
+    def __str__(self):
+        return '%s %s %s' % (self.labware, self.shaking_speed, self.temperature)
+
 class Labware(Base):
     __tablename__ = 'labware'
 
     id = Column(Integer, primary_key=True)
     name = Column(String,unique=True)
 
+    def __str__(self):
+        return self.name
 
 class Analyte(Base):
     __tablename__ = 'analyte'
@@ -185,6 +195,9 @@ class TrialIdentifier(Base):
     media_name = Column(String, ForeignKey('media.name'))
     media = relationship("Media")
 
+    environment_id = Column(Integer, ForeignKey('environment.id'))
+    environment = relationship('Environment')
+
     # trial specific
     replicate_id = Column(Integer)
 
@@ -196,8 +209,17 @@ class TrialIdentifier(Base):
     id_2 = Column(String)
     id_3 = Column(String)
 
+    def __init__(self, strain=None, media=None, environment=None):
+        self.strain = Strain() if strain is None else strain
+        self.media = Media() if media is None else media
+        self.environment = Environment() if strain is None else environment
+
+        # self.time = -1
+        # self.replicate_id = -1
+        # self.analyte_name = None
+
     def __str__(self):
-        return "%s %s %s t=%s rep=%s " % (self.strain,self.media,self.analyte_name,self.time,self.replicate_id)
+        return "strain: %s, media: %s, env: %s, analyte: %s, t: %s, rep: %s" % (self.strain,self.media,self.environment,self.analyte_name,self.time,self.replicate_id)
 
     def summary(self, items):
         summary = dict()
