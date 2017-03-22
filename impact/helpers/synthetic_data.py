@@ -118,13 +118,12 @@ def dynamic_model_integration(t, y0, model, single_trial, biomass_keys, substrat
     synthetic_t = np.linspace(0,t[-1],len(t)*extra_points_multiplier)
     # Now let's generate the data
     sol = odeint(dFBA_functions, y0, synthetic_t, args=(t[-1], model,
-                                              {analyte: interp1d(t, single_trial.analyte_dict[
-                                                  analyte].specific_productivity,
+                                              {analyte: interp1d(t, single_trial.analyte_dict[analyte].specific_productivity,
                                                                  bounds_error=False,
                                                                  fill_value=(single_trial.analyte_dict[
-                                                                                 analyte].specific_productivity[0],
+                                                                                 analyte].specific_productivity.data[0],
                                                                              single_trial.analyte_dict[
-                                                                                 analyte].specific_productivity[-1]))
+                                                                                 analyte].specific_productivity.data[-1]))
                                                for analyte in single_trial.analyte_dict},
                                               bar))
 
