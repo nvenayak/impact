@@ -16,3 +16,6 @@ def create_session():
 
     session_maker = sessionmaker(bind=engine)
     return session_maker()
+
+def create_db():
+    Base.metadata.create_all(bind_engine())
