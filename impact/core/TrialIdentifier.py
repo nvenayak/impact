@@ -4,6 +4,24 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from warnings import warn
 
+class Knockout(Base):
+    __tablename__ = 'knockout'
+    id = Column(Integer, primary_key=True)
+    gene = Column(String)
+    parent = Column(Integer, ForeignKey('strain.id'))
+
+    def __str__(self):
+        return str(self.gene)
+
+class Plasmid(Base):
+    __tablename__ = 'plasmid'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    strain = Column(Integer, ForeignKey('strain.id'))
+
+    def __str__(self):
+        return str(self.name)
+
 class Strain(Base):
     """
     Model for a strain
@@ -14,10 +32,10 @@ class Strain(Base):
     id = Column(Integer, primary_key=True)
     nickname = Column(String)
     formal_name = Column(String)
-    plasmid_1 = Column(String)
-    plasmid_2 = Column(String)
-    plasmid_3 = Column(String)
+    plasmids = relationship('Plasmid')
+    knockouts = relationship('Knockout')
     parent = Column(Integer,ForeignKey('strain.id'))
+
 
     def __init__(self, name='',**kwargs):
         for key in kwargs:
@@ -30,10 +48,9 @@ class Strain(Base):
             self.nickname = name
         # models.Model.__init__(self, *args, **kwargs)
 
+
     def __str__(self):
-        plasmid_summ = '+'.join([plasmid
-                                 for plasmid in [self.plasmid_1,self.plasmid_2,self.plasmid_3]
-                                 if plasmid is not None])
+        plasmid_summ = '+'.join([str(plasmid) for plasmid in self.plasmids])
 
         if self.nickname is None:
             nick = ''
@@ -124,11 +141,11 @@ class Media(Base):
     def __str__(self):
         if self.parent:
             return '+'.join([item for item in
-                             [compconc.concentration + 'g/L ' + compconc.media_component.name for compconc in
+                             [compconc.media_component.name + ' g/L ' + compconc.concentration for compconc in
                               self.component_concentrations] + self.parent_name])
         else:
             return '+'.join([item for item in
-                             [str(compconc.concentration) + 'g/L ' + compconc.media_component.name for compconc in
+                             [compconc.media_component.name + ' g/L '+ str(compconc.concentration) for compconc in
                               self.component_concentrations]])
 
     @property
@@ -145,8 +162,11 @@ class Environment(Base):
     shaking_diameter = Column(Float,nullable=True)
     temperature = Column(Float)
 
+    def __init__(self, labware=None):
+        self.labware = Labware() if labware is None else labware
+
     def __str__(self):
-        return '%s %s %s' % (self.labware, self.shaking_speed, self.temperature)
+        return '%s %sRPM %sC' % (self.labware, self.shaking_speed, self.temperature)
 
 class Labware(Base):
     __tablename__ = 'labware'
@@ -214,18 +234,74 @@ class TrialIdentifier(Base):
         self.media = Media() if media is None else media
         self.environment = Environment() if strain is None else environment
 
-        # self.time = -1
-        # self.replicate_id = -1
-        # self.analyte_name = None
+        self.time = -1
+        self.replicate_id = -1
+        self.analyte_name = None
 
     def __str__(self):
-        return "strain: %s, media: %s, env: %s, analyte: %s, t: %s, rep: %s" % (self.strain,self.media,self.environment,self.analyte_name,self.time,self.replicate_id)
+        return "strain: %s, media: %s, env: %s, analyte: %s, t: %s h, rep: %s" % (self.strain,self.media,self.environment,self.analyte_name,self.time,self.replicate_id)
 
     def summary(self, items):
         summary = dict()
         for item in items:
             summary[item] = getattr(self, item)
         return summary
+
+    def parse_identifier(self, id):
+        # Split by |
+        parameter_values = id.split('|')
+
+        for parameter_value in parameter_values:
+
+            if len(parameter_value.split(':')) == 2:
+                key, val = parameter_value.split(':')
+
+                if len(key.split('__')) == 1:
+                    if key in ['strain', 'media', 'environment']:
+                        getattr(self, key).nickname = val
+                    elif key == 'rep':
+                        self.replicate_id = int(val)
+                    elif key == 'time':
+                        self.time = float(val)
+                    else:
+                        raise Exception('Unknown key' + str(key))
+                elif len(key.split('__')) == 2:
+                    attr1, attr2 = key.split('__')
+
+                    # Set knockouts
+                    if attr1 == 'strain':
+                        if attr2 == 'ko':
+                            kos = val.split(',')
+                            for ko in kos:
+                                self.strain.knockouts.append(Knockout(gene=ko))
+                        if attr2 == 'plasmid':
+                            self.strain.plasmids.append(Plasmid(name=val))
+
+                    # Set component concentrations
+                    elif attr1 == 'media':
+                        if attr2 == 'cc':
+                            conc, comp = val.split(' ')
+                            self.media.component_concentrations.append(ComponentConcentration(MediaComponent(comp), conc))
+                        elif attr2 == 'base':
+                            self.media.base = Media(nickname=val)
+                        else:
+                            setattr(self.media,attr2,val)
+
+
+                    elif attr1 == 'environment':
+                        if attr2 == 'labware':
+                            self.environment.labware.name = val
+                        elif attr2 in ['shaking_speed','temperature']:
+                            setattr(self.environment,attr2,float(val))
+                        else:
+                            setattr(self.environment,attr2,val)
+                    else:
+                        # Set other attrs
+                        setattr(getattr(self, attr1), attr2, val)
+                else:
+                    raise Exception('Too many subparameters traversed' + str(key))
+            else:
+                raise Exception('Malformed parameter')
 
     def parse_trial_identifier_from_csv(self, csv_trial_identifier):
         """
@@ -258,7 +334,12 @@ class TrialIdentifier(Base):
         """
         Returns a string identifying the unique attribute of a single trial
         """
-        return self.unique_single_trial() + ' ' + self.analyte_name
+        if self.analyte_name:
+            an = self.analyte_name
+        else:
+            an = ''
+
+        return self.unique_single_trial() + ' ' + an
 
     def unique_single_trial(self):
         """
@@ -266,24 +347,23 @@ class TrialIdentifier(Base):
         """
         return self.unique_replicate_trial() + ' ' + str(self.replicate_id)
 
-
     def unique_replicate_trial(self):
         """
         Returns a string identifying the unique attribute of a replicate trial
         """
         return ' '.join([str(getattr(self,attr))
-                         for attr in ['strain','media','id_1',
+                         for attr in ['strain','media','environment','id_1',
                                       'id_2','id_3']
                          if str(getattr(self,attr) != '') ])
 
     def get_analyte_data_statistic_identifier(self):
         ti = TrialIdentifier()
-        for attr in ['strain','media','id_1','id_2','id_3','analyte_name','analyte_type']:
+        for attr in ['strain','media','environment','id_1','id_2','id_3','analyte_name','analyte_type']:
             setattr(ti,attr,getattr(self,attr))
         return ti
 
     def get_replicate_trial_trial_identifier(self):
         ti = TrialIdentifier()
-        for attr in ['strain','media','id_1','id_2','id_3']:
+        for attr in ['strain','media','environment','id_1','id_2','id_3']:
             setattr(ti,attr,getattr(self,attr))
         return ti

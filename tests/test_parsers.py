@@ -4,6 +4,33 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 class TestParsers(unittest.TestCase):
+    def test_generic_parser(self):
+        ti = impact.TrialIdentifier()
+        ti.parse_identifier(
+            'time:1|'
+            'environment__labware:Falcon96|'
+            'environment__shaking_speed:250|'
+            'environment__temperature:37|'
+            'media__base:LIMS|'
+            'media__cc:10 glc__D|'
+            'rep:1|'
+            'strain__id:D1|'
+            'strain__ko:adh,pta,lacI|'
+            'strain:MG|strain__plasmid:pKDL|'
+            'strain__plasmid:pKDL3|'
+            'strain__plasmid:pKDL2')
+        assert(ti.time,1.)
+        self.assertEqual(ti.environment.labware.name,'Falcon96')
+        self.assertEqual(ti.environment.shaking_speed,250)
+        self.assertEqual(ti.environment.temperature,37)
+        self.assertEqual(ti.media.base.nickname,'LIMS')
+        self.assertEqual(ti.media.component_concentrations[0].media_component.name,'glc__D')
+        self.assertEqual(ti.media.component_concentrations[0].concentration,'10')
+        self.assertEqual(ti.replicate_id,1)
+        # self.assertEqual(ti.strain.id,'D1') #TODO update
+        self.assertEqual(ti.strain.nickname,'MG')
+        self.assertIn('pKDL',[plasmid.name for plasmid in ti.strain.plasmids])
+
     def test_default_HPLC_parser(self):
         expt = impact.Experiment()
         expt.parse_raw_data('default_titers', fileName=os.path.join(BASE_DIR,'tests/test_data/sample_input_data.xlsx'))
