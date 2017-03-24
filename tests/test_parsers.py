@@ -4,7 +4,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 class TestParsers(unittest.TestCase):
-    def test_generic_parser(self):
+    def test_generic_identifier_parser(self):
         ti = impact.TrialIdentifier()
         ti.parse_identifier(
             'time:1|'
@@ -16,7 +16,8 @@ class TestParsers(unittest.TestCase):
             'rep:1|'
             'strain__id:D1|'
             'strain__ko:adh,pta,lacI|'
-            'strain:MG|strain__plasmid:pKDL|'
+            'strain:MG|'
+            'strain__plasmid:pKDL|'
             'strain__plasmid:pKDL3|'
             'strain__plasmid:pKDL2')
         self.assertEqual(ti.time,1.)
@@ -30,6 +31,9 @@ class TestParsers(unittest.TestCase):
         # self.assertEqual(ti.strain.id,'D1') #TODO update
         self.assertEqual(ti.strain.nickname,'MG')
         self.assertIn('pKDL',[plasmid.name for plasmid in ti.strain.plasmids])
+        self.assertIn('pKDL2',[plasmid.name for plasmid in ti.strain.plasmids])
+        self.assertIn('pKDL3',[plasmid.name for plasmid in ti.strain.plasmids])
+
 
     def test_default_HPLC_parser(self):
         expt = impact.Experiment()
