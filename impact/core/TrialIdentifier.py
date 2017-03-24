@@ -175,7 +175,7 @@ class Labware(Base):
     name = Column(String,unique=True)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 class Analyte(Base):
     __tablename__ = 'analyte'
