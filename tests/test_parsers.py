@@ -19,7 +19,7 @@ class TestParsers(unittest.TestCase):
             'strain:MG|strain__plasmid:pKDL|'
             'strain__plasmid:pKDL3|'
             'strain__plasmid:pKDL2')
-        assert(ti.time,1.)
+        self.assertEqual(ti.time,1.)
         self.assertEqual(ti.environment.labware.name,'Falcon96')
         self.assertEqual(ti.environment.shaking_speed,250)
         self.assertEqual(ti.environment.temperature,37)
