@@ -48,6 +48,11 @@ class TimePoint(Base):
 
     use_in_analysis = Column(Boolean)
 
+    def __init__(self, trial_identifier=None, time=None, data=None):
+        self.trial_identifier = TrialIdentifier() if trial_identifier is None else trial_identifier
+        self.time = time
+        self.data = data
+
     def get_unique_timepoint_id(self):
         return str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
             self.trial_identifier.replicate_id) + self.trial_identifier.analyte_name
@@ -104,19 +109,15 @@ class TimeCourse(Base):
         minimum_points_for_curve_fit = settings.minimum_points_for_curve_fit
         savgolFilterWindowSize = settings.savgolFilterWindowSize
 
-        # Overwrite user-set parameters
-        for arg in kwargs:
-            setattr(self,arg,kwargs[arg])
-
         if 'time_points' in kwargs:
             for time_point in kwargs['time_points']:
                 self.add_timepoint(time_point)
-                print(self.pd_series)
         else:
             self.pd_series = None
 
-        # Parent constructor
-        # AnalyteData.__init__(self)
+        # Overwrite user-set parameters
+        for arg in kwargs:
+            setattr(self,arg,kwargs[arg])
 
         # Used to store the single_trial to which each analyte instance belongs
         self.parent = None  # type SingleTrial

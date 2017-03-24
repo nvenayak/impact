@@ -317,9 +317,6 @@ class SingleTrial(Base):
                 setattr(self.trial_identifier, attr, getattr(analyte_data.trial_identifier, attr))
 
         for attr in ['strain','id_1','id_2','replicate_id']:
-            print(attr)
-            print('1',str(getattr(self.trial_identifier,attr)))
-            print('2',str(getattr(analyte_data.trial_identifier, attr)))
             if str(getattr(self.trial_identifier,attr)) != str(getattr(analyte_data.trial_identifier, attr)):
                 raise Exception('Trial identifiers do not match at the following attribute: '
                                 + attr
