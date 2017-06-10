@@ -54,4 +54,6 @@ class Settings(Base):
         self.default_outlier_cleaning_flag = False
         self.outlier_cleaning_flag = False
 
+        # curve_fitting
+        self.fit_type = {}
 settings = Settings()

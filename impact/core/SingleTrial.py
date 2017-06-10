@@ -1,15 +1,8 @@
-import numpy as np
-import dill as pickle
 import pandas as pd
-import sqlite3 as sql
-import warnings
-import copy
 
-from .TrialIdentifier import TrialIdentifier
-from .AnalyteData import TimeCourse, TimePoint
+from .TrialIdentifier import SingleTrialIdentifier
 from .features import *
 
-from django.db import models
 from ..database import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
 from sqlalchemy.orm import relationship
@@ -25,8 +18,8 @@ class SingleTrial(Base):
 
     id = Column(Integer, primary_key=True)
 
-    trial_identifier_id = Column(Integer,ForeignKey('trial_identifier.id'))
-    _trial_identifier = relationship('TrialIdentifier')
+    trial_identifier_id = Column(Integer,ForeignKey('single_trial_identifier.id'))
+    _trial_identifier = relationship('SingleTrialIdentifier')
 
     analyte_dict = relationship('TimeCourse',
                                 collection_class = attribute_mapped_collection('analyte_name'),
@@ -296,11 +289,10 @@ class SingleTrial(Base):
         if analyte_data.trial_identifier.analyte_name in self.analyte_dict:
             raise Exception('A duplicate titer was added to the single trial,\n'
                             'Make sure replicates are defined properly,\n'
-                            'Duplicate TrialIdentifier: ',
+                            'Duplicate ReplicateTrialIdentifier: ',
                             vars(analyte_data.trial_identifier))
 
-        # Set the parent
-        analyte_data.parent = self
+
 
         self.analyte_dict[analyte_data.trial_identifier.analyte_name] = analyte_data
 
@@ -309,24 +301,27 @@ class SingleTrial(Base):
             if analyte_data.trial_identifier.analyte_type in feature.requires:
                 feature.add_analyte_data(analyte_data)
 
-        # check if trial identifiers match TODO This needs updating.
-        if self.trial_identifier is None:
-            self.trial_identifier = TrialIdentifier()
-
-            for attr in ['strain', 'id_1', 'id_2', 'replicate_id']:
+        # check if trial identifiers match
+        if len(self.analyte_dict) == 1:
+            self.trial_identifier = SingleTrialIdentifier()
+            for attr in ['strain', 'media', 'environment','id_1', 'id_2', 'replicate_id']:
                 setattr(self.trial_identifier, attr, getattr(analyte_data.trial_identifier, attr))
+        else:
+            for attr in ['strain', 'media', 'environment','id_1', 'id_2', 'replicate_id']:
+                # Check for no match
+                if str(getattr(self.trial_identifier,attr)) != str(getattr(analyte_data.trial_identifier, attr)):
+                    raise Exception('Trial identifiers do not match at the following attribute: '
+                                    + attr
+                                    +' val 1: '
+                                    + str(getattr(self.trial_identifier,attr))
+                                    +' val 2: '
+                                    + str(getattr(analyte_data.trial_identifier, attr)))
+                # If match, ensure attrs refer to same instance
+                else:
+                    setattr(analyte_data.trial_identifier,attr,getattr(self.trial_identifier,attr))
 
-        for attr in ['strain','id_1','id_2','replicate_id']:
-            if str(getattr(self.trial_identifier,attr)) != str(getattr(analyte_data.trial_identifier, attr)):
-                raise Exception('Trial identifiers do not match at the following attribute: '
-                                + attr
-                                +' val 1: '
-                                + str(getattr(self.trial_identifier,attr))
-                                +' val 2: '
-                                + str(getattr(analyte_data.trial_identifier, attr)))
-            # else:
-            #     setattr(self.trial_identifier, attr, getattr(analyte_data.trial_identifier, attr))
-
+        # Set the parent
+        analyte_data.parent = self
 
         self.trial_identifier.time = None
 
@@ -337,6 +332,10 @@ class SingleTrial(Base):
         # Merging the dataframes this way will allow different time indices for different analytes
         self.analyte_df = pd.merge(self.analyte_df,temp_analyte_df,left_index=True,right_index=True, how='outer')
         self.t = self.analyte_df.index
+
+    def link_identifiers(self, trial_identifier, attrs=['strain','media','environment']):
+        for attr in attrs:
+            setattr(self.trial_identifier,attr,getattr(trial_identifier,attr))
 
 # Register known features
 for feature in [ProductYieldFactory,SpecificProductivityFactory]:

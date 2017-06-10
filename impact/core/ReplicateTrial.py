@@ -5,15 +5,14 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-from .AnalyteData import TimeCourse
+from .AnalyteData import TimeCourse, FitParameter
 from .SingleTrial import SingleTrial, SpecificProductivityFactory, ProductYieldFactory
-from .TrialIdentifier import TrialIdentifier
+from .TrialIdentifier import ReplicateTrialIdentifier
 from .settings import settings
 
 default_outlier_cleaning_flag = settings.default_outlier_cleaning_flag
 max_fraction_replicates_to_remove = settings.max_fraction_replicates_to_remove
 verbose = settings.verbose
-
 
 from ..database import Base
 from sqlalchemy import Column, Integer, ForeignKey, PickleType, String
@@ -40,8 +39,8 @@ class ReplicateTrial(Base):
                                      collection_class = attribute_mapped_collection('trial_identifier.replicate_id'),
                                      foreign_keys = 'SingleTrial.parent_id')
 
-    trial_identifier_id = Column(Integer,ForeignKey('trial_identifier.id'))
-    trial_identifier = relationship('TrialIdentifier')
+    trial_identifier_id = Column(Integer,ForeignKey('replicate_trial_identifier.id'))
+    trial_identifier = relationship('ReplicateTrialIdentifier')
 
     stage_parent_id = Column(Integer,ForeignKey('replicate_trial.id'))
     stages = relationship('ReplicateTrial')
@@ -64,7 +63,7 @@ class ReplicateTrial(Base):
 
         self.single_trial_dict = {}
 
-        self.trial_identifier = TrialIdentifier()
+        self.trial_identifier = ReplicateTrialIdentifier()
         self.bad_replicates = []
         self.replicate_df = dict()
 
@@ -76,6 +75,9 @@ class ReplicateTrial(Base):
         return self.trial_identifier.unique_replicate_trial()
 
     def calculate(self):
+        for stage in self.stages:
+            stage.calculate()
+
         for single_trial_key in self.single_trial_dict:
             self.single_trial_dict[single_trial_key].calculate()
 
@@ -92,19 +94,29 @@ class ReplicateTrial(Base):
         import json
         return json.dumps(serialized_dict)
 
-    def calculate_stages(self, stage_indices=None):
-        if stage_indices is None:
-            raise Exception('No stage_indices provided')
+    # def calculate_stages(self):
 
-        self.stages = []
-        self.stage_indices = stage_indices
-
-        for stage_bounds in stage_indices:
-            temp_stage = self.create_stage(stage_bounds)
-            temp_stage.calculate()
-            self.stages.append(temp_stage)
+        # if stage_indices is None:
+        #     raise Exception('No stage_indices provided')
+        #
+        # self.stages = []
+        # self.stage_indices = stage_indices
+        #
+        # for stage_bounds in stage_indices:
+        #     temp_stage = self.create_stage(stage_bounds)
+        #     temp_stage.calculate()
+        #     self.stages.append(temp_stage)
 
     def create_stage(self, stage_bounds):
+        if stage_bounds is None:
+            raise Exception('No stage_bounds provided')
+
+        # for stage_bounds in stage_indices:
+        #     temp_stage = self.create_stage(stage_bounds)
+        #     temp_stage.calculate()
+        #     self.stages.append(temp_stage)
+
+
         stage = ReplicateTrial()
         for replicate_id in self.single_trial_dict:
             # if self.blank:
@@ -112,7 +124,7 @@ class ReplicateTrial(Base):
             #     stage.set_blank(blank_stage)
             single_trial = self.single_trial_dict[replicate_id]
             stage.add_replicate(single_trial.create_stage(stage_bounds))
-
+        self.stages.append(stage)
         return stage
 
     def summary(self):
@@ -151,6 +163,8 @@ class ReplicateTrial(Base):
         live_calculations = settings.live_calculations
 
         if str(single_trial.trial_identifier.replicate_id) in self.single_trial_dict.keys():
+            print(single_trial.trial_identifier)
+            print(self.trial_identifier)
             raise Exception('Duplicate replicate id: '
                             + str(single_trial.trial_identifier.replicate_id)
                             + '.\nCurrent ids: '
@@ -163,9 +177,17 @@ class ReplicateTrial(Base):
         self.single_trial_dict[str(single_trial.trial_identifier.replicate_id)] = single_trial
         if len(self.single_trial_dict) == 1:
             self.t = self.single_trial_dict[str(single_trial.trial_identifier.replicate_id)].t
+            self.trial_identifier = single_trial.trial_identifier.get_replicate_trial_trial_identifier()
+        else:
+            for attr in ['strain', 'media', 'environment', 'id_1', 'id_2']:
+                setattr(single_trial.trial_identifier, attr, getattr(self.trial_identifier, attr))
+
+                for analyte in single_trial.analyte_dict.values():
+                    for attr in ['strain', 'media', 'environment', 'id_1', 'id_2']:
+                        setattr(analyte.trial_identifier, attr, getattr(self.trial_identifier, attr))
+
         self.check_replicate_unique_id_match()
 
-        self.trial_identifier = single_trial.trial_identifier.get_replicate_trial_trial_identifier()
 
         # Extract features from single trial
         for feature in single_trial.features:
@@ -248,10 +270,10 @@ class ReplicateTrial(Base):
                                 for replicate_id in self.single_trial_dict]:
                     temp = dict()
                     for param in self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].fit_params:
-                        temp[param] = calc(
-                            [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params[param]
+                        temp[param] = FitParameter(param,calc(
+                            [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params[param].parameter_value
                              for replicate_id in self.single_trial_dict
-                             if self.single_trial_dict[replicate_id].trial_identifier.replicate_id not in self.bad_replicates])
+                             if self.single_trial_dict[replicate_id].trial_identifier.replicate_id not in self.bad_replicates]))
 
                     getattr(self, stat).analyte_dict[analyte].fit_params = temp
                 else:
@@ -327,7 +349,7 @@ class ReplicateTrial(Base):
                     good_replicate_cols = [key for key in temp_std_by_mean if key not in bad_replicate_cols]
                     df = df[good_replicate_cols]
             self.replicate_df[analyte] = df[good_replicate_cols]
-
+            self.bad_replicates = bad_replicate_cols
             # Plot the results of replicate removal
             if verbose:
                 plt.figure()
@@ -367,3 +389,7 @@ class ReplicateTrial(Base):
                          for analyte in self.single_trial_dict[single_trial_key].analyte_dict]
                         )
                     )
+
+    def link_identifiers(self, trial_identifier, attrs=['strain','media','environment']):
+        for attr in attrs:
+            setattr(self.trial_identifier,attr,getattr(trial_identifier,attr))

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from .TrialIdentifier import TrialIdentifier, Strain, Media
+from .TrialIdentifier import ReplicateTrialIdentifier, Strain, Media
 
 from ..curve_fitting import *
 
@@ -39,8 +39,8 @@ class TimePoint(Base):
     }
 
     id = Column(Integer, primary_key=True)
-    trial_identifier_id = Column(Integer,ForeignKey('trial_identifier.id'))
-    trial_identifier = relationship('TrialIdentifier')
+    trial_identifier_id = Column(Integer,ForeignKey('time_course_identifier.id'))
+    trial_identifier = relationship('TimeCourseIdentifier')
     time = Column(Float)
     data = Column(Float)
     parent_id = Column(Integer,ForeignKey('time_course.id'))
@@ -49,13 +49,15 @@ class TimePoint(Base):
     use_in_analysis = Column(Boolean)
 
     def __init__(self, trial_identifier=None, time=None, data=None):
-        self.trial_identifier = TrialIdentifier() if trial_identifier is None else trial_identifier
+        self.trial_identifier = ReplicateTrialIdentifier() if trial_identifier is None else trial_identifier
         self.time = time
         self.data = data
 
     def get_unique_timepoint_id(self):
-        return str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
-            self.trial_identifier.replicate_id) + self.trial_identifier.analyte_name
+        return self.trial_identifier.unique_time_point()
+
+            # str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
+            # self.trial_identifier.replicate_id) + self.trial_identifier.analyte_name
 
 
 class GradientTimePoint(TimePoint):
@@ -81,21 +83,22 @@ class TimeCourse(Base):
 
     id = Column(Integer,primary_key = True)
 
-    trial_identifier_id = Column(Integer, ForeignKey('trial_identifier.id'))
-    _trial_identifier = relationship('TrialIdentifier')
+    trial_identifier_id = Column(Integer, ForeignKey('time_course_identifier.id'))
+    _trial_identifier = relationship('TimeCourseIdentifier')
+
     time_points = relationship('TimePoint')
     gradient_points = relationship('GradientTimePoint')
+    specific_productivity_points = relationship('SpecificProductivityTimePoint')
+
     calculations_uptodate = Column(Boolean)
     fit_params = relationship('FitParameter',
-                              collection_class=attribute_mapped_collection('keyword'),
+                              collection_class=attribute_mapped_collection('parameter_name'),
                               cascade="all, delete-orphan")
-
-    specific_productivity_points = relationship('SpecificProductivityTimePoint')
 
     stages = relationship('TimeCourseStage')
 
     parent_id = Column(Integer, ForeignKey('single_trial.id'))
-    parent = relationship('SingleTrial')
+    parent = relationship('SingleTrial',uselist=False)
 
     analyte_name = Column(String)
     analyte_type = Column(String)
@@ -132,12 +135,12 @@ class TimeCourse(Base):
         # self.units = {'time': 'hours',
         #               'data': 'None'}
 
-        self.gradient = []
+        self._gradient = []
         # self._specific_productivity = None
 
         # Options
         self.removeDeathPhaseFlag = remove_death_phase_flag
-        self.use_filtered_data_flag = use_filtered_data
+        self.use_filtered_data = use_filtered_data
         self.minimum_points_for_curve_fit = minimum_points_for_curve_fit
         self.savgolFilterWindowSize = savgolFilterWindowSize
 
@@ -158,6 +161,8 @@ class TimeCourse(Base):
         return ','.join([self.trial_identifier.strain,self.trial_identifier.media,self.trial_identifier.id_1,
                          self.trial_identifier.id_2, self.trial_identifier.id_3, self.trial_identifier.replicate_id])
 
+
+
     def serialize(self):
         serialized_dict = {'data'    : self.pd_series.to_json(), 'fit_params': self.fit_params,
                            'gradient': list(self.gradient)}
@@ -173,7 +178,7 @@ class TimeCourse(Base):
         serialized_dict['analyte_type'] = self.trial_identifier.analyte_type
 
         options = {}
-        for option in ['removeDeathPhaseFlag', 'use_filtered_data_flag', 'minimum_points_for_curve_fit']:
+        for option in ['removeDeathPhaseFlag', 'use_filtered_data', 'minimum_points_for_curve_fit']:
             options[option] = getattr(self,option)
         serialized_dict['options'] = options
 
@@ -202,7 +207,7 @@ class TimeCourse(Base):
         if self.analyte_type == 'product':
             self.fit_type = 'productionEquation_generalized_logistic'
         if self.analyte_type == 'biomass':
-            self.fit_type = 'janoschek'#'gompertz'#'richard_5','growthEquation_generalized_logistic'
+            self.fit_type = 'janoschek_no_limits'#'janoschek'#'gompertz'#'richard_5','growthEquation_generalized_logistic'
 
     @property
     def time_vector(self):
@@ -230,6 +235,7 @@ class TimeCourse(Base):
 
         # Filter data to smooth noise from the signal
         if settings.use_filtered_data:
+            print('filtered')
             return savgol_filter(np.array(self.pd_series), self.savgolFilterWindowSize, 3)
         else:
             return np.array(self.pd_series)
@@ -253,7 +259,16 @@ class TimeCourse(Base):
 
         if live_calculations:   self.calculate()
 
+    @property
+    def gradient(self):
+        if self._gradient == []:
+            # if self.time_vector is not None and len(self.time_vector) > 2:
+            self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
+
+        return self._gradient
+
     def generate_time_point_list(self):
+        # TODO, ensure new time point aren't created and previous ones are referenced
         self.time_points = [TimePoint(time=time, data=data)
                             for time, data in zip(self.pd_series.index, self.pd_series)]
 
@@ -262,7 +277,7 @@ class TimeCourse(Base):
         perform_curve_fit = settings.perform_curve_fit
 
         if self.time_vector is not None and len(self.time_vector) > 2:
-            self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
+            self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
         if self.removeDeathPhaseFlag:
             self.find_death_phase(self.data_vector)
 
@@ -271,13 +286,14 @@ class TimeCourse(Base):
 
     def find_death_phase(self, data_vector):
         from .settings import settings
-
+        use_filtered_data = settings.use_filtered_data
+        verbose = settings.verbose
         self.death_phase_start = self.find_death_phase_static(data_vector,
-                                                              use_filtered_data_flag = settings.use_filtered_data_flag,
-                                                              verbose = settings.verbose)
+                                                              use_filtered_data = use_filtered_data,
+                                                              verbose = verbose)
 
     @staticmethod
-    def find_death_phase_static(data_vector, use_filtered_data_flag=False, verbose=False, hyper_parameter = 1):
+    def find_death_phase_static(data_vector, use_filtered_data=False, verbose=False, hyper_parameter = 1):
         # The hyper_parameter determines the number of points
         # which need to have a negative diff to consider it death phase
 
@@ -287,7 +303,7 @@ class TimeCourse(Base):
         if (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector) > 2:
             if verbose: print('Growth range: ', (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector))
 
-            if use_filtered_data_flag:
+            if use_filtered_data:
                 filteredData = savgol_filter(data_vector, 51, 3)
             else:
                 filteredData = np.array(data_vector)
@@ -327,9 +343,13 @@ class TimeCourse(Base):
     #     return summary
 
     def create_stage(self, stage_bounds):
-        stage = TimeCourseStage(self, bounds = stage_bounds)
+        stage = TimeCourseStage(self)#, bounds = stage_bounds)
         stage.trial_identifier = self.trial_identifier
-        stage.pd_series = self.pd_series[stage_bounds[0]:stage_bounds[1] + 1]
+
+        # Note pandas slices by index value, not index
+        stage.pd_series = self.pd_series[stage_bounds[0]:stage_bounds[1]]
+
+
         # if len(self.gradient) > 0:
         #     stage.gradient = self.gradient[stage_bounds[0]:stage_bounds[1] + 1]
         # if self._specific_productivity is not None:
@@ -355,6 +375,9 @@ class TimeCourse(Base):
         else:
             if self.time_points[-1].trial_identifier.unique_single_trial() \
                     != self.time_points[-2].trial_identifier.unique_single_trial():
+                print(self.time_points[-1].trial_identifier)
+                print(self.time_points[-2].trial_identifier)
+
                 raise Exception("Attempted to add time point with non-matching identifier")
 
             # Check if ordering is broken
@@ -368,6 +391,8 @@ class TimeCourse(Base):
 
         if sum(self.pd_series.index.duplicated()) > 0:
             print(self.pd_series)
+            print(self.trial_identifier)
+            print(time_point.trial_identifier)
             raise Exception('Duplicate time points found, this is not supported')
 
         if len(self.time_points) > 6 and live_calculations:
@@ -407,7 +432,8 @@ class TimeCourse(Base):
             if verbose: print('Finished fit')
 
             for key in result.best_values:
-                self.fit_params[key] = result.best_values[key]
+                temp_param = FitParameter(key, result.best_values[key])
+                self.fit_params[key] = temp_param # result.best_values[key]
 
             if verbose:
                 import matplotlib.pyplot as plt
@@ -423,11 +449,12 @@ class TimeCourse(Base):
 
 class TimeCourseStage(TimeCourse):
     stage_parent_id = Column(Integer, ForeignKey('time_course.id'))
-    parent = relationship('TimeCourse')
+    parent = relationship('TimeCourse',uselist=False)
 
     def __init__(self, parent):
-        TimeCourse.__init__()
         self.parent = parent
+        super(TimeCourseStage, self).__init__()
+
 
 class EndPoint(TimeCourse):
     """

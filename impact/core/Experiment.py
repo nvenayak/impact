@@ -60,7 +60,7 @@ class Experiment(Base):
         #     self.info = dict()
 
     def __str__(self):
-        return '\n'.join(['Trials', '-----'] + self.strains + ['\n', 'Analytes', '-----'] + self.analyte_names)
+        return '\n'.join(['Trials', '-----'] + [str(rep.trial_identifier) for rep in self.replicate_trial_dict.values()] + ['\n', 'Analytes', '-----'] + self.analyte_names)
 
     def __add__(self, experiment):
         """
@@ -71,25 +71,23 @@ class Experiment(Base):
         experiment
         """
         # Break the experiment into its base analytes
-        titer_list = []
-        for replicateExperiment in self.replicate_trial_dict:
-            for singleTrial in self.replicate_trial_dict[replicateExperiment].single_trial_list:
-                for titer in singleTrial.analyte_dict:
-                    titer_list.append(singleTrial.analyte_dict[titer])
+        analyte_list = []
+        for replicate in list(self.replicate_trial_dict.values())+list(experiment.replicate_trial_dict.values()):
+            for singleTrial in replicate.single_trial_dict.values():
+                for analyte in singleTrial.analyte_dict.values():
+                    analyte_list.append(analyte)
 
-        for replicateExperiment in experiment.replicate_trial_dict:
-            for replicate_id in experiment.replicate_trial_dict[replicateExperiment].single_trial_dict:
-                for titer in experiment.replicate_trial_dict[replicateExperiment].single_trial_dict[
-                    replicate_id].analyte_dict:
-                    titer_list.append(experiment.replicate_trial_dict[replicateExperiment].single_trial_dict[
-                                          replicate_id].analyte_dict[titer])
+        # for replicate in experiment.replicate_trial_dict.values():
+        #     for singleTrial in replicate.single_trial_dict.values():
+        #         for titer in singleTrial.analyte_dict.values():
+        #             analyte_list.append(analyte)
 
         combined_experiment = Experiment()
         for attr in ['title','scientist_1','scientist_2','notes',
                                                      'import_date','start_date','end_date']:
             setattr(combined_experiment,attr,getattr(self,attr))
         # combined_experiment.info = self.info
-        combined_experiment.parse_titers(titer_list)
+        combined_experiment.parse_titers(analyte_list)
 
         return combined_experiment
 
@@ -171,20 +169,21 @@ class Experiment(Base):
         ----------
         replicateTrial : :class:`~ReplicateTrial`
         """
+        replicateTrial.parent = self
         self.replicate_trial_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
 
 
     ## Parsing
-    def parse_raw_data(self, dataFormat, fileName=None, data=None):
+    def parse_raw_data(self, data_format, id_type='CSV', file_name=None, data=None):
         t0 = time.time()
 
         if data is None:
-            if fileName is None:
+            if file_name is None:
                 raise Exception('No data or file name given to load data from')
 
             # Get data from xlsx file
-            data = get_data(fileName)
-            print('Imported data from %s' % (fileName))
+            data = get_data(file_name)
+            print('Imported data from %s' % (file_name))
 
         # Import parsers
         parser_case_dict = {'spectromax_OD' : parsers.spectromax_OD,
@@ -192,26 +191,26 @@ class Experiment(Base):
                             'default_titers': parsers.HPLC_titer_parser,
                             'spectromax_OD_triplicate': parsers.spectromax_OD_triplicate
                             }
-        if dataFormat in parser_case_dict.keys():
-            parser_case_dict[dataFormat](self, data, fileName)
+        if data_format in parser_case_dict.keys():
+            parser_case_dict[data_format](self, data, file_name, id_type=id_type)
         else:
-            raise Exception('Parser %s not found', dataFormat)
+            raise Exception('Parser %s not found', data_format)
 
     # Dicts
     def parse_time_point_dict(self, time_point_list):
         print('Parsing time point list...')
         t0 = time.time()
-        titer_dict = {}
+        analyte_dict = {}
         for timePoint in time_point_list:
-            if timePoint.get_unique_timepoint_id() in titer_dict:
-                titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
+            if timePoint.get_unique_timepoint_id() in analyte_dict:
+                analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
             else:
-                titer_dict[timePoint.get_unique_timepoint_id()] = TimeCourse()
-                titer_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
+                analyte_dict[timePoint.get_unique_timepoint_id()] = TimeCourse()
+                analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
 
         tf = time.time()
         print("Parsed %i time points in %0.1fs\n" % (len(time_point_list), (tf - t0)))
-        self.parse_single_trial_dict(titer_dict)
+        self.parse_single_trial_dict(analyte_dict)
 
     def parse_single_trial_dict(self, single_trial_dict):
         print('Parsing titer object list...')
@@ -247,6 +246,8 @@ class Experiment(Base):
             if flag == 0:
                 self.replicate_trial_dict[
                     replicate_trial_dict[key].trial_identifier.unique_replicate_trial()] = ReplicateTrial()
+                self.replicate_trial_dict[
+                    replicate_trial_dict[key].trial_identifier.unique_replicate_trial()].parent = self
                 self.replicate_trial_dict[
                     replicate_trial_dict[key].trial_identifier.unique_replicate_trial()].add_replicate(
                     replicate_trial_dict[key])
@@ -347,12 +348,12 @@ class Experiment(Base):
             stage.end_time = stage_tuple[1]
             for replicate in self.replicate_trial_dict.values():
                 stage.add_replicate_trial(replicate.create_stage(stage_tuple))
-            self.stages.append()
+            self.stages.append(stage)
 
         if live_calculations:
             for replicate_key in self.replicate_trial_dict:
                 replicate = self.replicate_trial_dict[replicate_key]
-                replicate.calculate_stages(stage_indices)
+                replicate.calculate_stages()
 
 
     ### Plotting - Deprecated
@@ -363,7 +364,7 @@ class Experiment(Base):
         Wrapper for impact.printGenericTimeCourse_plotly
         """
         if not strainsToPlot:
-            strainsToPlot = self.strains
+            strainsToPlot = [rep for rep in self.replicate_trial_dict.values()]
 
         # Plot all product titers if none specified TODO: Add an option to plot OD as well
         if not titersToPlot:
@@ -481,14 +482,14 @@ class Experiment(Base):
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
 
-        # uniques = list(set([getattr(self.replicate_trial_dict[key].TrialIdentifier,sortBy) for key in strainsToPlot]))
+        # uniques = list(set([getattr(self.replicate_trial_dict[key].ReplicateTrialIdentifier,sortBy) for key in strainsToPlot]))
         # uniques.sort()
         #
         # # Find max number of samples (in case they all aren't the same)
         # maxSamples = 0
         # for unique in uniques:
-        #     if len([self.replicate_trial_dict[key].avg.OD.fit_params[1] for key in strainsToPlot if getattr(self.replicate_trial_dict[key].TrialIdentifier,sortBy) == unique]) > maxSamples:
-        #         maxSamples = len([self.replicate_trial_dict[key].avg.OD.fit_params[1] for key in strainsToPlot if getattr(self.replicate_trial_dict[key].TrialIdentifier,sortBy) == unique])
+        #     if len([self.replicate_trial_dict[key].avg.OD.fit_params[1] for key in strainsToPlot if getattr(self.replicate_trial_dict[key].ReplicateTrialIdentifier,sortBy) == unique]) > maxSamples:
+        #         maxSamples = len([self.replicate_trial_dict[key].avg.OD.fit_params[1] for key in strainsToPlot if getattr(self.replicate_trial_dict[key].ReplicateTrialIdentifier,sortBy) == unique])
         #         maxIndex = unique
 
         replicateExperimentObjectList = self.replicate_trial_dict
@@ -517,7 +518,7 @@ class Experiment(Base):
                     if len([self.replicate_trial_dict[key].avg.products[product] for key in strainsToPlot if
                             getattr(self.replicate_trial_dict[key].trial_identifier,
                                     sortBy) == unique]) > maxSamples:
-                        # if len([self.replicate_trial_dict[key].avg.products[prodKey] for prodkey in self.replicate_trial_dict[key] for key in strainsToPlot if getattr(self.replicate_trial_dict[key].TrialIdentifier,sortBy) == unique]) > maxSamples:
+                        # if len([self.replicate_trial_dict[key].avg.products[prodKey] for prodkey in self.replicate_trial_dict[key] for key in strainsToPlot if getattr(self.replicate_trial_dict[key].ReplicateTrialIdentifier,sortBy) == unique]) > maxSamples:
                         maxSamples = len(
                             [self.replicate_trial_dict[key].avg.products[product] for key in strainsToPlot if
                              getattr(self.replicate_trial_dict[key].trial_identifier, sortBy) == unique])
