@@ -129,12 +129,13 @@ class SpecificProductivity(MultiAnalyteFeature):
         if self.biomass is None:
             return 'Biomass not defined'
 
-        self.analyte.calculate()    # Need gradient calculated before accessing
-        # print(self.analyte)
-        # print(self.analyte.gradient)
-        # print(self.analyte.time_vector)
-        # print(self.analyte.data_vector)
-        self.specific_productivity = self.analyte.gradient / self.biomass.data_vector
+        try:
+            if len(self.analyte.data_vector) > 2:
+                self.analyte.calculate()    # Need gradient calculated before accessing
+                self.specific_productivity = self.analyte.gradient / self.biomass.data_vector
+        except Exception as e:
+            print(self.analyte.data_vector)
+            raise Exception(e)
 
 class NormalizedData(MultiAnalyteFeature):
     def __init__(self, numerator, denominator):

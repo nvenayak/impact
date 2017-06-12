@@ -8,30 +8,10 @@ import numpy as np
 from pyexcel_xlsx import get_data
 
 from .core.AnalyteData import TimePoint
-from .core.TrialIdentifier import TrialIdentifier, Strain
+from .core.TrialIdentifier import ReplicateTrialIdentifier, Strain
 
 
-# "strain_ko=adh,pta;strain_gen1=D1;plasmid_name=pKDL071;inducer=IPTG"
-#
-# 'var_val_delim ='
-# 'id_delim ;'
-
-
-def generic_id_parser(self, id, id_val_delim='=', id_delim=';'):
-    assert isinstance(id,str)
-
-    pairs = id.split(id_delim)
-    id_val = {pair.split(id_val_delim)[0] : pair.split(id_val_delim)[1] for pair in pairs}
-
-    strain = Strain()
-    if 'strain_ko' in id_val.keys():
-        strain.knockouts = id_val['strain_ko']
-
-
-
-    return id_val
-
-def spectromax_OD(experiment, data, fileName = None):
+def spectromax_OD(experiment, data, id_type='CSV'):
     from .core.settings import settings
     live_calculations = settings.live_calculations
     
@@ -72,9 +52,16 @@ def spectromax_OD(experiment, data, fileName = None):
             for i, row in enumerate(plate_data):
                 for j, data in enumerate(row):
                     # Skip wells where no identifier is listed or no data present
-                    if identifiers[i][j] != '' and data != '':
-                        temp_trial_identifier = TrialIdentifier()
-                        temp_trial_identifier.parse_trial_identifier_from_csv(identifiers[i][j])
+                    if i<len(identifiers) and j<len(identifiers[0]) \
+                            and identifiers[i][j] not in ['',0,'0'] \
+                            and data != '':
+                        temp_trial_identifier = ReplicateTrialIdentifier()
+
+                        if id_type == 'CSV':
+                            temp_trial_identifier.parse_trial_identifier_from_csv(identifiers[i][j])
+                        elif id_type == 'traverse':
+                            temp_trial_identifier.parse_identifier(identifiers[i][j])
+
                         temp_trial_identifier.analyte_type = 'biomass'
                         temp_trial_identifier.analyte_name = 'OD600'
                         try:
@@ -95,7 +82,7 @@ def spectromax_OD(experiment, data, fileName = None):
     if live_calculations:   experiment.calculate()
 
 
-def spectromax_OD_triplicate(experiment, data, fileName=None):
+def spectromax_OD_triplicate(experiment, data, id_type='CSV'):
     from .core.settings import settings
     live_calculations = settings.live_calculations
 
@@ -126,31 +113,35 @@ def spectromax_OD_triplicate(experiment, data, fileName=None):
                 time = int(parsed_time[0]) * 60 + int(parsed_time[1])
 
             time /= 3600  # convert to hours
-
             # Define the data for each of the replicates
             replicate_plate_data = [[row[2:14] for row in raw_data[start_row_index:start_row_index + 8]],
                                     [row[15:27] for row in raw_data[start_row_index:start_row_index + 8]],
                                     [row[28:40] for row in raw_data[start_row_index:start_row_index + 8]]]
-
             # convert to strings to floats
             converted_data = []
             for plate_data in replicate_plate_data:
-                converted_data.append([[float(data) for data in row] for row in plate_data])
-
-
-            # from pprint import pprint
-            # print(replicate_plate_data)
+                converted_data.append([[float(data) if data is not None else 0. for data in row] for row in plate_data])
 
             # Calculate the average
-            plate_data = np.mean(converted_data,axis=0)
+            try:
+                plate_data = np.mean(converted_data,axis=0)
+            except Exception as e:
+                print(converted_data)
+                raise Exception(e)
 
             # Load the data point by point
             for i, row in enumerate(plate_data):
                 for j, data in enumerate(row):
                     # Skip wells where no identifier is listed or no data present
-                    if identifiers[i][j] != '' and data != '':
-                        temp_trial_identifier = TrialIdentifier()
-                        temp_trial_identifier.parse_trial_identifier_from_csv(identifiers[i][j])
+                    if i<len(identifiers) and j<len(identifiers[0]) \
+                            and identifiers[i][j] not in ['',0,'0'] \
+                            and data != '':
+                        temp_trial_identifier = ReplicateTrialIdentifier()
+
+                        if id_type == 'CSV':
+                            temp_trial_identifier.parse_trial_identifier_from_csv(identifiers[i][j])
+                        elif id_type == 'traverse':
+                            temp_trial_identifier.parse_identifier(identifiers[i][j])
                         temp_trial_identifier.analyte_type = 'biomass'
                         temp_trial_identifier.analyte_name = 'OD600'
                         temp_timepoint = TimePoint(temp_trial_identifier, time, float(data))
@@ -166,7 +157,7 @@ def spectromax_OD_triplicate(experiment, data, fileName=None):
     if live_calculations:   experiment.calculate()
 
 
-def HPLC_titer_parser(experiment, data, fileName):
+def HPLC_titer_parser(experiment, data, id_type='CSV'):
     t0 = sys_time.time()
 
     # Parameters
@@ -174,21 +165,22 @@ def HPLC_titer_parser(experiment, data, fileName):
     row_with_titer_types = 1
     first_data_row = 2
     titerDataSheetName = "titers"
-    if fileName is not None:
-        from collections import OrderedDict
-        if type(data) in [dict, type(OrderedDict())]:
-            if 'titers' not in data.keys():  # TODO data has no keys if there is only one sheet
-                raise Exception("No sheet named 'titers' found")
-        else:
-            data = {titerDataSheetName: data}
-    elif data is not None:
-        data = {titerDataSheetName: data}
-    else:
-        raise Exception('No fileName or data')
+    # if fileName is not None:
+    #     from collections import OrderedDict
+    #     if type(data) in [dict, type(OrderedDict())]:
+    #         if 'titers' not in data.keys():  # TODO data has no keys if there is only one sheet
+    #             raise Exception("No sheet named 'titers' found")
+    #     else:
+    #         data = {titerDataSheetName: data}
+    # if data is not None:
+    #     data = {titerDataSheetName: data}
+    # else:
+    #     raise Exception('No fileName or data')
 
     # Initialize variables
     analyte_nameColumn = dict()
     titer_type = dict()
+
     for i in range(1, len(data[titerDataSheetName][row_with_titer_names])):
         analyte_nameColumn[data[titerDataSheetName][row_with_titer_names][i]] = i
         titer_type[data[titerDataSheetName][row_with_titer_names][i]] = \
@@ -202,13 +194,15 @@ def HPLC_titer_parser(experiment, data, fileName):
     timepoint_list = []
     for i in range(first_data_row, len(data['titers'])):
         if type(data['titers'][i][0]) is str:
-
-
-            # temp_run_identifier_object.strain.name = strain_rename_dict[temp_run_identifier_object.strain.name]
-
             for key in tempTimePointCollection:
-                trial_identifier = TrialIdentifier()
+                trial_identifier = ReplicateTrialIdentifier()
                 trial_identifier.parse_trial_identifier_from_csv(data['titers'][i][0])
+
+                if id_type == 'CSV':
+                    trial_identifier.parse_trial_identifier_from_csv(data['titers'][i][0])
+                elif id_type == 'traverse':
+                    trial_identifier.parse_identifier(data['titers'][i][0])
+
                 trial_identifier.analyte_name = key
                 trial_identifier.analyte_type = titer_type[key]
 
@@ -222,10 +216,11 @@ def HPLC_titer_parser(experiment, data, fileName):
         else:
             skipped_lines += 1
     tf = sys_time.time()
-    print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(timepoint_list), tf - t0))
-    print("Number of lines skipped: ", skipped_lines)
+    print("Parsed %i timeCourseObjects in %0.3fs" % (len(timepoint_list), tf - t0), end='')
+    print("...Number of lines skipped: ", skipped_lines)
     experiment.parse_time_point_dict(timepoint_list)
-    experiment.calculate()
+    # experiment.calculate()
+
 
 def tecan_OD(experiment, data, fileName, t0):
     from .core.AnalyteData import TimeCourse
@@ -244,7 +239,7 @@ def tecan_OD(experiment, data, fileName, t0):
     skipped_lines = 0
     timeCourseObjectList = dict()
     for row in data[1:]:
-        temp_run_identifier_object = TrialIdentifier()
+        temp_run_identifier_object = ReplicateTrialIdentifier()
         if type(row[0]) is str:
             temp_run_identifier_object.parse_trial_identifier_from_csv(row[0])
             temp_run_identifier_object.analyte_name = 'OD600'
@@ -262,29 +257,60 @@ def tecan_OD(experiment, data, fileName, t0):
     experiment.parse_single_trial_dict(experiment.titer_dict)
     return data, t0
 
-def parse_raw_data(data_format, data = None, file_name = None, experiment = None):
+# def parse_raw_data(data_format, id_type='traverse',data = None, file_name = None, experiment = None):
+#     if experiment is None:
+#         from .core.Experiment import Experiment
+#         experiment = Experiment()
+#
+#     t0 = time.time()
+#
+#     if data is None:
+#         if file_name is None:
+#             raise Exception('No data or file name given to load data from')
+#
+#         # Get data from xlsx file
+#         data = get_data(file_name)
+#         print('Imported data from %s' % (file_name))
+#
+#     # Import parsers
+#     parser_case_dict = {'spectromax_OD':spectromax_OD,
+#                         'tecan_OD': tecan_OD,
+#                         'default_titers':HPLC_titer_parser
+#                         }
+#     if data_format in parser_case_dict.keys():
+#         parser_case_dict[data_format](experiment,data=data,file_name=file_name,id_type=id_type)
+#     else:
+#         raise Exception('Parser %s not found', data_format)
+#
+#     return experiment
+
+def parse_raw_data(format=None, id_type='CSV', file_name=None, data=None, experiment=None):
     if experiment is None:
         from .core.Experiment import Experiment
         experiment = Experiment()
 
     t0 = time.time()
+    if format is None:
+        raise Exception('No format defined')
 
     if data is None:
         if file_name is None:
             raise Exception('No data or file name given to load data from')
 
         # Get data from xlsx file
+        print('\nImporting data from %s...' % (file_name),end='')
         data = get_data(file_name)
-        print('Imported data from %s' % (file_name))
+        print('%0.1fs' % (time.time()-t0))
 
     # Import parsers
-    parser_case_dict = {'spectromax_OD':spectromax_OD,
-                        'tecan_OD': tecan_OD,
-                        'default_titers':HPLC_titer_parser
+    parser_case_dict = {'spectromax_OD' : spectromax_OD,
+                        'tecan_OD'      : tecan_OD,
+                        'default_titers': HPLC_titer_parser,
+                        'spectromax_OD_triplicate': spectromax_OD_triplicate
                         }
-    if data_format in parser_case_dict.keys():
-        parser_case_dict[data_format](experiment,data,file_name)
+    if format in parser_case_dict.keys():
+        parser_case_dict[format](experiment, data=data, id_type=id_type)
     else:
-        raise Exception('Parser %s not found', data_format)
+        raise Exception('Parser %s not found', format)
 
     return experiment

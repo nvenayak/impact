@@ -210,11 +210,16 @@ class ReplicateTrial(Base):
             self.std.analyte_dict[analyte] = TimeCourse()
 
             # Copy a relevant trial identifier
-            self.avg.analyte_dict[analyte].trial_identifier = \
-                self.single_trial_dict[list(self.single_trial_dict.keys())[0]]\
-                    .analyte_dict[analyte]\
-                    .trial_identifier.\
-                    get_analyte_data_statistic_identifier()
+            first_st = list(self.single_trial_dict.values())[0]
+            try:
+                self.avg.analyte_dict[analyte].trial_identifier = \
+                        first_st\
+                        .analyte_dict[analyte]\
+                        .trial_identifier.\
+                        get_analyte_data_statistic_identifier()
+            except:
+                print(first_st.analyte_dict)
+                raise Exception
 
             self.std.analyte_dict[analyte].trial_identifier = \
                 self.single_trial_dict[list(self.single_trial_dict.keys())[0]]\
@@ -246,8 +251,12 @@ class ReplicateTrial(Base):
             # Calculate statistics for features
             for feature in self.features:
                 # Get all the analytes with the feature
-                trial_list = [self.single_trial_dict[replicate_id] for replicate_id in self.single_trial_dict
-                                if feature.name in self.single_trial_dict[replicate_id].analyte_dict[analyte].__dict__]
+                trial_list = [self.single_trial_dict[replicate_id]
+                              for replicate_id in self.single_trial_dict
+                              if analyte in self.single_trial_dict[replicate_id].analyte_dict
+                              and feature.name in self.single_trial_dict[replicate_id].analyte_dict[analyte].__dict__]
+
+
 
                 # Merge them all, in case they don't share the same index (missing data)
                 df = pd.DataFrame()

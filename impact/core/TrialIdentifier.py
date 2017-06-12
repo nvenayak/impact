@@ -202,6 +202,9 @@ class Labware(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String,unique=True)
 
+    def __init__(self, name=None):
+        self.name = name
+
     def __str__(self):
         return str(self.name)
 
@@ -263,7 +266,8 @@ class ReplicateTrialIdentifier(Base):
         self.analyte_name = None
 
     def __str__(self):
-        return "strain: %s, media: %s, env: %s, analyte: %s, t: %s h, rep: %s" % (self.strain,self.media,self.environment,self.analyte_name,self.time,self.replicate_id)
+        return "strain: %s,\tmedia: %s,\tenv: %s" % (self.strain,self.media,self.environment)
+        # return "strain: %s,\tmedia: %s,\tenv: %s,\tanalyte: %s,\tt: %sh,\trep: %s" % (self.strain,self.media,self.environment,self.analyte_name,self.time,self.replicate_id)
 
     def summary(self, items):
         summary = dict()
@@ -416,9 +420,12 @@ class ReplicateTrialIdentifier(Base):
 class SingleTrialIdentifier(ReplicateTrialIdentifier):
     __tablename__ = 'single_trial_identifier'
 
-    replicate_trial_identifier_id = Column(Integer,ForeignKey('replicate_trial_identifier.id'))
-    id = Column(Integer, primary_key=True)
+    # replicate_trial_identifier_id = Column(Integer,ForeignKey('replicate_trial_identifier.id'))
+    id = Column(Integer, ForeignKey('replicate_trial_identifier.id'), primary_key=True)
     replicate_id = Column(Integer)
+
+    def __str__(self):
+        return "strain: %s,\tmedia: %s,\tenv: %s,\tt: %sh,\trep: %s" % (self.strain,self.media,self.environment,self.time,self.replicate_id)
 
 class TimeCourseIdentifier(SingleTrialIdentifier):
     """
@@ -443,10 +450,13 @@ class TimeCourseIdentifier(SingleTrialIdentifier):
     """
 
     __tablename__ = 'time_course_identifier'
-    single_trial_identifier_id = Column(Integer,ForeignKey('single_trial_identifier.id'))
+    # single_trial_identifier_id = Column(Integer,ForeignKey('single_trial_identifier.id'))
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, ForeignKey('single_trial_identifier.id'), primary_key=True)
 
     analyte_name = Column(String,ForeignKey('analyte.name'))
     analyte_type = Column(String)
+
+    def __str__(self):
+        return "strain: %s,\tmedia: %s,\tenv: %s,\tanalyte: %s,\trep: %s" % (self.strain,self.media,self.environment,self.analyte_name,self.replicate_id)
 

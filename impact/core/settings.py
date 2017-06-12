@@ -46,11 +46,11 @@ class Settings(Base):
         self.remove_death_phase_flag = False
         self.use_filtered_data = False
         self.minimum_points_for_curve_fit = 5
-        self.savgolFilterWindowSize = 21  # Must be odd
+        self.savgolFilterWindowSize = 17  # Must be odd
         self.perform_curve_fit = False
 
         # replicate
-        self.max_fraction_replicates_to_remove = 0.5
+        self.max_fraction_replicates_to_remove = 1/5
         self.default_outlier_cleaning_flag = False
         self.outlier_cleaning_flag = False
 

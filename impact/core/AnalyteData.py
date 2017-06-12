@@ -234,8 +234,7 @@ class TimeCourse(Base):
         from .settings import settings
 
         # Filter data to smooth noise from the signal
-        if settings.use_filtered_data:
-            print('filtered')
+        if settings.use_filtered_data and len(self.pd_series)>self.savgolFilterWindowSize:
             return savgol_filter(np.array(self.pd_series), self.savgolFilterWindowSize, 3)
         else:
             return np.array(self.pd_series)

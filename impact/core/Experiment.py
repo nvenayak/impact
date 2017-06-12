@@ -60,7 +60,21 @@ class Experiment(Base):
         #     self.info = dict()
 
     def __str__(self):
-        return '\n'.join(['Trials', '-----'] + [str(rep.trial_identifier) for rep in self.replicate_trial_dict.values()] + ['\n', 'Analytes', '-----'] + self.analyte_names)
+        try:
+            from tabulate import tabulate
+        except:
+            return '\n'.join(['Trials', '-----']
+                             + sorted([str(rep.trial_identifier) for rep in self.replicate_trial_dict.values()])
+                             + ['\n', 'Analytes', '-----']
+                             + self.analyte_names)
+        else:
+            data = [[str(rep.trial_identifier.strain),
+                     str(rep.trial_identifier.media),
+                     str(rep.trial_identifier.environment),
+                     str(rep.get_analytes())] for rep in sorted(self.replicate_trial_dict.values(),
+                                                                key=lambda rep: str(rep.trial_identifier))]
+
+            return tabulate(data, headers=['strain', 'media', 'environment','analytes'])
 
     def __add__(self, experiment):
         """
@@ -77,11 +91,6 @@ class Experiment(Base):
                 for analyte in singleTrial.analyte_dict.values():
                     analyte_list.append(analyte)
 
-        # for replicate in experiment.replicate_trial_dict.values():
-        #     for singleTrial in replicate.single_trial_dict.values():
-        #         for titer in singleTrial.analyte_dict.values():
-        #             analyte_list.append(analyte)
-
         combined_experiment = Experiment()
         for attr in ['title','scientist_1','scientist_2','notes',
                                                      'import_date','start_date','end_date']:
@@ -97,18 +106,14 @@ class Experiment(Base):
 
     @property
     def analyte_names(self):
-        titers_to_plot = list(set([titer for key in self.replicate_trial_dict
-                                   for replicate_id in self.replicate_trial_dict[key].single_trial_dict
-                                   for titer in
-                                   self.replicate_trial_dict[key].single_trial_dict[replicate_id].analyte_dict]
-                                  )
-                              )
+        return list(set([analyte for rep in self.replicate_trial_dict.values()
+                         for st in rep.single_trial_dict.values()
+                         for analyte in st.analyte_dict.keys()]))
 
-        return titers_to_plot
 
     def calculate(self):
         t0 = time.time()
-        print('Analyzing data..')
+        print('Analyzing data...',end='')
 
         # Precalculate the blank stats, otherwise they won't be available for subtraction
         if self.blank_key_list:
@@ -174,31 +179,13 @@ class Experiment(Base):
 
 
     ## Parsing
-    def parse_raw_data(self, data_format, id_type='CSV', file_name=None, data=None):
-        t0 = time.time()
 
-        if data is None:
-            if file_name is None:
-                raise Exception('No data or file name given to load data from')
-
-            # Get data from xlsx file
-            data = get_data(file_name)
-            print('Imported data from %s' % (file_name))
-
-        # Import parsers
-        parser_case_dict = {'spectromax_OD' : parsers.spectromax_OD,
-                            'tecan_OD'      : parsers.tecan_OD,
-                            'default_titers': parsers.HPLC_titer_parser,
-                            'spectromax_OD_triplicate': parsers.spectromax_OD_triplicate
-                            }
-        if data_format in parser_case_dict.keys():
-            parser_case_dict[data_format](self, data, file_name, id_type=id_type)
-        else:
-            raise Exception('Parser %s not found', data_format)
-
+    def parse_raw_data(self, *args, **kwargs):
+        from ..parsers import parse_raw_data
+        return parse_raw_data(experiment=self, *args, **kwargs)
     # Dicts
     def parse_time_point_dict(self, time_point_list):
-        print('Parsing time point list...')
+        print('Parsing time point list...',end='')
         t0 = time.time()
         analyte_dict = {}
         for timePoint in time_point_list:
@@ -209,11 +196,11 @@ class Experiment(Base):
                 analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
 
         tf = time.time()
-        print("Parsed %i time points in %0.1fs\n" % (len(time_point_list), (tf - t0)))
+        print("Parsed %i time points in %0.1fs" % (len(time_point_list), (tf - t0)))
         self.parse_single_trial_dict(analyte_dict)
 
     def parse_single_trial_dict(self, single_trial_dict):
-        print('Parsing titer object list...')
+        print('Parsing analyte list...',end='')
         t0 = time.time()
         replicate_trial_dict = {}
         count = 0
@@ -230,11 +217,11 @@ class Experiment(Base):
                     single_trial_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
                     single_trial_dict[analyte_dictKey])
         tf = time.time()
-        print("Parsed %i single trials in %0.1fms\n" % (len(replicate_trial_dict), (tf - t0) * 1000))
+        print("Parsed %i single trials in %0.1fms" % (len(replicate_trial_dict), (tf - t0) * 1000))
         self.parse_replicate_trials(replicate_trial_dict)
 
     def parse_replicate_trials(self, replicate_trial_dict):
-        print('Parsing single experiment object list...')
+        print('Parsing single trial object list...',end='')
         t0 = time.time()
         for key in replicate_trial_dict:
             flag = 0
@@ -252,11 +239,11 @@ class Experiment(Base):
                     replicate_trial_dict[key].trial_identifier.unique_replicate_trial()].add_replicate(
                     replicate_trial_dict[key])
         tf = time.time()
-        print("Parsed %i replicates in %0.1fs\n" % (len(self.replicate_trial_dict), (tf - t0)))
+        print("Parsed %i replicates in %0.1fs" % (len(self.replicate_trial_dict), (tf - t0)))
 
     # Lists
     def parse_titers(self, titer_list):
-        print('Parsing titer object list...')
+        print('Parsing analyte list...',end='')
         t0 = time.time()
 
         uniques = list(set([titer.trial_identifier.unique_single_trial() for titer in titer_list]))
@@ -270,7 +257,7 @@ class Experiment(Base):
             single_trial_list.append(single_trial)
 
         tf = time.time()
-        print("Parsed %i titer objects in %0.1fms\n" % (len(single_trial_list), (tf - t0) * 1000))
+        print("Parsed %i analytes in %0.1fms" % (len(single_trial_list), (tf - t0) * 1000))
 
         self.parse_single_trial_list(single_trial_list)
 
