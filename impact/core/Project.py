@@ -7,7 +7,7 @@ import sqlite3 as sql
 
 class Identifier(object):
     def __init__(self):
-        self.nickname = ''
+        self.name = ''
         self.description = ''
 
 

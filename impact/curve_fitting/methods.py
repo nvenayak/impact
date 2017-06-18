@@ -44,17 +44,104 @@ curve_fit_dict['growthEquation_generalized_logistic_2'] = CurveFitObject(
     method='leastsq'
 )
 
+class Parameter(object):
+    # name = 0
+    # guess = 0
+    # min = 0
+    # max = 0
+
+    def __init__(self, name=None, guess=None, min=None, max=None):
+        self.name = name
+        self.guess = guess
+        self.min = min
+        self.max = max
+
+
+# from lmfit import Model
+# class FitMethod(object):
+#     """
+#     Wrapper for curve fitting objects
+#
+#     Parameters:
+#         paramList: List of parameters, with initial guess, max and min values
+#             Each parameter is a dict with the following form
+#                 {'name': str PARAMETER NAME,
+#                 'guess': float or lambda function
+#                 'max': float or lambda function
+#                 'min': float or lambda function
+#                 'vary' True or False}
+#         growthEquation: A function to fit with the following form:
+#             def growthEquation(t, param1, param2, ..): return f(param1,param2,..)
+#
+#         method: lmfit method (slsqp, leastsq)
+#     """
+#
+#     def __init__(self, parameter_list, fit_equation, method='slsqp'):
+#         self.parameter_list = parameter_list
+#         self.fit_equation = fit_equation
+#         self.gmod = Model(fit_equation)
+#         self.method = method
+#
+#     def calculate_fit(self, t, data, **kwargs):
+#         if 'method' not in kwargs:
+#             method = self.method
+#         else:
+#             method = kwargs['method']
+#
+#         for param in self.parameter_list:
+#             # Check if the parameter is a lambda function
+#             temp = dict()
+#
+#             for attr in ['guess', 'min', 'max']:
+#                 # print('hint: ',hint,'param[hint]: ',param[hint])
+#                 if type(getattr(param,attr)) == type(lambda x: 0):
+#                     temp[attr] = getattr(param, attr)(data)
+#                 else:
+#                     temp[attr] = getattr(param,attr)
+#
+#             self.gmod.set_param_hint(param.name,
+#                                      value=temp['guess'],
+#                                      min=temp['min'],
+#                                      max=temp['max'],
+#                                      vary=param['vary'])
+#         try:
+#             params = self.gmod.make_params()
+#         except Exception as e:
+#             print(data)
+#             print(e)
+#
+#         result = self.gmod.fit(data, params, t=t, method=method, **kwargs)
+#         result.fit_report()
+#         return result
+#
+# growth_rate = Parameter('growth_rate',guess=0.01,min=0)
+# X0 = Parameter('X0',guess=lambda data: min(data))
+# Xf = Parameter ('Xf',guess=lambda data: max(data))
+# delta = Parameter('delta',guess=1)
+# janoshek = FitMethod(parameter_list = [growth_rate, X0, growth_rate, Xf, delta])
+
+
+
 """
 janoschek
 """
 def janoschek(t, B, k, L, delta): return L - (L - B) * np.exp(-k * np.power(t, delta))
 curve_fit_dict['janoschek'] = CurveFitObject(
     [dict(zip(keys, ['B', np.min, lambda data: 0.975 * np.min(data), lambda data: 1.025 * np.min(data), True])),
-     dict(zip(keys, ['k', lambda data: 0.5, lambda data: 0.001, 200, True])),
-     dict(zip(keys, ['delta', 1, -100, 100, True])),
-     dict(zip(keys, ['L', max, lambda data: 0.975 * max(data), lambda data: 1.025 * max(data), True]))],
+     dict(zip(keys, ['k', lambda data: 0.001, None, 5, True])),
+     dict(zip(keys, ['delta', 1, None, None, True])),
+     dict(zip(keys, ['L', max, lambda data: max(data), lambda data: 2 * max(data), True]))],
     janoschek,
-    method='nelder'
+    method='slsqp'
+)
+
+curve_fit_dict['janoschek_no_limits'] = CurveFitObject(
+    [dict(zip(keys, ['B', np.min, None, None, True])),
+     dict(zip(keys, ['k', 1, None, None, True])),
+     dict(zip(keys, ['delta', 1, None, None, True])),
+     dict(zip(keys, ['L', np.max, None, None, True]))],
+    janoschek,
+    method='slsqp'
 )
 
 """
@@ -81,7 +168,20 @@ def gompertz(t, A, growth_rate, lam):
 curve_fit_dict['gompertz'] = CurveFitObject(
     [dict(zip(keys, ['A', np.max, lambda data: 0.975 * np.max(data), lambda data: 1.025 * np.max(data), True])),
      dict(zip(keys, ['growth_rate', 1, 0, 5, True])),
-     dict(zip(keys, ['lam', 0, 0, lambda data:np.min(data)*0.95, True]))],
+     dict(zip(keys, ['lam', 2, 0, None, True]))],
     gompertz,
     method='slsqp'
+)
+
+"""
+3 parameter growth curve (sigmoid)
+"""
+def three_param_growth(t,A,B,mu):
+    return A * B / (A + (B - A) * np.exp(-mu * t))
+curve_fit_dict['three_param'] = CurveFitObject(
+    [dict(zip(keys, ['A', 0.05, None, None, True])),
+     dict(zip(keys, ['B', 1, None, None, True])),
+     dict(zip(keys, ['mu', 0.5, None, None, True]))],
+    three_param_growth,
+    method='leastsq'
 )

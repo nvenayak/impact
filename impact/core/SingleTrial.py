@@ -76,7 +76,7 @@ class SingleTrial(Base):
         serialized_dict = {}
 
         if self.trial_identifier:
-            serialized_dict['strain_id'] = self.trial_identifier.strain.nickname
+            serialized_dict['strain_id'] = self.trial_identifier.strain.name
             serialized_dict['id_1'] = self.trial_identifier.id_1
             serialized_dict['id_2'] = self.trial_identifier.id_2
 

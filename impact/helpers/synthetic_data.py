@@ -182,7 +182,7 @@ def generate_replicate_trial():
     for replicate_id, replicate in enumerate(replicateList):
         timeCourseList = []
         for exchange in biomass_keys + substrate_keys + product_keys:
-            trial_identifier = impt.TrialIdentifier()
+            trial_identifier = impt.ReplicateTrialIdentifier()
             trial_identifier.strain_id = 'iJO1366'
             trial_identifier.id_1 = 'Anaerobic'
             trial_identifier.replicate_id = replicate_id

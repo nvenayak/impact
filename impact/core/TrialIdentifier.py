@@ -1,29 +1,79 @@
-from ..database import Base
+from ..database import Base, create_session
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, UniqueConstraint
+from sqlalchemy.orm import relationship, reconstructor
 from warnings import warn
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
-class Knockout(Base):
+class TrialIdentifierMixin(object):
+    # eq_attrs = []
+    # __table_args__ = (UniqueConstraint(*eq_attrs),)
+
+    def __eq__(self, other):
+        if not isinstance(other,self.__class__):
+            return False
+
+        for attr in self.eq_attrs:
+            vals = [getattr(self,attr), getattr(other,attr)]
+            if not hasattr(vals[0],'__len__') or isinstance(vals[0],str):
+                if vals[0] != vals[1]:
+                    return False
+            elif isinstance(vals[0],list):
+                for item1, item2 in zip(vals[0],vals[1]):
+                    if item1 != item2:
+                        return False
+            elif isinstance(vals[0],dict):
+                for key in vals[0]:
+                    if vals[0][key] != vals[1][key]:
+                        return False
+            else:
+                raise Exception('Object contains non-hashable')
+        return True
+
+    def __hash__(self):
+        cat_hash = []
+        for attr in self.eq_attrs:
+            val = getattr(self,attr)
+            if isinstance(val,list):
+                cat_hash += val
+            elif isinstance(val,dict):
+                keys = sorted(list(val.keys()))
+                cat_hash += [val[key] for key in keys]
+            else:
+                try:
+                    cat_hash.append(val)
+                except Exception as e:
+                    print('Object contains non-hashable')
+                    raise Exception(e)
+
+        return hash(tuple(cat_hash))
+
+
+class Knockout(Base, TrialIdentifierMixin):
     __tablename__ = 'knockout'
     id = Column(Integer, primary_key=True)
     gene = Column(String)
     parent = Column(Integer, ForeignKey('strain.id'))
 
+    eq_attrs = ['gene','parent']
+
     def __str__(self):
         return str(self.gene)
 
-class Plasmid(Base):
+
+class Plasmid(Base, TrialIdentifierMixin):
     __tablename__ = 'plasmid'
     id = Column(Integer, primary_key=True)
     name = Column(String)
     strain = Column(Integer, ForeignKey('strain.id'))
 
+    eq_attrs = ['name','strain']
+
     def __str__(self):
         return str(self.name)
 
-class Strain(Base):
+
+class Strain(Base, TrialIdentifierMixin):
     """
     Model for a strain
     """
@@ -31,7 +81,7 @@ class Strain(Base):
     __tablename__ = 'strain'
 
     id = Column(Integer, primary_key=True)
-    nickname = Column(String)
+    name = Column(String)
     formal_name = Column(String)
     plasmids = relationship('Plasmid')
     knockouts = relationship('Knockout')
@@ -39,28 +89,31 @@ class Strain(Base):
     id_1 = Column(String)
     id_2 = Column(String)
 
+    eq_attrs = ['name','formal_name','plasmids','knockouts','parent','id_1','id_2']
+    # __table_args__ = (UniqueConstraint(*eq_attrs),)
+
+    # UniqueConstraint('name','formal_name','plasmids','knockouts','parent','id_1','id_2')
     def __init__(self, name='',**kwargs):
         self.id_1 = ''
         self.id_2 = ''
 
         for key in kwargs:
-            if key in ['nickname','formal_name', 'plasmid_1','plasmid_2','plasmid_3']:
+            if key in ['name','formal_name', 'plasmid_1','plasmid_2','plasmid_3']:
                 setattr(self,key,kwargs[key])
             else:
                 setattr(self,key,None)
 
         if name != '':
-            self.nickname = name
+            self.name = name
         # models.Model.__init__(self, *args, **kwargs)
-
 
     def __str__(self):
         plasmid_summ = '+'.join([str(plasmid) for plasmid in self.plasmids])
 
-        if self.nickname is None:
-            nick = ''
+        if self.name is None:
+            name = ''
         else:
-            nick = self.nickname
+            name = self.name
 
         summ_id = ''
         if self.id_1 != '': summ_id = summ_id+' '+self.id_1
@@ -69,15 +122,16 @@ class Strain(Base):
         knockouts = 'd('+','.join([str(ko) for ko in self.knockouts])+')' if self.knockouts else ''
 
         if plasmid_summ :
-            return nick+'+'+plasmid_summ+summ_id+knockouts
+            return name+'+'+plasmid_summ+summ_id+knockouts
         else:
-            return nick+summ_id+knockouts
+            return name+summ_id+knockouts
 
     @property
     def unique_id(self):
         return self.name
 
-class MediaComponent(Base):
+
+class MediaComponent(Base, TrialIdentifierMixin):
     """
     Media component many-to-many relationship
     """
@@ -86,10 +140,13 @@ class MediaComponent(Base):
     id = Column(Integer,primary_key=True)
     name = Column(String,unique=True)
 
+    eq_attrs = ['name']
+
     def __init__(self, name):
         self.name = name
 
-class ComponentConcentration(Base):
+
+class ComponentConcentration(Base, TrialIdentifierMixin):
     """
     Concentration of all components for all media
     """
@@ -104,6 +161,9 @@ class ComponentConcentration(Base):
     component = relationship("MediaComponent", cascade='all')
 
     concentration = Column(Float)
+
+    eq_attrs = ['media','component','concentration']
+
 
     def __init__(self, component, concentration, unit=None, **kwargs):
         for key in kwargs:
@@ -124,23 +184,25 @@ class ComponentConcentration(Base):
             else:
                 raise Exception('Only g/L and % supported')
 
-class Media(Base):
+
+class Media(Base, TrialIdentifierMixin):
     __tablename__ = 'media'
     id = Column(Integer,primary_key=True)
-    nickname = Column(String)
     name = Column(String)
+    formal_name = Column(String)
     components = relationship('ComponentConcentration',
                               collection_class=attribute_mapped_collection('component_name'),
                               cascade = 'all')
 
     parent = Column(Integer,ForeignKey('media.name'))
 
+    eq_attrs = ['name', 'formal_name', 'components', 'parent']
+
+
     def __init__(self, concentration=None, unit=None, **kwargs):
         for key in kwargs:
-            if key in ['parent','nickname','name']:
+            if key in ['parent','name','name']:
                 setattr(self,key,kwargs[key])
-
-        # self.components = {}
 
         self._concentration = concentration
         self._unit = unit
@@ -151,18 +213,14 @@ class Media(Base):
         if concentration and unit:
             self._convert_units()
 
-    # @property
-    # def components(self):
-    #     return [compconc.media_component.name for compconc in self.components]
-
     def __str__(self):
         if self.parent:
-            return self.parent.nickname+'+'+'+'.join([item for item in
-                             [str(compconc.concentration) + 'g/L ' + compconc.media_component.name for compconc in
+            return self.parent.name+'+'+'+'.join([item for item in
+                             [str(cc.concentration) + 'g/L ' + cc.media_component.name for cc in
                               self.components.values()]])
         else:
             return '+'.join([item for item in
-                             [str(compconc.concentration) + 'g/L ' + compconc.media_component.name for compconc in
+                             [str(cc.concentration) + 'g/L ' + cc.media_component.name for cc in
                               self.components.values()]])
 
     @property
@@ -176,11 +234,14 @@ class Media(Base):
             else:
                 raise Exception('Component added with no concentration')
         elif isinstance(component,ComponentConcentration):
+            # If the component is fully formed
             self.components[component.component_name] = component
         elif isinstance(component,str):
+            # If only a name was given
             self.components[component.name] = ComponentConcentration(MediaComponent(component), concentration, unit)
 
-class Environment(Base):
+
+class Environment(Base, TrialIdentifierMixin):
     __tablename__ = 'environment'
 
     id = Column(Integer, primary_key=True)
@@ -190,17 +251,30 @@ class Environment(Base):
     shaking_diameter = Column(Float,nullable=True)
     temperature = Column(Float)
 
+    eq_attrs = ['labware', 'shaking_speed', 'shaking_diameter', 'temperature']
+
+    # @reconstructor
     def __init__(self, labware=None):
         self.labware = Labware() if labware is None else labware
 
     def __str__(self):
-        return '%s %sRPM %sC' % (self.labware, self.shaking_speed, self.temperature)
+        _ = ''
+        if self.labware is not None:
+            _ += str(self.labware)+' '
+        if self.shaking_speed is not None:
+            _ += str(self.shaking_speed)+'RPM '
+        if self.temperature is not None:
+            _ += str(self.temperature)+'C'
+        return _ #'%s %sRPM %sC' % (self.labware, self.shaking_speed, self.temperature)
 
-class Labware(Base):
+
+class Labware(Base, TrialIdentifierMixin):
     __tablename__ = 'labware'
 
     id = Column(Integer, primary_key=True)
     name = Column(String,unique=True)
+
+    eq_attrs = ['name']
 
     def __init__(self, name=None):
         self.name = name
@@ -208,13 +282,17 @@ class Labware(Base):
     def __str__(self):
         return str(self.name)
 
-class Analyte(Base):
+
+class Analyte(Base, TrialIdentifierMixin):
     __tablename__ = 'analyte'
 
     name = Column(String, primary_key=True)
     default_type = Column(String)
 
-class ReplicateTrialIdentifier(Base):
+    eq_attrs = ['name']
+
+
+class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
     """
     Carries information about the run through all the objects
 
@@ -253,6 +331,9 @@ class ReplicateTrialIdentifier(Base):
     id_2 = Column(String)
     id_3 = Column(String)
 
+    eq_attrs = ['strain','media','environment','id_1','id_2','id_3']
+
+    @reconstructor
     def __init__(self, strain=None, media=None, environment=None):
         self.strain = Strain() if strain is None else strain
         self.media = Media() if media is None else media
@@ -291,7 +372,7 @@ class ReplicateTrialIdentifier(Base):
 
                     if len(key.split('__')) == 1:
                         if key in ['strain', 'media', 'environment']:
-                            getattr(self, key).nickname = val
+                            getattr(self, key).name = val
                         elif key == 'rep':
                             self.replicate_id = int(val)
                         elif key in ['time','t']:
@@ -329,7 +410,7 @@ class ReplicateTrialIdentifier(Base):
                                     self.media.add_component(
                                         ComponentConcentration(MediaComponent(conc), float(comp)))
                             elif attr2 == 'base':
-                                self.media.parent = Media(nickname=val)
+                                self.media.parent = Media(name=val)
                             else:
                                 setattr(self.media,attr2,val)
 
@@ -363,7 +444,7 @@ class ReplicateTrialIdentifier(Base):
             if len(tempParsedIdentifier) == 0:
                 print(tempParsedIdentifier, " <-- not processed")
             if len(tempParsedIdentifier) > 0:
-                self.strain = Strain(nickname=tempParsedIdentifier[0])
+                self.strain = Strain(name=tempParsedIdentifier[0])
             if len(tempParsedIdentifier) > 1:
                 self.id_1 = tempParsedIdentifier[1]
             if len(tempParsedIdentifier) > 2:
@@ -406,7 +487,7 @@ class ReplicateTrialIdentifier(Base):
                          if str(getattr(self,attr) != '') ])
 
     def get_analyte_data_statistic_identifier(self):
-        ti = ReplicateTrialIdentifier()
+        ti = TimeCourseIdentifier()
         for attr in ['strain','media','environment','id_1','id_2','id_3','analyte_name','analyte_type']:
             setattr(ti,attr,getattr(self,attr))
         return ti

@@ -12,38 +12,40 @@ except NameError:
     from plotly.offline import plot
 else:
     from plotly.offline import init_notebook_mode
-    init_notebook_mode()
     from plotly.offline import iplot as plot
     from IPython.display import HTML
 
+
     # This is required for correct mathjax (latex) rendering
     HTML(
-    """
-    <script>
-        var waitForPlotly = setInterval( function() {
-            if( typeof(window.Plotly) !== "undefined" ){
-                MathJax.Hub.Config({ SVG: { font: "STIX-Web" }, displayAlign: "center" });
-                MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
-                clearInterval(waitForPlotly);
-            }}, 250 );
-    </script>
-    """
+        """
+        <script>
+            var waitForPlotly = setInterval( function() {
+                if( typeof(window.Plotly) !== "undefined" ){
+                    MathJax.Hub.Config({ SVG: { font: "STIX-Web" }, displayAlign: "center" });
+                    MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
+                    clearInterval(waitForPlotly);
+                }}, 250 );
+        </script>
+        """
     )
-    print('Injected plotly')
+    init_notebook_mode(connected=True)
 
 from plotly import tools
 import plotly.graph_objs as go
 import plotly.plotly as py
-
+import colorlover as cl
 import math
 
-import colorlover as cl
-
+# Wrap plotly functions for easy access
+go = go
+tools = tools
+cl = cl
+plot = plot
 
 def generic_timecourse(impact_core_instance_list=None):
     if impact_core_instance_list is None:
         raise ValueError('No data')
-
 
 
 def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[],
@@ -55,7 +57,6 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                                   horizontal_spacing=0.2, vertical_spacing=0.4, row_height=300,
                                   format='web', single_subplot=False, plot_curve_fit = False):
     """
-
     Parameters
     ----------
     replicateTrialList: ~class`titer`
@@ -191,7 +192,6 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
 
     # fig['layout'].update(height=height, legend={'orientation': 'h', 'font': {'size': 10, 'color': '#000000'}})
 
-
     if not (sortBy == 'product_in_legend' or single_subplot):
         fig = tools.make_subplots(rows=rows, cols=number_of_columns,
                                   horizontal_spacing=horizontal_spacing / number_of_columns,
@@ -220,7 +220,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     prepped_y_avg = dict()
     prepped_y_std = dict()
     prepped_legendgroup = dict()
-    for name in [replicate.trial_identifier.strain.nickname + '+'
+    for name in [str(replicate.trial_identifier.strain.nickname) + '+'
                  + replicate.trial_identifier.id_1 + ','
                  + replicate.trial_identifier.id_2 for replicate in replicateTrialList]:
         prepped_x[name] = []
@@ -248,7 +248,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     sort_by_product_in_legend_flag = True
 
                 uniques = ['']
-                sortBy = 'strain_id'  # This is just a placeholder, it can be any attribute of TrialIdentifier
+                sortBy = 'strain_id'  # This is just a placeholder, it can be any attribute of ReplicateTrialIdentifier
                 # just so the function call doesn't return an error
                 sort_by_flag = False
 
@@ -477,7 +477,6 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
             y_std = replicate.std.analyte_dict[product].get_normalized_data(normalize_to)[
                     ::removePointFraction]
 
-        # dataLabel = ''
         t = replicate.t[::removePointFraction]
 
         if product in replicate.avg.analyte_dict:
@@ -603,3 +602,57 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
     fig['layout'].update(height=height, legend=legend_params)
     showlegend_flag = False
     return final_plot_number
+
+## NEW PLOTTING
+def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600', colors=None,
+                        cl_scales=['8', 'qual', 'Set1'],
+                        label=lambda replicate: str(replicate.parent.start_date)
+                                                + ' '
+                                                + replicate.trial_identifier.strain.nickname
+                                                + ' '
+                                                + replicate.trial_identifier.id_1
+                                                + ' '
+                                                + replicate.trial_identifier.id_2,
+                        legendgroup=lambda x: None,
+                        showlegend = True,
+                        pts_per_hour = 60
+                        ):
+
+
+    traces = []
+
+    if colors is None:
+        color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
+        # https://plot.ly/ipython-notebooks/color-scales/
+        if len(replicate_trials) > int(cl_scales[0]):
+            print(len(replicate_trials))
+            print(int(cl_scales[0]))
+            print('interpolated')
+            num_pts = len(replicate_trials)
+            colors = cl.interp(color_scale, num_pts)
+            # Index the list
+            colors = [colors[int(x)] for x in np.arange(0, num_pts, num_pts / round(len(replicate_trials)))]
+        else:
+            colors = color_scale
+
+    for index, replicate in enumerate(replicate_trials):
+        # Determine how many points should be plotted
+        required_num_pts = replicate.t[-1] * pts_per_hour
+        removePointFraction = int(len(replicate.t) / required_num_pts)
+        if removePointFraction < 1:  removePointFraction = 1
+
+        traces.append(go.Scatter(x=replicate.t[::removePointFraction],
+                                 y=replicate.avg.analyte_dict[analyte].data_vector[::removePointFraction],
+                                 error_y={
+                                     'type'   : 'data',
+                                     'array'  : replicate.std.analyte_dict[analyte].data_vector[::removePointFraction],
+                                     'visible': True,
+                                     'color'  : colors[index]},
+                                 # mode=mode,
+                                 marker={
+                                     'color': colors[index]},
+                                 line={'color': colors[index]},
+                                 showlegend=showlegend,
+                                 legendgroup=legendgroup(replicate),
+                                 name=label(replicate)))  # ,
+    return traces

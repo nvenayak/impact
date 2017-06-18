@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from .TrialIdentifier import ReplicateTrialIdentifier, Strain, Media
+from .TrialIdentifier import TimeCourseIdentifier, Strain, Media
 
 from ..curve_fitting import *
 
@@ -10,10 +10,9 @@ from scipy.signal import savgol_filter
 
 from ..database import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, reconstructor
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy import event
-
 
 class FitParameter(Base):
     __tablename__ = 'fit_parameters'
@@ -49,7 +48,7 @@ class TimePoint(Base):
     use_in_analysis = Column(Boolean)
 
     def __init__(self, trial_identifier=None, time=None, data=None):
-        self.trial_identifier = ReplicateTrialIdentifier() if trial_identifier is None else trial_identifier
+        self.trial_identifier = TimeCourseIdentifier() if trial_identifier is None else trial_identifier
         self.time = time
         self.data = data
 
@@ -103,14 +102,10 @@ class TimeCourse(Base):
     analyte_name = Column(String)
     analyte_type = Column(String)
 
+    @reconstructor
     def __init__(self, **kwargs):
         # Get the default parameters
         from .settings import settings
-
-        remove_death_phase_flag = settings.remove_death_phase_flag
-        use_filtered_data = settings.use_filtered_data
-        minimum_points_for_curve_fit = settings.minimum_points_for_curve_fit
-        savgolFilterWindowSize = settings.savgolFilterWindowSize
 
         if 'time_points' in kwargs:
             for time_point in kwargs['time_points']:
@@ -130,20 +125,17 @@ class TimeCourse(Base):
 
         self.pd_series = None
 
-
         self.fit_params = dict()
-        # self.units = {'time': 'hours',
-        #               'data': 'None'}
 
         self._gradient = []
-        # self._specific_productivity = None
 
         # Options
-        self.removeDeathPhaseFlag = remove_death_phase_flag
-        self.use_filtered_data = use_filtered_data
-        self.minimum_points_for_curve_fit = minimum_points_for_curve_fit
-        self.savgolFilterWindowSize = savgolFilterWindowSize
+        self.remove_death_phase_flag = settings.remove_death_phase_flag
+        self.use_filtered_data = settings.use_filtered_data
+        self.minimum_points_for_curve_fit = settings.minimum_points_for_curve_fit
+        self.savgol_filter_window_size = settings.savgolFilterWindowSize
 
+        # Init variables
         self.death_phase_start = None
         self.blankSubtractionFlag = True
 
@@ -154,20 +146,16 @@ class TimeCourse(Base):
         self.fit_type = 'gompertz'
 
     def __str__(self):
-        return str(self.trial_identifier.unique_analyte_data())#'strain_name: '+str(self.trial_identifier.strain)+' media_name: '+str(self.trial_identifier.media)
+        return str(self.trial_identifier.unique_analyte_data())
 
     @property
     def unique_id(self):
         return ','.join([self.trial_identifier.strain,self.trial_identifier.media,self.trial_identifier.id_1,
                          self.trial_identifier.id_2, self.trial_identifier.id_3, self.trial_identifier.replicate_id])
 
-
-
     def serialize(self):
         serialized_dict = {'data'    : self.pd_series.to_json(), 'fit_params': self.fit_params,
                            'gradient': list(self.gradient)}
-        # serialized_dict['time_vector'] = self.time_vector
-        # serialized_dict['data_vector'] = self.data_vector
 
         try:
             serialized_dict['specific_productivity'] = list(self.specific_productivity)
@@ -178,7 +166,7 @@ class TimeCourse(Base):
         serialized_dict['analyte_type'] = self.trial_identifier.analyte_type
 
         options = {}
-        for option in ['removeDeathPhaseFlag', 'use_filtered_data', 'minimum_points_for_curve_fit']:
+        for option in ['remove_death_phase_flag', 'use_filtered_data', 'minimum_points_for_curve_fit']:
             options[option] = getattr(self,option)
         serialized_dict['options'] = options
 
@@ -207,11 +195,12 @@ class TimeCourse(Base):
         if self.analyte_type == 'product':
             self.fit_type = 'productionEquation_generalized_logistic'
         if self.analyte_type == 'biomass':
-            self.fit_type = 'janoschek_no_limits'#'janoschek'#'gompertz'#'richard_5','growthEquation_generalized_logistic'
+            self.fit_type = 'janoschek_no_limits'
+            #'janoschek'#'gompertz'#'richard_5','growthEquation_generalized_logistic'
 
     @property
     def time_vector(self):
-        if self.pd_series is not None:
+        if hasattr(self,'pd_series') and self.pd_series is not None:
             return np.array(self.pd_series.index)
         return None
 
@@ -234,8 +223,8 @@ class TimeCourse(Base):
         from .settings import settings
 
         # Filter data to smooth noise from the signal
-        if settings.use_filtered_data and len(self.pd_series)>self.savgolFilterWindowSize:
-            return savgol_filter(np.array(self.pd_series), self.savgolFilterWindowSize, 3)
+        if settings.use_filtered_data and len(self.pd_series)>self.savgol_filter_window_size:
+            return savgol_filter(np.array(self.pd_series), self.savgol_filter_window_size, 3)
         else:
             return np.array(self.pd_series)
 
@@ -277,7 +266,7 @@ class TimeCourse(Base):
 
         if self.time_vector is not None and len(self.time_vector) > 2:
             self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
-        if self.removeDeathPhaseFlag:
+        if self.remove_death_phase_flag:
             self.find_death_phase(self.data_vector)
 
         if len(self.data_vector) > self.minimum_points_for_curve_fit and perform_curve_fit:
