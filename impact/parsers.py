@@ -2,11 +2,9 @@ import copy
 import datetime
 import time
 import time as sys_time
-from collections import OrderedDict
 
 import numpy as np
 
-from pyexcel_xlsx import get_data
 from openpyxl import load_workbook
 
 from .core.AnalyteData import TimePoint
