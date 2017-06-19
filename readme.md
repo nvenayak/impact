@@ -23,6 +23,12 @@ Install the dependencies for the project using requirements.txt:
 	
 	pip install -r requirements.txt
 
+You may also want to install the additional packages as needed, especially the plotting requirements
+    
+    pip install -r requirements_plotting.txt
+    pip install -r requirements_modeling.txt
+    pip install -r requirements_docs.txt
+
 Install the package, use develop mode to ensure all the relative paths remain correct.
 
     python setup.py develop
