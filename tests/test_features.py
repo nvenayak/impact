@@ -4,7 +4,7 @@ import numpy as np
 
 class TestFeatures(unittest.TestCase):
     def test_specific_productivity(self):
-        ti = impt.TrialIdentifier()
+        ti = impt.ReplicateTrialIdentifier()
         ti.analyte_name = 'OD600'
         ti.analyte_type = 'biomass'
 
@@ -16,7 +16,7 @@ class TestFeatures(unittest.TestCase):
         st = impt.SingleTrial()
         st.add_analyte_data(tc)
 
-        ti = impt.TrialIdentifier()
+        ti = impt.ReplicateTrialIdentifier()
         ti.analyte_name = 'etoh'
         ti.analyte_type = 'product'
 

@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 class TestParsers(unittest.TestCase):
     def test_generic_identifier_parser(self):
-        ti = impact.TrialIdentifier()
+        ti = impact.ReplicateTrialIdentifier()
         ti.parse_identifier(
             'time:1|'
             'environment__labware:Falcon96|'
@@ -24,12 +24,13 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(ti.environment.labware.name,'Falcon96')
         self.assertEqual(ti.environment.shaking_speed,250)
         self.assertEqual(ti.environment.temperature,37)
-        self.assertEqual(ti.media.base.nickname,'LIMS')
-        self.assertEqual(ti.media.component_concentrations[0].media_component.name,'glc__D')
-        self.assertEqual(ti.media.component_concentrations[0].concentration,'10')
+        self.assertEqual(ti.media.parent.name,'LIMS')
+        print(ti.media.components)
+        self.assertEqual(ti.media.components['glc__D'].component_name,'glc__D')
+        self.assertEqual(ti.media.components['glc__D'].concentration,10)
         self.assertEqual(ti.replicate_id,1)
         # self.assertEqual(ti.strain.id,'D1') #TODO update
-        self.assertEqual(ti.strain.nickname,'MG')
+        self.assertEqual(ti.strain.name,'MG')
         self.assertIn('pKDL',[plasmid.name for plasmid in ti.strain.plasmids])
         self.assertIn('pKDL2',[plasmid.name for plasmid in ti.strain.plasmids])
         self.assertIn('pKDL3',[plasmid.name for plasmid in ti.strain.plasmids])
@@ -37,7 +38,7 @@ class TestParsers(unittest.TestCase):
 
     def test_default_HPLC_parser(self):
         expt = impact.Experiment()
-        expt.parse_raw_data('default_titers', fileName=os.path.join(BASE_DIR,'tests/test_data/sample_input_data.xlsx'))
+        expt.parse_raw_data('default_titers', file_name=os.path.join(BASE_DIR, 'tests/test_data/sample_input_data.xlsx'))
 
         num_replicates = (len(expt.replicate_trial_dict.keys()))
 
