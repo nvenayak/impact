@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from .TrialIdentifier import TimeCourseIdentifier, Strain, Media
+from .TrialIdentifier import TimeCourseIdentifier
 
 from ..curve_fitting import *
 
@@ -9,7 +9,7 @@ import pandas as pd
 from scipy.signal import savgol_filter
 
 from ..database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Float
 from sqlalchemy.orm import relationship, reconstructor
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy import event
@@ -318,18 +318,6 @@ class TimeCourse(Base):
 
         return death_phase_start
 
-    # def summary(self, print=False):
-    #     summary = dict()
-    #     summary['time_vector'] = self.time_vector
-    #     summary['data_vector'] = self.data_vector
-    #     summary['number_of_data_points'] = len(self.time_vector)
-    #     summary['trial_identifier'] = self.trial_identifier.summary(['strain.name', 'id_1', 'id_2',
-    #                                                             'analyte_name', 'titerType', 'replicate_id'])
-    #     if print:
-    #         print(summary)
-    #
-    #     return summary
-
     def create_stage(self, stage_bounds):
         stage = TimeCourseStage(self)#, bounds = stage_bounds)
         stage.trial_identifier = self.trial_identifier
@@ -434,6 +422,45 @@ class TimeCourse(Base):
             print('Unidentified titer type:' + self.trial_identifier.analyte_type)
             print('Ensure that the trial identifier is described before adding data. This will allow curve fitting'
                   'to be appropriate to the analyte type.')
+
+
+class Biomass(TimeCourse):
+    pass
+
+
+class Substrate(TimeCourse):
+    pass
+
+
+class Product(TimeCourse):
+    pass
+
+
+class Reporter(TimeCourse):
+    fit_type = None
+
+    # def __init__(self):
+        # TimeCourse.__init__()
+        # self._trial_identifier
+
+    @property
+    def trial_identifier(self):
+        return self._trial_identifier
+
+    @trial_identifier.setter
+    def trial_identifier(self, trial_identifier):
+        return self._trial_identifier
+
+    def curve_fit_data(self):
+        from .settings import settings
+        verbose = settings.verbose
+
+        if self.trial_identifier.analyte_type == 'reporter':
+            raise Exception('Reported curve fitting not implemented')
+        else:
+            raise Exception('Incorrect analyte_type')
+
+
 
 class TimeCourseStage(TimeCourse):
     stage_parent_id = Column(Integer, ForeignKey('time_course.id'))

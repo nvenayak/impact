@@ -86,6 +86,7 @@ class Strain(Base, TrialIdentifierMixin):
     plasmids = relationship('Plasmid')
     knockouts = relationship('Knockout')
     parent = Column(Integer,ForeignKey('strain.id'))
+    ALE_time = Column(String)
     id_1 = Column(String)
     id_2 = Column(String)
 
@@ -265,7 +266,7 @@ class Environment(Base, TrialIdentifierMixin):
             _ += str(self.shaking_speed)+'RPM '
         if self.temperature is not None:
             _ += str(self.temperature)+'C'
-        return _ #'%s %sRPM %sC' % (self.labware, self.shaking_speed, self.temperature)
+        return _
 
 
 class Labware(Base, TrialIdentifierMixin):
