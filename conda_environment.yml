@@ -1,5 +1,5 @@
 # This environment allows some packages to be managed by conda.
-# This is not necessary on unix environment
+# This is not necessary on unix environment, but offers easy venvs on windows
 
 name: impact_conda_venv
 dependencies:
