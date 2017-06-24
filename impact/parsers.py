@@ -14,9 +14,9 @@ from .core.TrialIdentifier import TimeCourseIdentifier
 def spectromax_OD(experiment, data, id_type='CSV'):
     from .core.settings import settings
     live_calculations = settings.live_calculations
-    
-    unparsed_identifiers = [[elem.value for elem in row] for row in data['identifiers']]
-    raw_data = [[elem.value for elem in row] for row in data['data']]
+
+    unparsed_identifiers = data['identifiers']
+    raw_data = data['data']
 
     # The data starts at (3,2) and is in a 8x12 format
     timepoint_list = []
@@ -90,7 +90,9 @@ def spectromax_OD(experiment, data, id_type='CSV'):
         else:
             break
 
-    experiment.parse_time_point_dict(timepoint_list)
+    replicate_trial_list = parse_time_point_list(timepoint_list)
+    for rep in replicate_trial_list:
+        experiment.add_replicate_trial(rep)
 
     if live_calculations:   experiment.calculate()
 
@@ -165,7 +167,9 @@ def spectromax_OD_triplicate(experiment, data, id_type='CSV'):
         else:
             break
 
-    experiment.parse_time_point_dict(timepoint_list)
+    replicate_trial_list = parse_time_point_list(timepoint_list)
+    for rep in replicate_trial_list:
+        experiment.add_replicate_trial(rep)
 
     if live_calculations:   experiment.calculate()
 
@@ -194,7 +198,8 @@ def HPLC_titer_parser(experiment, data, id_type='CSV'):
     analyte_nameColumn = dict()
     titer_type = dict()
 
-    data = [[elem.value for elem in row] for row in data[titerDataSheetName]]
+    # data = [[elem.value for elem in row] for row in data[titerDataSheetName]]
+    data = data[titerDataSheetName]
 
     for i in range(1, len(data[row_with_titer_names])):
         analyte_nameColumn[data[row_with_titer_names][i]] = i
@@ -233,7 +238,10 @@ def HPLC_titer_parser(experiment, data, id_type='CSV'):
     tf = sys_time.time()
     print("Parsed %i timeCourseObjects in %0.3fs" % (len(timepoint_list), tf - t0), end='')
     print("...Number of lines skipped: ", skipped_lines)
-    experiment.parse_time_point_dict(timepoint_list)
+    replicate_trial_list = parse_time_point_list(timepoint_list)
+    for rep in replicate_trial_list:
+        experiment.add_replicate_trial(rep)
+    # experiment.parse_time_point_list()
     # experiment.calculate()
 
 
@@ -269,7 +277,7 @@ def tecan_OD(experiment, data, fileName, t0):
             experiment.titer_dict[temp_time_course.trial_identifier.unique_single_trial()] = copy.copy(temp_time_course)
     tf = sys_time.time()
     print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(experiment.titer_dict), tf - t0))
-    experiment.parse_single_trial_dict(experiment.titer_dict)
+    experiment.parse_analyte_dict(experiment.titer_dict)
     return data, t0
 
 
@@ -289,8 +297,12 @@ def parse_raw_data(format=None, id_type='CSV', file_name=None, data=None, experi
         # Get data from xlsx file
         print('\nImporting data from %s...' % (file_name),end='')
         # data = get_data(file_name)
-        data = load_workbook(filename=file_name, data_only=True)
+        xls_data = load_workbook(filename=file_name, data_only=True)
         print('%0.1fs' % (time.time()-t0))
+
+        # Extract data from sheets
+        data = {sheet.title: [[elem.value if elem is not None else None for elem in row]
+                              for row in xls_data[sheet.title]] for sheet in xls_data}
 
     # Import parsers
     parser_case_dict = {'spectromax_OD' : spectromax_OD,
@@ -304,3 +316,74 @@ def parse_raw_data(format=None, id_type='CSV', file_name=None, data=None, experi
         raise Exception('Parser %s not found', format)
 
     return experiment
+
+from .core import SingleTrial
+def parse_analyte_data(analyte_data_list):
+
+    print('Parsing analyte list...',end='')
+    t0 = time.time()
+
+    uniques = list(set([titer.trial_identifier.unique_single_trial() for titer in analyte_data_list]))
+
+    single_trial_list = []
+    for unique in uniques:
+        single_trial = SingleTrial()
+        for titer in analyte_data_list:
+            if titer.trial_identifier.unique_single_trial() == unique:
+                single_trial.add_analyte_data(titer)
+        single_trial_list.append(single_trial)
+
+    tf = time.time()
+    print("Parsed %i analytes in %0.1fms" % (len(single_trial_list), (tf - t0) * 1000))
+
+    return parse_single_trial_list(single_trial_list)
+
+from .core.AnalyteData import Biomass, Substrate, Product, Reporter
+def parse_time_point_list(time_point_list):
+    print('Parsing time point list...',end='')
+    t0 = time.time()
+    analyte_dict = {}
+    for timePoint in time_point_list:
+        if timePoint.get_unique_timepoint_id() in analyte_dict:
+            analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
+        else:
+            case_dict = {'biomass': Biomass,
+                         'substrate': Substrate,
+                         'product': Product,
+                         'reporter': Reporter}
+            if timePoint.trial_identifier.analyte_type in case_dict.keys():
+                analyte_dict[timePoint.get_unique_timepoint_id()] = \
+                    case_dict[timePoint.trial_identifier.analyte_type]()
+            else:
+                raise Exception('Unexpected analyte type %s' % timePoint.trial_identifier.analyte_type)
+
+            analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
+
+    tf = time.time()
+    print("Parsed %i time points in %0.1fs" % (len(time_point_list), (tf - t0)))
+    return parse_analyte_data(list(analyte_dict.values()))
+
+from .core import ReplicateTrial
+def parse_single_trial_list(single_trial_list):
+    print('Parsing single trial list...',end='')
+    t0 = time.time()
+    uniques = list(set([single_trial.trial_identifier.unique_replicate_trial()
+                        for single_trial in single_trial_list]
+                       )
+                   )
+
+    replicate_trial_list = []
+    for unique in uniques:
+        replicate_trial = ReplicateTrial()
+        for single_trial in single_trial_list:
+            if single_trial.trial_identifier.unique_replicate_trial() == unique:
+                replicate_trial.add_replicate(single_trial)
+                replicate_trial_list.append(replicate_trial)
+    tf = time.time()
+    print("Parsed %i replicates in %0.1fs" % (len(replicate_trial_list), (tf - t0)))
+    return replicate_trial_list
+
+    # self.replicate_trial_dict = dict()
+    # for replicate_trial in replicate_trial_list:
+    #     self.add_replicate_trial(replicate_trial)
+

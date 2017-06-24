@@ -98,6 +98,7 @@ class Strain(Base, TrialIdentifierMixin):
         self.id_1 = ''
         self.id_2 = ''
 
+        # TODO
         for key in kwargs:
             if key in ['name','formal_name', 'plasmid_1','plasmid_2','plasmid_3']:
                 setattr(self,key,kwargs[key])
@@ -130,6 +131,8 @@ class Strain(Base, TrialIdentifierMixin):
     @property
     def unique_id(self):
         return self.name
+
+    # def add_plasmid(self):
 
 
 class MediaComponent(Base, TrialIdentifierMixin):
@@ -189,39 +192,42 @@ class ComponentConcentration(Base, TrialIdentifierMixin):
 class Media(Base, TrialIdentifierMixin):
     __tablename__ = 'media'
     id = Column(Integer,primary_key=True)
-    name = Column(String)
-    formal_name = Column(String)
+    name = Column(String, nullable=True)
+    formal_name = Column(String, nullable=True)
     components = relationship('ComponentConcentration',
                               collection_class=attribute_mapped_collection('component_name'),
                               cascade = 'all')
 
-    parent = Column(Integer,ForeignKey('media.name'))
+    parent = relationship('Media', uselist=False)
+    parent_id = Column(Integer,ForeignKey('media.id'), nullable=True)
 
-    eq_attrs = ['name', 'formal_name', 'components', 'parent']
+    unit = Column(String)
+
+    eq_attrs = ['name', 'formal_name', 'components', 'parent', 'unit']
 
 
-    def __init__(self, concentration=None, unit=None, **kwargs):
+    def __init__(self, concentration=None, unit='a.u.', **kwargs):
+        self.parent = None
+
         for key in kwargs:
-            if key in ['parent','name','name']:
+            if key in ['parent','name','unit']:
                 setattr(self,key,kwargs[key])
 
         self._concentration = concentration
-        self._unit = unit
+        self.unit = unit
         self.unit_conversion_flag = False
 
-        self.parent = None
-
-        if concentration and unit:
-            self._convert_units()
+        # if concentration and unit:
+        #     self._convert_units()
 
     def __str__(self):
         if self.parent:
             return self.parent.name+'+'+'+'.join([item for item in
-                             [str(cc.concentration) + 'g/L ' + cc.media_component.name for cc in
+                             [str(cc.concentration) + self.unit + cc.media_component.name for cc in
                               self.components.values()]])
         else:
             return '+'.join([item for item in
-                             [str(cc.concentration) + 'g/L ' + cc.media_component.name for cc in
+                             [str(cc.concentration) + self.unit + cc.media_component.name for cc in
                               self.components.values()]])
 
     @property
@@ -239,7 +245,7 @@ class Media(Base, TrialIdentifierMixin):
             self.components[component.component_name] = component
         elif isinstance(component,str):
             # If only a name was given
-            self.components[component.name] = ComponentConcentration(MediaComponent(component), concentration, unit)
+            self.components[component] = ComponentConcentration(MediaComponent(component), concentration, unit)
 
 
 class Environment(Base, TrialIdentifierMixin):
@@ -255,8 +261,11 @@ class Environment(Base, TrialIdentifierMixin):
     eq_attrs = ['labware', 'shaking_speed', 'shaking_diameter', 'temperature']
 
     # @reconstructor
-    def __init__(self, labware=None):
+    def __init__(self, labware=None, **kwargs):
         self.labware = Labware() if labware is None else labware
+        # Overwrite user-set parameters
+        for arg in kwargs:
+            setattr(self,arg,kwargs[arg])
 
     def __str__(self):
         _ = ''
@@ -334,7 +343,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
 
     eq_attrs = ['strain','media','environment','id_1','id_2','id_3']
 
-    @reconstructor
+    # @reconstructor
     def __init__(self, strain=None, media=None, environment=None):
         self.strain = Strain() if strain is None else strain
         self.media = Media() if media is None else media
@@ -482,10 +491,10 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         """
         Returns a string identifying the unique attribute of a replicate trial
         """
-        return ' '.join([str(getattr(self,attr))
-                         for attr in ['strain','media','environment','id_1',
-                                      'id_2','id_3']
-                         if str(getattr(self,attr) != '') ])
+        return ' '.join([str(getattr(self, attr))
+                         for attr in ['strain', 'media', 'environment', 'id_1',
+                                      'id_2', 'id_3']
+                         if str(getattr(self, attr) != '')])
 
     def get_analyte_data_statistic_identifier(self):
         ti = TimeCourseIdentifier()

@@ -1,7 +1,7 @@
 import sqlite3 as sql
 import time
 
-from .AnalyteData import TimeCourse
+from .AnalyteData import TimeCourse, Biomass, Product, Substrate, Reporter
 from .ReplicateTrial import ReplicateTrial
 from .SingleTrial import SingleTrial
 from .. import parsers
@@ -19,7 +19,7 @@ import numpy as np
 from warnings import warn
 
 from ..database import Base
-from sqlalchemy import Column, Integer, ForeignKey, Float, Date, String
+from sqlalchemy import Column, Integer, ForeignKey, Float, Date, String, event
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
@@ -28,10 +28,11 @@ class Experiment(Base):
     __tablename__ = 'experiment'
 
     id = Column(Integer, primary_key=True)
-    replicate_trials = relationship('ReplicateTrial')
+    # replicate_trials = relationship('ReplicateTrial')
     stages = relationship('Stage')
     replicate_trial_dict = relationship('ReplicateTrial',
-                                        collection_class=attribute_mapped_collection('unique_id'))
+                                        collection_class=attribute_mapped_collection('unique_id'),
+                                        back_populates='parent')
     import_date = Column(Date)
     start_date = Column(Date)
     end_date = Column(Date)
@@ -39,6 +40,13 @@ class Experiment(Base):
     scientist_1 = Column(String)
     scientist_2 = Column(String)
     notes = Column(String)
+
+    type = Column(String)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'experiment',
+        'polymorphic_on': type
+    }
 
     def __init__(self, **kwargs):
         for key in kwargs:
@@ -94,7 +102,7 @@ class Experiment(Base):
                                                      'import_date','start_date','end_date']:
             setattr(combined_experiment,attr,getattr(self,attr))
         # combined_experiment.info = self.info
-        combined_experiment.parse_titers(analyte_list)
+        combined_experiment.parse_analyte_data(analyte_list)
 
         return combined_experiment
 
@@ -107,7 +115,6 @@ class Experiment(Base):
         return list(set([analyte for rep in self.replicate_trial_dict.values()
                          for st in rep.single_trial_dict.values()
                          for analyte in st.analyte_dict.keys()]))
-
 
     def calculate(self):
         t0 = time.time()
@@ -164,6 +171,7 @@ class Experiment(Base):
         for replicate_key in self.replicate_trial_dict:
             self.replicate_trial_dict[replicate_key].summary()
 
+    # @event.listens_for(ReplicateTrial, 'load')
     def add_replicate_trial(self, replicateTrial):
         """
         Add a :class:`~ReplicateTrial` to the experiment.
@@ -175,107 +183,11 @@ class Experiment(Base):
         replicateTrial.parent = self
         self.replicate_trial_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
 
-
     ## Parsing
-
     def parse_raw_data(self, *args, **kwargs):
         from ..parsers import parse_raw_data
         return parse_raw_data(experiment=self, *args, **kwargs)
-    # Dicts
-    def parse_time_point_dict(self, time_point_list):
-        print('Parsing time point list...',end='')
-        t0 = time.time()
-        analyte_dict = {}
-        for timePoint in time_point_list:
-            if timePoint.get_unique_timepoint_id() in analyte_dict:
-                analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
-            else:
-                analyte_dict[timePoint.get_unique_timepoint_id()] = TimeCourse()
-                analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
 
-        tf = time.time()
-        print("Parsed %i time points in %0.1fs" % (len(time_point_list), (tf - t0)))
-        self.parse_single_trial_dict(analyte_dict)
-
-    def parse_single_trial_dict(self, single_trial_dict):
-        print('Parsing analyte list...',end='')
-        t0 = time.time()
-        replicate_trial_dict = {}
-        count = 0
-        for analyte_dictKey in single_trial_dict:
-            count += 1
-            if single_trial_dict[analyte_dictKey].trial_identifier.unique_single_trial() in replicate_trial_dict:
-                replicate_trial_dict[
-                    single_trial_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
-                    single_trial_dict[analyte_dictKey])
-            else:
-                replicate_trial_dict[
-                    single_trial_dict[analyte_dictKey].trial_identifier.unique_single_trial()] = SingleTrial()
-                replicate_trial_dict[
-                    single_trial_dict[analyte_dictKey].trial_identifier.unique_single_trial()].add_analyte_data(
-                    single_trial_dict[analyte_dictKey])
-        tf = time.time()
-        print("Parsed %i single trials in %0.1fms" % (len(replicate_trial_dict), (tf - t0) * 1000))
-        self.parse_replicate_trials(replicate_trial_dict)
-
-    def parse_replicate_trials(self, replicate_trial_dict):
-        print('Parsing single trial object list...',end='')
-        t0 = time.time()
-        for key in replicate_trial_dict:
-            flag = 0
-            for key2 in self.replicate_trial_dict:
-                if key2 == replicate_trial_dict[key].trial_identifier.unique_replicate_trial():
-                    self.replicate_trial_dict[key2].add_replicate(replicate_trial_dict[key])
-                    flag = 1
-                    break
-            if flag == 0:
-                self.replicate_trial_dict[
-                    replicate_trial_dict[key].trial_identifier.unique_replicate_trial()] = ReplicateTrial()
-                self.replicate_trial_dict[
-                    replicate_trial_dict[key].trial_identifier.unique_replicate_trial()].parent = self
-                self.replicate_trial_dict[
-                    replicate_trial_dict[key].trial_identifier.unique_replicate_trial()].add_replicate(
-                    replicate_trial_dict[key])
-        tf = time.time()
-        print("Parsed %i replicates in %0.1fs" % (len(self.replicate_trial_dict), (tf - t0)))
-
-    # Lists
-    def parse_titers(self, titer_list):
-        print('Parsing analyte list...',end='')
-        t0 = time.time()
-
-        uniques = list(set([titer.trial_identifier.unique_single_trial() for titer in titer_list]))
-
-        single_trial_list = []
-        for unique in uniques:
-            single_trial = SingleTrial()
-            for titer in titer_list:
-                if titer.trial_identifier.unique_single_trial() == unique:
-                    single_trial.add_analyte_data(titer)
-            single_trial_list.append(single_trial)
-
-        tf = time.time()
-        print("Parsed %i analytes in %0.1fms" % (len(single_trial_list), (tf - t0) * 1000))
-
-        self.parse_single_trial_list(single_trial_list)
-
-    def parse_single_trial_list(self, single_trial_list):
-        uniques = list(set([single_trial.trial_identifier.unique_replicate_trial() for single_trial in single_trial_list]))
-
-        replicate_trial_list = []
-        for unique in uniques:
-            replicate_trial = ReplicateTrial()
-            for single_trial in single_trial_list:
-                if single_trial.trial_identifier.unique_replicate_trial() == unique:
-                    replicate_trial.add_replicate(single_trial)
-                    replicate_trial_list.append(replicate_trial)
-
-        self.replicate_trial_dict = dict()
-        for replicate_trial in replicate_trial_list:
-            self.add_replicate_trial(replicate_trial)
-
-
-    ## Analysis details
     def set_blanks(self, mode='auto', common_id='id_2'):
 
         self.blank_key_list = [replicate_key
@@ -344,9 +256,13 @@ class Experiment(Base):
 class Stage(Experiment):
     __tablename__ = 'stage'
 
-    id = Column(Integer, primary_key=True)
+    parent_id = Column(Integer, ForeignKey('experiment.id'), primary_key=True)
     start_time = Column(Float)
     end_time = Column(Float)
 
     parent = relationship('Experiment')
-    parent_id = Column(Integer, ForeignKey('experiment.id'))
+    # parent_id = Column(Integer, ForeignKey('experiment.id'))
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'experiment_stage',
+    }
