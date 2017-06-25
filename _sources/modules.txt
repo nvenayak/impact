@@ -1,7 +1,7 @@
-FermAT
+impact
 ======
 
 .. toctree::
    :maxdepth: 4
 
-   FermAT
+   impact

@@ -1,0 +1,689 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Quickstart\n",
+    "\n",
+    "The impact framework is designed to help scientists parse, interpret, explore and visualize data to understand and engineer micorbial physiology. The core framework is open-source and written entirely in python.\n",
+    "\n",
+    "Data is parsed into an object-oriented data structure, built on top of a relational mapping to most sql databases. This allows for efficient saving and querying to ease data exploration.\n",
+    "\n",
+    "Here we provide the basics to get started analyzing data with the core framework. Before getting started, it is worthwhile to understand the basic data schema:\n",
+    "\n",
+    "| Model                | Function                                                                         |\n",
+    "|----------------------|----------------------------------------------------------------------------------|\n",
+    "| TrialIdentifier      | Describes a trial (time, analyte, strain, media, etc.)                           |\n",
+    "| AnalyteData          | Time, data points and vectors for quantified data (g/L product, OD, etc.)        |\n",
+    "| SingleTrial          | All analytes for a given unit (e.g. a tube, well on plate, bioreactor, etc.)     |\n",
+    "| ReplicateTrial       | Contains a set of `SingleTrial`s with replicates grouped to calculate statistics |\n",
+    "| Experiment           | All of the trials performed on a given date                                      |\n",
+    "| Project              | Groups of experiments with overall goals              \n",
+    "\n",
+    "On import, data will automatically be parsed into this format. In addition, data will most commonly be queried by metadata in the `TrialIdentifier` which is composed of three main identifiers:\n",
+    "\n",
+    "| Model                | Function                                                                             |\n",
+    "|----------------------|--------------------------------------------------------------------------------------|\n",
+    "| Strain               | Describes the organism being characterized (e.g. strain, knockouts, plasmids, etc.)  |\n",
+    "| Media                | Described the medium used to characterize the organism (e.g. M9 + 0.02% glc_D)       |\n",
+    "| Environment          | The conditions and labware used (e.g. 96-well plate, 250RPM, 37C)                    |\n",
+    "\n",
+    "\n",
+    "## Importing data\n",
+    "\n",
+    "Data is imported using the `parse_raw_data` function from the `.parsing` module. This function returns an `Experiment`, which is the result of organizing all of your data.\n",
+    "\n",
+    "To parse data, the data is usually provided in an xlsx file in one of the desired formats. If your data doesn't conform to one of the built-in formats, you can use the provided parsers as a cookbook to build your own. Generally, minor edits are required to conform to new data.\n",
+    "\n",
+    "Here we use the sample test data, which is a typical format for data from HPLC. Each row is a specific trial and time points, and the columns represent the different analytes, and their types. You can see this data in `tests/test_data/sample_input_data.xlsx`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\Naveen\\Anaconda3\\lib\\site-packages\\IPython\\html.py:14: ShimWarning: The `IPython.html` package has been deprecated. You should import from `notebook` instead. `IPython.html.widgets` has moved to `ipywidgets`.\n",
+      "  \"`IPython.html.widgets` has moved to `ipywidgets`.\", ShimWarning)\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Importing data from ../tests/test_data/sample_input_data.xlsx...0.1s\n",
+      "Parsed 2884 timeCourseObjects in 0.670s...Number of lines skipped:  0\n",
+      "Parsing time point list...Parsed 2884 time points in 2.7s\n",
+      "Parsing analyte list...Parsed 18 analytes in 673.5ms\n",
+      "Parsing single trial list...Parsed 18 replicates in 0.0s\n",
+      "Analyzing data..."
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "c:\\users\\naveen\\documents\\university\\grad school\\university of toronto\\research\\python\\impact\\impact\\impact\\core\\features.py:42: RuntimeWarning: invalid value encountered in true_divide\n",
+      "  self.substrate_consumed\n",
+      "c:\\users\\naveen\\documents\\university\\grad school\\university of toronto\\research\\python\\impact\\impact\\impact\\core\\features.py:42: RuntimeWarning: divide by zero encountered in true_divide\n",
+      "  self.substrate_consumed\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Ran analysis in 1.1s\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "from impact.parsers import parse_raw_data\n",
+    "from pprint import pprint\n",
+    "expt = parse_raw_data('default_titers',file_name = '../tests/test_data/sample_input_data.xlsx')\n",
+    "expt.calculate()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The data is now imported and organized, we can quickly get an overview of what we've imported."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "strain    media    environment    analytes\n",
+      "--------  -------  -------------  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n",
+      "strain1            None           ['pyruvate', 'lactate', 'ethanol', 'meso-2,3-butanediol', '1,3-butanediol', 'acetate', '3-hydroxybutyrate', 'glucose', 'R/S-2,3-butanediol', 'acetoin', 'OD600', 'succinate', 'acetaldehyde', 'formate']\n",
+      "strain2            None           ['pyruvate', 'lactate', 'ethanol', 'meso-2,3-butanediol', '1,3-butanediol', 'acetate', '3-hydroxybutyrate', 'glucose', 'acetoin', 'R/S-2,3-butanediol', 'OD600', 'succinate', 'acetaldehyde', 'formate']\n",
+      "strain2            None           ['lactate', 'pyruvate', 'ethanol', 'meso-2,3-butanediol', '1,3-butanediol', 'acetate', '3-hydroxybutyrate', 'glucose', 'acetoin', 'R/S-2,3-butanediol', 'OD600', 'succinate', 'acetaldehyde', 'formate']\n",
+      "strain3            None           ['pyruvate', 'lactate', 'ethanol', 'meso-2,3-butanediol', '1,3-butanediol', 'acetate', 'glucose', 'acetoin', 'R/S-2,3-butanediol', 'formate', 'OD600', 'succinate', 'acetaldehyde', '3-hydroxybutyrate']\n",
+      "strain3            None           ['lactate', 'pyruvate', 'ethanol', 'meso-2,3-butanediol', '1,3-butanediol', 'acetate', '3-hydroxybutyrate', 'glucose', 'R/S-2,3-butanediol', 'acetoin', 'OD600', 'succinate', 'acetaldehyde', 'formate']\n",
+      "strain4            None           ['pyruvate', 'lactate', 'ethanol', 'meso-2,3-butanediol', '1,3-butanediol', 'acetate', 'glucose', 'acetoin', 'R/S-2,3-butanediol', 'formate', 'OD600', 'succinate', 'acetaldehyde', '3-hydroxybutyrate']\n",
+      "strain4            None           ['lactate', 'pyruvate', 'ethanol', 'meso-2,3-butanediol', '1,3-butanediol', 'acetate', '3-hydroxybutyrate', 'glucose', 'acetoin', 'R/S-2,3-butanediol', 'OD600', 'succinate', 'acetaldehyde', 'formate']\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(expt)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Before we dive into data analysis, it is worth having a basic understanding of the schema to know where to look for data.\n",
+    "\n",
+    "Firstly, all data is funneled into a `ReplicateTrial`, even if you only have one replicate. As such, it is convenient to always look for data in this object. This object contains both an `avg` and `std` attribute where you can find the respective statistics. `avg` and `std` attributes are instances of `SingleTrial`, so we can access the statistical data similarly to the raw data itself.\n",
+    "\n",
+    "# Querying and filtering for data\n",
+    "\n",
+    "Let's look into the ethanol data a bit more closely"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div id=\"b1f1b6a6-8bf3-48bc-9f5b-bffc87c3a1b5\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";Plotly.newPlot(\"b1f1b6a6-8bf3-48bc-9f5b-bffc87c3a1b5\", [{\"y\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.12009656288557986, 0.06714874986723046, 0.120498518999678, 0.18742098038980617, 0.21531220831355802], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"1\"}, {\"y\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.11059826005601686, 0.10914556053477255, 0.20538777577806824, 0.26252518074207654, 0.33025627131012353], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"2\"}, {\"y\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.22817472397633792, 0.13721191055932067, 0.3009883711507868, 0.3959185423599948, 0.516351866462772], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"3\"}, {\"y\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.15295651563931154, 0.10450207365377455, 0.20895822197617767, 0.28195490116395916, 0.35397344869548447], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"avg\"}, {\"y\": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0653137702803532, 0.03526163778601206, 0.09029788340222862, 0.1055980296389689, 0.15191476992707262], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"std\"}], {\"title\": \"strain: strain4,\\tmedia: ,\\tenv: None ,\\tanalyte: ethanol,\\trep: -1\"}, {\"linkText\": \"Export to plot.ly\", \"showLink\": true})});</script>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div id=\"edc3e28a-3a29-4c21-af3b-801cb3e624d8\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";Plotly.newPlot(\"edc3e28a-3a29-4c21-af3b-801cb3e624d8\", [{\"y\": [0.0, 0.0, 0.0, 0.029176551639578614, 0.07437622556599253, 0.4705314126442964, 0.2736340223793883, 1.081963864735378, 0.7549749733176734, 0.8934447899820545], \"type\": \"scatter\", \"x\": [0.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"1\"}, {\"y\": [0.0, 0.0, 0.0, 0.032079268871719364, 0.09809090872661047, 0.4928697060431429, 0.45079457485114444, 0.7974309655617386, 0.9846983810925872, 1.2762860100959026], \"type\": \"scatter\", \"x\": [0.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"2\"}, {\"y\": [0.0, 0.0, 0.0, 0.03062791025564899, 0.08623356714630151, 0.48170055934371964, 0.36221429861526633, 0.9396974151485583, 0.8698366772051302, 1.0848654000389786], \"type\": \"scatter\", \"x\": [0.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"avg\"}, {\"y\": [0.0, 0.0, 0.0, 0.0020525310387137703, 0.01676881327656337, 0.015795558742459064, 0.12527142801153396, 0.20119514247634857, 0.16243897943492402, 0.2707096228602337], \"type\": \"scatter\", \"x\": [0.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"std\"}], {\"title\": \"strain: strain4,\\tmedia: ,\\tenv: None ,\\tanalyte: ethanol,\\trep: -1\"}, {\"linkText\": \"Export to plot.ly\", \"showLink\": true})});</script>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div id=\"77e188bc-22de-4fba-b92a-93352d3215d7\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";Plotly.newPlot(\"77e188bc-22de-4fba-b92a-93352d3215d7\", [{\"y\": [0.19742149883357218, 0.23809780357762042, 0.35215706971627686, 1.389872829540814, 6.80241138485276, 8.157154050872187, 8.775111215528923, 14.653220938029687, 18.55916173907527, 19.905619162519336, 20.28527449328406, 18.425731153396256], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"1\"}, {\"y\": [0.24050099306262393, 0.23524083559033712, 0.35504779104636586, 1.5819528927561621, 7.618940424304775, 7.635998821926136, 7.822461554129708, 12.086328509621154, 14.479667790646467, 15.758535369921129, 16.467133162168814, 17.00564385760393], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"2\"}, {\"y\": [0.18359101001417738, 0.23735070799709448, 0.3171157690295085, 1.4755933923678362, 6.854999738881148, 7.85586754201966, 7.76394478195397, 12.185689306599885, 17.87684172343998, 20.6679153595959, 19.287981768237408, 18.453576695910076], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"3\"}, {\"y\": [0.20717116730345783, 0.23689644905501736, 0.34144020993071705, 1.482473038221604, 7.092117182679561, 7.883006804939328, 8.120505850537535, 12.975079584750242, 16.971890417720573, 18.777356630678785, 18.68012980789676, 17.961650568970086], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"avg\"}, {\"y\": [0.02968128314440146, 0.0014816645740292162, 0.02111511037904726, 0.09622465804827772, 0.4569993760195169, 0.2616354292872427, 0.5676593970534616, 1.4541619384318885, 2.1851247946305623, 2.6420134795873382, 1.9803191183140412, 0.828043155694391], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"std\"}], {\"title\": \"strain: strain2,\\tmedia: ,\\tenv: None ,\\tanalyte: ethanol,\\trep: -1\"}, {\"linkText\": \"Export to plot.ly\", \"showLink\": true})});</script>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div id=\"057b1a2b-91e6-410e-ba70-b22213ee04a0\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";Plotly.newPlot(\"057b1a2b-91e6-410e-ba70-b22213ee04a0\", [{\"y\": [0.0, 0.0, 0.0, 0.015773420861146907, 0.05221654613777321, 0.144723090999459, 0.9289328884483677, 0.7350423981707466, 1.156142442263525, 1.4653214370079328, 1.4224944319092205], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"1\"}, {\"y\": [0.0, 0.0, 0.0, 0.0, 0.04857316001760055, 0.11941060641898113, 0.7381537756738612, 0.685989939654157, 1.0356940319950068, 1.4743983196306278, 1.7802784372691407], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"2\"}, {\"y\": [0.0, 0.0, 0.0, 0.0, 0.04732989083037269, 0.15912522614875593, 1.0063474740047569, 0.9328372930994794, 1.4412344938339934, 1.4348510717320384, 1.8717736212287441], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"3\"}, {\"y\": [0.0, 0.0, 0.0, 0.005257806953715635, 0.049373198995248814, 0.14108630785573203, 0.8911447127089952, 0.7846232103081276, 1.2110236560308416, 1.458190276123533, 1.6915154968023682], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"avg\"}, {\"y\": [0.0, 0.0, 0.0, 0.009106788780224426, 0.002539664701816717, 0.02010553154721424, 0.1380323318117286, 0.13067936591096424, 0.20826600122337557, 0.020715605126510713, 0.237428077929155], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"std\"}], {\"title\": \"strain: strain3,\\tmedia: ,\\tenv: None ,\\tanalyte: ethanol,\\trep: -1\"}, {\"linkText\": \"Export to plot.ly\", \"showLink\": true})});</script>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div id=\"d922213c-a093-4c16-a02a-8d78dcf4cf39\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";Plotly.newPlot(\"d922213c-a093-4c16-a02a-8d78dcf4cf39\", [{\"y\": [0.10330914504307137, 0.11965854294907595, 0.12706209381804734, 0.21208874090122193, 1.9099359839175205, 4.044774286479206, 4.221771567961494, 6.595553599693483, 8.68329879164273, 9.967575899283828, 11.169197430083226, 12.247290500765365], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"1\"}, {\"y\": [0.09920293234581025, 0.11930190262344603, 0.12581609515129757, 0.22336581527119906, 1.9828712686922814, 4.321057735945162, 4.836030297436304, 7.280909861029207, 10.183047447628335, 12.066001256097541, 13.384686008943937, 13.424865709654409], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"2\"}, {\"y\": [0.10854099597658623, 0.14436225946937137, 0.12428421208090276, 0.26269859724792344, 2.203910293342941, 4.800018968588174, 5.053898903659924, 5.33115526521237, 7.306537957010101, 8.867095568923117, 11.43661981649218, 11.9608672086363], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"3\"}, {\"y\": [0.10368435778848928, 0.12777423501396445, 0.12572080035008257, 0.2327177178067815, 2.0322391819842474, 4.38861699700418, 4.703900256352575, 6.402539575311686, 8.724294732093723, 10.300224241434828, 11.996834418506447, 12.544341139685358], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"avg\"}, {\"y\": [0.004680325474403282, 0.01436675727435909, 0.0013913905133873454, 0.026569398763139438, 0.15307879277561787, 0.38212801883609554, 0.43151215107078145, 0.9891039157658118, 1.4386928834029478, 1.6251894008118177, 1.2093294468415405, 0.7758880166028468], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"std\"}], {\"title\": \"strain: strain2,\\tmedia: ,\\tenv: None ,\\tanalyte: ethanol,\\trep: -1\"}, {\"linkText\": \"Export to plot.ly\", \"showLink\": true})});</script>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div id=\"d2cf2d29-d434-4088-acc3-210e9fff6509\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";Plotly.newPlot(\"d2cf2d29-d434-4088-acc3-210e9fff6509\", [{\"y\": [0.0, 0.0, 0.012669009976484388, 0.0037361396657597337, 0.0, 0.013055611419212127, 0.15297572510095417, 0.14425445689604324, 0.20037044473933682, 0.20751609969418225, 0.19441882768268512], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"1\"}, {\"y\": [0.0, 0.0, 0.013646432611822096, 0.0, 0.0, 0.013459308984114664, 0.13180431644604962, 0.126484259717946, 0.17359944785856676, 0.1599945531251254, 0.18672294217965044], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"2\"}, {\"y\": [0.0, 0.0, 0.013157721294153242, 0.0018680698328798668, 0.0, 0.013257460201663396, 0.14239002077350188, 0.13536935830699462, 0.1869849462989518, 0.1837553264096538, 0.19057088493116778], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"avg\"}, {\"y\": [0.0, 0.0, 0.0006911421735325195, 0.002641849693118749, 0.0, 0.0002854572856910808, 0.01497044662715457, 0.012565426927654614, 0.01892995343351642, 0.03360280783145241, 0.005441812826431069], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], \"name\": \"std\"}], {\"title\": \"strain: strain3,\\tmedia: ,\\tenv: None ,\\tanalyte: ethanol,\\trep: -1\"}, {\"linkText\": \"Export to plot.ly\", \"showLink\": true})});</script>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div id=\"07fd7238-cacf-4cb2-9119-386202c8ef21\" style=\"height: 525px; width: 100%;\" class=\"plotly-graph-div\"></div><script type=\"text/javascript\">require([\"plotly\"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL=\"https://plot.ly\";Plotly.newPlot(\"07fd7238-cacf-4cb2-9119-386202c8ef21\", [{\"y\": [0.0, 0.0, 0.0, 0.024876109642490533, 0.10109732386685776, 0.3947797162475893, 4.523273963773695, 4.25160856704865, 6.96391392978976, 9.402432302229483, 9.719286965075371, 11.287072877174005, 12.08877218335116], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"1\"}, {\"y\": [0.0, 0.0, 0.0, 0.0, 0.08876628197195137, 0.36237235560909264, 4.416314385977613, 3.726755265049707, 5.915580128099751, 9.156828632953923, 10.58442277686517, 11.42037907861894, 12.008648461583414], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"2\"}, {\"y\": [0.0, 0.0, 0.0, 0.012438054821245267, 0.09493180291940456, 0.378576035928341, 4.469794174875654, 3.989181916049178, 6.439747028944755, 9.279630467591703, 10.15185487097027, 11.353725977896472, 12.048710322467286], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"avg\"}, {\"y\": [0.0, 0.0, 0.0, 0.01759006581774512, 0.00871936334298372, 0.022915464467838976, 0.07563184277245959, 0.3711273289716035, 0.7412839401220788, 0.17366802002904683, 0.6117433991638952, 0.09426171901593323, 0.05665602699587767], \"type\": \"scatter\", \"x\": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], \"name\": \"std\"}], {\"title\": \"strain: strain1,\\tmedia: ,\\tenv: None ,\\tanalyte: ethanol,\\trep: -1\"}, {\"linkText\": \"Export to plot.ly\", \"showLink\": true})});</script>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'2': <impact.core.AnalyteData.Product object at 0x0000012CF559DE80>, 'std': <impact.core.AnalyteData.TimeCourse object at 0x0000012CF5A8A780>, '1': <impact.core.AnalyteData.Product object at 0x0000012CF5558B00>, 'avg': <impact.core.AnalyteData.TimeCourse object at 0x0000012CF5A6B588>}\n"
+     ]
+    }
+   ],
+   "source": [
+    "import impact.plotting as implot\n",
+    "\n",
+    "# Grab the average data\n",
+    "rep_list = [rep for rep in expt.replicate_trial_dict.values()]\n",
+    "\n",
+    "etoh_datas = []\n",
+    "for rep in rep_list:\n",
+    "    etoh_datas.append({'avg': rep.avg.analyte_dict['ethanol'], \n",
+    "                      'std': rep.std.analyte_dict['ethanol']})\n",
+    "    for rep_id in rep.single_trial_dict:\n",
+    "        etoh_datas[-1][rep_id] = rep.single_trial_dict[rep_id].analyte_dict['ethanol']\n",
+    "\n",
+    "for etoh_data in etoh_datas:\n",
+    "    layout = implot.go.Layout(title=str(etoh_data['avg'].trial_identifier))\n",
+    "    implot.plot(implot.go.Figure(data=[implot.go.Scatter(x=etoh_data[key].time_vector, \n",
+    "                                   y=etoh_data[key].data_vector,\n",
+    "                                  name=key) for key in sorted(etoh_data)],layout=layout))\n",
+    "    \n",
+    "# implot.plot([implot.go.Scatter(x=etoh_data.time_vector, y=etoh_data.data_vector) for etoh_data in etoh_datas])\n",
+    "\n",
+    "print(etoh_data)\n",
+    "# and the data for each replicate\n",
+    "# for rep_id in rep.\n",
+    "# for analyte_data in etoh_data['avg']:\n",
+    "#     print(analyte_data.trial_identifier)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "import impact.plotting\n",
+    "import plotly.graph_objs as go\n",
+    "from plotly.offline import iplot\n",
+    "\n",
+    "iplot(\n",
+    "    [go.Scatter(\n",
+    "            x=analyte_data_avg.time_vector,\n",
+    "            y=analyte_data_avg.data_vector,\n",
+    "            name=str(analyte_data),\n",
+    "            error_y=dict(type='data', array=analyte_data_std.data_vector)\n",
+    "               ) \n",
+    "     for analyte_data_avg, analyte_data_std in zip(ethanol_avg_data, ethanol_std_data)]\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Exploring features\n",
+    "\n",
+    "With a standard schema for the data, we can now begin to explore some of the features which have been generated. Features include things like:\n",
+    "\n",
+    "- rate ($g\\ \\ h^{-1}$)\n",
+    "- yield ($g_{product}\\ \\ g_{substrate}^{-1}$)\n",
+    "- specific productivity ($g\\ \\ gdw^{-1}\\ \\ h^{-1}$)\n",
+    "- normalized data (e.g. $a.u. fluorescence\\ \\ OD_{600}^{-1}$)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "ethanol_avg_specific_productivity = [expt.replicate_experiment_dict[replicate_key].avg.analyte_dict['ethanol'].specific_productivity for replicate_key in expt.replicate_experiment_dict]\n",
+    "# ethanol_std_specific_productivity = [expt.replicate_experiment_dict[replicate_key].std.analyte_dict['ethanol'].specific_productivity for replicate_key in expt.replicate_experiment_dict]\n",
+    "\n",
+    "iplot(\n",
+    "    [go.Scatter(\n",
+    "            x=analyte_data_avg.time_vector,\n",
+    "            y=analyte_data_avg.specific_productivity,\n",
+    "            name=str(analyte_data),\n",
+    "#             error_y=dict(type='data', array=analyte_data_std.product_yield)\n",
+    "               ) \n",
+    "     for analyte_data_avg, analyte_data_std in zip(ethanol_avg_data, ethanol_std_data)]\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Or maybe just the endpoints.."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "ethanol_avg_data = sorted(ethanol_avg_data,key=lambda x: x.pd_series.iloc[-1])\n",
+    "\n",
+    "iplot(\n",
+    "    [go.Bar(\n",
+    "            x=[str(analyte_data_avg) for analyte_data_avg in ethanol_avg_data],\n",
+    "            y=[analyte_data_avg.pd_series.iloc[-1] for analyte_data_avg in ethanol_avg_data],\n",
+    "            name=str(analyte_data),\n",
+    "#             error_y=dict(type='data', array=analyte_data_std.product_yield)\n",
+    "               )]\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "{\n",
+    " \"cells\": [\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {\n",
+    "    \"nbsphinx\": \"hidden\"\n",
+    "   },\n",
+    "   \"source\": [\n",
+    "    \"This notebook is part of the `nbsphinx` documentation: http://nbsphinx.readthedocs.io/.\"\n",
+    "   ]\n",
+    "  },\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {},\n",
+    "   \"source\": [\n",
+    "    \"# Markdown Cells\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"We can use *emphasis*, **boldface**, `preformatted text`.\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"> It looks like strike-out text is not supported: ~~strikethrough~~.\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"* Red\\n\",\n",
+    "    \"* Green\\n\",\n",
+    "    \"* Blue\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"***\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"1. One\\n\",\n",
+    "    \"1. Two\\n\",\n",
+    "    \"1. Three\"\n",
+    "   ]\n",
+    "  },\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {},\n",
+    "   \"source\": [\n",
+    "    \"## Equations\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"Equations can be formatted really nicely, either inline, like $\\\\text{e}^{i\\\\pi} = -1$, or on a separate line, like\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"\\\\begin{equation}\\n\",\n",
+    "    \"\\\\int_{-\\\\infty}^\\\\infty f(x) \\\\delta(x - x_0) dx = f(x_0)\\n\",\n",
+    "    \"\\\\end{equation}\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"*Note:* Avoid leading and trailing spaces around math expressions, otherwise errors like the following will occur when Sphinx is running:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"    ERROR: Unknown interpreted text role \\\"raw-latex\\\".\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"See also the [pandoc docs](http://pandoc.org/README.html#math):\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"> Anything between two `$` characters will be treated as TeX math. The opening `$` must have a non-space character immediately to its right, while the closing `$` must have a non-space character immediately to its left, and must not be followed immediately by a digit.\"\n",
+    "   ]\n",
+    "  },\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {},\n",
+    "   \"source\": [\n",
+    "    \"## Code\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"We can also write code with nice syntax highlighting:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"```python3\\n\",\n",
+    "    \"print(\\\"Hello, world!\\\")\\n\",\n",
+    "    \"```\"\n",
+    "   ]\n",
+    "  },\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {},\n",
+    "   \"source\": [\n",
+    "    \"## Tables\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"A     | B     | A and B\\n\",\n",
+    "    \"------|-------|--------\\n\",\n",
+    "    \"False | False | False\\n\",\n",
+    "    \"True  | False | False\\n\",\n",
+    "    \"False | True  | False\\n\",\n",
+    "    \"True  | True  | True\"\n",
+    "   ]\n",
+    "  },\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {},\n",
+    "   \"source\": [\n",
+    "    \"## Images\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"PNG file (local): ![Jupyter notebook icon](images/notebook_icon.png)\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"SVG file (local): ![Python logo](images/python_logo.svg)\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"PNG file (remote): ![Python logo (remote)](https://www.python.org/static/img/python-logo-large.png)\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"SVG file (remote): ![Jupyter logo (remote)](http://jupyter.org/assets/nav_logo.svg)\"\n",
+    "   ]\n",
+    "  },\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {},\n",
+    "   \"source\": [\n",
+    "    \"## HTML Elements (HTML only)\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"It is allowed to use plain HTML elements within Markdown cells.\\n\",\n",
+    "    \"Those elements are passed through to the HTML output and are ignored for the LaTeX output.\\n\",\n",
+    "    \"Below are a few examples.\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"HTML5 [audio](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio) elements can be created like this:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"```html\\n\",\n",
+    "    \"<audio src=\\\"https://example.org/audio.ogg\\\" controls>alternative text</audio>\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"Example:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"<audio src=\\\"https://upload.wikimedia.org/wikipedia/commons/6/61/DescenteInfinie.ogg\\\" controls>The HTML audio element is not supported!</audio>\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"HTML5 [video](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video) elements can be created like this:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"```html\\n\",\n",
+    "    \"<video src=\\\"https://example.org/video.ogv\\\" controls>alternative text</video>\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"Example:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"<video src=\\\"https://upload.wikimedia.org/wikipedia/commons/4/42/Shepard_Calais_1906_FrenchGP.ogv\\\" controls autoplay loop>The HTML video element is not supported!</video>\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"The alternative text is shown in browsers that don't support those elements. The same text is also shown in Sphinx's LaTeX output.\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"<div class=\\\"alert alert-info\\\">\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"**Note:** You can also use local files for the `<audio>` and `<video>` elements, but you have to create a link to the source file somewhere, because only then are the local files copied to the HTML output directory!\\n\",\n",
+    "    \"You should do that anyway to make the audio/video file accessible to browsers that don't support the `<audio>` and `<video>` elements.\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"</div>\"\n",
+    "   ]\n",
+    "  },\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {},\n",
+    "   \"source\": [\n",
+    "    \"## Info/Warning Boxes\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"<div class=\\\"alert alert-warning\\\">\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"**Warning:**\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"This is an *experimental feature*!\\n\",\n",
+    "    \"Its usage will probably change in the future or it might be removed completely!\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"</div>\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"Until there is an info/warning extension for Markdown/CommonMark (see [this issue](https://github.com/jupyter/notebook/issues/1292)), such boxes can be created by using HTML `<div>` elements like this:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"```html\\n\",\n",
+    "    \"<div class=\\\"alert alert-info\\\">\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"**Note:** This is a note!\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"</div>\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"For this to work reliably, you should obey the following guidelines:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"* The `class` attribute has to be either `\\\"alert alert-info\\\"` or `\\\"alert alert-warning\\\"`, other values will not be converted correctly.\\n\",\n",
+    "    \"* No further attributes are allowed.\\n\",\n",
+    "    \"* For compatibility with CommonMark, you should add an empty line between the `<div>` start tag and the beginning of the content.\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"<div class=\\\"alert alert-info\\\">\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"**Note:**\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"The text can contain further Markdown formatting.\\n\",\n",
+    "    \"It is even possible to have nested boxes:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"<div class=\\\"alert alert-warning\\\">\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"... but please don't *overuse* this!\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"</div>\\n\",\n",
+    "    \"</div>\"\n",
+    "   ]\n",
+    "  },\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {},\n",
+    "   \"source\": [\n",
+    "    \"## Links to Other Notebooks\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"Relative links to local notebooks can be used:\\n\",\n",
+    "    \"[a link to a notebook in a subdirectory](subdir/a-notebook-in-a-subdir.ipynb),\\n\",\n",
+    "    \"[a link to an orphan notebook](orphan.ipynb)\\n\",\n",
+    "    \"(latter won't work in LaTeX output, because orphan pages are not included there).\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"This is how a link is created in Markdown:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"[a link to a notebook in a subdirectory](subdir/a-notebook-in-a-subdir.ipynb)\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"Markdown also supports *reference-style* links:\\n\",\n",
+    "    \"[a reference-style link][mylink],\\n\",\n",
+    "    \"[another version of the same link][mylink].\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"[mylink]: subdir/a-notebook-in-a-subdir.ipynb\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"These can be created with this syntax:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"[a reference-style link][mylink]\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"[mylink]: subdir/a-notebook-in-a-subdir.ipynb\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"Links to sub-sections are also possible, e.g.\\n\",\n",
+    "    \"[this subsection](subdir/a-notebook-in-a-subdir.ipynb#A-Sub-Section).\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"This link was created with:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"[this subsection](subdir/a-notebook-in-a-subdir.ipynb#A-Sub-Section)\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"You just have to remember to replace spaces with hyphens!\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"BTW, links to sections of the current notebook work, too, e.g.\\n\",\n",
+    "    \"[beginning of this section](#Links-to-Other-Notebooks).\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"This can be done, as expected, like this:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"[beginning of this section](#Links-to-Other-Notebooks)\\n\",\n",
+    "    \"```\"\n",
+    "   ]\n",
+    "  },\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {},\n",
+    "   \"source\": [\n",
+    "    \"## Links to `*.rst` Files (and Other Sphinx Source Files)\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"Links to files whose extension is in the configuration value [source_suffix](http://www.sphinx-doc.org/config.html#confval-source_suffix), will be converted to links to the generated HTML/LaTeX pages. Example: [A reStructuredText file](a-normal-rst-file.rst).\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"This was created with:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"[A reStructuredText file](a-normal-rst-file.rst)\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"Links to sub-sections are not (yet?) possible.\"\n",
+    "   ]\n",
+    "  },\n",
+    "  {\n",
+    "   \"cell_type\": \"markdown\",\n",
+    "   \"metadata\": {},\n",
+    "   \"source\": [\n",
+    "    \"## Links to Local Files (HTML only)\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"Links to local files (other than Jupyter notebooks and other Sphinx source files) are also possible, e.g. [requirements.txt](requirements.txt).\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"This was simply created with:\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"[requirements.txt](requirements.txt)\\n\",\n",
+    "    \"```\\n\",\n",
+    "    \"\\n\",\n",
+    "    \"The linked files are automatically copied to the HTML output directory.\\n\",\n",
+    "    \"For LaTeX output, no link is created.\"\n",
+    "   ]\n",
+    "  }\n",
+    " ],\n",
+    " \"metadata\": {\n",
+    "  \"kernelspec\": {\n",
+    "   \"display_name\": \"Python 3\",\n",
+    "   \"language\": \"python\",\n",
+    "   \"name\": \"python3\"\n",
+    "  },\n",
+    "  \"language_info\": {\n",
+    "   \"codemirror_mode\": {\n",
+    "    \"name\": \"ipython\",\n",
+    "    \"version\": 3\n",
+    "   },\n",
+    "   \"file_extension\": \".py\",\n",
+    "   \"mimetype\": \"text/x-python\",\n",
+    "   \"name\": \"python\",\n",
+    "   \"nbconvert_exporter\": \"python\",\n",
+    "   \"pygments_lexer\": \"ipython3\",\n",
+    "   \"version\": \"3.4.4\"\n",
+    "  }\n",
+    " },\n",
+    " \"nbformat\": 4,\n",
+    " \"nbformat_minor\": 1\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "anaconda-cloud": {},
+  "kernelspec": {
+   "display_name": "Python [default]",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.5.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
