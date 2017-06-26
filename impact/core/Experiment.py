@@ -4,7 +4,6 @@ import time
 from .AnalyteData import TimeCourse, Biomass, Product, Substrate, Reporter
 from .ReplicateTrial import ReplicateTrial
 from .SingleTrial import SingleTrial
-from .. import parsers
 
 try:
     from pyexcel_xlsx import get_data
