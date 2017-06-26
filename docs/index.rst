@@ -33,12 +33,12 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   quick_install
+   ../readme.md
    quickstart
    0_getting_started
+   core_structure
    1_features_0
    2_features_1
-   3_import_experiment_data
    impact
 
 

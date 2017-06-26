@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Documentation &mdash; impact 0.4.0 documentation</title>
+    <title>Documentation &mdash; impact 0.8.0 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4.0',
+        VERSION:     '0.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,9 +29,9 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="top" title="impact 0.4.0 documentation" href="#" />
-    <link rel="next" title="Quick Install" href="quick_install.html" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+    <link rel="top" title="impact 0.8.0 documentation" href="#" />
+    <link rel="next" title="Impact: a framework for analyzing microbial physiology" href="readme.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -51,7 +51,7 @@
         </button>
         <a class="navbar-brand" href="#">
           impact</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.8</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -69,10 +69,25 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="quick_install.html">Quick Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#quick-start-guide">Quick Start Guide</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Import-data">Import data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Importing-data">Importing data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core_structure.html">Core structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
@@ -85,7 +100,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="3_import_experiment_data.html">Importing Raw Analyte Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
@@ -119,7 +133,7 @@
               
                 
   <li>
-    <a href="quick_install.html" title="Next Chapter: Quick Install"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Quick Install &raquo;</span>
+    <a href="readme.html" title="Next Chapter: Impact: a framework for analyzing microbial physiology"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Impact: a fra... &raquo;</span>
     </a>
   </li>
               
@@ -166,7 +180,7 @@ numerous interfaces to other languages such as matlab and python.</p>
 Use of the module is demonstrated using the jupyter notebook, which is a web-based user interface
 allowing scientists to store prose describing experiments and code to analyze data and generate visualizations
 together, greatly increasing the transparency of data analysis.</p>
-<p>For first time users, visit <a class="reference internal" href="quick_install.html"><em>Quick Install</em></a> to install the package.
+<p>For first time users, visit <code class="xref doc docutils literal"><span class="pre">quick_install</span></code> to install the package.
 Then, head over to the <a class="reference internal" href="quickstart.html"><em>Quickstart</em></a> tutorial to begin importing and
 analyzing data.</p>
 <p>To learn more about the features which are automatically extracted from the
@@ -177,10 +191,25 @@ data and visualization of these features, follow the <a class="reference interna
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="quick_install.html">Quick Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#quick-start-guide">Quick Start Guide</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Import-data">Import data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Importing-data">Importing data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core_structure.html">Core structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
@@ -193,7 +222,6 @@ data and visualization of these features, follow the <a class="reference interna
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="3_import_experiment_data.html">Importing Raw Analyte Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>

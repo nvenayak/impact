@@ -37,3 +37,7 @@ Install the package, use develop mode to ensure all the relative paths remain co
 To update to the latest version, run the following in the root folder:
     
     git pull
+    
+## Documentation
+
+The documentation is available in `docs` or a rendered version is available [here](http://nvenayak.github.io/impact/)

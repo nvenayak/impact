@@ -16,7 +16,7 @@ else:
     from IPython.display import HTML
 
 
-    # This is required for correct mathjax (latex) rendering
+    # This is required for correct mathjax (latex) and documentation rendering
     HTML(
         """
         <script>
@@ -220,7 +220,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     prepped_y_avg = dict()
     prepped_y_std = dict()
     prepped_legendgroup = dict()
-    for name in [str(replicate.trial_identifier.strain.nickname) + '+'
+    for name in [str(replicate.trial_identifier.strain.name) + '+'
                  + replicate.trial_identifier.id_1 + ','
                  + replicate.trial_identifier.id_2 for replicate in replicateTrialList]:
         prepped_x[name] = []
@@ -288,13 +288,13 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                              if getattr(replicate.trial_identifier, sortBy)
                              == unique or sort_by_flag is False]
                     if sortBy == 'id_1':
-                        x = [replicate.trial_identifier.strain.nickname + ',' +
+                        x = [replicate.trial_identifier.strain.name + ',' +
                              replicate.trial_identifier.id_2
                              for replicate in replicateTrialList
                              if getattr(replicate.trial_identifier, sortBy)
                              == unique or sort_by_flag is False]
                     if sortBy == 'id_2':
-                        x = [replicate.trial_identifier.strain.nickname
+                        x = [replicate.trial_identifier.strain.name
                              + '+'
                              + replicate.trial_identifier.id_1
                              for replicate in replicateTrialList
@@ -304,12 +304,12 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                 else:
                     if sort_by_product_in_legend_flag:
                         x = [product for _ in replicateTrialList]
-                        legendgroup = [replicate.trial_identifier.strain.nickname + '+' +
+                        legendgroup = [replicate.trial_identifier.strain.name + '+' +
                                        replicate.trial_identifier.id_1 + ',' +
                                        replicate.trial_identifier.id_2 for replicate in replicateTrialList]
                     else:
                         legendgroup = None
-                        x = [(replicate.trial_identifier.strain.nickname + '+' +
+                        x = [(replicate.trial_identifier.strain.name + '+' +
                               replicate.trial_identifier.id_1 +
                               replicate.trial_identifier.id_2).split('LMSE')[-1]
                              for replicate in replicateTrialList
@@ -509,10 +509,10 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
                                    marker={
                                        'color': colors[color_index]},
                                    line={'color': colors[color_index]},
-                                   legendgroup=(replicate.trial_identifier.strain.nickname + '+' +
+                                   legendgroup=(replicate.trial_identifier.strain.name + '+' +
                                                 replicate.trial_identifier.id_1 +
                                                 replicate.trial_identifier.id_2).split('LMSE')[-1],
-                                   name=(replicate.trial_identifier.strain.nickname + '+' +
+                                   name=(replicate.trial_identifier.strain.name + '+' +
                                          replicate.trial_identifier.id_1 +
                                          replicate.trial_identifier.id_2).split('LMSE')[-1])  # ,
 
@@ -608,7 +608,7 @@ def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600',
                         cl_scales=['8', 'qual', 'Set1'],
                         label=lambda replicate: str(replicate.parent.start_date)
                                                 + ' '
-                                                + replicate.trial_identifier.strain.nickname
+                                                + replicate.trial_identifier.strain.name
                                                 + ' '
                                                 + replicate.trial_identifier.id_1
                                                 + ' '

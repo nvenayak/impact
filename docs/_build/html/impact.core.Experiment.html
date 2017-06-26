@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>impact.core.Experiment module &mdash; impact 0.4.0 documentation</title>
+    <title>impact.core.Experiment module &mdash; impact 0.8.0 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4.0',
+        VERSION:     '0.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,8 +29,8 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="top" title="impact 0.4.0 documentation" href="index.html" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+    <link rel="top" title="impact 0.8.0 documentation" href="index.html" />
     <link rel="up" title="impact.core package" href="impact.core.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -51,7 +51,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           impact</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.8</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -69,10 +69,25 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="quick_install.html">Quick Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#quick-start-guide">Quick Start Guide</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Import-data">Import data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Importing-data">Importing data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core_structure.html">Core structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
@@ -185,38 +200,15 @@
 <td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.parse_raw_data" title="impact.core.Experiment.Experiment.parse_raw_data"><code class="xref py py-obj docutils literal"><span class="pre">parse_raw_data</span></code></a>(*args,&nbsp;**kwargs)</td>
-<td></td>
+<td>Wrapper for parsing data into an experiment</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.parse_replicate_trials" title="impact.core.Experiment.Experiment.parse_replicate_trials"><code class="xref py py-obj docutils literal"><span class="pre">parse_replicate_trials</span></code></a>(replicate_trial_dict)</td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.set_blanks" title="impact.core.Experiment.Experiment.set_blanks"><code class="xref py py-obj docutils literal"><span class="pre">set_blanks</span></code></a>([mode,&nbsp;common_id])</td>
+<td>Define how to associate blanks and perform blank subtraction.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.parse_single_trial_dict" title="impact.core.Experiment.Experiment.parse_single_trial_dict"><code class="xref py py-obj docutils literal"><span class="pre">parse_single_trial_dict</span></code></a>(single_trial_dict)</td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.set_stages" title="impact.core.Experiment.Experiment.set_stages"><code class="xref py py-obj docutils literal"><span class="pre">set_stages</span></code></a>([stage_indices,&nbsp;stage_times])</td>
+<td>Set the stages for the experiment.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.parse_single_trial_list" title="impact.core.Experiment.Experiment.parse_single_trial_list"><code class="xref py py-obj docutils literal"><span class="pre">parse_single_trial_list</span></code></a>(single_trial_list)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.parse_time_point_dict" title="impact.core.Experiment.Experiment.parse_time_point_dict"><code class="xref py py-obj docutils literal"><span class="pre">parse_time_point_dict</span></code></a>(time_point_list)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.parse_titers" title="impact.core.Experiment.Experiment.parse_titers"><code class="xref py py-obj docutils literal"><span class="pre">parse_titers</span></code></a>(titer_list)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.set_blanks" title="impact.core.Experiment.Experiment.set_blanks"><code class="xref py py-obj docutils literal"><span class="pre">set_blanks</span></code></a>([mode,&nbsp;common_id])</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.set_stages" title="impact.core.Experiment.Experiment.set_stages"><code class="xref py py-obj docutils literal"><span class="pre">set_stages</span></code></a>([stage_indices,&nbsp;stage_times])</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.summary" title="impact.core.Experiment.Experiment.summary"><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code></a>([level])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#impact.core.Experiment.Experiment.summary" title="impact.core.Experiment.Experiment.summary"><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code></a>([level])</td>
 <td></td>
 </tr>
 </tbody>
@@ -273,41 +265,22 @@
 <dl class="method">
 <dt id="impact.core.Experiment.Experiment.parse_raw_data">
 <code class="descname">parse_raw_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.Experiment.Experiment.parse_raw_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="impact.core.Experiment.Experiment.parse_replicate_trials">
-<code class="descname">parse_replicate_trials</code><span class="sig-paren">(</span><em>replicate_trial_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.Experiment.Experiment.parse_replicate_trials" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="impact.core.Experiment.Experiment.parse_single_trial_dict">
-<code class="descname">parse_single_trial_dict</code><span class="sig-paren">(</span><em>single_trial_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.Experiment.Experiment.parse_single_trial_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="impact.core.Experiment.Experiment.parse_single_trial_list">
-<code class="descname">parse_single_trial_list</code><span class="sig-paren">(</span><em>single_trial_list</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.Experiment.Experiment.parse_single_trial_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="impact.core.Experiment.Experiment.parse_time_point_dict">
-<code class="descname">parse_time_point_dict</code><span class="sig-paren">(</span><em>time_point_list</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.Experiment.Experiment.parse_time_point_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="impact.core.Experiment.Experiment.parse_titers">
-<code class="descname">parse_titers</code><span class="sig-paren">(</span><em>titer_list</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.Experiment.Experiment.parse_titers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Wrapper for parsing data into an experiment</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>args</strong></p>
+<p class="last"><strong>kwargs</strong></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="impact.core.Experiment.Experiment.replicate_trial_dict">
 <code class="descname">replicate_trial_dict</code><a class="headerlink" href="#impact.core.Experiment.Experiment.replicate_trial_dict" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="impact.core.Experiment.Experiment.replicate_trials">
-<code class="descname">replicate_trials</code><a class="headerlink" href="#impact.core.Experiment.Experiment.replicate_trials" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -322,13 +295,20 @@
 
 <dl class="method">
 <dt id="impact.core.Experiment.Experiment.set_blanks">
-<code class="descname">set_blanks</code><span class="sig-paren">(</span><em>mode='auto'</em>, <em>common_id='id_2'</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.Experiment.Experiment.set_blanks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">set_blanks</code><span class="sig-paren">(</span><em>mode='auto'</em>, <em>common_id='environment'</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.Experiment.Experiment.set_blanks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define how to associate blanks and perform blank subtraction.
+Parameters
+&#8212;&#8212;&#8212;-
+mode (str) : how to determine blanks
+common_id (str) : which identifier to use</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="impact.core.Experiment.Experiment.set_stages">
 <code class="descname">set_stages</code><span class="sig-paren">(</span><em>stage_indices=None</em>, <em>stage_times=None</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.Experiment.Experiment.set_stages" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>Set the stages for the experiment. These stages can be defined manually based on growth kinetics
+or batch condition changes such as inducer additions.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -363,6 +343,11 @@
 <dl class="attribute">
 <dt id="impact.core.Experiment.Experiment.title">
 <code class="descname">title</code><a class="headerlink" href="#impact.core.Experiment.Experiment.title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="impact.core.Experiment.Experiment.type">
+<code class="descname">type</code><a class="headerlink" href="#impact.core.Experiment.Experiment.type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -403,38 +388,15 @@
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_raw_data</span></code>(*args,&nbsp;**kwargs)</td>
-<td></td>
+<td>Wrapper for parsing data into an experiment</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_replicate_trials</span></code>(replicate_trial_dict)</td>
-<td></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_blanks</span></code>([mode,&nbsp;common_id])</td>
+<td>Define how to associate blanks and perform blank subtraction.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_single_trial_dict</span></code>(single_trial_dict)</td>
-<td></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_stages</span></code>([stage_indices,&nbsp;stage_times])</td>
+<td>Set the stages for the experiment.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_single_trial_list</span></code>(single_trial_list)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_time_point_dict</span></code>(time_point_list)</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_titers</span></code>(titer_list)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_blanks</span></code>([mode,&nbsp;common_id])</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_stages</span></code>([stage_indices,&nbsp;stage_times])</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code>([level])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">summary</span></code>([level])</td>
 <td></td>
 </tr>
 </tbody>
@@ -480,11 +442,6 @@
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="impact.core.Experiment.Stage.replicate_trials">
-<code class="descname">replicate_trials</code><a class="headerlink" href="#impact.core.Experiment.Stage.replicate_trials" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="impact.core.Experiment.Stage.scientist_1">
 <code class="descname">scientist_1</code><a class="headerlink" href="#impact.core.Experiment.Stage.scientist_1" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -512,6 +469,11 @@
 <dl class="attribute">
 <dt id="impact.core.Experiment.Stage.title">
 <code class="descname">title</code><a class="headerlink" href="#impact.core.Experiment.Stage.title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="impact.core.Experiment.Stage.type">
+<code class="descname">type</code><a class="headerlink" href="#impact.core.Experiment.Stage.type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

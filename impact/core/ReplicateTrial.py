@@ -15,7 +15,7 @@ max_fraction_replicates_to_remove = settings.max_fraction_replicates_to_remove
 verbose = settings.verbose
 
 from ..database import Base
-from sqlalchemy import Column, Integer, ForeignKey, PickleType, String
+from sqlalchemy import Column, Integer, ForeignKey, PickleType, String, event
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
@@ -48,7 +48,7 @@ class ReplicateTrial(Base):
     blank_id = Column(Integer,ForeignKey('single_trial.id'))
     blank = relationship('SingleTrial',uselist=False, foreign_keys=[blank_id])
 
-    parent = relationship('Experiment')
+    parent = relationship('Experiment',back_populates="replicate_trial_dict")
     parent_id = Column(Integer,ForeignKey('experiment.id'))
 
     bad_replicates = Column(PickleType)
@@ -56,7 +56,7 @@ class ReplicateTrial(Base):
 
     unique_id = Column(String)
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.avg = SingleTrial()
         self.std = SingleTrial()
         self.t = None
@@ -70,6 +70,9 @@ class ReplicateTrial(Base):
         self.stages = []
         self.features = []
 
+        for arg in kwargs:
+            setattr(self,arg,kwargs[arg])
+
     @property
     def unique_id(self):
         return self.trial_identifier.unique_replicate_trial()
@@ -78,44 +81,25 @@ class ReplicateTrial(Base):
         for stage in self.stages:
             stage.calculate()
 
-        for single_trial_key in self.single_trial_dict:
-            self.single_trial_dict[single_trial_key].calculate()
+        for single_trial in self.single_trial_dict.values():
+            single_trial.calculate()
 
         if self.blank:  self.substract_blank()
         self.calculate_statistics()
 
-    def serialize(self):
-        serialized_dict = {}
-
-        for replicate_id in self.single_trial_dict:
-            serialized_dict[str(replicate_id)] = self.single_trial_dict[replicate_id].serialize()
-        serialized_dict['avg'] = self.avg.serialize()
-        serialized_dict['std'] = self.std.serialize()
-        import json
-        return json.dumps(serialized_dict)
-
-    # def calculate_stages(self):
-
-        # if stage_indices is None:
-        #     raise Exception('No stage_indices provided')
-        #
-        # self.stages = []
-        # self.stage_indices = stage_indices
-        #
-        # for stage_bounds in stage_indices:
-        #     temp_stage = self.create_stage(stage_bounds)
-        #     temp_stage.calculate()
-        #     self.stages.append(temp_stage)
+    # def serialize(self):
+    #     serialized_dict = {}
+    #
+    #     for replicate_id in self.single_trial_dict:
+    #         serialized_dict[str(replicate_id)] = self.single_trial_dict[replicate_id].serialize()
+    #     serialized_dict['avg'] = self.avg.serialize()
+    #     serialized_dict['std'] = self.std.serialize()
+    #     import json
+    #     return json.dumps(serialized_dict)
 
     def create_stage(self, stage_bounds):
         if stage_bounds is None:
             raise Exception('No stage_bounds provided')
-
-        # for stage_bounds in stage_indices:
-        #     temp_stage = self.create_stage(stage_bounds)
-        #     temp_stage.calculate()
-        #     self.stages.append(temp_stage)
-
 
         stage = ReplicateTrial()
         for replicate_id in self.single_trial_dict:
@@ -126,9 +110,6 @@ class ReplicateTrial(Base):
             stage.add_replicate(single_trial.create_stage(stage_bounds))
         self.stages.append(stage)
         return stage
-
-    def summary(self):
-        return
 
     def get_normalized_data(self, normalize_to):
         new_replicate = ReplicateTrial()
@@ -150,6 +131,7 @@ class ReplicateTrial(Base):
                 raise Exception(
                     "the replicates do not have the same uniqueID, either the uniqueID includes too much information or the strains don't match")
 
+    # @event.listens_for(SingleTrial, 'load')
     def add_replicate(self, single_trial):
         """
         Add a SingleTrial object to this list of replicates

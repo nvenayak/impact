@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>impact.core.AnalyteData module &mdash; impact 0.4.0 documentation</title>
+    <title>impact.core.AnalyteData module &mdash; impact 0.8.0 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4.0',
+        VERSION:     '0.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,8 +29,8 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="top" title="impact 0.4.0 documentation" href="index.html" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+    <link rel="top" title="impact 0.8.0 documentation" href="index.html" />
     <link rel="up" title="impact.core package" href="impact.core.html" />
     <link rel="prev" title="impact.core package" href="impact.core.html" />
 <meta charset='utf-8'>
@@ -52,7 +52,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           impact</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.8</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -70,10 +70,25 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="quick_install.html">Quick Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#quick-start-guide">Quick Start Guide</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Import-data">Import data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Importing-data">Importing data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core_structure.html">Core structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
@@ -301,6 +316,11 @@
 <code class="descname">trial_identifier_id</code><a class="headerlink" href="#impact.core.AnalyteData.Biomass.trial_identifier_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="impact.core.AnalyteData.Biomass.type">
+<code class="descname">type</code><a class="headerlink" href="#impact.core.AnalyteData.Biomass.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -441,6 +461,11 @@
 <code class="descname">trial_identifier_id</code><a class="headerlink" href="#impact.core.AnalyteData.EndPoint.trial_identifier_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="impact.core.AnalyteData.EndPoint.type">
+<code class="descname">type</code><a class="headerlink" href="#impact.core.AnalyteData.EndPoint.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -463,8 +488,8 @@
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="impact.core.AnalyteData.FitParameter.parent">
-<code class="descname">parent</code><a class="headerlink" href="#impact.core.AnalyteData.FitParameter.parent" title="Permalink to this definition">¶</a></dt>
+<dt id="impact.core.AnalyteData.FitParameter.parent_id">
+<code class="descname">parent_id</code><a class="headerlink" href="#impact.core.AnalyteData.FitParameter.parent_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -674,6 +699,11 @@
 <code class="descname">trial_identifier_id</code><a class="headerlink" href="#impact.core.AnalyteData.Product.trial_identifier_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="impact.core.AnalyteData.Product.type">
+<code class="descname">type</code><a class="headerlink" href="#impact.core.AnalyteData.Product.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -829,6 +859,11 @@
 <code class="descname">trial_identifier_id</code><a class="headerlink" href="#impact.core.AnalyteData.Reporter.trial_identifier_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="impact.core.AnalyteData.Reporter.type">
+<code class="descname">type</code><a class="headerlink" href="#impact.core.AnalyteData.Reporter.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -896,7 +931,7 @@
 
 <dl class="class">
 <dt id="impact.core.AnalyteData.Substrate">
-<em class="property">class </em><code class="descclassname">impact.core.AnalyteData.</code><code class="descname">Substrate</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.AnalyteData.Substrate" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">impact.core.AnalyteData.</code><code class="descname">Substrate</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.AnalyteData.Substrate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#impact.core.AnalyteData.TimeCourse" title="impact.core.AnalyteData.TimeCourse"><code class="xref py py-class docutils literal"><span class="pre">impact.core.AnalyteData.TimeCourse</span></code></a></p>
 <p class="rubric">Attributes</p>
 <table border="1" class="longtable docutils">
@@ -1045,6 +1080,11 @@
 <dl class="attribute">
 <dt id="impact.core.AnalyteData.Substrate.trial_identifier_id">
 <code class="descname">trial_identifier_id</code><a class="headerlink" href="#impact.core.AnalyteData.Substrate.trial_identifier_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="impact.core.AnalyteData.Substrate.type">
+<code class="descname">type</code><a class="headerlink" href="#impact.core.AnalyteData.Substrate.type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1253,6 +1293,11 @@
 <dd></dd></dl>
 
 <dl class="attribute">
+<dt id="impact.core.AnalyteData.TimeCourse.type">
+<code class="descname">type</code><a class="headerlink" href="#impact.core.AnalyteData.TimeCourse.type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="impact.core.AnalyteData.TimeCourse.unique_id">
 <code class="descname">unique_id</code><a class="headerlink" href="#impact.core.AnalyteData.TimeCourse.unique_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1261,7 +1306,7 @@
 
 <dl class="class">
 <dt id="impact.core.AnalyteData.TimeCourseStage">
-<em class="property">class </em><code class="descclassname">impact.core.AnalyteData.</code><code class="descname">TimeCourseStage</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.AnalyteData.TimeCourseStage" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">impact.core.AnalyteData.</code><code class="descname">TimeCourseStage</code><span class="sig-paren">(</span><em>parent</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.core.AnalyteData.TimeCourseStage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#impact.core.AnalyteData.TimeCourse" title="impact.core.AnalyteData.TimeCourse"><code class="xref py py-class docutils literal"><span class="pre">impact.core.AnalyteData.TimeCourse</span></code></a></p>
 <p class="rubric">Attributes</p>
 <table border="1" class="longtable docutils">
@@ -1377,6 +1422,11 @@
 <dd></dd></dl>
 
 <dl class="attribute">
+<dt id="impact.core.AnalyteData.TimeCourseStage.stage_parent">
+<code class="descname">stage_parent</code><a class="headerlink" href="#impact.core.AnalyteData.TimeCourseStage.stage_parent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="impact.core.AnalyteData.TimeCourseStage.stage_parent_id">
 <code class="descname">stage_parent_id</code><a class="headerlink" href="#impact.core.AnalyteData.TimeCourseStage.stage_parent_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1394,6 +1444,11 @@
 <dl class="attribute">
 <dt id="impact.core.AnalyteData.TimeCourseStage.trial_identifier_id">
 <code class="descname">trial_identifier_id</code><a class="headerlink" href="#impact.core.AnalyteData.TimeCourseStage.trial_identifier_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="impact.core.AnalyteData.TimeCourseStage.type">
+<code class="descname">type</code><a class="headerlink" href="#impact.core.AnalyteData.TimeCourseStage.type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

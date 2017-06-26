@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &mdash; impact 0.4.0 documentation</title>
+    <title>Index &mdash; impact 0.8.0 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4.0',
+        VERSION:     '0.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,8 +30,8 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="top" title="impact 0.4.0 documentation" href="index.html" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+    <link rel="top" title="impact 0.8.0 documentation" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -51,7 +51,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           impact</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.8</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -69,10 +69,25 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="quick_install.html">Quick Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#quick-start-guide">Quick Start Guide</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Import-data">Import data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Importing-data">Importing data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core_structure.html">Core structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
@@ -85,7 +100,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="3_import_experiment_data.html">Importing Raw Analyte Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
@@ -1083,10 +1097,6 @@
   </dt>
 
         
-  <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.FitParameter.parent">(impact.core.AnalyteData.FitParameter attribute)</a>
-  </dt>
-
-        
   <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.GradientTimePoint.parent">(impact.core.AnalyteData.GradientTimePoint attribute)</a>
   </dt>
 
@@ -1137,6 +1147,10 @@
   </dt>
 
         
+  <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.FitParameter.parent_id">(impact.core.AnalyteData.FitParameter attribute)</a>
+  </dt>
+
+        
   <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.GradientTimePoint.parent_id">(impact.core.AnalyteData.GradientTimePoint attribute)</a>
   </dt>
 
@@ -1182,6 +1196,10 @@
 
       </dl></dd>
       
+  <dt><a href="impact.parsers.html#impact.parsers.parse_analyte_data">parse_analyte_data() (in module impact.parsers)</a>
+  </dt>
+
+      
   <dt><a href="impact.core.Experiment.html#impact.core.Experiment.Experiment.parse_raw_data">parse_raw_data() (impact.core.Experiment.Experiment method)</a>
   </dt>
 
@@ -1192,27 +1210,15 @@
 
       </dl></dd>
       
-  <dt><a href="impact.core.Experiment.html#impact.core.Experiment.Experiment.parse_replicate_trials">parse_replicate_trials() (impact.core.Experiment.Experiment method)</a>
+  <dt><a href="impact.parsers.html#impact.parsers.parse_single_trial_list">parse_single_trial_list() (in module impact.parsers)</a>
   </dt>
 
       
-  <dt><a href="impact.core.Experiment.html#impact.core.Experiment.Experiment.parse_single_trial_dict">parse_single_trial_dict() (impact.core.Experiment.Experiment method)</a>
-  </dt>
-
-      
-  <dt><a href="impact.core.Experiment.html#impact.core.Experiment.Experiment.parse_single_trial_list">parse_single_trial_list() (impact.core.Experiment.Experiment method)</a>
-  </dt>
-
-      
-  <dt><a href="impact.core.Experiment.html#impact.core.Experiment.Experiment.parse_time_point_dict">parse_time_point_dict() (impact.core.Experiment.Experiment method)</a>
+  <dt><a href="impact.parsers.html#impact.parsers.parse_time_point_list">parse_time_point_list() (in module impact.parsers)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="impact.core.Experiment.html#impact.core.Experiment.Experiment.parse_titers">parse_titers() (impact.core.Experiment.Experiment method)</a>
-  </dt>
-
       
   <dt><a href="impact.core.settings.html#impact.core.settings.Settings.perform_curve_fit">perform_curve_fit (impact.core.settings.Settings attribute)</a>
   </dt>
@@ -1285,16 +1291,6 @@
       </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="impact.core.Experiment.html#impact.core.Experiment.Experiment.replicate_trials">replicate_trials (impact.core.Experiment.Experiment attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="impact.core.Experiment.html#impact.core.Experiment.Stage.replicate_trials">(impact.core.Experiment.Stage attribute)</a>
-  </dt>
-
-      </dl></dd>
       
   <dt><a href="impact.core.ReplicateTrial.html#impact.core.ReplicateTrial.ReplicateTrial">ReplicateTrial (class in impact.core.ReplicateTrial)</a>
   </dt>
@@ -1427,12 +1423,12 @@
   <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.SpecificProductivityTimePoint">SpecificProductivityTimePoint (class in impact.core.AnalyteData)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="impact.parsers.html#impact.parsers.spectromax_OD">spectromax_OD() (in module impact.parsers)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="impact.parsers.html#impact.parsers.spectromax_OD_triplicate">spectromax_OD_triplicate() (in module impact.parsers)</a>
   </dt>
@@ -1451,6 +1447,10 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.TimeCourseStage.stage_parent">stage_parent (impact.core.AnalyteData.TimeCourseStage attribute)</a>
+  </dt>
+
       
   <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.TimeCourseStage.stage_parent_id">stage_parent_id (impact.core.AnalyteData.TimeCourseStage attribute)</a>
   </dt>
@@ -1740,6 +1740,44 @@
 
         
   <dt><a href="impact.core.SingleTrial.html#impact.core.SingleTrial.SingleTrial.trial_identifier_id">(impact.core.SingleTrial.SingleTrial attribute)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.Biomass.type">type (impact.core.AnalyteData.Biomass attribute)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.EndPoint.type">(impact.core.AnalyteData.EndPoint attribute)</a>
+  </dt>
+
+        
+  <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.Product.type">(impact.core.AnalyteData.Product attribute)</a>
+  </dt>
+
+        
+  <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.Reporter.type">(impact.core.AnalyteData.Reporter attribute)</a>
+  </dt>
+
+        
+  <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.Substrate.type">(impact.core.AnalyteData.Substrate attribute)</a>
+  </dt>
+
+        
+  <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.TimeCourse.type">(impact.core.AnalyteData.TimeCourse attribute)</a>
+  </dt>
+
+        
+  <dt><a href="impact.core.AnalyteData.html#impact.core.AnalyteData.TimeCourseStage.type">(impact.core.AnalyteData.TimeCourseStage attribute)</a>
+  </dt>
+
+        
+  <dt><a href="impact.core.Experiment.html#impact.core.Experiment.Experiment.type">(impact.core.Experiment.Experiment attribute)</a>
+  </dt>
+
+        
+  <dt><a href="impact.core.Experiment.html#impact.core.Experiment.Stage.type">(impact.core.Experiment.Stage attribute)</a>
   </dt>
 
       </dl></dd>

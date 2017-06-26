@@ -33,8 +33,9 @@ class TestDatabase(unittest.TestCase):
 
         self.session.add(ti)
         self.session.commit()
-
-        ti = self.session.query(impt.ReplicateTrialIdentifier).all()[0]
+        del ti
+        del strain
+        ti = self.session.query(impt.ReplicateTrialIdentifier).one()
 
         self.assertEqual(ti.strain.name, 'test strain')
         self.trial_identifier = ti

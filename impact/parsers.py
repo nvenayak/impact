@@ -7,9 +7,10 @@ import numpy as np
 
 from openpyxl import load_workbook
 
-from .core.AnalyteData import TimePoint
 from .core.TrialIdentifier import TimeCourseIdentifier
-
+from .core.AnalyteData import Biomass, Substrate, Product, Reporter, TimePoint
+from .core import SingleTrial
+from .core import ReplicateTrial
 
 def spectromax_OD(experiment, data, id_type='CSV'):
     from .core.settings import settings
@@ -317,7 +318,8 @@ def parse_raw_data(format=None, id_type='CSV', file_name=None, data=None, experi
 
     return experiment
 
-from .core import SingleTrial
+
+
 def parse_analyte_data(analyte_data_list):
 
     print('Parsing analyte list...',end='')
@@ -338,7 +340,6 @@ def parse_analyte_data(analyte_data_list):
 
     return parse_single_trial_list(single_trial_list)
 
-from .core.AnalyteData import Biomass, Substrate, Product, Reporter
 def parse_time_point_list(time_point_list):
     print('Parsing time point list...',end='')
     t0 = time.time()
@@ -363,7 +364,6 @@ def parse_time_point_list(time_point_list):
     print("Parsed %i time points in %0.1fs" % (len(time_point_list), (tf - t0)))
     return parse_analyte_data(list(analyte_dict.values()))
 
-from .core import ReplicateTrial
 def parse_single_trial_list(single_trial_list):
     print('Parsing single trial list...',end='')
     t0 = time.time()

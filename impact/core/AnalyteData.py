@@ -18,7 +18,7 @@ class FitParameter(Base):
     __tablename__ = 'fit_parameters'
 
     id = Column(Integer,primary_key = True)
-    parent = Column(Integer,ForeignKey('time_course.id'))
+    parent_id = Column(Integer,ForeignKey('time_course.id'))
     parameter_name = Column(String)
     parameter_value = Column(Float)
 
@@ -102,16 +102,24 @@ class TimeCourse(Base):
     analyte_name = Column(String)
     analyte_type = Column(String)
 
+    type = Column(String)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'time_course',
+        'polymorphic_on': type
+    }
+
     @reconstructor
     def __init__(self, **kwargs):
         # Get the default parameters
         from .settings import settings
 
+        self.pd_series = None
+
         if 'time_points' in kwargs:
             for time_point in kwargs['time_points']:
                 self.add_timepoint(time_point)
-        else:
-            self.pd_series = None
+
 
         # Overwrite user-set parameters
         for arg in kwargs:
@@ -123,7 +131,6 @@ class TimeCourse(Base):
         # Keep track of whether or not calculations need to be updated
         self.calculations_uptodate = False
 
-        self.pd_series = None
 
         self.fit_params = dict()
 
@@ -143,7 +150,7 @@ class TimeCourse(Base):
         self._stage_indices = None
 
         # Declare the default curve fit
-        self.fit_type = 'gompertz'
+        self.fit_type = None
 
     def __str__(self):
         return str(self.trial_identifier.unique_analyte_data())
@@ -189,14 +196,14 @@ class TimeCourse(Base):
     @trial_identifier.setter
     def trial_identifier(self, trial_identifier):
         self._trial_identifier = trial_identifier
-
-        self.analyte_name = trial_identifier.analyte_name
-        self.analyte_type = trial_identifier.analyte_type
-        if self.analyte_type == 'product':
-            self.fit_type = 'productionEquation_generalized_logistic'
-        if self.analyte_type == 'biomass':
-            self.fit_type = 'janoschek_no_limits'
-            #'janoschek'#'gompertz'#'richard_5','growthEquation_generalized_logistic'
+        #
+        # self.analyte_name = trial_identifier.analyte_name
+        # self.analyte_type = trial_identifier.analyte_type
+        # if self.analyte_type == 'product':
+        #     self.fit_type = 'productionEquation_generalized_logistic'
+        # if self.analyte_type == 'biomass':
+        #     self.fit_type = 'janoschek_no_limits'
+        #     #'janoschek'#'gompertz'#'richard_5','growthEquation_generalized_logistic'
 
     @property
     def time_vector(self):
@@ -244,7 +251,6 @@ class TimeCourse(Base):
 
         # Instantiate death phase to be not detected (last point of the vector)
         self.death_phase_start = len(data_vector)
-
         if live_calculations:   self.calculate()
 
     @property
@@ -369,20 +375,91 @@ class TimeCourse(Base):
             print(self.pd_series)
             print(self.trial_identifier)
             print(time_point.trial_identifier)
-            raise Exception('Duplicate time points found, this is not supported')
+            raise Exception('Duplicate time points found, this is not supported - likely an identifier input error')
 
         if len(self.time_points) > 6 and live_calculations:
             self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
 
     def curve_fit_data(self):
-        from .settings import settings
-        verbose = settings.verbose
+        raise Exception('This must be implemented in a child')
+        #
+        # from .settings import settings
+        # verbose = settings.verbose
+        #
+        # if self.trial_identifier.analyte_type == 'titer' or self.trial_identifier.analyte_type in ['substrate', 'product']:
+        #     print(
+        #         'Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py')
+        #
+        # elif self.trial_identifier.analyte_type in ['biomass']:
+        #     # from scipy.interpolate import InterpolatedUnivariateSpline
+        #     # spl = InterpolatedUnivariateSpline(self.time_vector, self.data_vector)
+        #     # spl.set_smoothing_factor(0.2)
+        #     # spl_grad = np.gradient(spl(self.time_vector)) / np.gradient(self.time_vector)
+        #     # self.fit_params['growth_rate'] = max(spl_grad)
+        #     #
+        #     # import matplotlib.pyplot as plt
+        #     # plt.figure()
+        #     # plt.plot(self.time_vector,self.data_vector,'o')
+        #     # plt.plot(self.time_vector,spl(self.time_vector),lw=2)
+        #     # plt.show()
+        #     # return max(spl_grad)
+        #
+        #
+        #
+        #     if verbose:
+        #         print('Started fit')
+        #         print('Death phase start: ', self.death_phase_start)
+        #
+        #     result = curve_fit_dict[self.fit_type].calcFit(self.time_vector[0:self.death_phase_start],
+        #                                                    self.data_vector[0:self.death_phase_start])
+        #     #,fit_kws = {'xatol':1E-10, 'fatol':1E-10})  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
+        #     if verbose: print('Finished fit')
+        #
+        #     for key in result.best_values:
+        #         temp_param = FitParameter(key, result.best_values[key])
+        #         self.fit_params[key] = temp_param # result.best_values[key]
+        #
+        #     if verbose:
+        #         import matplotlib.pyplot as plt
+        #         plt.figure()
+        #         plt.plot(self.time_vector[0:self.death_phase_start], self.data_vector[0:self.death_phase_start], 'bo')
+        #         plt.plot(self.time_vector[0:self.death_phase_start], result.best_fit, 'r-')
+        #
+        #     if verbose: print(result.fit_report())
+        # else:
+        #     print('Unidentified titer type:' + self.trial_identifier.analyte_type)
+        #     print('Ensure that the trial identifier is described before adding data. This will allow curve fitting'
+        #           'to be appropriate to the analyte type.')
 
-        if self.trial_identifier.analyte_type == 'titer' or self.trial_identifier.analyte_type in ['substrate', 'product']:
-            print(
-                'Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py')
 
-        elif self.trial_identifier.analyte_type in ['biomass']:
+class Biomass(TimeCourse):
+    fit_type = 'gompertz'
+    id = Column(Integer,ForeignKey('time_course.id'),primary_key=True)
+
+    # def __init__(self):
+        # TimeCourse.__init__()
+        # self._trial_identifier
+
+    __tablename__ = 'analyte_biomass'
+    __mapper_args__ = {
+        'polymorphic_identity': 'biomass',
+    }
+
+    @property
+    def trial_identifier(self):
+        return self._trial_identifier
+
+    @trial_identifier.setter
+    def trial_identifier(self, trial_identifier):
+        self._trial_identifier = trial_identifier
+
+
+
+    def curve_fit_data(self):
+        if self.trial_identifier.analyte_type == 'biomass':
+            from .settings import settings
+            verbose = settings.verbose
+
             # from scipy.interpolate import InterpolatedUnivariateSpline
             # spl = InterpolatedUnivariateSpline(self.time_vector, self.data_vector)
             # spl.set_smoothing_factor(0.2)
@@ -396,20 +473,18 @@ class TimeCourse(Base):
             # plt.show()
             # return max(spl_grad)
 
-
-
             if verbose:
                 print('Started fit')
                 print('Death phase start: ', self.death_phase_start)
 
             result = curve_fit_dict[self.fit_type].calcFit(self.time_vector[0:self.death_phase_start],
                                                            self.data_vector[0:self.death_phase_start])
-            #,fit_kws = {'xatol':1E-10, 'fatol':1E-10})  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
+            # ,fit_kws = {'xatol':1E-10, 'fatol':1E-10})  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
             if verbose: print('Finished fit')
 
             for key in result.best_values:
                 temp_param = FitParameter(key, result.best_values[key])
-                self.fit_params[key] = temp_param # result.best_values[key]
+                self.fit_params[key] = temp_param  # result.best_values[key]
 
             if verbose:
                 import matplotlib.pyplot as plt
@@ -419,38 +494,43 @@ class TimeCourse(Base):
 
             if verbose: print(result.fit_report())
         else:
-            print('Unidentified titer type:' + self.trial_identifier.analyte_type)
-            print('Ensure that the trial identifier is described before adding data. This will allow curve fitting'
-                  'to be appropriate to the analyte type.')
-
-
-class Biomass(TimeCourse):
-    pass
+            raise Exception('Incorrect analyte_type')
 
 
 class Substrate(TimeCourse):
-    pass
+    fit_type = None
+    id = Column(Integer,ForeignKey('time_course.id'),primary_key=True)
+
+    __tablename__ = 'analyte_substrate'
+    __mapper_args__ = {
+        'polymorphic_identity': 'substrate',
+    }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self._trial_identifier
+
+
+    def curve_fit_data(self):
+        from .settings import settings
+        verbose = settings.verbose
+
+        if self.trial_identifier.analyte_type == 'substrate':
+            raise Exception('Substrate curve fitting not implemented')
+        else:
+            raise Exception('Incorrect analyte_type')
 
 
 class Product(TimeCourse):
-    pass
-
-
-class Reporter(TimeCourse):
-    fit_type = None
+    fit_type = 'productionEquation_generalized_logistic'
+    id = Column(Integer,ForeignKey('time_course.id'),primary_key=True)
 
     # def __init__(self):
         # TimeCourse.__init__()
         # self._trial_identifier
-
-    @property
-    def trial_identifier(self):
-        return self._trial_identifier
-
-    @trial_identifier.setter
-    def trial_identifier(self, trial_identifier):
-        return self._trial_identifier
-
+    __tablename__ = 'analyte_product'
+    __mapper_args__ = {
+        'polymorphic_identity': 'product',
+    }
     def curve_fit_data(self):
         from .settings import settings
         verbose = settings.verbose
@@ -461,23 +541,49 @@ class Reporter(TimeCourse):
             raise Exception('Incorrect analyte_type')
 
 
+class Reporter(TimeCourse):
+    fit_type = None
+
+    # def __init__(self):
+        # TimeCourse.__init__()
+        # self._trial_identifier
+    id = Column(Integer,ForeignKey('time_course.id'),primary_key=True)
+    __tablename__ = 'analyte_reporter'
+    __mapper_args__ = {
+        'polymorphic_identity': 'reporter',
+    }
+    def curve_fit_data(self):
+        from .settings import settings
+        verbose = settings.verbose
+
+        if self.trial_identifier.analyte_type == 'reporter':
+            raise Exception('Reported curve fitting not implemented')
+        else:
+            raise Exception('Incorrect analyte_type')
+
 
 class TimeCourseStage(TimeCourse):
-    stage_parent_id = Column(Integer, ForeignKey('time_course.id'))
-    parent = relationship('TimeCourse',uselist=False)
+    __tablename__ = 'time_course_stage'
 
-    def __init__(self, parent):
-        self.parent = parent
-        super(TimeCourseStage, self).__init__()
+    stage_parent_id = Column(Integer, ForeignKey('time_course.id'), primary_key=True)
+    stage_parent = relationship('TimeCourse',uselist=False)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'time_course_stage',
+    }
+
+    def __init__(self, parent, *args, **kwargs):
+        self.stage_parent = parent
+        # print(type(parent))
+
+        super().__init__(*args, **kwargs)
 
 
 class EndPoint(TimeCourse):
     """
     This is a child of :class:`~AnalyteData` which does not calcualte any time-based data
     """
-    # class Meta:
-    #     app_label = 'impact'
-    # __tablename__ = 'endpoint'
+
     __mapper_args__ = {'polymorphic_identity': 'endpoint'}
 
     def __init__(self, runID, t, data):
@@ -491,5 +597,3 @@ class EndPoint(TimeCourse):
 
         if len(self.time_points) == 2:
             self.time_points.sort(key=lambda timePoint: timePoint.time)
-
-# class AnalyteFeature(object):

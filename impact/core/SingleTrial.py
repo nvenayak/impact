@@ -2,9 +2,10 @@ import pandas as pd
 
 from .TrialIdentifier import SingleTrialIdentifier
 from .features import *
+from .AnalyteData import TimeCourse
 
 from ..database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, PickleType, Float, event
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
@@ -128,8 +129,8 @@ class SingleTrial(Base):
 
     def create_stage(self, stage_bounds):
         stage = SingleTrial()
-        for titer in self.analyte_dict:
-            stage.add_analyte_data(self.analyte_dict[titer].create_stage(stage_bounds))
+        for analyte in self.analyte_dict:
+            stage.add_analyte_data(self.analyte_dict[analyte].create_stage(stage_bounds))
 
         return stage
 
@@ -272,6 +273,7 @@ class SingleTrial(Base):
 
         dFBA_profile = {key: [row[i] for row in sol] for i, key in enumerate(exchange_keys)}
 
+    # @event.listens_for(TimeCourse, 'load')
     def add_analyte_data(self, analyte_data):
         """
         Add a :class:`~TiterObject`

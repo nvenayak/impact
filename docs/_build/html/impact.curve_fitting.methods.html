@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>impact.curve_fitting.methods module &mdash; impact 0.4.0 documentation</title>
+    <title>impact.curve_fitting.methods module &mdash; impact 0.8.0 documentation</title>
     
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4.0',
+        VERSION:     '0.8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -29,8 +29,8 @@
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
-    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="top" title="impact 0.4.0 documentation" href="index.html" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+    <link rel="top" title="impact 0.8.0 documentation" href="index.html" />
     <link rel="up" title="impact.curve_fitting package" href="impact.curve_fitting.html" />
     <link rel="next" title="impact.helpers package" href="impact.helpers.html" />
 <meta charset='utf-8'>
@@ -52,7 +52,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           impact</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.8</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -70,10 +70,25 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="quick_install.html">Quick Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#quick-start-guide">Quick Start Guide</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Import-data">Import data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Importing-data">Importing data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core_structure.html">Core structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
@@ -161,7 +176,7 @@
 
 <dl class="data">
 <dt id="impact.curve_fitting.methods.curve_fit_dict">
-<code class="descclassname">impact.curve_fitting.methods.</code><code class="descname">curve_fit_dict</code><em class="property"> = {'growthEquation_generalized_logistic': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000290C3283F28&gt;, 'growthEquation_generalized_logistic_2': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000290C3283F98&gt;, 'gompertz': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000290C32841D0&gt;, 'richard_5': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000290C3284160&gt;, 'three_param': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000290C3284240&gt;, 'janoschek': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000290C3284048&gt;, 'janoschek_no_limits': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000290C32840B8&gt;, 'productionEquation_generalized_logistic': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000290C3283E48&gt;}</em><a class="headerlink" href="#impact.curve_fitting.methods.curve_fit_dict" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">impact.curve_fitting.methods.</code><code class="descname">curve_fit_dict</code><em class="property"> = {'janoschek_no_limits': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000295563E01D0&gt;, 'three_param': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000295563E0358&gt;, 'richard_5': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000295563E0278&gt;, 'growthEquation_generalized_logistic_2': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000295563E00F0&gt;, 'gompertz': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000295563E02E8&gt;, 'growthEquation_generalized_logistic': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000295563E0080&gt;, 'janoschek': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000295563E0160&gt;, 'productionEquation_generalized_logistic': &lt;impact.curve_fitting.core.CurveFitObject object at 0x00000295563E6F60&gt;}</em><a class="headerlink" href="#impact.curve_fitting.methods.curve_fit_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generalized logistic</p>
 </dd></dl>
 

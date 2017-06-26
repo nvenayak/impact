@@ -45,13 +45,13 @@ class Experiment(Base):
 
     __mapper_args__ = {
         'polymorphic_identity': 'experiment',
-        'polymorphic_on': type
+        'polymorphic_on'      : type
     }
 
     def __init__(self, **kwargs):
         for key in kwargs:
-            if key in ['import_date','start_date','end_date','title','scientist_1','scientist_2','notes']:
-                setattr(self,key,kwargs[key])
+            if key in ['import_date', 'start_date', 'end_date', 'title', 'scientist_1', 'scientist_2', 'notes']:
+                setattr(self, key, kwargs[key])
         self.blank_key_list = []
         self.replicate_trial_dict = dict()
         self.stage_indices = []
@@ -80,7 +80,7 @@ class Experiment(Base):
                      str(rep.get_analytes())] for rep in sorted(self.replicate_trial_dict.values(),
                                                                 key=lambda rep: str(rep.trial_identifier))]
 
-            return tabulate(data, headers=['strain', 'media', 'environment','analytes'])
+            return tabulate(data, headers=['strain', 'media', 'environment', 'analytes'])
 
     def __add__(self, experiment):
         """
@@ -92,15 +92,15 @@ class Experiment(Base):
         """
         # Break the experiment into its base analytes
         analyte_list = []
-        for replicate in list(self.replicate_trial_dict.values())+list(experiment.replicate_trial_dict.values()):
+        for replicate in list(self.replicate_trial_dict.values()) + list(experiment.replicate_trial_dict.values()):
             for singleTrial in replicate.single_trial_dict.values():
                 for analyte in singleTrial.analyte_dict.values():
                     analyte_list.append(analyte)
 
         combined_experiment = Experiment()
-        for attr in ['title','scientist_1','scientist_2','notes',
-                                                     'import_date','start_date','end_date']:
-            setattr(combined_experiment,attr,getattr(self,attr))
+        for attr in ['title', 'scientist_1', 'scientist_2', 'notes',
+                     'import_date', 'start_date', 'end_date']:
+            setattr(combined_experiment, attr, getattr(self, attr))
         # combined_experiment.info = self.info
         combined_experiment.parse_analyte_data(analyte_list)
 
@@ -118,7 +118,7 @@ class Experiment(Base):
 
     def calculate(self):
         t0 = time.time()
-        print('Analyzing data...',end='')
+        print('Analyzing data...', end='')
 
         # Precalculate the blank stats, otherwise they won't be available for subtraction
         if self.blank_key_list:
@@ -183,37 +183,45 @@ class Experiment(Base):
         replicateTrial.parent = self
         self.replicate_trial_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
 
-    ## Parsing
     def parse_raw_data(self, *args, **kwargs):
+        """
+        Wrapper for parsing data into an experiment
+
+        Parameters
+        ----------
+        args
+        kwargs
+
+        """
         from ..parsers import parse_raw_data
-        return parse_raw_data(experiment=self, *args, **kwargs)
+        parse_raw_data(experiment=self, *args, **kwargs)
 
-    def set_blanks(self, mode='auto', common_id='id_2'):
+    def set_blanks(self, mode='auto', common_id='environment'):
+        """
+        Define how to associate blanks and perform blank subtraction.
+        Parameters
+        ----------
+        mode (str) : how to determine blanks
+        common_id (str) : which identifier to use
 
-        self.blank_key_list = [replicate_key
-                               for replicate_key in self.replicate_trial_dict
-                               if self.replicate_trial_dict[replicate_key].trial_identifier.strain.name
-                               in ['Blank', 'blank']]
+        """
+        self.blank_reps = [rep for rep in self.replicate_trial_dict.values()
+                           if rep.trial_identifier.strain.name
+                           in ['Blank', 'blank']]
 
         if common_id:
-            blank_ids = {
-            getattr(self.replicate_trial_dict[replicate_key].trial_identifier, common_id): replicate_key
-            for replicate_key in self.blank_key_list}
+            blank_ids = {getattr(rep.trial_identifier, common_id): rep
+                         for rep in self.blank_key_list}
 
-        for replicate_key in [replicate_key for replicate_key in self.replicate_trial_dict if
-                              replicate_key not in self.blank_key_list]:
+        for rep in [rep for rep in self.replicate_trial_dict.values()
+                    if rep not in self.blank_reps]:
             if common_id:
-                self.replicate_trial_dict[replicate_key].set_blank(
-                    self.replicate_trial_dict[
-                        blank_ids[getattr(self.replicate_trial_dict[replicate_key].trial_identifier, common_id)]]
+                rep.set_blank(
+                    self.replicate_trial_dict[blank_ids[getattr(rep.trial_identifier, common_id)]]
                 )
             else:
-                self.replicate_trial_dict[replicate_key].set_blank(
-                    self.replicate_trial_dict[self.blank_key_list[0]])
+                rep.set_blank(self.blank_reps[0])
 
-        # for replicate_key in self.replicate_trial_dict:
-        #     if self.replicate_trial_dict[replicate_key].trial_identifier.strain.name in ['Blank','blank']:
-        #         blank_list.append(replicate_key)
         if mode == 'auto':
             pass
         else:
@@ -221,6 +229,8 @@ class Experiment(Base):
 
     def set_stages(self, stage_indices=None, stage_times=None):
         """
+        Set the stages for the experiment. These stages can be defined manually based on growth kinetics
+        or batch condition changes such as inducer additions.
 
         Parameters
         ----------
