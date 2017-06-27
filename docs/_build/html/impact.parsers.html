@@ -32,7 +32,6 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
     <link rel="top" title="impact 0.8.0 documentation" href="index.html" />
     <link rel="up" title="impact package" href="impact.html" />
-    <link rel="next" title="impact.plotting module" href="impact.plotting.html" />
     <link rel="prev" title="impact.database module" href="impact.database.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -77,9 +76,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Importing-data">Importing data</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Visualization">Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Exploring-features">Exploring features</a></li>
 </ul>
 </li>
@@ -102,7 +100,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="3_import_experiment_data.html">Importing Raw Analyte Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="impact.html">impact package</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
@@ -122,7 +119,9 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">impact.parsers module</a></li>
+<li><a class="reference internal" href="#">impact.parsers module</a><ul>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -133,10 +132,6 @@
                 
   <li>
     <a href="impact.database.html" title="Previous Chapter: impact.database module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; impact.databa...</span>
-    </a>
-  </li>
-  <li>
-    <a href="impact.plotting.html" title="Next Chapter: impact.plotting module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">impact.plotti... &raquo;</span>
     </a>
   </li>
               
@@ -177,6 +172,169 @@
 <code class="descclassname">impact.parsers.</code><code class="descname">HPLC_titer_parser</code><span class="sig-paren">(</span><em>experiment</em>, <em>data</em>, <em>id_type='CSV'</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.parsers.HPLC_titer_parser" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="class">
+<dt id="impact.parsers.Parser">
+<em class="property">class </em><code class="descclassname">impact.parsers.</code><code class="descname">Parser</code><a class="headerlink" href="#impact.parsers.Parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#impact.parsers.Parser.parse_data" title="impact.parsers.Parser.parse_data"><code class="xref py py-obj docutils literal"><span class="pre">parse_data</span></code></a>(*args,&nbsp;**kwargs)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#impact.parsers.Parser.parse_identifiers" title="impact.parsers.Parser.parse_identifiers"><code class="xref py py-obj docutils literal"><span class="pre">parse_identifiers</span></code></a>(unparsed_identifiers,&nbsp;id_type)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#impact.parsers.Parser.parse_raw_data" title="impact.parsers.Parser.parse_raw_data"><code class="xref py py-obj docutils literal"><span class="pre">parse_raw_data</span></code></a>([id_type,&nbsp;file_name,&nbsp;data,&nbsp;...])</td>
+<td>Parses raw data into an experiment object</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="impact.parsers.Parser.parse_data">
+<code class="descname">parse_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.parsers.Parser.parse_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="impact.parsers.Parser.parse_identifiers">
+<em class="property">static </em><code class="descname">parse_identifiers</code><span class="sig-paren">(</span><em>unparsed_identifiers</em>, <em>id_type</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.parsers.Parser.parse_identifiers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="impact.parsers.Parser.parse_raw_data">
+<em class="property">classmethod </em><code class="descname">parse_raw_data</code><span class="sig-paren">(</span><em>id_type='traverse'</em>, <em>file_name=None</em>, <em>data=None</em>, <em>experiment=None</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.parsers.Parser.parse_raw_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses raw data into an experiment object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>format (str): spectromax_OD, spectromax_OD_triplicate, default_titers, tecan_OD</strong></p>
+<p><strong>id_type (str): traverse (id1:value|id2:value) or CSV (deprecated)</strong></p>
+<p><strong>file_name (str): path to structured file</strong></p>
+<p><strong>data (str): dictionary containing data with sheets appropriate to parser</strong></p>
+<p><strong>experiment (str): `Experiment` instance to parse data into, will create new instance if None</strong></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><cite>Experiment</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="impact.parsers.PlateBasedParser">
+<em class="property">class </em><code class="descclassname">impact.parsers.</code><code class="descname">PlateBasedParser</code><a class="headerlink" href="#impact.parsers.PlateBasedParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#impact.parsers.Parser" title="impact.parsers.Parser"><code class="xref py py-class docutils literal"><span class="pre">impact.parsers.Parser</span></code></a></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#impact.parsers.PlateBasedParser.parse_data" title="impact.parsers.PlateBasedParser.parse_data"><code class="xref py py-obj docutils literal"><span class="pre">parse_data</span></code></a>(experiment,&nbsp;data[,&nbsp;id_type,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_identifiers</span></code>(unparsed_identifiers,&nbsp;id_type)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_raw_data</span></code>([id_type,&nbsp;file_name,&nbsp;data,&nbsp;...])</td>
+<td>Parses raw data into an experiment object</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="impact.parsers.PlateBasedParser.parse_data">
+<em class="property">classmethod </em><code class="descname">parse_data</code><span class="sig-paren">(</span><em>experiment</em>, <em>data</em>, <em>id_type='CSV'</em>, <em>analyte_name='biomass'</em>, <em>analyte_type='OD600'</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.parsers.PlateBasedParser.parse_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="impact.parsers.SpectromaxOD">
+<em class="property">class </em><code class="descclassname">impact.parsers.</code><code class="descname">SpectromaxOD</code><a class="headerlink" href="#impact.parsers.SpectromaxOD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#impact.parsers.PlateBasedParser" title="impact.parsers.PlateBasedParser"><code class="xref py py-class docutils literal"><span class="pre">impact.parsers.PlateBasedParser</span></code></a></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_data</span></code>(experiment,&nbsp;data[,&nbsp;id_type,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_identifiers</span></code>(unparsed_identifiers,&nbsp;id_type)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_raw_data</span></code>([id_type,&nbsp;file_name,&nbsp;data,&nbsp;...])</td>
+<td>Parses raw data into an experiment object</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="impact.parsers.SpectromaxOD.data_sheet_name">
+<code class="descname">data_sheet_name</code><em class="property"> = 'data'</em><a class="headerlink" href="#impact.parsers.SpectromaxOD.data_sheet_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="impact.parsers.SpectromaxOD.data_x_coords">
+<code class="descname">data_x_coords</code><em class="property"> = [2, 14]</em><a class="headerlink" href="#impact.parsers.SpectromaxOD.data_x_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="impact.parsers.SpectromaxOD.end_cell_text">
+<code class="descname">end_cell_text</code><em class="property"> = '~End'</em><a class="headerlink" href="#impact.parsers.SpectromaxOD.end_cell_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="impact.parsers.SpectromaxOD.identifiers_sheet_name">
+<code class="descname">identifiers_sheet_name</code><em class="property"> = 'identifiers'</em><a class="headerlink" href="#impact.parsers.SpectromaxOD.identifiers_sheet_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="impact.parsers.SpectromaxOD.plate_spacing">
+<code class="descname">plate_spacing</code><em class="property"> = 9</em><a class="headerlink" href="#impact.parsers.SpectromaxOD.plate_spacing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="impact.parsers.SpectromaxOD.row_with_first_data">
+<code class="descname">row_with_first_data</code><em class="property"> = 3</em><a class="headerlink" href="#impact.parsers.SpectromaxOD.row_with_first_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="impact.parsers.TimePointByAnalyte">
+<em class="property">class </em><code class="descclassname">impact.parsers.</code><code class="descname">TimePointByAnalyte</code><a class="headerlink" href="#impact.parsers.TimePointByAnalyte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#impact.parsers.Parser" title="impact.parsers.Parser"><code class="xref py py-class docutils literal"><span class="pre">impact.parsers.Parser</span></code></a></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_data</span></code>(*args,&nbsp;**kwargs)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_identifiers</span></code>(unparsed_identifiers,&nbsp;id_type)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">parse_raw_data</span></code>([id_type,&nbsp;file_name,&nbsp;data,&nbsp;...])</td>
+<td>Parses raw data into an experiment object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="function">
 <dt id="impact.parsers.parse_analyte_data">
 <code class="descclassname">impact.parsers.</code><code class="descname">parse_analyte_data</code><span class="sig-paren">(</span><em>analyte_data_list</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.parsers.parse_analyte_data" title="Permalink to this definition">¶</a></dt>
@@ -185,7 +343,24 @@
 <dl class="function">
 <dt id="impact.parsers.parse_raw_data">
 <code class="descclassname">impact.parsers.</code><code class="descname">parse_raw_data</code><span class="sig-paren">(</span><em>format=None</em>, <em>id_type='CSV'</em>, <em>file_name=None</em>, <em>data=None</em>, <em>experiment=None</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.parsers.parse_raw_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Parses raw data into an experiment object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>format (str): spectromax_OD, spectromax_OD_triplicate, default_titers, tecan_OD</strong></p>
+<p><strong>id_type (str): traverse (id1:value|id2:value) or CSV (deprecated)</strong></p>
+<p><strong>file_name (str): path to structured file</strong></p>
+<p><strong>data (str): dictionary containing data with sheets appropriate to parser</strong></p>
+<p><strong>experiment (str): `Experiment` instance to parse data into, will create new instance if None</strong></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><cite>Experiment</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="impact.parsers.parse_single_trial_list">
@@ -209,7 +384,7 @@
 
 <dl class="function">
 <dt id="impact.parsers.tecan_OD">
-<code class="descclassname">impact.parsers.</code><code class="descname">tecan_OD</code><span class="sig-paren">(</span><em>experiment</em>, <em>data</em>, <em>fileName</em>, <em>t0</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.parsers.tecan_OD" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">impact.parsers.</code><code class="descname">tecan_OD</code><span class="sig-paren">(</span><em>experiment</em>, <em>data</em>, <em>fileName</em><span class="sig-paren">)</span><a class="headerlink" href="#impact.parsers.tecan_OD" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>

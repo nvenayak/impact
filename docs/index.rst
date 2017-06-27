@@ -33,7 +33,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   ../readme.md
+   readme.md
    quickstart
    0_getting_started
    core_structure

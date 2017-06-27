@@ -76,9 +76,8 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Quickstart</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Importing-data">Importing data</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#Querying-and-filtering-for-data">Querying and filtering for data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Querying-and-filtering-for-data">Querying and filtering for data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Visualization">Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#Exploring-features">Exploring features</a></li>
 </ul>
 </li>
@@ -122,9 +121,8 @@
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Quickstart</a><ul>
 <li><a class="reference internal" href="#Importing-data">Importing data</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#Querying-and-filtering-for-data">Querying and filtering for data</a><ul>
+<li><a class="reference internal" href="#Querying-and-filtering-for-data">Querying and filtering for data</a></li>
+<li><a class="reference internal" href="#Visualization">Visualization</a></li>
 <li><a class="reference internal" href="#Exploring-features">Exploring features</a></li>
 </ul>
 </li>
@@ -310,6 +308,25 @@ div.nboutput  > :nth-child(2).stderr {
 </style>
 <div class="section" id="Quickstart">
 <h1>Quickstart<a class="headerlink" href="#Quickstart" title="Permalink to this headline">¶</a></h1>
+<div class="nbinput container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [1]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">impact</span> <span class="kn">as</span> <span class="nn">impt</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast container">
+<div class="container">
+</div>
+<div class="stderr container">
+<div class="highlight"><pre>
+C:\Users\Naveen\Anaconda3\lib\site-packages\IPython\html.py:14: ShimWarning: The `IPython.html` package has been deprecated. You should import from `notebook` instead. `IPython.html.widgets` has moved to `ipywidgets`.
+  &#34;`IPython.html.widgets` has moved to `ipywidgets`.&#34;, ShimWarning)
+</pre></div></div>
+</div>
 <p>The impact framework is designed to help scientists parse, interpret,
 explore and visualize data to understand and engineer micorbial
 physiology. The core framework is open-source and written entirely in
@@ -397,7 +414,7 @@ represent the different analytes, and their types. You can see this data
 in <code class="docutils literal"><span class="pre">tests/test_data/sample_input_data.xlsx</span></code></p>
 <div class="nbinput container">
 <div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [1]:
+<span></span>In [2]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
@@ -411,22 +428,13 @@ in <code class="docutils literal"><span class="pre">tests/test_data/sample_input
 <div class="nboutput container">
 <div class="container">
 </div>
-<div class="stderr container">
-<div class="highlight"><pre>
-C:\Users\Naveen\Anaconda3\lib\site-packages\IPython\html.py:14: ShimWarning: The `IPython.html` package has been deprecated. You should import from `notebook` instead. `IPython.html.widgets` has moved to `ipywidgets`.
-  &#34;`IPython.html.widgets` has moved to `ipywidgets`.&#34;, ShimWarning)
-</pre></div></div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
 <div class="container">
 <div class="highlight"><pre>
 
 Importing data from ../tests/test_data/sample_input_data.xlsx...0.1s
-Parsed 2884 timeCourseObjects in 0.670s...Number of lines skipped:  0
+Parsed 2884 timeCourseObjects in 0.528s...Number of lines skipped:  0
 Parsing time point list...Parsed 2884 time points in 2.7s
-Parsing analyte list...Parsed 18 analytes in 673.5ms
+Parsing analyte list...Parsed 18 analytes in 633.9ms
 Parsing single trial list...Parsed 18 replicates in 0.0s
 Analyzing data...
 </pre></div></div>
@@ -455,7 +463,7 @@ Ran analysis in 1.1s
 of what we&#8217;ve imported.</p>
 <div class="nbinput container">
 <div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [2]:
+<span></span>In [3]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
@@ -470,13 +478,13 @@ of what we&#8217;ve imported.</p>
 <div class="highlight"><pre>
 strain    media    environment    analytes
 --------  -------  -------------  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-strain1            None           [&#39;pyruvate&#39;, &#39;lactate&#39;, &#39;ethanol&#39;, &#39;meso-2,3-butanediol&#39;, &#39;1,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;glucose&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;acetoin&#39;, &#39;OD600&#39;, &#39;succinate&#39;, &#39;acetaldehyde&#39;, &#39;formate&#39;]
-strain2            None           [&#39;pyruvate&#39;, &#39;lactate&#39;, &#39;ethanol&#39;, &#39;meso-2,3-butanediol&#39;, &#39;1,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;glucose&#39;, &#39;acetoin&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;OD600&#39;, &#39;succinate&#39;, &#39;acetaldehyde&#39;, &#39;formate&#39;]
-strain2            None           [&#39;lactate&#39;, &#39;pyruvate&#39;, &#39;ethanol&#39;, &#39;meso-2,3-butanediol&#39;, &#39;1,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;glucose&#39;, &#39;acetoin&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;OD600&#39;, &#39;succinate&#39;, &#39;acetaldehyde&#39;, &#39;formate&#39;]
-strain3            None           [&#39;pyruvate&#39;, &#39;lactate&#39;, &#39;ethanol&#39;, &#39;meso-2,3-butanediol&#39;, &#39;1,3-butanediol&#39;, &#39;acetate&#39;, &#39;glucose&#39;, &#39;acetoin&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;formate&#39;, &#39;OD600&#39;, &#39;succinate&#39;, &#39;acetaldehyde&#39;, &#39;3-hydroxybutyrate&#39;]
-strain3            None           [&#39;lactate&#39;, &#39;pyruvate&#39;, &#39;ethanol&#39;, &#39;meso-2,3-butanediol&#39;, &#39;1,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;glucose&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;acetoin&#39;, &#39;OD600&#39;, &#39;succinate&#39;, &#39;acetaldehyde&#39;, &#39;formate&#39;]
-strain4            None           [&#39;pyruvate&#39;, &#39;lactate&#39;, &#39;ethanol&#39;, &#39;meso-2,3-butanediol&#39;, &#39;1,3-butanediol&#39;, &#39;acetate&#39;, &#39;glucose&#39;, &#39;acetoin&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;formate&#39;, &#39;OD600&#39;, &#39;succinate&#39;, &#39;acetaldehyde&#39;, &#39;3-hydroxybutyrate&#39;]
-strain4            None           [&#39;lactate&#39;, &#39;pyruvate&#39;, &#39;ethanol&#39;, &#39;meso-2,3-butanediol&#39;, &#39;1,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;glucose&#39;, &#39;acetoin&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;OD600&#39;, &#39;succinate&#39;, &#39;acetaldehyde&#39;, &#39;formate&#39;]
+strain1            None           [&#39;ethanol&#39;, &#39;glucose&#39;, &#39;1,3-butanediol&#39;, &#39;lactate&#39;, &#39;succinate&#39;, &#39;pyruvate&#39;, &#39;formate&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;acetoin&#39;, &#39;meso-2,3-butanediol&#39;, &#39;acetaldehyde&#39;, &#39;OD600&#39;]
+strain2            None           [&#39;ethanol&#39;, &#39;glucose&#39;, &#39;1,3-butanediol&#39;, &#39;lactate&#39;, &#39;succinate&#39;, &#39;pyruvate&#39;, &#39;formate&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;acetoin&#39;, &#39;meso-2,3-butanediol&#39;, &#39;acetaldehyde&#39;, &#39;OD600&#39;]
+strain2            None           [&#39;1,3-butanediol&#39;, &#39;glucose&#39;, &#39;ethanol&#39;, &#39;lactate&#39;, &#39;succinate&#39;, &#39;pyruvate&#39;, &#39;formate&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;acetoin&#39;, &#39;meso-2,3-butanediol&#39;, &#39;acetaldehyde&#39;, &#39;OD600&#39;]
+strain3            None           [&#39;1,3-butanediol&#39;, &#39;glucose&#39;, &#39;ethanol&#39;, &#39;lactate&#39;, &#39;succinate&#39;, &#39;pyruvate&#39;, &#39;formate&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;acetoin&#39;, &#39;meso-2,3-butanediol&#39;, &#39;acetaldehyde&#39;, &#39;OD600&#39;]
+strain3            None           [&#39;1,3-butanediol&#39;, &#39;glucose&#39;, &#39;ethanol&#39;, &#39;lactate&#39;, &#39;succinate&#39;, &#39;pyruvate&#39;, &#39;formate&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;acetoin&#39;, &#39;meso-2,3-butanediol&#39;, &#39;acetaldehyde&#39;, &#39;OD600&#39;]
+strain4            None           [&#39;glucose&#39;, &#39;1,3-butanediol&#39;, &#39;ethanol&#39;, &#39;lactate&#39;, &#39;succinate&#39;, &#39;pyruvate&#39;, &#39;formate&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;acetoin&#39;, &#39;meso-2,3-butanediol&#39;, &#39;acetaldehyde&#39;, &#39;OD600&#39;]
+strain4            None           [&#39;1,3-butanediol&#39;, &#39;glucose&#39;, &#39;ethanol&#39;, &#39;lactate&#39;, &#39;succinate&#39;, &#39;pyruvate&#39;, &#39;formate&#39;, &#39;R/S-2,3-butanediol&#39;, &#39;acetate&#39;, &#39;3-hydroxybutyrate&#39;, &#39;acetoin&#39;, &#39;meso-2,3-butanediol&#39;, &#39;acetaldehyde&#39;, &#39;OD600&#39;]
 </pre></div></div>
 </div>
 <p>Before we dive into data analysis, it is worth having a basic
@@ -488,19 +496,196 @@ attribute where you can find the respective statistics. <code class="docutils li
 <code class="docutils literal"><span class="pre">std</span></code> attributes are instances of <code class="docutils literal"><span class="pre">SingleTrial</span></code>, so we can access
 the statistical data similarly to the raw data itself.</p>
 </div>
-</div>
 <div class="section" id="Querying-and-filtering-for-data">
-<h1>Querying and filtering for data<a class="headerlink" href="#Querying-and-filtering-for-data" title="Permalink to this headline">¶</a></h1>
-<p>Let&#8217;s look into the ethanol data a bit more closely</p>
+<h2>Querying and filtering for data<a class="headerlink" href="#Querying-and-filtering-for-data" title="Permalink to this headline">¶</a></h2>
+<p>After import, data is all sorted into python objects, associated to an
+sql database using an object-relational mapper, SQLalchemy. Usually,
+we&#8217;re interested in comparing a set of features and a set of conditions
+(strain, media, environment) and the queryable database allows us to
+search for the data we are interested in.</p>
+<p>Although it is usually simple to use the ORM to access the database
+directly, basic querying can also be done using python list
+comprehensions. The major limitation is that you will only query
+experiments loaded in memory, e.g. experiments that were parsed into
+this notebook.</p>
 <div class="nbinput container">
 <div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [20]:
+<span></span>In [4]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;All&#39;</span><span class="p">)</span>
+<span class="n">reps</span> <span class="o">=</span> <span class="p">[</span><span class="n">rep</span> <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">expt</span><span class="o">.</span><span class="n">replicate_trials</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">reps</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">rep</span><span class="o">.</span><span class="n">trial_identifier</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Filtered&#39;</span><span class="p">)</span>
+<span class="n">reps</span> <span class="o">=</span> <span class="p">[</span><span class="n">rep</span> <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">expt</span><span class="o">.</span><span class="n">replicate_trials</span>
+       <span class="k">if</span> <span class="n">rep</span><span class="o">.</span><span class="n">trial_identifier</span><span class="o">.</span><span class="n">strain</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;strain1&#39;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">reps</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">rep</span><span class="o">.</span><span class="n">trial_identifier</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast container">
+<div class="container">
+</div>
+<div class="container">
+<div class="highlight"><pre>
+All
+strain: strain1,        media: ,        env: None
+strain: strain2,        media: ,        env: None
+strain: strain3,        media: ,        env: None
+strain: strain4,        media: ,        env: None
+strain: strain3,        media: ,        env: None
+strain: strain4,        media: ,        env: None
+strain: strain2,        media: ,        env: None
+Filtered
+strain: strain1,        media: ,        env: None
+</pre></div></div>
+</div>
+<p>To use the database, we must query data through a <code class="docutils literal"><span class="pre">session</span></code> object.
+The session is open for the entire application.</p>
+<div class="nbinput container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [10]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">impact.database</span> <span class="kn">import</span> <span class="n">session</span><span class="p">,</span> <span class="n">create_db</span>
+<span class="n">create_db</span><span class="p">()</span>
+<span class="n">session</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>Out[10]:
+</pre></div>
+</div>
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>&lt;sqlalchemy.orm.session.Session at 0x24ed289cb70&gt;
+</pre></div>
+</div>
+</div>
+<p>Now that we have a session, we can use the standard SQLalchemy ORM
+language to query - it is described in detail here
+<a class="reference external" href="http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#querying">http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#querying</a></p>
+<div class="nbinput nblast container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [12]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">expt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [15]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="n">reps</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">impt</span><span class="o">.</span><span class="n">ReplicateTrial</span><span class="p">)</span>\
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">impt</span><span class="o">.</span><span class="n">ReplicateTrialIdentifier</span><span class="p">)</span>\
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">impt</span><span class="o">.</span><span class="n">Strain</span><span class="p">)</span>\
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">impt</span><span class="o">.</span><span class="n">Strain</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;strain1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">reps</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">rep</span><span class="o">.</span><span class="n">trial_identifier</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast container">
+<div class="container">
+</div>
+<div class="container">
+<div class="highlight"><pre>
+strain: strain1,        media: ,        env: None
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Visualization">
+<h2>Visualization<a class="headerlink" href="#Visualization" title="Permalink to this headline">¶</a></h2>
+<p>Several packages already exist for visualization in python. The most
+popular one in matplotlib, it has very simple syntax which should feel
+familiar for matlab users; however, matplotlib generates static plots.
+The Impact visualization module is built around plotly, and as such it
+is worthwhile understanding the basic syntax of plotly charts.</p>
+<div class="nbinput container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [23]:
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">impact.plotting</span> <span class="kn">as</span> <span class="nn">implot</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-<span class="c1"># Grab the average data</span>
+<span class="c1"># Charts are made up in a hierarchical structure, but can be quickly generated as follows:</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">implot</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">implot</span><span class="o">.</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">),</span>
+             <span class="n">implot</span><span class="o">.</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="o">*</span><span class="mi">2</span><span class="p">)])</span>
+
+<span class="c1"># For more control over these plots, they can be built form the ground up</span>
+<span class="c1"># Traces are defined for each feature</span>
+<span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">implot</span><span class="o">.</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">),</span>
+             <span class="n">implot</span><span class="o">.</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="o">*</span><span class="mi">2</span><span class="p">)]</span>
+
+<span class="n">layout</span> <span class="o">=</span> <span class="n">implot</span><span class="o">.</span><span class="n">go</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+<span class="c1"># Traces are joined to a figure</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">implot</span><span class="o">.</span><span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">traces</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">)</span>
+
+<span class="c1"># And a figure is printed using plot</span>
+<span class="n">implot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput container">
+<div class="container">
+</div>
+<div class="container">
+<div id="b3c87cd8-2799-4c18-8ebc-532c49d142ff" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("b3c87cd8-2799-4c18-8ebc-532c49d142ff", [{"x": [0.0, 1.1111111111111112, 2.2222222222222223, 3.3333333333333335, 4.444444444444445, 5.555555555555555, 6.666666666666667, 7.777777777777779, 8.88888888888889, 10.0], "y": [0.0, 1.234567901234568, 4.938271604938272, 11.111111111111112, 19.75308641975309, 30.864197530864196, 44.44444444444445, 60.49382716049384, 79.01234567901236, 100.0], "type": "scatter"}, {"x": [0.0, 1.1111111111111112, 2.2222222222222223, 3.3333333333333335, 4.444444444444445, 5.555555555555555, 6.666666666666667, 7.777777777777779, 8.88888888888889, 10.0], "y": [0.0, 2.469135802469136, 9.876543209876544, 22.222222222222225, 39.50617283950618, 61.72839506172839, 88.8888888888889, 120.98765432098767, 158.0246913580247, 200.0], "type": "scatter"}], {}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
+</div>
+<div class="nboutput nblast container">
+<div class="container">
+</div>
+<div class="container">
+<div id="be2bb2b9-09ee-473a-9c09-81cdfdf8f9b8" style="height: 525px; width: 400px;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("be2bb2b9-09ee-473a-9c09-81cdfdf8f9b8", [{"x": [0.0, 1.1111111111111112, 2.2222222222222223, 3.3333333333333335, 4.444444444444445, 5.555555555555555, 6.666666666666667, 7.777777777777779, 8.88888888888889, 10.0], "y": [0.0, 1.234567901234568, 4.938271604938272, 11.111111111111112, 19.75308641975309, 30.864197530864196, 44.44444444444445, 60.49382716049384, 79.01234567901236, 100.0], "type": "scatter"}, {"x": [0.0, 1.1111111111111112, 2.2222222222222223, 3.3333333333333335, 4.444444444444445, 5.555555555555555, 6.666666666666667, 7.777777777777779, 8.88888888888889, 10.0], "y": [0.0, 2.469135802469136, 9.876543209876544, 22.222222222222225, 39.50617283950618, 61.72839506172839, 88.8888888888889, 120.98765432098767, 158.0246913580247, 200.0], "type": "scatter"}], {"width": 400}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
+</div>
+<p>It should be noted that the implot package offers a direct wrapper to
+useful plotly functions, which could also be accessed with plotly
+directly. The Impact visualization module offers functions to help
+extract useful data and generate traces.</p>
+<div class="nbinput container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [30]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">impact.plotting</span> <span class="kn">import</span> <span class="n">time_profile_traces</span>
+
+<span class="n">implot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_profile_traces</span><span class="p">(</span><span class="n">replicate_trials</span><span class="o">=</span><span class="n">expt</span><span class="o">.</span><span class="n">replicate_trials</span><span class="p">,</span>
+                               <span class="n">analyte</span><span class="o">=</span><span class="s1">&#39;ethanol&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast container">
+<div class="container">
+</div>
+<div class="container">
+<div id="a339f74b-ce03-4ed3-932b-f09122d03487" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("a339f74b-ce03-4ed3-932b-f09122d03487", [{"legendgroup": null, "error_y": {"color": "rgb(228,26,28)", "array": [0.0, 0.0, 0.0, 0.01759006581774512, 0.00871936334298372, 0.022915464467838976, 0.07563184277245959, 0.3711273289716035, 0.7412839401220788, 0.17366802002904683, 0.6117433991638952, 0.09426171901593323, 0.05665602699587767], "type": "data", "visible": true}, "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "marker": {"color": "rgb(228,26,28)"}, "type": "scatter", "line": {"color": "rgb(228,26,28)"}, "showlegend": true, "y": [0.0, 0.0, 0.0, 0.012438054821245267, 0.09493180291940456, 0.378576035928341, 4.469794174875654, 3.989181916049178, 6.439747028944755, 9.279630467591703, 10.15185487097027, 11.353725977896472, 12.048710322467286], "name": "None strain1 plasmid1 "}, {"legendgroup": null, "error_y": {"color": "rgb(55,126,184)", "array": [0.004680325474403282, 0.014366757274359092, 0.0013913905133873456, 0.026569398763139438, 0.15307879277561787, 0.38212801883609554, 0.43151215107078145, 0.9891039157658118, 1.438692883402948, 1.6251894008118177, 1.2093294468415405, 0.7758880166028469], "type": "data", "visible": true}, "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "marker": {"color": "rgb(55,126,184)"}, "type": "scatter", "line": {"color": "rgb(55,126,184)"}, "showlegend": true, "y": [0.10368435778848928, 0.12777423501396445, 0.12572080035008257, 0.2327177178067815, 2.032239181984248, 4.388616997004181, 4.703900256352575, 6.402539575311688, 8.724294732093723, 10.300224241434828, 11.996834418506447, 12.544341139685358], "name": "None strain2 plasmid1 "}, {"legendgroup": null, "error_y": {"color": "rgb(77,175,74)", "array": [0.0, 0.0, 0.0, 0.009106788780224426, 0.002539664701816717, 0.02010553154721424, 0.13803233181172858, 0.13067936591096424, 0.20826600122337557, 0.020715605126510713, 0.237428077929155], "type": "data", "visible": true}, "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "marker": {"color": "rgb(77,175,74)"}, "type": "scatter", "line": {"color": "rgb(77,175,74)"}, "showlegend": true, "y": [0.0, 0.0, 0.0, 0.005257806953715635, 0.049373198995248814, 0.14108630785573203, 0.8911447127089952, 0.7846232103081276, 1.2110236560308416, 1.458190276123533, 1.6915154968023687], "name": "None strain3 plasmid1 "}, {"legendgroup": null, "error_y": {"color": "rgb(152,78,163)", "array": [0.0, 0.0, 0.0, 0.0020525310387137703, 0.01676881327656337, 0.015795558742459064, 0.12527142801153396, 0.20119514247634857, 0.16243897943492402, 0.2707096228602337], "type": "data", "visible": true}, "x": [0.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "marker": {"color": "rgb(152,78,163)"}, "type": "scatter", "line": {"color": "rgb(152,78,163)"}, "showlegend": true, "y": [0.0, 0.0, 0.0, 0.03062791025564899, 0.08623356714630151, 0.48170055934371964, 0.36221429861526633, 0.9396974151485583, 0.8698366772051302, 1.0848654000389786], "name": "None strain4 plasmid1 "}, {"legendgroup": null, "error_y": {"color": "rgb(255,127,0)", "array": [0.0, 0.0, 0.0006911421735325195, 0.002641849693118749, 0.0, 0.0002854572856910808, 0.01497044662715457, 0.012565426927654614, 0.01892995343351642, 0.03360280783145241, 0.005441812826431069], "type": "data", "visible": true}, "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "marker": {"color": "rgb(255,127,0)"}, "type": "scatter", "line": {"color": "rgb(255,127,0)"}, "showlegend": true, "y": [0.0, 0.0, 0.013157721294153242, 0.0018680698328798668, 0.0, 0.013257460201663396, 0.14239002077350188, 0.13536935830699462, 0.1869849462989518, 0.1837553264096538, 0.19057088493116778], "name": "None strain3 plasmid3 "}, {"legendgroup": null, "error_y": {"color": "rgb(255,255,51)", "array": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0653137702803532, 0.035261637786012066, 0.09029788340222862, 0.1055980296389689, 0.15191476992707262], "type": "data", "visible": true}, "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "marker": {"color": "rgb(255,255,51)"}, "type": "scatter", "line": {"color": "rgb(255,255,51)"}, "showlegend": true, "y": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.15295651563931154, 0.10450207365377456, 0.20895822197617767, 0.28195490116395916, 0.35397344869548447], "name": "None strain4 plasmid3 "}, {"legendgroup": null, "error_y": {"color": "rgb(166,86,40)", "array": [0.02968128314440146, 0.0014816645740292162, 0.02111511037904726, 0.09622465804827773, 0.4569993760195169, 0.26163542928724276, 0.5676593970534616, 1.4541619384318882, 2.1851247946305623, 2.6420134795873382, 1.9803191183140414, 0.828043155694391], "type": "data", "visible": true}, "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "marker": {"color": "rgb(166,86,40)"}, "type": "scatter", "line": {"color": "rgb(166,86,40)"}, "showlegend": true, "y": [0.20717116730345783, 0.23689644905501736, 0.34144020993071705, 1.4824730382216043, 7.092117182679561, 7.883006804939328, 8.120505850537533, 12.975079584750242, 16.971890417720573, 18.77735663067879, 18.680129807896762, 17.961650568970086], "name": "None strain2 plasmid2 "}], {}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
+</div>
+<div class="nbinput nblast container">
+<div class="highlight-none"><div class="highlight"><pre>
+<span></span>In [ ]:
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre>
+
+<span></span><span class="c1"># Grab the average data</span>
 <span class="n">rep_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">rep</span> <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">expt</span><span class="o">.</span><span class="n">replicate_trial_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
 
 <span class="n">etoh_datas</span> <span class="o">=</span> <span class="p">[]</span>
@@ -526,56 +711,6 @@ the statistical data similarly to the raw data itself.</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<div id="b1f1b6a6-8bf3-48bc-9f5b-bffc87c3a1b5" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("b1f1b6a6-8bf3-48bc-9f5b-bffc87c3a1b5", [{"y": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.12009656288557986, 0.06714874986723046, 0.120498518999678, 0.18742098038980617, 0.21531220831355802], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "1"}, {"y": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.11059826005601686, 0.10914556053477255, 0.20538777577806824, 0.26252518074207654, 0.33025627131012353], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "2"}, {"y": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.22817472397633792, 0.13721191055932067, 0.3009883711507868, 0.3959185423599948, 0.516351866462772], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "3"}, {"y": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.15295651563931154, 0.10450207365377455, 0.20895822197617767, 0.28195490116395916, 0.35397344869548447], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "avg"}, {"y": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0653137702803532, 0.03526163778601206, 0.09029788340222862, 0.1055980296389689, 0.15191476992707262], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "std"}], {"title": "strain: strain4,\tmedia: ,\tenv: None ,\tanalyte: ethanol,\trep: -1"}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<div id="edc3e28a-3a29-4c21-af3b-801cb3e624d8" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("edc3e28a-3a29-4c21-af3b-801cb3e624d8", [{"y": [0.0, 0.0, 0.0, 0.029176551639578614, 0.07437622556599253, 0.4705314126442964, 0.2736340223793883, 1.081963864735378, 0.7549749733176734, 0.8934447899820545], "type": "scatter", "x": [0.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "1"}, {"y": [0.0, 0.0, 0.0, 0.032079268871719364, 0.09809090872661047, 0.4928697060431429, 0.45079457485114444, 0.7974309655617386, 0.9846983810925872, 1.2762860100959026], "type": "scatter", "x": [0.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "2"}, {"y": [0.0, 0.0, 0.0, 0.03062791025564899, 0.08623356714630151, 0.48170055934371964, 0.36221429861526633, 0.9396974151485583, 0.8698366772051302, 1.0848654000389786], "type": "scatter", "x": [0.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "avg"}, {"y": [0.0, 0.0, 0.0, 0.0020525310387137703, 0.01676881327656337, 0.015795558742459064, 0.12527142801153396, 0.20119514247634857, 0.16243897943492402, 0.2707096228602337], "type": "scatter", "x": [0.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "std"}], {"title": "strain: strain4,\tmedia: ,\tenv: None ,\tanalyte: ethanol,\trep: -1"}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<div id="77e188bc-22de-4fba-b92a-93352d3215d7" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("77e188bc-22de-4fba-b92a-93352d3215d7", [{"y": [0.19742149883357218, 0.23809780357762042, 0.35215706971627686, 1.389872829540814, 6.80241138485276, 8.157154050872187, 8.775111215528923, 14.653220938029687, 18.55916173907527, 19.905619162519336, 20.28527449328406, 18.425731153396256], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "1"}, {"y": [0.24050099306262393, 0.23524083559033712, 0.35504779104636586, 1.5819528927561621, 7.618940424304775, 7.635998821926136, 7.822461554129708, 12.086328509621154, 14.479667790646467, 15.758535369921129, 16.467133162168814, 17.00564385760393], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "2"}, {"y": [0.18359101001417738, 0.23735070799709448, 0.3171157690295085, 1.4755933923678362, 6.854999738881148, 7.85586754201966, 7.76394478195397, 12.185689306599885, 17.87684172343998, 20.6679153595959, 19.287981768237408, 18.453576695910076], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "3"}, {"y": [0.20717116730345783, 0.23689644905501736, 0.34144020993071705, 1.482473038221604, 7.092117182679561, 7.883006804939328, 8.120505850537535, 12.975079584750242, 16.971890417720573, 18.777356630678785, 18.68012980789676, 17.961650568970086], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "avg"}, {"y": [0.02968128314440146, 0.0014816645740292162, 0.02111511037904726, 0.09622465804827772, 0.4569993760195169, 0.2616354292872427, 0.5676593970534616, 1.4541619384318885, 2.1851247946305623, 2.6420134795873382, 1.9803191183140412, 0.828043155694391], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "std"}], {"title": "strain: strain2,\tmedia: ,\tenv: None ,\tanalyte: ethanol,\trep: -1"}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<div id="057b1a2b-91e6-410e-ba70-b22213ee04a0" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("057b1a2b-91e6-410e-ba70-b22213ee04a0", [{"y": [0.0, 0.0, 0.0, 0.015773420861146907, 0.05221654613777321, 0.144723090999459, 0.9289328884483677, 0.7350423981707466, 1.156142442263525, 1.4653214370079328, 1.4224944319092205], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "1"}, {"y": [0.0, 0.0, 0.0, 0.0, 0.04857316001760055, 0.11941060641898113, 0.7381537756738612, 0.685989939654157, 1.0356940319950068, 1.4743983196306278, 1.7802784372691407], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "2"}, {"y": [0.0, 0.0, 0.0, 0.0, 0.04732989083037269, 0.15912522614875593, 1.0063474740047569, 0.9328372930994794, 1.4412344938339934, 1.4348510717320384, 1.8717736212287441], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "3"}, {"y": [0.0, 0.0, 0.0, 0.005257806953715635, 0.049373198995248814, 0.14108630785573203, 0.8911447127089952, 0.7846232103081276, 1.2110236560308416, 1.458190276123533, 1.6915154968023682], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "avg"}, {"y": [0.0, 0.0, 0.0, 0.009106788780224426, 0.002539664701816717, 0.02010553154721424, 0.1380323318117286, 0.13067936591096424, 0.20826600122337557, 0.020715605126510713, 0.237428077929155], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "std"}], {"title": "strain: strain3,\tmedia: ,\tenv: None ,\tanalyte: ethanol,\trep: -1"}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<div id="d922213c-a093-4c16-a02a-8d78dcf4cf39" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("d922213c-a093-4c16-a02a-8d78dcf4cf39", [{"y": [0.10330914504307137, 0.11965854294907595, 0.12706209381804734, 0.21208874090122193, 1.9099359839175205, 4.044774286479206, 4.221771567961494, 6.595553599693483, 8.68329879164273, 9.967575899283828, 11.169197430083226, 12.247290500765365], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "1"}, {"y": [0.09920293234581025, 0.11930190262344603, 0.12581609515129757, 0.22336581527119906, 1.9828712686922814, 4.321057735945162, 4.836030297436304, 7.280909861029207, 10.183047447628335, 12.066001256097541, 13.384686008943937, 13.424865709654409], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "2"}, {"y": [0.10854099597658623, 0.14436225946937137, 0.12428421208090276, 0.26269859724792344, 2.203910293342941, 4.800018968588174, 5.053898903659924, 5.33115526521237, 7.306537957010101, 8.867095568923117, 11.43661981649218, 11.9608672086363], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "3"}, {"y": [0.10368435778848928, 0.12777423501396445, 0.12572080035008257, 0.2327177178067815, 2.0322391819842474, 4.38861699700418, 4.703900256352575, 6.402539575311686, 8.724294732093723, 10.300224241434828, 11.996834418506447, 12.544341139685358], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "avg"}, {"y": [0.004680325474403282, 0.01436675727435909, 0.0013913905133873454, 0.026569398763139438, 0.15307879277561787, 0.38212801883609554, 0.43151215107078145, 0.9891039157658118, 1.4386928834029478, 1.6251894008118177, 1.2093294468415405, 0.7758880166028468], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "std"}], {"title": "strain: strain2,\tmedia: ,\tenv: None ,\tanalyte: ethanol,\trep: -1"}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<div id="d2cf2d29-d434-4088-acc3-210e9fff6509" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("d2cf2d29-d434-4088-acc3-210e9fff6509", [{"y": [0.0, 0.0, 0.012669009976484388, 0.0037361396657597337, 0.0, 0.013055611419212127, 0.15297572510095417, 0.14425445689604324, 0.20037044473933682, 0.20751609969418225, 0.19441882768268512], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "1"}, {"y": [0.0, 0.0, 0.013646432611822096, 0.0, 0.0, 0.013459308984114664, 0.13180431644604962, 0.126484259717946, 0.17359944785856676, 0.1599945531251254, 0.18672294217965044], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "2"}, {"y": [0.0, 0.0, 0.013157721294153242, 0.0018680698328798668, 0.0, 0.013257460201663396, 0.14239002077350188, 0.13536935830699462, 0.1869849462989518, 0.1837553264096538, 0.19057088493116778], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "avg"}, {"y": [0.0, 0.0, 0.0006911421735325195, 0.002641849693118749, 0.0, 0.0002854572856910808, 0.01497044662715457, 0.012565426927654614, 0.01892995343351642, 0.03360280783145241, 0.005441812826431069], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0], "name": "std"}], {"title": "strain: strain3,\tmedia: ,\tenv: None ,\tanalyte: ethanol,\trep: -1"}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
-</div>
-<div class="nboutput container">
-<div class="container">
-</div>
-<div class="container">
-<div id="07fd7238-cacf-4cb2-9119-386202c8ef21" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("07fd7238-cacf-4cb2-9119-386202c8ef21", [{"y": [0.0, 0.0, 0.0, 0.024876109642490533, 0.10109732386685776, 0.3947797162475893, 4.523273963773695, 4.25160856704865, 6.96391392978976, 9.402432302229483, 9.719286965075371, 11.287072877174005, 12.08877218335116], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "1"}, {"y": [0.0, 0.0, 0.0, 0.0, 0.08876628197195137, 0.36237235560909264, 4.416314385977613, 3.726755265049707, 5.915580128099751, 9.156828632953923, 10.58442277686517, 11.42037907861894, 12.008648461583414], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "2"}, {"y": [0.0, 0.0, 0.0, 0.012438054821245267, 0.09493180291940456, 0.378576035928341, 4.469794174875654, 3.989181916049178, 6.439747028944755, 9.279630467591703, 10.15185487097027, 11.353725977896472, 12.048710322467286], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "avg"}, {"y": [0.0, 0.0, 0.0, 0.01759006581774512, 0.00871936334298372, 0.022915464467838976, 0.07563184277245959, 0.3711273289716035, 0.7412839401220788, 0.17366802002904683, 0.6117433991638952, 0.09426171901593323, 0.05665602699587767], "type": "scatter", "x": [0.0, 3.0, 6.0, 9.0, 12.0, 15.0, 24.0, 24.1, 36.0, 48.0, 60.0, 72.0, 84.0], "name": "std"}], {"title": "strain: strain1,\tmedia: ,\tenv: None ,\tanalyte: ethanol,\trep: -1"}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
-</div>
-<div class="nboutput nblast container">
-<div class="container">
-</div>
-<div class="container">
-<div class="highlight"><pre>
-{&#39;2&#39;: &lt;impact.core.AnalyteData.Product object at 0x0000012CF559DE80&gt;, &#39;std&#39;: &lt;impact.core.AnalyteData.TimeCourse object at 0x0000012CF5A8A780&gt;, &#39;1&#39;: &lt;impact.core.AnalyteData.Product object at 0x0000012CF5558B00&gt;, &#39;avg&#39;: &lt;impact.core.AnalyteData.TimeCourse object at 0x0000012CF5A6B588&gt;}
-</pre></div></div>
-</div>
 <div class="nbinput nblast container">
 <div class="highlight-none"><div class="highlight"><pre>
 <span></span>In [ ]:
@@ -596,6 +731,7 @@ the statistical data similarly to the raw data itself.</p>
      <span class="k">for</span> <span class="n">analyte_data_avg</span><span class="p">,</span> <span class="n">analyte_data_std</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ethanol_avg_data</span><span class="p">,</span> <span class="n">ethanol_std_data</span><span class="p">)]</span>
 <span class="p">)</span>
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="Exploring-features">
@@ -649,298 +785,7 @@ the features which have been generated. Features include things like:</p>
 </pre></div>
 </div>
 </div>
-{
- "cells": [
-  {
-   "cell_type": "markdown",
-   "metadata": {
-    "nbsphinx": "hidden"
-   },
-   "source": [
-    "This notebook is part of the `nbsphinx` documentation: http://nbsphinx.readthedocs.io/."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "# Markdown Cells\n",
-    "\n",
-    "We can use *emphasis*, **boldface**, `preformatted text`.\n",
-    "\n",
-    "> It looks like strike-out text is not supported: ~~strikethrough~~.\n",
-    "\n",
-    "* Red\n",
-    "* Green\n",
-    "* Blue\n",
-    "\n",
-    "***\n",
-    "\n",
-    "1. One\n",
-    "1. Two\n",
-    "1. Three"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## Equations\n",
-    "\n",
-    "Equations can be formatted really nicely, either inline, like $\\text{e}^{i\\pi} = -1$, or on a separate line, like\n",
-    "\n",
-    "\\begin{equation}\n",
-    "\\int_{-\\infty}^\\infty f(x) \\delta(x - x_0) dx = f(x_0)\n",
-    "\\end{equation}\n",
-    "\n",
-    "*Note:* Avoid leading and trailing spaces around math expressions, otherwise errors like the following will occur when Sphinx is running:\n",
-    "\n",
-    "    ERROR: Unknown interpreted text role \"raw-latex\".\n",
-    "\n",
-    "See also the [pandoc docs](http://pandoc.org/README.html#math):\n",
-    "\n",
-    "> Anything between two `$` characters will be treated as TeX math. The opening `$` must have a non-space character immediately to its right, while the closing `$` must have a non-space character immediately to its left, and must not be followed immediately by a digit."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## Code\n",
-    "\n",
-    "We can also write code with nice syntax highlighting:\n",
-    "\n",
-    "```python3\n",
-    "print(\"Hello, world!\")\n",
-    "```"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## Tables\n",
-    "\n",
-    "A     | B     | A and B\n",
-    "------|-------|--------\n",
-    "False | False | False\n",
-    "True  | False | False\n",
-    "False | True  | False\n",
-    "True  | True  | True"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## Images\n",
-    "\n",
-    "PNG file (local): ![Jupyter notebook icon](images/notebook_icon.png)\n",
-    "\n",
-    "SVG file (local): ![Python logo](images/python_logo.svg)\n",
-    "\n",
-    "PNG file (remote): ![Python logo (remote)](https://www.python.org/static/img/python-logo-large.png)\n",
-    "\n",
-    "SVG file (remote): ![Jupyter logo (remote)](http://jupyter.org/assets/nav_logo.svg)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## HTML Elements (HTML only)\n",
-    "\n",
-    "It is allowed to use plain HTML elements within Markdown cells.\n",
-    "Those elements are passed through to the HTML output and are ignored for the LaTeX output.\n",
-    "Below are a few examples.\n",
-    "\n",
-    "HTML5 [audio](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio) elements can be created like this:\n",
-    "\n",
-    "```html\n",
-    "<audio src=\"https://example.org/audio.ogg\" controls>alternative text</audio>\n",
-    "```\n",
-    "\n",
-    "Example:\n",
-    "\n",
-    "<audio src=\"https://upload.wikimedia.org/wikipedia/commons/6/61/DescenteInfinie.ogg\" controls>The HTML audio element is not supported!</audio>\n",
-    "\n",
-    "\n",
-    "HTML5 [video](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video) elements can be created like this:\n",
-    "\n",
-    "```html\n",
-    "<video src=\"https://example.org/video.ogv\" controls>alternative text</video>\n",
-    "```\n",
-    "\n",
-    "Example:\n",
-    "\n",
-    "<video src=\"https://upload.wikimedia.org/wikipedia/commons/4/42/Shepard_Calais_1906_FrenchGP.ogv\" controls autoplay loop>The HTML video element is not supported!</video>\n",
-    "\n",
-    "The alternative text is shown in browsers that don't support those elements. The same text is also shown in Sphinx's LaTeX output.\n",
-    "\n",
-    "<div class=\"alert alert-info\">\n",
-    "\n",
-    "**Note:** You can also use local files for the `<audio>` and `<video>` elements, but you have to create a link to the source file somewhere, because only then are the local files copied to the HTML output directory!\n",
-    "You should do that anyway to make the audio/video file accessible to browsers that don't support the `<audio>` and `<video>` elements.\n",
-    "\n",
-    "</div>"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## Info/Warning Boxes\n",
-    "\n",
-    "<div class=\"alert alert-warning\">\n",
-    "\n",
-    "**Warning:**\n",
-    "\n",
-    "This is an *experimental feature*!\n",
-    "Its usage will probably change in the future or it might be removed completely!\n",
-    "\n",
-    "</div>\n",
-    "\n",
-    "Until there is an info/warning extension for Markdown/CommonMark (see [this issue](https://github.com/jupyter/notebook/issues/1292)), such boxes can be created by using HTML `<div>` elements like this:\n",
-    "\n",
-    "```html\n",
-    "<div class=\"alert alert-info\">\n",
-    "\n",
-    "**Note:** This is a note!\n",
-    "\n",
-    "</div>\n",
-    "```\n",
-    "\n",
-    "For this to work reliably, you should obey the following guidelines:\n",
-    "\n",
-    "* The `class` attribute has to be either `\"alert alert-info\"` or `\"alert alert-warning\"`, other values will not be converted correctly.\n",
-    "* No further attributes are allowed.\n",
-    "* For compatibility with CommonMark, you should add an empty line between the `<div>` start tag and the beginning of the content.\n",
-    "\n",
-    "<div class=\"alert alert-info\">\n",
-    "\n",
-    "**Note:**\n",
-    "\n",
-    "The text can contain further Markdown formatting.\n",
-    "It is even possible to have nested boxes:\n",
-    "\n",
-    "<div class=\"alert alert-warning\">\n",
-    "\n",
-    "... but please don't *overuse* this!\n",
-    "\n",
-    "</div>\n",
-    "</div>"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## Links to Other Notebooks\n",
-    "\n",
-    "Relative links to local notebooks can be used:\n",
-    "[a link to a notebook in a subdirectory](subdir/a-notebook-in-a-subdir.ipynb),\n",
-    "[a link to an orphan notebook](orphan.ipynb)\n",
-    "(latter won't work in LaTeX output, because orphan pages are not included there).\n",
-    "\n",
-    "This is how a link is created in Markdown:\n",
-    "\n",
-    "```\n",
-    "[a link to a notebook in a subdirectory](subdir/a-notebook-in-a-subdir.ipynb)\n",
-    "```\n",
-    "\n",
-    "Markdown also supports *reference-style* links:\n",
-    "[a reference-style link][mylink],\n",
-    "[another version of the same link][mylink].\n",
-    "\n",
-    "[mylink]: subdir/a-notebook-in-a-subdir.ipynb\n",
-    "\n",
-    "These can be created with this syntax:\n",
-    "\n",
-    "```\n",
-    "[a reference-style link][mylink]\n",
-    "\n",
-    "[mylink]: subdir/a-notebook-in-a-subdir.ipynb\n",
-    "```\n",
-    "\n",
-    "Links to sub-sections are also possible, e.g.\n",
-    "[this subsection](subdir/a-notebook-in-a-subdir.ipynb#A-Sub-Section).\n",
-    "\n",
-    "This link was created with:\n",
-    "\n",
-    "```\n",
-    "[this subsection](subdir/a-notebook-in-a-subdir.ipynb#A-Sub-Section)\n",
-    "```\n",
-    "\n",
-    "You just have to remember to replace spaces with hyphens!\n",
-    "\n",
-    "BTW, links to sections of the current notebook work, too, e.g.\n",
-    "[beginning of this section](#Links-to-Other-Notebooks).\n",
-    "\n",
-    "This can be done, as expected, like this:\n",
-    "\n",
-    "```\n",
-    "[beginning of this section](#Links-to-Other-Notebooks)\n",
-    "```"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## Links to `*.rst` Files (and Other Sphinx Source Files)\n",
-    "\n",
-    "Links to files whose extension is in the configuration value [source_suffix](http://www.sphinx-doc.org/config.html#confval-source_suffix), will be converted to links to the generated HTML/LaTeX pages. Example: [A reStructuredText file](a-normal-rst-file.rst).\n",
-    "\n",
-    "This was created with:\n",
-    "\n",
-    "```\n",
-    "[A reStructuredText file](a-normal-rst-file.rst)\n",
-    "```\n",
-    "\n",
-    "Links to sub-sections are not (yet?) possible."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "## Links to Local Files (HTML only)\n",
-    "\n",
-    "Links to local files (other than Jupyter notebooks and other Sphinx source files) are also possible, e.g. [requirements.txt](requirements.txt).\n",
-    "\n",
-    "This was simply created with:\n",
-    "\n",
-    "```\n",
-    "[requirements.txt](requirements.txt)\n",
-    "```\n",
-    "\n",
-    "The linked files are automatically copied to the HTML output directory.\n",
-    "For LaTeX output, no link is created."
-   ]
-  }
- ],
- "metadata": {
-  "kernelspec": {
-   "display_name": "Python 3",
-   "language": "python",
-   "name": "python3"
-  },
-  "language_info": {
-   "codemirror_mode": {
-    "name": "ipython",
-    "version": 3
-   },
-   "file_extension": ".py",
-   "mimetype": "text/x-python",
-   "name": "python",
-   "nbconvert_exporter": "python",
-   "pygments_lexer": "ipython3",
-   "version": "3.4.4"
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 1
-}<div class="nbinput nblast container">
+<div class="nbinput nblast container">
 <div class="highlight-none"><div class="highlight"><pre>
 <span></span>In [ ]:
 </pre></div>
