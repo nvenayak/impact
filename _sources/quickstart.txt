@@ -152,7 +152,7 @@
     "\n",
     "Firstly, all data is funneled into a `ReplicateTrial`, even if you only have one replicate. As such, it is convenient to always look for data in this object. This object contains both an `avg` and `std` attribute where you can find the respective statistics. `avg` and `std` attributes are instances of `SingleTrial`, so we can access the statistical data similarly to the raw data itself.\n",
     "\n",
-    "# Querying and filtering for data\n",
+    "## Querying and filtering for data\n",
     "\n",
     "After import, data is all sorted into python objects, associated to an sql database using an object-relational mapper, SQLalchemy. Usually, we're interested in comparing a set of features and a set of conditions (strain, media, environment) and the queryable database allows us to search for the data we are interested in.\n",
     "\n",

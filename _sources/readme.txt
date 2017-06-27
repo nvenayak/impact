@@ -7,13 +7,12 @@ Impact parses raw data from common equipment such as chromatography (HPLC),
 and plate readers. Data is automatically interpreted and built into hierarchical objects
 which describe the experiments and extract features.
 
-## Quick Start Guide
-### Install
+## Install
 Download a [Python 3 installation](https://www.python.org/downloads/) for your platform, 
 or you can use [Anaconda](https://www.continuum.io/downloads). If you are on windows, you will need a way to install
 numpy, scipy, matplotlib - packaged with Anaconda.
 
-#### Fresh install
+### Fresh install
 First, clone the repository. You will need your github username and password but if you are here presumably you are logged in.
     
     git clone http://github.com/nvenayak/impact
@@ -33,7 +32,11 @@ Install the package, use develop mode to ensure all the relative paths remain co
 
     python setup.py develop
     
-#### Updating
+### Updating
 To update to the latest version, run the following in the root folder:
     
     git pull
+    
+## Documentation
+
+The documentation is available in `docs` or a rendered version is available [here](http://nvenayak.github.io/impact/)

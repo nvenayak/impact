@@ -71,14 +71,14 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="">Impact: a framework for analyzing microbial physiology</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Importing-data">Importing data</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Visualization">Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Exploring-features">Exploring features</a></li>
 </ul>
 </li>
@@ -101,7 +101,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="3_import_experiment_data.html">Importing Raw Analyte Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
@@ -122,14 +121,12 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Impact: a framework for analyzing microbial physiology</a><ul>
-<li><a class="reference internal" href="#quick-start-guide">Quick Start Guide</a><ul>
 <li><a class="reference internal" href="#install">Install</a><ul>
 <li><a class="reference internal" href="#fresh-install">Fresh install</a></li>
 <li><a class="reference internal" href="#updating">Updating</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
 </ul>
 </li>
 </ul>
@@ -186,15 +183,13 @@
 Impact parses raw data from common equipment such as chromatography (HPLC),
 and plate readers. Data is automatically interpreted and built into hierarchical objects
 which describe the experiments and extract features.</p>
-<div class="section" id="quick-start-guide">
-<span id="quick-start-guide"></span><h2>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="install">
-<span id="install"></span><h3>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h3>
+<span id="install"></span><h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
 <p>Download a <a class="reference external" href="https://www.python.org/downloads/">Python 3 installation</a> for your platform,
 or you can use <a class="reference external" href="https://www.continuum.io/downloads">Anaconda</a>. If you are on windows, you will need a way to install
 numpy, scipy, matplotlib - packaged with Anaconda.</p>
 <div class="section" id="fresh-install">
-<span id="fresh-install"></span><h4>Fresh install<a class="headerlink" href="#fresh-install" title="Permalink to this headline">¶</a></h4>
+<span id="fresh-install"></span><h3>Fresh install<a class="headerlink" href="#fresh-install" title="Permalink to this headline">¶</a></h3>
 <p>First, clone the repository. You will need your github username and password but if you are here presumably you are logged in.</p>
 <pre class="literal-block">
 git clone http://github.com/nvenayak/impact
@@ -216,13 +211,16 @@ python setup.py develop
 </pre>
 </div>
 <div class="section" id="updating">
-<span id="updating"></span><h4>Updating<a class="headerlink" href="#updating" title="Permalink to this headline">¶</a></h4>
+<span id="updating"></span><h3>Updating<a class="headerlink" href="#updating" title="Permalink to this headline">¶</a></h3>
 <p>To update to the latest version, run the following in the root folder:</p>
 <pre class="literal-block">
 git pull
 </pre>
 </div>
 </div>
+<div class="section" id="documentation">
+<span id="documentation"></span><h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>The documentation is available in <code class="docutils literal"><span class="pre">docs</span></code> or a rendered version is available <a class="reference external" href="http://nvenayak.github.io/impact/">here</a></p>
 </div>
 </div>
 
