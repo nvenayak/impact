@@ -114,6 +114,9 @@ class Experiment(Base):
         return list(set([analyte for rep in self.replicate_trial_dict.values()
                          for st in rep.single_trial_dict.values()
                          for analyte in st.analyte_dict.keys()]))
+    @property
+    def replicate_trials(self):
+        return list(self.replicate_trial_dict.values())
 
     def calculate(self):
         t0 = time.time()

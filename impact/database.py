@@ -3,8 +3,9 @@ from sqlalchemy import event
 from sqlalchemy.orm import mapper
 from sqlalchemy.ext.declarative import declarative_base
 from .core import TrialIdentifier as ti
-
 from sqlalchemy import create_engine
+
+Base = declarative_base()
 
 def bind_engine(db_path='sqlite:///default_impt.db',echo=False):
     engine = create_engine(db_path, echo=echo)
@@ -17,7 +18,8 @@ def create_session(engine='default'):
     if engine == 'default':
         engine = bind_engine()
 
-    session_maker = sessionmaker(bind=engine,autoflush=False,expire_on_commit=False)
+    # create_db()
+    session_maker = sessionmaker(bind=engine,autoflush=True,expire_on_commit=False)
     return session_maker()
 
 
@@ -26,7 +28,6 @@ def create_db():
 
 
 session = create_session()
-Base = declarative_base()
 
 
 # @event.listens_for(session, 'before_flush')

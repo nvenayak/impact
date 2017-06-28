@@ -77,6 +77,10 @@ class ReplicateTrial(Base):
     def unique_id(self):
         return self.trial_identifier.unique_replicate_trial()
 
+    @property
+    def single_trials(self):
+        return list(self.single_trial_dict.values())
+
     def calculate(self):
         for stage in self.stages:
             stage.calculate()

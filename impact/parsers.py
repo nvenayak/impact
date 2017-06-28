@@ -13,6 +13,10 @@ from .core import SingleTrial, ReplicateTrial
 
 
 class Parser(object):
+    """
+    Base class for parsers. Contains helper to import data from file,  parse identifiers from a plate format,
+    Requires a `parse_data` method in classes inheriting this class
+    """
     @classmethod
     def parse_raw_data(cls, id_type='traverse', file_name=None, data=None, experiment=None):
         """
@@ -82,7 +86,7 @@ class Parser(object):
 class PlateBasedParser(Parser):
     @classmethod
     def parse_data(cls, experiment, data, id_type='CSV',
-                   analyte_name = 'biomass', analyte_type = 'OD600'):
+                   analyte_name = 'OD600', analyte_type = 'biomass'):
         from .core.settings import settings
         live_calculations = settings.live_calculations
         raw_data = data[cls.data_sheet_name]
@@ -149,6 +153,7 @@ class SpectromaxOD(PlateBasedParser):
 
 class TimePointByAnalyte(Parser):
     pass
+
 
 def spectromax_OD(experiment, data, id_type='CSV'):
     from .core.settings import settings
