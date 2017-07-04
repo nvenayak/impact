@@ -196,22 +196,30 @@ class ReplicateTrial(Base):
             self.std.analyte_dict[analyte] = TimeCourse()
 
             # Copy a relevant trial identifier
-            first_st = list(self.single_trial_dict.values())[0]
+            first_st = [single_trial for single_trial in self.single_trial_dict.values()
+                        if analyte in single_trial.analyte_dict][0]
+            # first_st = list(self.single_trial_dict.values())[0]
             try:
                 self.avg.analyte_dict[analyte].trial_identifier = \
                         first_st\
                         .analyte_dict[analyte]\
                         .trial_identifier.\
                         get_analyte_data_statistic_identifier()
-            except:
-                print(first_st.analyte_dict)
-                raise Exception
 
-            self.std.analyte_dict[analyte].trial_identifier = \
-                self.single_trial_dict[list(self.single_trial_dict.keys())[0]]\
-                    .analyte_dict[analyte]\
-                    .trial_identifier.\
-                    get_analyte_data_statistic_identifier()
+                self.std.analyte_dict[analyte].trial_identifier = \
+                        first_st\
+                        .analyte_dict[analyte]\
+                        .trial_identifier.\
+                        get_analyte_data_statistic_identifier()
+            except Exception as e:
+                print(first_st.analyte_dict)
+                raise Exception(e)
+
+            # self.std.analyte_dict[analyte].trial_identifier = \
+            #     self.single_trial_dict[list(self.single_trial_dict.keys())[0]]\
+            #         .analyte_dict[analyte]\
+            #         .trial_identifier.\
+            #         get_analyte_data_statistic_identifier()
 
             self.replicate_df[analyte] = pd.DataFrame()
 
@@ -260,8 +268,9 @@ class ReplicateTrial(Base):
         # Calculate fit param stats
         for analyte in unique_analytes:
             for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
-                # If a fit_params exists, calculate the mean
+                # If a fit_params exists, calculate the stats
                 if None not in [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
+                                if analyte in self.single_trial_dict[replicate_id].analyte_dict else None
                                 for replicate_id in self.single_trial_dict]:
                     temp = dict()
                     for param in self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].fit_params:
@@ -271,9 +280,10 @@ class ReplicateTrial(Base):
                              if self.single_trial_dict[replicate_id].trial_identifier.replicate_id not in self.bad_replicates]))
 
                     getattr(self, stat).analyte_dict[analyte].fit_params = temp
-                else:
-                    print([self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
-                                for replicate_id in self.single_trial_dict])
+                # else:
+                #     print([self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
+                #            for replicate_id in self.single_trial_dict
+                #            if analyte in self.single_trial_dict[replicate_id].analyte_dict])
 
     def get_analytes(self):
         # Get all unique analytes

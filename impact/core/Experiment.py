@@ -89,6 +89,8 @@ class Experiment(Base):
         ----------
         experiment
         """
+        from ..parsers import parse_analyte_data
+
         # Break the experiment into its base analytes
         analyte_list = []
         for replicate in list(self.replicate_trial_dict.values()) + list(experiment.replicate_trial_dict.values()):
@@ -101,7 +103,10 @@ class Experiment(Base):
                      'import_date', 'start_date', 'end_date']:
             setattr(combined_experiment, attr, getattr(self, attr))
         # combined_experiment.info = self.info
-        combined_experiment.parse_analyte_data(analyte_list)
+        combined_replicates = parse_analyte_data(analyte_list)
+
+        for replicate in combined_replicates:
+            combined_experiment.add_replicate_trial(replicate)
 
         return combined_experiment
 
