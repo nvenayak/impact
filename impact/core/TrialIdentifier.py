@@ -169,14 +169,14 @@ class ComponentConcentration(Base, TrialIdentifierMixin):
     eq_attrs = ['media','component','concentration']
 
 
-    def __init__(self, component, concentration, unit=None, **kwargs):
+    def __init__(self, component, concentration, unit='a.u.', **kwargs):
         for key in kwargs:
             if key in ['media']:
                 setattr(self,key,kwargs[key])
 
         self.media_component = component
         self.component_name = component.name
-
+        self.unit = unit
         self.concentration = concentration
 
     def _convert_units(self):
@@ -201,9 +201,9 @@ class Media(Base, TrialIdentifierMixin):
     parent = relationship('Media', uselist=False)
     parent_id = Column(Integer,ForeignKey('media.id'), nullable=True)
 
-    unit = Column(String)
+    # unit = Column(String)
 
-    eq_attrs = ['name', 'formal_name', 'components', 'parent', 'unit']
+    eq_attrs = ['name', 'formal_name', 'components', 'parent']
 
 
     def __init__(self, concentration=None, unit='a.u.', **kwargs):
@@ -214,8 +214,8 @@ class Media(Base, TrialIdentifierMixin):
                 setattr(self,key,kwargs[key])
 
         self._concentration = concentration
-        self.unit = unit
-        self.unit_conversion_flag = False
+        # self.unit = unit
+        # self.unit_conversion_flag = False
 
         # if concentration and unit:
         #     self._convert_units()
@@ -223,11 +223,11 @@ class Media(Base, TrialIdentifierMixin):
     def __str__(self):
         if self.parent:
             return self.parent.name+'+'+'+'.join([item for item in
-                             [str(cc.concentration) + self.unit + cc.media_component.name for cc in
+                             [str(cc.concentration) + cc.unit + ' ' + cc.media_component.name for cc in
                               self.components.values()]])
         else:
             return '+'.join([item for item in
-                             [str(cc.concentration) + self.unit + cc.media_component.name for cc in
+                             [str(cc.concentration) + cc.unit + ' ' + cc.media_component.name for cc in
                               self.components.values()]])
 
     @property
