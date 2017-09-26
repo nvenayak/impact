@@ -1,6 +1,7 @@
 import sqlite3 as sql
 
 import numpy as np
+import sys
 
 from .core.ReplicateTrial import ReplicateTrial
 from .core.settings import plotly_username, plotly_api_key
@@ -11,25 +12,31 @@ try:
 except NameError:
     from plotly.offline import plot
 else:
-    from plotly.offline import init_notebook_mode
-    from plotly.offline import iplot as plot
-    from IPython.display import HTML
+    if 'ipykernel' in sys.modules:
+	    from plotly.offline import init_notebook_mode
+	    from plotly.offline import iplot as plot
+	    from IPython.display import HTML
 
-
-    # This is required for correct mathjax (latex) and documentation rendering
-    HTML(
-        """
-        <script>
-            var waitForPlotly = setInterval( function() {
-                if( typeof(window.Plotly) !== "undefined" ){
-                    MathJax.Hub.Config({ SVG: { font: "STIX-Web" }, displayAlign: "center" });
-                    MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
-                    clearInterval(waitForPlotly);
-                }}, 250 );
-        </script>
-        """
-    )
-    init_notebook_mode(connected=True)
+	    # This is required for correct mathjax (latex) and documentation rendering
+	    HTML(
+	        """
+	        <script>
+	            var waitForPlotly = setInterval( function() {
+	                if( typeof(window.Plotly) !== "undefined" ){
+	                    MathJax.Hub.Config({ SVG: { font: "STIX-Web" }, displayAlign: "center" });
+	                    MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
+	                    clearInterval(waitForPlotly);
+	                }}, 250 );
+	        </script>
+	        """
+	    )
+	    init_notebook_mode(connected=True)
+    elif 'IPython' in sys.modules:
+    	# in a terminal
+    	from plotly.offline import plot
+    else:
+    	warn('Unknown ipython configuration')
+    	from plotly.offline import plot
 
 from plotly import tools
 import plotly.graph_objs as go
