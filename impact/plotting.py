@@ -2,6 +2,7 @@ import sqlite3 as sql
 
 import numpy as np
 import sys
+from warnings import warn
 
 from .core.ReplicateTrial import ReplicateTrial
 from .core.settings import plotly_username, plotly_api_key
