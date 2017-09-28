@@ -24,8 +24,11 @@ class TrialIdentifierMixin(object):
                         return False
             elif isinstance(vals[0],dict):
                 for key in vals[0]:
-                    if vals[0][key] != vals[1][key]:
-                        return False
+                    try:
+                        if vals[0][key] != vals[1][key]:
+                            return False
+                    except KeyError:
+                        return False  
             else:
                 raise Exception('Object contains non-hashable')
         return True
