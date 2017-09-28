@@ -215,9 +215,14 @@ class Media(Base, TrialIdentifierMixin):
         for key in kwargs:
             if key in ['parent','name','unit']:
                 setattr(self,key,kwargs[key])
+            if self.parent and not self.name:
+                setattr(self,'name',self.parent.name+'+'+'+'.join([item for item in
+                             [str(cc.concentration) + cc.unit + ' ' + cc.media_component.name for cc in
+                              self.components.values()]]))
 
         self._concentration = concentration
-        # self.unit = unit
+        self.unit = unit
+
         # self.unit_conversion_flag = False
 
         # if concentration and unit:
