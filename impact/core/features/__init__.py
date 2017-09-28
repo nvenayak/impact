@@ -1,9 +1,10 @@
 import numpy as np
 
 # Features
-class MultiAnalyteFeature(object):
+class BaseAnalyteFeature(object):
     """
     Base multi analyte feature. Use this to create new features.
+    A feature is anything calcaulted from multiple analytes
     """
     def __init__(self):
         self.analyte_list = []
@@ -13,16 +14,32 @@ class MultiAnalyteFeature(object):
     def data(self):
         return 'Not implemented'
 
-# class YieldTimePoint(object):
-#     __tablename__ = 'yield_time_point'
-#
-#     id = Column(Integer, primary_key=True)
-#     time = Column(Float)
-#     data = Column(Float)
+class BaseAnalayteFeatureFactory(object):
+    requires = None
+    name = None
+
+    def __init__(self):
+        """
+        Initialize any required variables here.
+        """
+        raise Exception('Must be implemented in child')
+
+    def add_analyte_data(self, analyte_data):
+        """
+        Function called when new analyte is added. If an analyte is required for this feature, ensure to save or
+        use analyte. Do not manipulate raw analyte data.
+        Parameters
+        ----------
+        analyte_data
+
+        Returns
+        -------
+
+        """
+        pass
 
 
-
-class ProductYield(MultiAnalyteFeature):
+class ProductYield(BaseAnalyteFeature):
     def __init__(self, substrate, product):
         self.substrate = substrate
         self.product = product
@@ -52,7 +69,7 @@ class ProductYield(MultiAnalyteFeature):
              for dataPoint in self.substrate.data_vector]
         )
 
-class ProductYieldFactory(object):
+class ProductYieldFactory(BaseAnalayteFeatureFactory):
     requires = ['substrate','product', 'biomass']
     name = 'product_yield'
 
@@ -84,6 +101,7 @@ class ProductYieldFactory(object):
                 # Hold on to the product until a substrate is defined
                 self.products.append(analyte_data)
 
+
 class SpecificProductivityFactory(object):
     requires = ['substrate', 'product', 'biomass']
     name = 'specific_productivity'
@@ -109,7 +127,7 @@ class SpecificProductivityFactory(object):
             else:
                 self.pending_analytes.append(analyte_data)
 
-class SpecificProductivity(MultiAnalyteFeature):
+class SpecificProductivity(BaseAnalyteFeature):
     def __init__(self, biomass, analyte):
         self.biomass = biomass
         self.analyte = analyte
@@ -137,11 +155,49 @@ class SpecificProductivity(MultiAnalyteFeature):
             print(self.analyte.data_vector)
             raise Exception(e)
 
-class NormalizedData(MultiAnalyteFeature):
-    def __init__(self, numerator, denominator):
-        pass
 
-class COBRAModelFactory(MultiAnalyteFeature):
+class NormalizedData(BaseAnalyteFeature):
+    """
+    Normalizes a given analyte to another
+    """
+    def __init__(self, analyte, normalization_analyte):
+        self.analyte = analyte
+        self.normalization_analyte = normalization_analyte
+
+    @property
+    def data(self):
+        return self.analyte / self.normalization_analyte
+
+
+class NormalizedDataFactory(BaseAnalayteFeatureFactory):
+    requires = ['product','substrate','biomass']
+    name = 'normalized_data'
+
+    def __init__(self):
+        """
+        Initialize any required variables here.
+        """
+        self.analytes = []
+        raise Exception('Must be implemented in child')
+
+    def add_analyte_data(self, analyte):
+        """
+        Function called when new analyte is added. If an analyte is required for this feature, ensure to save or
+        use analyte. Do not manipulate raw analyte data.
+        Parameters
+        ----------
+        analyte_data
+
+        Returns
+        -------
+
+        """
+        self.analytes.append(analyte)
+
+        for analyte in self.analytes:
+            analyte.normalized_data = NormalizedData(analyte,self.analytes[-1])
+
+class COBRAModelFactory(BaseAnalyteFeature):
     def __init__(self):
         self.requires = ['biomass','substrate','product']
 
@@ -149,32 +205,88 @@ class COBRAModelFactory(MultiAnalyteFeature):
         import cameo
         iJO = cameo.models.iJO1366
 
-class MassBalanceFactory(MultiAnalyteFeature):
+class MassBalance(BaseAnalyteFeature):
+    """
+    Base multi analyte feature. Use this to create new features.
+    """
+    def __init__(self):
+        self.analyte_list = []
+        self.name = ''
+
+    @property
+    def data(self):
+        return 'Not implemented'
+
+class MassBalance(BaseAnalyteFeature):
+    def __init__(self, substrate, product=None, biomass=None):
+        self.substrate = substrate
+        self.product = product
+        self.biomass = biomass
+        # self.product_yield = None
+        # self.substrate_consumed = None
+
+    @property
+    def data(self):
+        if self.product is None and self.biomass is None:
+            raise Exception('Cannot balance mass without anything produced')
+        else:
+            self.calculate()
+        return self.mass_balance
+
+    def calculate(self):
+        # self.mass_balance = self.substrate - [analyte]
+
+
+        # Check if id is bigg
+        pass
+
+        # Calculate mass
+        pass
+
+
+        # self.calculate_substrate_consumed()
+        # try:
+        #     self.product_yield = np.divide(
+        #         self.product.data_vector - np.tile(self.product.data_vector[0],[len(self.product.data_vector)]),
+        #         self.substrate_consumed
+        #     )
+        # except Exception as e:
+        #     print(self.product)
+        #     print(self.product.data_vector)
+        #     raise Exception(e)
+
+    def calculate_substrate_consumed(self):
+        self.substrate_consumed = np.array(
+            [(self.substrate.data_vector[0] - dataPoint)
+             for dataPoint in self.substrate.data_vector]
+        )
+
+class MassBalanceFactory(object):
     def __init__(self):
         self.requires = ['biomass','substrate','product']
 
-class FeatureManager(object):
-    def __init__(self):
-        self.features = []
-        self.analytes_to_features = {}
-        self.analyte_types = ['biomass','substrate','product']
-        for analyte_type in self.analyte_types:
-            self.analytes_to_features[analyte_type] = []
-
-    def register_feature(self, feature):
-        self.features.append(feature)
-
-        analyte_types = ['biomass','substrate','product']
-        for analyte_type in analyte_types:
-            if analyte_type in feature.requires:
-                self.analytes_to_features[analyte_type].append(feature)
-        setattr(self,feature.name,feature)
-
-    def add_analyte(self, analyte_data):
-        for analyte_type in self.analyte_types:
-            for feature in self.features:
-                if feature in self.analyte_types[analyte_type]:
-                    feature.add_analyte(analyte_data)
+# class FeatureManager(object):
+#     def __init__(self):
+#         self.features = []
+#         self.analytes_to_features = {}
+#         self.analyte_types = ['biomass','substrate','product']
+#         for analyte_type in self.analyte_types:
+#             self.analytes_to_features[analyte_type] = []
+#
+#     def register_feature(self, feature):
+#         self.features.append(feature)
+#
+#         analyte_types = ['biomass','substrate','product']
+#         for analyte_type in analyte_types:
+#             if analyte_type in feature.requires:
+#                 self.analytes_to_features[analyte_type].append(feature)
+#         setattr(self,feature.name,feature)
+#
+#     def add_analyte(self, analyte_data):
+#         for analyte_type in self.analyte_types:
+#             for feature in self.features:
+#                 if feature in self.analyte_types[analyte_type]:
+#                     feature.add_analyte(analyte_data)
 
 # class TimeCourseStage(TimeCourse):
 #     def __init__(self):
