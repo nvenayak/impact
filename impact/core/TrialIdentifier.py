@@ -251,8 +251,8 @@ class Media(Base, TrialIdentifierMixin):
         self.formal_name = ''
         if self.parent:
             self.formal_name += self.parent.name
-        else:
-            self.formal_name += 'Unkown Media Base'
+        elif self.name:
+            self.formal_name += self.name #This is wrong. Right way is to pass parent
         if self.components:
             for component in self.components:
                 self.formal_name += ' + '
@@ -525,10 +525,18 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                 else:
                     raise Exception('Malformed parameter: '+id)
 
-        self.strain=Strain(name=identifier_dict['strain']['name'],plasmids=identifier_dict['strain']['plasmid'],
+        if identifier_dict['strain']['parent']:
+            self.strain=Strain(name=identifier_dict['strain']['name'],plasmids=identifier_dict['strain']['plasmid'],
                            knockouts=identifier_dict['strain']['ko'],parent=Strain(name=identifier_dict['strain']['parent']))
-        self.media=Media(name=identifier_dict['media']['name'],parent=Media(name=identifier_dict['media']['parent']),
+        else:
+            self.strain = Strain(name=identifier_dict['strain']['name'], plasmids=identifier_dict['strain']['plasmid'],
+                                 knockouts=identifier_dict['strain']['ko'],)
+        if identifier_dict['media']['parent']:
+            self.media=Media(name=identifier_dict['media']['name'],parent=Media(name=identifier_dict['media']['parent']),
                          components=identifier_dict['media']['cc'])
+        else:
+            self.media = Media(name=identifier_dict['media']['name'],
+                               components=identifier_dict['media']['cc'])
         self.environment=Environment(labware=identifier_dict['environment']['labware'],
                                     shaking_speed=identifier_dict['environment']['shaking_speed'],
                                      shaking_diameter=identifier_dict['environment']['shaking_diameter'],
