@@ -661,7 +661,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         Returns a string identifying the unique attribute of a replicate trial
         """
 
-        if self.strain.formal_name!='Unknown Base Strain':
+        if 'Unknown Base Strain' not in self.strain.formal_name:
             return ' '.join([str(getattr(self, attr))
                          for attr in ['strain', 'media', 'environment', 'id_1',
                                       'id_2', 'id_3']
