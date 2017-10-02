@@ -450,7 +450,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                         # Set knockouts
                         if attr1 == 'strain':
                             if attr2 == 'parent':
-                                identifier_dict[attr1][attr2]=Strain(name=val.strip())
+                                identifier_dict[attr1][attr2]=val.strip()
                             if attr2 == 'ko':
                                 kos = val.split(',')
                                 for ko in kos:
@@ -502,7 +502,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                     identifier_dict[attr1][attr2][comp.component_name]=comp
 
                             elif attr2 == 'base':
-                                identifier_dict[attr1]['parent'] = Media(name=val.strip())
+                                identifier_dict[attr1]['parent'] = val.strip()
                             else:
                                 raise Exception ('Unknown attribute passed for media identifier')
 
@@ -526,8 +526,8 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                     raise Exception('Malformed parameter: '+id)
 
         self.strain=Strain(name=identifier_dict['strain']['name'],plasmids=identifier_dict['strain']['plasmid'],
-                           knockouts=identifier_dict['strain']['ko'],parent=identifier_dict['strain']['parent'])
-        self.media=Media(name=identifier_dict['media']['name'],parent=identifier_dict['media']['parent'],
+                           knockouts=identifier_dict['strain']['ko'],parent=Strain(name=identifier_dict['strain']['parent']))
+        self.media=Media(name=identifier_dict['media']['name'],parent=Media(name=identifier_dict['media']['parent']),
                          components=identifier_dict['media']['cc'])
         self.environment=Environment(labware=identifier_dict['environment']['labware'],
                                     shaking_speed=identifier_dict['environment']['shaking_speed'],
