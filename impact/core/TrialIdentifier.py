@@ -56,9 +56,13 @@ class Knockout(Base, TrialIdentifierMixin):
     __tablename__ = 'knockout'
     id = Column(Integer, primary_key=True)
     gene = Column(String)
-    parent = Column(Integer, ForeignKey('strain.id'))
+    #changed the name parent to strain because it is ambiguous. strain makes more sense in this case.
+    strain = Column(Integer, ForeignKey('strain.id'))
 
-    eq_attrs = ['gene','parent']
+    eq_attrs = ['gene','strain']
+
+    def __init__(self,gene=None):
+        self.gene = gene
 
     def __str__(self):
         return str(self.gene)
@@ -71,6 +75,9 @@ class Plasmid(Base, TrialIdentifierMixin):
     strain = Column(Integer, ForeignKey('strain.id'))
 
     eq_attrs = ['name','strain']
+
+    def __init__(self,name=None):
+        self.name=name
 
     def __str__(self):
         return str(self.name)
@@ -101,35 +108,43 @@ class Strain(Base, TrialIdentifierMixin):
         self.id_1 = ''
         self.id_2 = ''
 
+        # formal name removed from list of keys because formal name is constructed using the strain's parent, knockouts
+        # and plasmids. It is not an attribute on its own. Also, plasmids was made a list arguement instead of the
+        # previous implementation where each plasmid was described separately. This was done so that it is consistent
+        # to the usage of plasmids everywhere else in the code.
         # TODO
         for key in kwargs:
-            if key in ['name','formal_name', 'plasmid_1','plasmid_2','plasmid_3']:
+            if key in ['name', 'plasmids', 'knockouts', 'parent','formal_name']:
                 setattr(self,key,kwargs[key])
             else:
                 setattr(self,key,None)
 
+        #Build formal name from parent, knockouts and plasmids
+        self.formal_name=''
+        if self.parent:
+            self.formal_name += self.parent.name
+        else:
+            self.formal_name += 'Unknown Base Strain'
+        if self.knockouts:
+            self.formal_name += ' \u0394('
+            self.formal_name += ','.join([knockout.gene for knockout in self.knockouts])
+            self.formal_name += ')'
+        if self.plasmids:
+            self.formal_name += ' + '
+            self.formal_name += ' + '.join([plasmid.name for plasmid in self.plasmids])
+
+
+        #Set name to be formal name if no explicit name is given
         if name != '':
             self.name = name
+        else:
+            self.name = self.formal_name
+
         # models.Model.__init__(self, *args, **kwargs)
 
     def __str__(self):
-        plasmid_summ = '+'.join([str(plasmid) for plasmid in self.plasmids])
-
-        if self.name is None:
-            name = ''
-        else:
-            name = self.name
-
-        summ_id = ''
-        if self.id_1 != '': summ_id = summ_id+' '+self.id_1
-        if self.id_2 != '': summ_id = summ_id+' '+self.id_2
-
-        knockouts = 'd('+','.join([str(ko) for ko in self.knockouts])+')' if self.knockouts else ''
-
-        if plasmid_summ :
-            return name+'+'+plasmid_summ+summ_id+knockouts
-        else:
-            return name+summ_id+knockouts
+    #already built formal_name using similar code in __init__.
+        return self.formal_name
 
     @property
     def unique_id(self):
@@ -169,27 +184,33 @@ class ComponentConcentration(Base, TrialIdentifierMixin):
 
     concentration = Column(Float)
 
-    eq_attrs = ['media','component','concentration']
+    #Removed media as one of the attributes. Does not make sense to have it. Component concentration is a child of media
+    # and not the other way round.
+    eq_attrs = ['component', 'concentration']
 
 
-    def __init__(self, component, concentration, unit='a.u.', **kwargs):
-        for key in kwargs:
-            if key in ['media']:
-                setattr(self,key,kwargs[key])
+    def __init__(self, component, concentration, unit=' a.u.', **kwargs):
+        # Marked as comments because there is no use of media as an attribute of component concentration.
+        #for key in kwargs:
+        #    if key in ['media']:
+        #        setattr(self,key,kwargs[key])
 
-        self.media_component = component
+#1 change made here: previous version had self.media_component. that is not a member of this table. It should
+# instead read self.component.
+        self.component = component
         self.component_name = component.name
         self.unit = unit
         self.concentration = concentration
 
-    def _convert_units(self):
-        if not self.units_converted:
-            if self._unit == '%':
-                self._concentration *= 10
-            elif self._unit == 'g/L':
-                pass
-            else:
-                raise Exception('Only g/L and % supported')
+    # Purpose of this function? Easier to pass converted units into the parser than do this
+    #def _convert_units(self):
+    #    if not self.units_converted:
+    #        if self._unit == '%':
+    #            self._concentration *= 10
+    #        elif self._unit == 'g/L':
+    #            pass
+    #        else:
+    #            raise Exception('Only g/L and % supported')
 
 
 class Media(Base, TrialIdentifierMixin):
@@ -197,6 +218,8 @@ class Media(Base, TrialIdentifierMixin):
     id = Column(Integer,primary_key=True)
     name = Column(String, nullable=True)
     formal_name = Column(String, nullable=True)
+
+    # the class media_component as well)
     components = relationship('ComponentConcentration',
                               collection_class=attribute_mapped_collection('component_name'),
                               cascade = 'all')
@@ -206,50 +229,65 @@ class Media(Base, TrialIdentifierMixin):
 
     # unit = Column(String)
 
-    eq_attrs = ['name', 'formal_name', 'components', 'parent']
+    # formal name removed from list of keys because formal name is constructed using the strain's parent, knockouts
+    # and plasmids. It is not an attribute on its own.
+    eq_attrs = ['name', 'components', 'parent']
 
 
-    def __init__(self, concentration=None, unit='a.u.', **kwargs):
+    #What is this concentration for?
+    def __init__(self, concentration=None, unit='a.u.', name='', **kwargs):
         self.parent = None
-
+        self.name = name
+        self.formal_name=''
         for key in kwargs:
-            if key in ['parent','name','unit']:
+            if key in ['parent','name','components']:
                 setattr(self,key,kwargs[key])
 
         self._concentration = concentration
+        # Build formal name from parent, knockouts and plasmids
+        self.formal_name = ''
+        if self.parent:
+            self.formal_name += self.parent.name
+        else:
+            self.formal_name += 'Unkown Media Base'
+        if self.components:
+            for component in self.components:
+                self.formal_name += ' + '
+                self.formal_name += str(self.components[component].concentration)
+                self.formal_name += self.components[component].unit + ' '
+                self.formal_name += self.components[component].component_name
+
+        if not self.name:
+            self.name=self.formal_name
+
+
         # self.unit = unit
+        # above line was commented because it does not make sense here. unit is an attribute of the class component_concentration
         # self.unit_conversion_flag = False
 
         # if concentration and unit:
         #     self._convert_units()
 
+    #Everything that needs to go on here is already assigned to self.formal_name
     def __str__(self):
-        if self.parent:
-            return self.parent.name+'+'+'+'.join([item for item in
-                             [str(cc.concentration) + cc.unit + ' ' + cc.media_component.name for cc in
-                              self.components.values()]])
-        else:
-            return '+'.join([item for item in
-                             [str(cc.concentration) + cc.unit + ' ' + cc.media_component.name for cc in
-                              self.components.values()]])
+        return self.formal_name
 
     @property
     def unique_id(self):
         return self.name
 
-    def add_component(self, component, concentration=None, unit=None):
-        if isinstance(component,MediaComponent):
-            if concentration is not None:
-                self.components[component.name] = ComponentConcentration(component, concentration, unit)
-            else:
-                raise Exception('Component added with no concentration')
-        elif isinstance(component,ComponentConcentration):
+    def add_component(self, component, concentration=None, unit=' a.u.'):
+        if isinstance(component, ComponentConcentration):
             # If the component is fully formed
             self.components[component.component_name] = component
-        elif isinstance(component,str):
-            # If only a name was given
-            self.components[component] = ComponentConcentration(MediaComponent(component), concentration, unit)
-
+        elif concentration is not None:
+            if isinstance(component,MediaComponent):
+                self.components[component.name] = ComponentConcentration(component, concentration, unit)
+            elif isinstance(component,str):
+                # If only a name was given
+                self.components[component] = ComponentConcentration(MediaComponent(component), concentration, unit)
+        else:
+            raise Exception('Component added with no concentration')
 
 class Environment(Base, TrialIdentifierMixin):
     __tablename__ = 'environment'
@@ -260,8 +298,10 @@ class Environment(Base, TrialIdentifierMixin):
     shaking_speed = Column(Float)
     shaking_diameter = Column(Float,nullable=True)
     temperature = Column(Float)
+    pH = Column(Float)
+    DO = Column(Float)
 
-    eq_attrs = ['labware', 'shaking_speed', 'shaking_diameter', 'temperature']
+    eq_attrs = ['labware', 'shaking_speed', 'shaking_diameter', 'temperature', 'pH', 'DO']
 
     # @reconstructor
     def __init__(self, labware=None, **kwargs):
@@ -271,14 +311,20 @@ class Environment(Base, TrialIdentifierMixin):
             setattr(self,arg,kwargs[arg])
 
     def __str__(self):
-        _ = ''
-        if self.labware is not None:
-            _ += str(self.labware)+' '
-        if self.shaking_speed is not None:
-            _ += str(self.shaking_speed)+'RPM '
-        if self.temperature is not None:
-            _ += str(self.temperature)+'C'
-        return _
+        env = ''
+        if self.labware:
+            env += str(self.labware)+' '
+        if self.shaking_speed:
+            env += str(self.shaking_speed)+'RPM '
+        if self.shaking_diameter:
+            env += str(self.shaking_diameter)+' mm Shaking Diameter'
+        if self.temperature:
+            env += str(self.temperature)+'\u00B0C '
+        if self.pH:
+            env += 'pH: ' + str(self.pH) + ' '
+        if self.DO:
+            env += 'DO: ' + str(self.DO) + ' '
+        return env
 
 
 class Labware(Base, TrialIdentifierMixin):
@@ -340,6 +386,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
     environment_id = Column(Integer, ForeignKey('environment.id'))
     environment = relationship('Environment')
 
+    #What are these?
     id_1 = Column(String)
     id_2 = Column(String)
     id_3 = Column(String)
@@ -371,7 +418,13 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
 
     def parse_identifier(self, id):
         # Split by |
-        parameter_values = id.split('|')
+
+
+        parameter_values=id.split('|')
+        identifier_dict={'strain':{'name':'','plasmid':[],'ko':[],'parent':''},
+                            'media':{'name':'','cc':{},'parent':''},
+                            'environment':{'labware':'','shaking_speed':'','shaking_diameter':'','temperature':'',
+                                           'pH':'','DO':''}}
 
         for parameter_value in parameter_values:
             if parameter_value != '':
@@ -384,8 +437,121 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                     key, val = parameter_value.split(':')
 
                     if len(key.split('__')) == 1:
+                        if key in ['strain', 'media']:
+                            identifier_dict[key]['name'] = val.strip()
+                        elif key == 'rep':
+                            self.replicate_id = int(val)
+                        elif key in ['time','t']:
+                            self.time = float(val)
+                        else:
+                            raise Exception('Unknown key: ' + str(key))
+                    elif len(key.split('__')) == 2:
+                        attr1, attr2 = key.split('__')
+
+                        # Set knockouts
+                        if attr1 == 'strain':
+                            if attr2 == 'parent':
+                                identifier_dict[attr1][attr2]=Strain(name=val.strip())
+                            if attr2 == 'ko':
+                                kos = val.split(',')
+                                for ko in kos:
+                                    identifier_dict[attr1][attr2].append(Knockout(gene=ko.strip()))
+                            if attr2 == 'plasmid':
+                                plasmids = val.split(',')
+                                for plasmid in plasmids:
+                                    identifier_dict[attr1][attr2].append(Plasmid(name=plasmid.strip()))
+                            #if attr2 == 'id':
+                            #    if self.strain.id_1 == '':
+                            #        self.strain.id_1 = val
+                            #    elif self.strain.id_2 == '':
+                            #        self.strain.id_2 = val
+                            #    else:
+                            #        raise Exception('Only two generic strain ids permitted')
+
+                        # Set component concentrations
+                        elif attr1 == 'media':
+                            if attr2 == 'cc':
+                                compconcs=val.split(',')
+                                cclist=[]
+                                for compconc in compconcs:
+                                    if(len(compconc.split(' '))==2):
+                                        # if units are not given in the identifier
+                                        conc, comp = compconc.split(' ')
+                                        try:
+                                            # Try format concentration component (0.2 glc)
+                                            cclist.append(
+                                                ComponentConcentration(component=MediaComponent(comp),concentration=float(conc)))
+                                        except ValueError:
+                                            # Try format component concentration (glc 0.2)
+                                            cclist.append(
+                                                ComponentConcentration(component=MediaComponent(conc), concentration=float(comp)))
+
+                                    elif(len(val.split(' '))==3):
+                                        #if units are given in the identifier
+                                        conc,unit,comp = val.split(' ')
+                                        try:
+                                            # Try format concentration component (0.2 glc mM)
+                                            cclist.append(
+                                                ComponentConcentration(component=MediaComponent(comp),concentration=float(conc),unit=' '+unit))
+                                        except ValueError:
+                                            # Try format component concentration (glc 0.2 mM)
+                                            cclist.append(
+                                                ComponentConcentration(component=MediaComponent(conc), concentration=float(unit),unit=' '+comp))
+                                    else:
+                                        raise Exception ('Unknown format for component concentration')
+                                for comp in cclist:
+                                    identifier_dict[attr1][attr2][comp.component_name]=comp
+
+                            elif attr2 == 'base':
+                                identifier_dict[attr1]['parent'] = Media(name=val.strip())
+                            else:
+                                raise Exception ('Unknown attribute passed for media identifier')
+
+
+                        elif attr1 == 'environment':
+                            if attr2 =='labware':
+                                identifier_dict[attr1][attr2]=Labware(val.strip())
+                            elif attr2 in ['shaking_speed','shaking_diameter','temperature','pH','DO']:
+                                try:
+                                    identifier_dict[attr1][attr2]=float(val.strip())
+                                except ValueError:
+                                    print('Invalid value entered for attribute')
+                            else:
+                                raise Exception ('Unkown attribute passed for environment identifier')
+                        else:
+                            # Set other attrs
+                            setattr(getattr(self, attr1), attr2, val)
+                    else:
+                        raise Exception('Too many subparameters traversed' + str(key))
+                else:
+                    raise Exception('Malformed parameter: '+id)
+
+        self.strain=Strain(name=identifier_dict['strain']['name'],plasmids=identifier_dict['strain']['plasmid'],
+                           knockouts=identifier_dict['strain']['ko'],parent=identifier_dict['strain']['parent'])
+        self.media=Media(name=identifier_dict['media']['name'],parent=identifier_dict['media']['parent'],
+                         components=identifier_dict['media']['cc'])
+        self.environment=Environment(labware=identifier_dict['environment']['labware'],
+                                    shaking_speed=identifier_dict['environment']['shaking_speed'],
+                                     shaking_diameter=identifier_dict['environment']['shaking_diameter'],
+                                     temperature=identifier_dict['environment']['temperature'],
+                                     pH=identifier_dict['environment']['pH'],DO=identifier_dict['environment']['DO'])
+
+
+        #parameter_values = id.split('|')
+        #old version commented
+        '''for parameter_value in parameter_values:
+            if parameter_value != '':
+                if len(parameter_value.split(':')) == 1:
+                    if parameter_value in ['blank','Blank']:
+                        self.blank = True
+                    else:
+                        raise Exception('Identifier malformed: '+parameter_value)
+                elif len(parameter_value.split(':')) == 2:
+                    key, val = parameter_value.split(':')
+
+                    if len(key.split('__')) == 1:
                         if key in ['strain', 'media', 'environment']:
-                            getattr(self, key).name = val
+                            getattr(self, key).name = val.strip()
                         elif key == 'rep':
                             self.replicate_id = int(val)
                         elif key in ['time','t']:
@@ -401,8 +567,10 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                 kos = val.split(',')
                                 for ko in kos:
                                     self.strain.knockouts.append(Knockout(gene=ko))
-                            if attr2 == 'plasmid':
-                                self.strain.plasmids.append(Plasmid(name=val))
+                            if attr2 == 'plasmids':
+                                plasmids = val.split(',')
+                                for plasmid in plasmids:
+                                    self.strain.plasmids.append(Plasmid(name=plasmid))
                             if attr2 == 'id':
                                 if self.strain.id_1 == '':
                                     self.strain.id_1 = val
@@ -420,8 +588,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                     self.media.add_component(ComponentConcentration(MediaComponent(comp), float(conc)))
                                 except ValueError:
                                     # Try format component concentration (glc 0.2)
-                                    self.media.add_component(
-                                        ComponentConcentration(MediaComponent(conc), float(comp)))
+                                    self.media.add_component(ComponentConcentration(MediaComponent(conc), float(comp)))
                             elif attr2 == 'base':
                                 self.media.parent = Media(name=val)
                             else:
@@ -431,7 +598,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                         elif attr1 == 'environment':
                             if attr2 == 'labware':
                                 self.environment.labware.name = val
-                            elif attr2 in ['shaking_speed','temperature']:
+                            elif attr2 in ['shaking_speed','temperature','pH','DO']:
                                 setattr(self.environment,attr2,float(val))
                             else:
                                 setattr(self.environment,attr2,val)
@@ -441,7 +608,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                     else:
                         raise Exception('Too many subparameters traversed' + str(key))
                 else:
-                    raise Exception('Malformed parameter: '+id)
+                    raise Exception('Malformed parameter: '+id)'''
 
     def parse_trial_identifier_from_csv(self, csv_trial_identifier):
         """
@@ -494,11 +661,17 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         """
         Returns a string identifying the unique attribute of a replicate trial
         """
-        return ' '.join([str(getattr(self, attr))
+
+        if self.strain.formal_name!='Unknown Base Strain':
+            return ' '.join([str(getattr(self, attr))
                          for attr in ['strain', 'media', 'environment', 'id_1',
                                       'id_2', 'id_3']
                          if str(getattr(self, attr) != '')])
-
+        else:
+            return self.strain.name + ' ' + ' '.join([str(getattr(self, attr))
+                         for attr in ['media', 'environment', 'id_1',
+                                      'id_2', 'id_3']
+                         if str(getattr(self, attr) != '')])
     def get_analyte_data_statistic_identifier(self):
         ti = TimeCourseIdentifier()
         for attr in ['strain','media','environment','id_1','id_2','id_3','analyte_name','analyte_type']:
