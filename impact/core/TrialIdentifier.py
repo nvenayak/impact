@@ -408,7 +408,6 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
 
     def __str__(self):
         return "strain: %s,\tmedia: %s,\tenv: %s" % (self.strain,self.media,self.environment)
-        # return "strain: %s,\tmedia: %s,\tenv: %s,\tanalyte: %s,\tt: %sh,\trep: %s" % (self.strain,self.media,self.environment,self.analyte_name,self.time,self.replicate_id)
 
     def summary(self, items):
         summary = dict()
@@ -417,9 +416,6 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         return summary
 
     def parse_identifier(self, id):
-        # Split by |
-
-
         parameter_values=id.split('|')
         identifier_dict={'strain':{'name':'','plasmid':[],'ko':[],'parent':''},
                             'media':{'name':'','cc':{},'parent':''},
