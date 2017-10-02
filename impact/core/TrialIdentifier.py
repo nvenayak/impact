@@ -219,9 +219,8 @@ class Media(Base, TrialIdentifierMixin):
     name = Column(String, nullable=True)
     formal_name = Column(String, nullable=True)
 
-    #changed components to componentconcs because the name component was ambiguous(might refer to
     # the class media_component as well)
-    componentconcs = relationship('ComponentConcentration',
+    components = relationship('ComponentConcentration',
                               collection_class=attribute_mapped_collection('component_name'),
                               cascade = 'all')
 
@@ -232,7 +231,7 @@ class Media(Base, TrialIdentifierMixin):
 
     # formal name removed from list of keys because formal name is constructed using the strain's parent, knockouts
     # and plasmids. It is not an attribute on its own.
-    eq_attrs = ['name', 'componentconcs', 'parent']
+    eq_attrs = ['name', 'components', 'parent']
 
 
     #What is this concentration for?
@@ -241,7 +240,7 @@ class Media(Base, TrialIdentifierMixin):
         self.name = name
         self.formal_name=''
         for key in kwargs:
-            if key in ['parent','name','componentconcs']:
+            if key in ['parent','name','components']:
                 setattr(self,key,kwargs[key])
 
         self._concentration = concentration
@@ -251,12 +250,12 @@ class Media(Base, TrialIdentifierMixin):
             self.formal_name += self.parent.name
         else:
             self.formal_name += 'Unkown Media Base'
-        if self.componentconcs:
-            for component in self.componentconcs:
+        if self.components:
+            for component in self.components:
                 self.formal_name += ' + '
-                self.formal_name += str(self.componentconcs[component].concentration)
-                self.formal_name += self.componentconcs[component].unit + ' '
-                self.formal_name += self.componentconcs[component].component_name
+                self.formal_name += str(self.components[component].concentration)
+                self.formal_name += self.components[component].unit + ' '
+                self.formal_name += self.components[component].component_name
 
         if not self.name:
             self.name=self.formal_name
@@ -280,13 +279,13 @@ class Media(Base, TrialIdentifierMixin):
     def add_component(self, component, concentration=None, unit=' a.u.'):
         if isinstance(component, ComponentConcentration):
             # If the component is fully formed
-            self.componentconcs[component.component_name] = component
+            self.components[component.component_name] = component
         elif concentration is not None:
             if isinstance(component,MediaComponent):
-                self.componentconcs[component.name] = ComponentConcentration(component, concentration, unit)
+                self.components[component.name] = ComponentConcentration(component, concentration, unit)
             elif isinstance(component,str):
                 # If only a name was given
-                self.componentconcs[component] = ComponentConcentration(MediaComponent(component), concentration, unit)
+                self.components[component] = ComponentConcentration(MediaComponent(component), concentration, unit)
         else:
             raise Exception('Component added with no concentration')
 
@@ -513,7 +512,10 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                             if attr2 =='labware':
                                 identifier_dict[attr1][attr2]=Labware(val.strip())
                             elif attr2 in ['shaking_speed','shaking_diameter','temperature','pH','DO']:
-                                identifier_dict[attr1][attr2]=val.strip()
+                                try:
+                                    identifier_dict[attr1][attr2]=float(val.strip())
+                                except ValueError:
+                                    print('Invalid value entered for attribute')
                             else:
                                 raise Exception ('Unkown attribute passed for environment identifier')
                         else:
@@ -527,7 +529,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         self.strain=Strain(name=identifier_dict['strain']['name'],plasmids=identifier_dict['strain']['plasmid'],
                            knockouts=identifier_dict['strain']['ko'],parent=identifier_dict['strain']['parent'])
         self.media=Media(name=identifier_dict['media']['name'],parent=identifier_dict['media']['parent'],
-                         componentconcs=identifier_dict['media']['cc'])
+                         components=identifier_dict['media']['cc'])
         self.environment=Environment(labware=identifier_dict['environment']['labware'],
                                     shaking_speed=identifier_dict['environment']['shaking_speed'],
                                      shaking_diameter=identifier_dict['environment']['shaking_diameter'],
@@ -659,11 +661,17 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         """
         Returns a string identifying the unique attribute of a replicate trial
         """
-        return ' '.join([str(getattr(self, attr))
+
+        if self.strain.formal_name!='Unknown Base Strain':
+            return ' '.join([str(getattr(self, attr))
                          for attr in ['strain', 'media', 'environment', 'id_1',
                                       'id_2', 'id_3']
                          if str(getattr(self, attr) != '')])
-
+        else:
+            return self.strain.name + ' ' + ' '.join([str(getattr(self, attr))
+                         for attr in ['media', 'environment', 'id_1',
+                                      'id_2', 'id_3']
+                         if str(getattr(self, attr) != '')])
     def get_analyte_data_statistic_identifier(self):
         ti = TimeCourseIdentifier()
         for attr in ['strain','media','environment','id_1','id_2','id_3','analyte_name','analyte_type']:
