@@ -127,7 +127,7 @@ class Strain(Base, TrialIdentifierMixin):
         if self.parent:
             self.formal_name += self.parent.name
         else:
-            self.formal_name += 'Unknown Base Strain'
+            self.formal_name += self.name #This is actually wrong. Proper way is to give the parent's name appropriately
         if self.knockouts:
             self.formal_name += ' \u0394('
             self.formal_name += ','.join([knockout.gene for knockout in self.knockouts])
@@ -661,16 +661,12 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         Returns a string identifying the unique attribute of a replicate trial
         """
 
-        if 'Unknown Base Strain' not in self.strain.formal_name:
-            return ' '.join([str(getattr(self, attr))
+
+        return ' '.join([str(getattr(self, attr))
                          for attr in ['strain', 'media', 'environment', 'id_1',
                                       'id_2', 'id_3']
                          if str(getattr(self, attr) != '')])
-        else:
-            return self.strain.name + ' ' + ' '.join([str(getattr(self, attr))
-                         for attr in ['media', 'environment', 'id_1',
-                                      'id_2', 'id_3']
-                         if str(getattr(self, attr) != '')])
+
     def get_analyte_data_statistic_identifier(self):
         ti = TimeCourseIdentifier()
         for attr in ['strain','media','environment','id_1','id_2','id_3','analyte_name','analyte_type']:
