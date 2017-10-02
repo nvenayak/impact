@@ -65,5 +65,10 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(num_analyte_data,252)
         self.assertEqual(num_time_points,2884)
 
+    def test_spectromax_parser(self):
+        expt = impact.Experiment()
+        expt.parse_raw_data(format='spectromax_OD',id_type='traverse',file_name=os.path.join(BASE_DIR,'tests/test_data/sample_spectromax_data.xlsx'))
+        print(expt)
+
 if __name__ == '__main__':
     unittest.main()
