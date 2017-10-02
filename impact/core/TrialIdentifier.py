@@ -110,14 +110,14 @@ class Strain(Base, TrialIdentifierMixin):
     def __init__(self, name='',**kwargs):
         self.id_1 = ''
         self.id_2 = ''
-
+        self.name=name
         # formal name removed from list of keys because formal name is constructed using the strain's parent, knockouts
         # and plasmids. It is not an attribute on its own. Also, plasmids was made a list arguement instead of the
         # previous implementation where each plasmid was described separately. This was done so that it is consistent
         # to the usage of plasmids everywhere else in the code.
         # TODO
         for key in kwargs:
-            if key in ['name', 'plasmids', 'knockouts', 'parent','formal_name']:
+            if key in ['plasmids', 'knockouts', 'parent','formal_name']:
                 setattr(self,key,kwargs[key])
             else:
                 setattr(self,key,None)
@@ -126,8 +126,10 @@ class Strain(Base, TrialIdentifierMixin):
         self.formal_name=''
         if self.parent:
             self.formal_name += self.parent.name
-        #if self.name:
-        self.formal_name += self.name #This is actually wrong. Proper way is to give the parent's name appropriately
+        elif self.name:
+            self.formal_name += self.name #This is actually wrong. Proper way is to give the parent's name appropriately
+        else:
+            self.formal_name += 'Unkown Base Strain'
         if self.knockouts:
             self.formal_name += ' \u0394('
             self.formal_name += ','.join([knockout.gene for knockout in self.knockouts])
