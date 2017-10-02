@@ -126,8 +126,8 @@ class Strain(Base, TrialIdentifierMixin):
         self.formal_name=''
         if self.parent:
             self.formal_name += self.parent.name
-        if self.name:
-            self.formal_name += self.name #This is actually wrong. Proper way is to give the parent's name appropriately
+        #if self.name:
+        self.formal_name += self.name #This is actually wrong. Proper way is to give the parent's name appropriately
         if self.knockouts:
             self.formal_name += ' \u0394('
             self.formal_name += ','.join([knockout.gene for knockout in self.knockouts])
