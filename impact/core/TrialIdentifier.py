@@ -126,7 +126,7 @@ class Strain(Base, TrialIdentifierMixin):
         self.formal_name=''
         if self.parent:
             self.formal_name += self.parent.name
-        else:
+        elif self.name:
             self.formal_name += self.name #This is actually wrong. Proper way is to give the parent's name appropriately
         if self.knockouts:
             self.formal_name += ' \u0394('
