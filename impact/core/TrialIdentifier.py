@@ -537,78 +537,78 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                      pH=identifier_dict['environment']['pH'],DO=identifier_dict['environment']['DO'])
 
 
-        #parameter_values = id.split('|')
-        #old version commented
-        '''for parameter_value in parameter_values:
-            if parameter_value != '':
-                if len(parameter_value.split(':')) == 1:
-                    if parameter_value in ['blank','Blank']:
-                        self.blank = True
-                    else:
-                        raise Exception('Identifier malformed: '+parameter_value)
-                elif len(parameter_value.split(':')) == 2:
-                    key, val = parameter_value.split(':')
-
-                    if len(key.split('__')) == 1:
-                        if key in ['strain', 'media', 'environment']:
-                            getattr(self, key).name = val.strip()
-                        elif key == 'rep':
-                            self.replicate_id = int(val)
-                        elif key in ['time','t']:
-                            self.time = float(val)
-                        else:
-                            raise Exception('Unknown key: ' + str(key))
-                    elif len(key.split('__')) == 2:
-                        attr1, attr2 = key.split('__')
-
-                        # Set knockouts
-                        if attr1 == 'strain':
-                            if attr2 == 'ko':
-                                kos = val.split(',')
-                                for ko in kos:
-                                    self.strain.knockouts.append(Knockout(gene=ko))
-                            if attr2 == 'plasmids':
-                                plasmids = val.split(',')
-                                for plasmid in plasmids:
-                                    self.strain.plasmids.append(Plasmid(name=plasmid))
-                            if attr2 == 'id':
-                                if self.strain.id_1 == '':
-                                    self.strain.id_1 = val
-                                elif self.strain.id_2 == '':
-                                    self.strain.id_2 = val
-                                else:
-                                    raise Exception('Only two generic strain ids permitted')
-
-                        # Set component concentrations
-                        elif attr1 == 'media':
-                            if attr2 == 'cc':
-                                conc, comp = val.split(' ')
-                                try:
-                                    # Try format concentration component (0.2 glc)
-                                    self.media.add_component(ComponentConcentration(MediaComponent(comp), float(conc)))
-                                except ValueError:
-                                    # Try format component concentration (glc 0.2)
-                                    self.media.add_component(ComponentConcentration(MediaComponent(conc), float(comp)))
-                            elif attr2 == 'base':
-                                self.media.parent = Media(name=val)
-                            else:
-                                setattr(self.media,attr2,val)
-
-
-                        elif attr1 == 'environment':
-                            if attr2 == 'labware':
-                                self.environment.labware.name = val
-                            elif attr2 in ['shaking_speed','temperature','pH','DO']:
-                                setattr(self.environment,attr2,float(val))
-                            else:
-                                setattr(self.environment,attr2,val)
-                        else:
-                            # Set other attrs
-                            setattr(getattr(self, attr1), attr2, val)
-                    else:
-                        raise Exception('Too many subparameters traversed' + str(key))
-                else:
-                    raise Exception('Malformed parameter: '+id)'''
+        # parameter_values = id.split('|')
+        # old version commented
+        # for parameter_value in parameter_values:
+        #     if parameter_value != '':
+        #         if len(parameter_value.split(':')) == 1:
+        #             if parameter_value in ['blank','Blank']:
+        #                 self.blank = True
+        #             else:
+        #                 raise Exception('Identifier malformed: '+parameter_value)
+        #         elif len(parameter_value.split(':')) == 2:
+        #             key, val = parameter_value.split(':')
+        #
+        #             if len(key.split('__')) == 1:
+        #                 if key in ['strain', 'media', 'environment']:
+        #                     getattr(self, key).name = val.strip()
+        #                 elif key == 'rep':
+        #                     self.replicate_id = int(val)
+        #                 elif key in ['time','t']:
+        #                     self.time = float(val)
+        #                 else:
+        #                     raise Exception('Unknown key: ' + str(key))
+        #             elif len(key.split('__')) == 2:
+        #                 attr1, attr2 = key.split('__')
+        #
+        #                 # Set knockouts
+        #                 if attr1 == 'strain':
+        #                     if attr2 == 'ko':
+        #                         kos = val.split(',')
+        #                         for ko in kos:
+        #                             self.strain.knockouts.append(Knockout(gene=ko))
+        #                     if attr2 == 'plasmids':
+        #                         plasmids = val.split(',')
+        #                         for plasmid in plasmids:
+        #                             self.strain.plasmids.append(Plasmid(name=plasmid))
+        #                     if attr2 == 'id':
+        #                         if self.strain.id_1 == '':
+        #                             self.strain.id_1 = val
+        #                         elif self.strain.id_2 == '':
+        #                             self.strain.id_2 = val
+        #                         else:
+        #                             raise Exception('Only two generic strain ids permitted')
+        #
+        #                 # Set component concentrations
+        #                 elif attr1 == 'media':
+        #                     if attr2 == 'cc':
+        #                         conc, comp = val.split(' ')
+        #                         try:
+        #                             # Try format concentration component (0.2 glc)
+        #                             self.media.add_component(ComponentConcentration(MediaComponent(comp), float(conc)))
+        #                         except ValueError:
+        #                             # Try format component concentration (glc 0.2)
+        #                             self.media.add_component(ComponentConcentration(MediaComponent(conc), float(comp)))
+        #                     elif attr2 == 'base':
+        #                         self.media.parent = Media(name=val)
+        #                     else:
+        #                         setattr(self.media,attr2,val)
+        #
+        #
+        #                 elif attr1 == 'environment':
+        #                     if attr2 == 'labware':
+        #                         self.environment.labware.name = val
+        #                     elif attr2 in ['shaking_speed','temperature','pH','DO']:
+        #                         setattr(self.environment,attr2,float(val))
+        #                     else:
+        #                         setattr(self.environment,attr2,val)
+        #                 else:
+        #                     # Set other attrs
+        #                     setattr(getattr(self, attr1), attr2, val)
+        #             else:
+        #                 raise Exception('Too many subparameters traversed' + str(key))
+        #         else:
+        #             raise Exception('Malformed parameter: '+id)
 
     def parse_trial_identifier_from_csv(self, csv_trial_identifier):
         """
