@@ -95,7 +95,10 @@ class Strain(Base, TrialIdentifierMixin):
     formal_name = Column(String)
     plasmids = relationship('Plasmid')
     knockouts = relationship('Knockout')
-    parent = Column(Integer,ForeignKey('strain.id'))
+
+    parent = relationship('Strain',uselist=False)
+    parent_id = Column(Integer,ForeignKey('strain.id'))
+
     ALE_time = Column(String)
     id_1 = Column(String)
     id_2 = Column(String)
