@@ -110,14 +110,14 @@ class Strain(Base, TrialIdentifierMixin):
     def __init__(self, name='',**kwargs):
         self.id_1 = ''
         self.id_2 = ''
-
+        self.name=name
         # formal name removed from list of keys because formal name is constructed using the strain's parent, knockouts
         # and plasmids. It is not an attribute on its own. Also, plasmids was made a list arguement instead of the
         # previous implementation where each plasmid was described separately. This was done so that it is consistent
         # to the usage of plasmids everywhere else in the code.
         # TODO
         for key in kwargs:
-            if key in ['name', 'plasmids', 'knockouts', 'parent','formal_name']:
+            if key in ['plasmids', 'knockouts', 'parent','formal_name']:
                 setattr(self,key,kwargs[key])
             else:
                 setattr(self,key,None)
@@ -126,8 +126,10 @@ class Strain(Base, TrialIdentifierMixin):
         self.formal_name=''
         if self.parent:
             self.formal_name += self.parent.name
+        elif self.name:
+            self.formal_name += self.name #This is actually wrong. Proper way is to give the parent's name appropriately
         else:
-            self.formal_name += 'Unknown Base Strain'
+            self.formal_name += 'Unkown Base Strain'
         if self.knockouts:
             self.formal_name += ' \u0394('
             self.formal_name += ','.join([knockout.gene for knockout in self.knockouts])
@@ -251,8 +253,8 @@ class Media(Base, TrialIdentifierMixin):
         self.formal_name = ''
         if self.parent:
             self.formal_name += self.parent.name
-        else:
-            self.formal_name += 'Unkown Media Base'
+        elif self.name:
+            self.formal_name += self.name #This is wrong. Right way is to pass parent
         if self.components:
             for component in self.components:
                 self.formal_name += ' + '
@@ -450,7 +452,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                         # Set knockouts
                         if attr1 == 'strain':
                             if attr2 == 'parent':
-                                identifier_dict[attr1][attr2]=Strain(name=val.strip())
+                                identifier_dict[attr1][attr2]=val.strip()
                             if attr2 == 'ko':
                                 kos = val.split(',')
                                 for ko in kos:
@@ -502,7 +504,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                     identifier_dict[attr1][attr2][comp.component_name]=comp
 
                             elif attr2 == 'base':
-                                identifier_dict[attr1]['parent'] = Media(name=val.strip())
+                                identifier_dict[attr1]['parent'] = val.strip()
                             else:
                                 raise Exception ('Unknown attribute passed for media identifier')
 
@@ -525,10 +527,18 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                 else:
                     raise Exception('Malformed parameter: '+id)
 
-        self.strain=Strain(name=identifier_dict['strain']['name'],plasmids=identifier_dict['strain']['plasmid'],
-                           knockouts=identifier_dict['strain']['ko'],parent=identifier_dict['strain']['parent'])
-        self.media=Media(name=identifier_dict['media']['name'],parent=identifier_dict['media']['parent'],
+        if identifier_dict['strain']['parent']:
+            self.strain=Strain(name=identifier_dict['strain']['name'],plasmids=identifier_dict['strain']['plasmid'],
+                           knockouts=identifier_dict['strain']['ko'],parent=Strain(name=identifier_dict['strain']['parent']))
+        else:
+            self.strain = Strain(name=identifier_dict['strain']['name'], plasmids=identifier_dict['strain']['plasmid'],
+                                 knockouts=identifier_dict['strain']['ko'],)
+        if identifier_dict['media']['parent']:
+            self.media=Media(name=identifier_dict['media']['name'],parent=Media(name=identifier_dict['media']['parent']),
                          components=identifier_dict['media']['cc'])
+        else:
+            self.media = Media(name=identifier_dict['media']['name'],
+                               components=identifier_dict['media']['cc'])
         self.environment=Environment(labware=identifier_dict['environment']['labware'],
                                     shaking_speed=identifier_dict['environment']['shaking_speed'],
                                      shaking_diameter=identifier_dict['environment']['shaking_diameter'],
@@ -661,16 +671,12 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         Returns a string identifying the unique attribute of a replicate trial
         """
 
-        if self.strain.formal_name!='Unknown Base Strain':
-            return ' '.join([str(getattr(self, attr))
+
+        return ' '.join([str(getattr(self, attr))
                          for attr in ['strain', 'media', 'environment', 'id_1',
                                       'id_2', 'id_3']
                          if str(getattr(self, attr) != '')])
-        else:
-            return self.strain.name + ' ' + ' '.join([str(getattr(self, attr))
-                         for attr in ['media', 'environment', 'id_1',
-                                      'id_2', 'id_3']
-                         if str(getattr(self, attr) != '')])
+
     def get_analyte_data_statistic_identifier(self):
         ti = TimeCourseIdentifier()
         for attr in ['strain','media','environment','id_1','id_2','id_3','analyte_name','analyte_type']:
