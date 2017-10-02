@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/nvenayak/impact.svg?token=V3Kqb5fkhiSEid1A8oyf&branch=master)](https://travis-ci.com/nvenayak/impact)
+[![Build Status](https://travis-ci.org/nvenayak/impact.svg?branch=master)](https://travis-ci.org/nvenayak/impact)
 
 # Impact: a framework for analyzing microbial physiology
 
