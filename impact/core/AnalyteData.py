@@ -157,7 +157,7 @@ class TimeCourse(Base):
 
     @property
     def unique_id(self):
-        return ','.join([self.trial_identifier.strain,self.trial_identifier.media,self.trial_identifier.id_1,
+        return ','.join([str(self.trial_identifier.strain),str(self.trial_identifier.media),self.trial_identifier.id_1,
                          self.trial_identifier.id_2, self.trial_identifier.id_3, self.trial_identifier.replicate_id])
 
     def serialize(self):
