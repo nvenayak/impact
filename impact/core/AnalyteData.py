@@ -157,8 +157,8 @@ class TimeCourse(Base):
 
     @property
     def unique_id(self):
-        return ','.join([self.trial_identifier.strain,self.trial_identifier.media,self.trial_identifier.id_1,
-                         self.trial_identifier.id_2, self.trial_identifier.id_3, self.trial_identifier.replicate_id])
+        return ','.join([str(self.trial_identifier.strain),str(self.trial_identifier.media),str(self.trial_identifier.id_1),
+                         str(self.trial_identifier.id_2), str(self.trial_identifier.id_3), str(self.trial_identifier.replicate_id)])
 
     def serialize(self):
         serialized_dict = {'data'    : self.pd_series.to_json(), 'fit_params': self.fit_params,
@@ -294,7 +294,7 @@ class TimeCourse(Base):
         death_phase_start = len(data_vector)
 
         # Check if there is a reasonable difference between the min and max of the curve
-        if (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector) > 2:
+        if (np.max(data_vector) - np.m                                                                                                                                                                                                                                                                                                                                          in(data_vector)) / np.min(data_vector) > 2:
             if verbose: print('Growth range: ', (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector))
 
             if use_filtered_data:
