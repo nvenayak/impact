@@ -14,11 +14,12 @@ from sqlalchemy.orm import relationship, reconstructor
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy import event
 
+
 class FitParameter(Base):
     __tablename__ = 'fit_parameters'
 
-    id = Column(Integer,primary_key = True)
-    parent_id = Column(Integer,ForeignKey('time_course.id'))
+    id = Column(Integer, primary_key=True)
+    parent_id = Column(Integer, ForeignKey('time_course.id'))
     parameter_name = Column(String)
     parameter_value = Column(Float)
 
@@ -33,16 +34,16 @@ class TimePoint(Base):
     time_point_type = Column(String)
 
     __mapper_args__ = {
-        'polymorphic_on': time_point_type,
-        'polymorphic_identity':'raw'
+        'polymorphic_on'      : time_point_type,
+        'polymorphic_identity': 'raw'
     }
 
     id = Column(Integer, primary_key=True)
-    trial_identifier_id = Column(Integer,ForeignKey('time_course_identifier.id'))
+    trial_identifier_id = Column(Integer, ForeignKey('time_course_identifier.id'))
     trial_identifier = relationship('TimeCourseIdentifier')
     time = Column(Float)
     data = Column(Float)
-    parent_id = Column(Integer,ForeignKey('time_course.id'))
+    parent_id = Column(Integer, ForeignKey('time_course.id'))
     parent = relationship('TimeCourse')
 
     use_in_analysis = Column(Boolean)
@@ -55,19 +56,19 @@ class TimePoint(Base):
     def get_unique_timepoint_id(self):
         return self.trial_identifier.unique_time_point()
 
-            # str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
-            # self.trial_identifier.replicate_id) + self.trial_identifier.analyte_name
+        # str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
+        # self.trial_identifier.replicate_id) + self.trial_identifier.analyte_name
 
 
 class GradientTimePoint(TimePoint):
     __mapper_args__ = {
-        'polymorphic_identity':'gradient'
+        'polymorphic_identity': 'gradient'
     }
 
 
 class SpecificProductivityTimePoint(TimePoint):
     __mapper_args__ = {
-        'polymorphic_identity':'specific_productivity'
+        'polymorphic_identity': 'specific_productivity'
     }
 
 
@@ -80,7 +81,7 @@ class TimeCourse(Base):
     discriminator = Column(String(50))
     __mapper_args__ = {'polymorphic_on': discriminator}
 
-    id = Column(Integer,primary_key = True)
+    id = Column(Integer, primary_key=True)
 
     trial_identifier_id = Column(Integer, ForeignKey('time_course_identifier.id'))
     _trial_identifier = relationship('TimeCourseIdentifier')
@@ -97,7 +98,7 @@ class TimeCourse(Base):
     stages = relationship('TimeCourseStage')
 
     parent_id = Column(Integer, ForeignKey('single_trial.id'))
-    parent = relationship('SingleTrial',uselist=False)
+    parent = relationship('SingleTrial', uselist=False)
 
     analyte_name = Column(String)
     analyte_type = Column(String)
@@ -106,34 +107,29 @@ class TimeCourse(Base):
 
     __mapper_args__ = {
         'polymorphic_identity': 'time_course',
-        'polymorphic_on': type
+        'polymorphic_on'      : type
     }
 
     @reconstructor
-    def __init__(self, **kwargs):
+    def __init__(self, time_points, **kwargs):
         # Get the default parameters
         from .settings import settings
 
         self.pd_series = None
 
         if 'time_points' in kwargs:
-            for time_point in kwargs['time_points']:
+            for time_point in time_points:
                 self.add_timepoint(time_point)
-
 
         # Overwrite user-set parameters
         for arg in kwargs:
-            setattr(self,arg,kwargs[arg])
-
+            setattr(self, arg, kwargs[arg])
         # Used to store the single_trial to which each analyte instance belongs
         self.parent = None  # type SingleTrial
-
         # Keep track of whether or not calculations need to be updated
         self.calculations_uptodate = False
 
-
         self.fit_params = dict()
-
         self._gradient = []
 
         # Options
@@ -157,7 +153,7 @@ class TimeCourse(Base):
 
     @property
     def unique_id(self):
-        return ','.join([self.trial_identifier.strain,self.trial_identifier.media,self.trial_identifier.id_1,
+        return ','.join([self.trial_identifier.strain, self.trial_identifier.media, self.trial_identifier.id_1,
                          self.trial_identifier.id_2, self.trial_identifier.id_3, self.trial_identifier.replicate_id])
 
     def serialize(self):
@@ -174,7 +170,7 @@ class TimeCourse(Base):
 
         options = {}
         for option in ['remove_death_phase_flag', 'use_filtered_data', 'minimum_points_for_curve_fit']:
-            options[option] = getattr(self,option)
+            options[option] = getattr(self, option)
         serialized_dict['options'] = options
 
         return serialized_dict
@@ -207,7 +203,7 @@ class TimeCourse(Base):
 
     @property
     def time_vector(self):
-        if hasattr(self,'pd_series') and self.pd_series is not None:
+        if hasattr(self, 'pd_series') and self.pd_series is not None:
             return np.array(self.pd_series.index)
         return None
 
@@ -230,7 +226,7 @@ class TimeCourse(Base):
         from .settings import settings
 
         # Filter data to smooth noise from the signal
-        if settings.use_filtered_data and len(self.pd_series)>self.savgol_filter_window_size:
+        if settings.use_filtered_data and len(self.pd_series) > self.savgol_filter_window_size:
             return savgol_filter(np.array(self.pd_series), self.savgol_filter_window_size, 3)
         else:
             return np.array(self.pd_series)
@@ -283,11 +279,11 @@ class TimeCourse(Base):
         use_filtered_data = settings.use_filtered_data
         verbose = settings.verbose
         self.death_phase_start = self.find_death_phase_static(data_vector,
-                                                              use_filtered_data = use_filtered_data,
-                                                              verbose = verbose)
+                                                              use_filtered_data=use_filtered_data,
+                                                              verbose=verbose)
 
     @staticmethod
-    def find_death_phase_static(data_vector, use_filtered_data=False, verbose=False, hyper_parameter = 1):
+    def find_death_phase_static(data_vector, use_filtered_data=False, verbose=False, hyper_parameter=1):
         # The hyper_parameter determines the number of points
         # which need to have a negative diff to consider it death phase
 
@@ -325,12 +321,11 @@ class TimeCourse(Base):
         return death_phase_start
 
     def create_stage(self, stage_bounds):
-        stage = TimeCourseStage(self)#, bounds = stage_bounds)
+        stage = TimeCourseStage(self)  # , bounds = stage_bounds)
         stage.trial_identifier = self.trial_identifier
 
         # Note pandas slices by index value, not index
         stage.pd_series = self.pd_series[stage_bounds[0]:stage_bounds[1]]
-
 
         # if len(self.gradient) > 0:
         #     stage.gradient = self.gradient[stage_bounds[0]:stage_bounds[1] + 1]
@@ -353,7 +348,7 @@ class TimeCourse(Base):
         self.time_points.append(time_point)
         if len(self.time_points) == 1:
             self.trial_identifier = time_point.trial_identifier
-            self.pd_series = pd.Series([time_point.data],index=[time_point.time])
+            self.pd_series = pd.Series([time_point.data], index=[time_point.time])
         else:
             if self.time_points[-1].trial_identifier.unique_single_trial() \
                     != self.time_points[-2].trial_identifier.unique_single_trial():
@@ -369,7 +364,7 @@ class TimeCourse(Base):
                                            index=[timePoint.time for timePoint in self.time_points])
             else:
                 # Otherwise simply append
-                self.pd_series = self.pd_series.append(pd.Series([time_point.data],index=[time_point.time]))
+                self.pd_series = self.pd_series.append(pd.Series([time_point.data], index=[time_point.time]))
 
         if sum(self.pd_series.index.duplicated()) > 0:
             print(self.pd_series)
@@ -434,11 +429,11 @@ class TimeCourse(Base):
 
 class Biomass(TimeCourse):
     fit_type = 'gompertz'
-    id = Column(Integer,ForeignKey('time_course.id'),primary_key=True)
+    id = Column(Integer, ForeignKey('time_course.id'), primary_key=True)
 
     # def __init__(self):
-        # TimeCourse.__init__()
-        # self._trial_identifier
+    # TimeCourse.__init__()
+    # self._trial_identifier
 
     __tablename__ = 'analyte_biomass'
     __mapper_args__ = {
@@ -452,8 +447,6 @@ class Biomass(TimeCourse):
     @trial_identifier.setter
     def trial_identifier(self, trial_identifier):
         self._trial_identifier = trial_identifier
-
-
 
     def curve_fit_data(self):
         if self.trial_identifier.analyte_type == 'biomass':
@@ -499,16 +492,16 @@ class Biomass(TimeCourse):
 
 class Substrate(TimeCourse):
     fit_type = None
-    id = Column(Integer,ForeignKey('time_course.id'),primary_key=True)
+    id = Column(Integer, ForeignKey('time_course.id'), primary_key=True)
 
     __tablename__ = 'analyte_substrate'
     __mapper_args__ = {
         'polymorphic_identity': 'substrate',
     }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # self._trial_identifier
-
 
     def curve_fit_data(self):
         from .settings import settings
@@ -522,15 +515,16 @@ class Substrate(TimeCourse):
 
 class Product(TimeCourse):
     fit_type = 'productionEquation_generalized_logistic'
-    id = Column(Integer,ForeignKey('time_course.id'),primary_key=True)
+    id = Column(Integer, ForeignKey('time_course.id'), primary_key=True)
 
     # def __init__(self):
-        # TimeCourse.__init__()
-        # self._trial_identifier
+    # TimeCourse.__init__()
+    # self._trial_identifier
     __tablename__ = 'analyte_product'
     __mapper_args__ = {
         'polymorphic_identity': 'product',
     }
+
     def curve_fit_data(self):
         from .settings import settings
         verbose = settings.verbose
@@ -545,13 +539,14 @@ class Reporter(TimeCourse):
     fit_type = None
 
     # def __init__(self):
-        # TimeCourse.__init__()
-        # self._trial_identifier
-    id = Column(Integer,ForeignKey('time_course.id'),primary_key=True)
+    # TimeCourse.__init__()
+    # self._trial_identifier
+    id = Column(Integer, ForeignKey('time_course.id'), primary_key=True)
     __tablename__ = 'analyte_reporter'
     __mapper_args__ = {
         'polymorphic_identity': 'reporter',
     }
+
     def curve_fit_data(self):
         from .settings import settings
         verbose = settings.verbose
@@ -566,7 +561,7 @@ class TimeCourseStage(TimeCourse):
     __tablename__ = 'time_course_stage'
 
     stage_parent_id = Column(Integer, ForeignKey('time_course.id'), primary_key=True)
-    stage_parent = relationship('TimeCourse',uselist=False)
+    stage_parent = relationship('TimeCourse', uselist=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'time_course_stage',
