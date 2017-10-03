@@ -138,7 +138,7 @@ class SingleTrial(Base):
         summary = dict()
 
         for analyte_type in ['substrate','products','biomass']:
-            summary[analyte_type] = [str(analyte_data) for analyte_data in self.analyte_dict if analyte_data.trial_identifier.analyte_type == analyte_type]
+            summary[analyte_type] = [str(analyte_data) for analyte_data in self.analyte_dict.values() if analyte_data.trial_identifier.analyte_type == analyte_type]
         summary['number_of_data_points'] = len(self._t)
         summary['run_identifier'] = self.trial_identifier.summary(['strain_id', 'id_1', 'id_2',
                                                                 'replicate_id'])
