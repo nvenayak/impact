@@ -254,7 +254,7 @@ class TimeCourse(Base):
         if live_calculations:   self.calculate()
 
     @property
-    def gradientcalc(self):
+    def gradient(self):
         if self._gradient == []:
             if self.time_vector is not None and len(self.time_vector) > 2:
                 self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
@@ -270,9 +270,8 @@ class TimeCourse(Base):
         from .settings import settings
         perform_curve_fit = settings.perform_curve_fit
 
-        #if self.time_vector is not None and len(self.time_vector) > 2:
-        #    self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
-        self._gradient=self.gradientcalc()
+        if self.time_vector is not None and len(self.time_vector) > 2:
+            self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
         if self.remove_death_phase_flag:
             self.find_death_phase(self.data_vector)
 
