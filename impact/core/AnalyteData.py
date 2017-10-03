@@ -111,14 +111,14 @@ class TimeCourse(Base):
     }
 
     @reconstructor
-    def __init__(self, time_points, **kwargs):
+    def __init__(self, **kwargs):
         # Get the default parameters
         from .settings import settings
 
         self.pd_series = None
 
         if 'time_points' in kwargs:
-            for time_point in time_points:
+            for time_point in kwargs['time_points']:
                 self.add_timepoint(time_point)
 
         # Overwrite user-set parameters
