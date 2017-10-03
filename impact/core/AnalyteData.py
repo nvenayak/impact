@@ -254,7 +254,7 @@ class TimeCourse(Base):
         if live_calculations:   self.calculate()
 
     @property
-    def gradient(self):
+    def gradientcalc(self):
         if self._gradient == []:
             if self.time_vector is not None and len(self.time_vector) > 2:
                 self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
@@ -272,7 +272,7 @@ class TimeCourse(Base):
 
         #if self.time_vector is not None and len(self.time_vector) > 2:
         #    self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
-        self.gradient()
+        self.gradientcalc()
         if self.remove_death_phase_flag:
             self.find_death_phase(self.data_vector)
 
@@ -295,8 +295,8 @@ class TimeCourse(Base):
         death_phase_start = len(data_vector)
 
         # Check if there is a reasonable difference between the min and max of the curve
-        if (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector) > 2:                                                                                                                                                                                                                                                                                                                                         in(data_vector)) / np.min(data_vector) > 2:
-            if verbose: print('Growth range: ', (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector))
+        if (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector) > 2:
+
 
             if use_filtered_data:
                 filteredData = savgol_filter(data_vector, 51, 3)
