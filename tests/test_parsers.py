@@ -68,7 +68,31 @@ class TestParsers(unittest.TestCase):
     def test_spectromax_parser(self):
         expt = impact.Experiment()
         expt.parse_raw_data(format='spectromax_OD',id_type='traverse',file_name=os.path.join(BASE_DIR,'tests/test_data/sample_spectromax_data.xlsx'))
-        print(expt)
+
+        num_replicates = (len(expt.replicate_trial_dict.keys()))
+
+        num_single_trials = len([
+            single_trial_key for replicate_key in expt.replicate_trial_dict
+            for single_trial_key in expt.replicate_trial_dict[replicate_key].single_trial_dict
+        ])
+
+        num_analyte_data = len([
+            analyte_name for replicate_key in expt.replicate_trial_dict
+            for single_trial_key in expt.replicate_trial_dict[replicate_key].single_trial_dict
+            for analyte_name in expt.replicate_trial_dict[replicate_key].single_trial_dict[single_trial_key].analyte_dict
+        ])
+
+        num_time_points = len([
+            time_point for replicate_key in expt.replicate_trial_dict
+            for single_trial_key in expt.replicate_trial_dict[replicate_key].single_trial_dict
+            for analyte_name in expt.replicate_trial_dict[replicate_key].single_trial_dict[single_trial_key].analyte_dict
+            for time_point in expt.replicate_trial_dict[replicate_key].single_trial_dict[single_trial_key].analyte_dict[analyte_name].time_points
+        ])
+
+        self.assertEqual(num_replicates,32)
+        self.assertEqual(num_single_trials,88)
+        self.assertEqual(num_analyte_data,88)
+        self.assertEqual(num_time_points,10032)
 
 if __name__ == '__main__':
     unittest.main()
