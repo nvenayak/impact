@@ -70,8 +70,7 @@ def spectromax_OD(experiment, data, id_type='CSV'):
             for i, row in enumerate(plate_data):
                 for j, data in enumerate(row):
                     # Skip wells where no identifier is listed or no data present
-                    if identifiers[i][j] is not None \
-                            and data not in [None,'']:
+                    if identifiers[i][j] is not None and data not in [None,'']:
                         # temp_trial_identifier = TimeCourseIdentifier()
                         #
                         # if id_type == 'CSV':
@@ -235,40 +234,60 @@ def HPLC_titer_parser(experiment, data, id_type='CSV'):
     # experiment.calculate()
 
 
-def tecan_OD(experiment, data, fileName):
-    from .core.AnalyteData import TimeCourse
+def tecan_OD(experiment, data, id_type='CSV'):
+    from .core.settings import settings
+    live_calculations = settings.live_calculations
 
-    t0 = sys_time.time()
-    if fileName:
-        # Check for correct data for import
-        if 'OD' not in data.keys():
-            raise Exception("No sheet named 'OD' found")
-        else:
-            ODDataSheetName = 'OD'
+    unparsed_identifiers = data['identifiers']
+    raw_data = data['data']
 
-        data = data[ODDataSheetName]
+    # The data starts at (3,2) and is in a 8x12 format
+    timepoint_list = []
 
-    # Parse data into timeCourseObjects
-    skipped_lines = 0
-    timeCourseObjectList = dict()
-    for row in data[1:]:
-        temp_run_identifier_object = TimeCourseIdentifier()
-        if type(row[0]) is str:
-            temp_run_identifier_object.parse_trial_identifier_from_csv(row[0])
-            temp_run_identifier_object.analyte_name = 'OD600'
-            temp_run_identifier_object.analyte_type = 'biomass'
-            temp_time_course = TimeCourse()
-            temp_time_course.trial_identifier = temp_run_identifier_object
+    # Parse identifiers (to prevent parsing at every time point)
+    identifiers = []
+    for i, row in enumerate(unparsed_identifiers):
+        parsed_row = []
+        for j, data in enumerate(row):
+            if unparsed_identifiers[i][j] not in ['', 0, '0', None]:
+                temp_trial_identifier = TimeCourseIdentifier()
 
-            # Data in seconds, data required to be in hours
-            temp_time_course.time_vector = np.array(np.divide(data[0][1:], 3600))
+                if id_type == 'CSV':
+                    temp_trial_identifier.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
+                elif id_type == 'traverse':
+                    temp_trial_identifier.parse_identifier(unparsed_identifiers[i][j])
 
-            temp_time_course.data_vector = np.array(row[1:])
-            experiment.titer_dict[temp_time_course.trial_identifier.unique_single_trial()] = temp_time_course
-    tf = sys_time.time()
-    print("Parsed %i timeCourseObjects in %0.3fs\n" % (len(experiment.titer_dict), tf - t0))
-    experiment.parse_analyte_dict(experiment.titer_dict)
-    return data, t0
+                parsed_row.append(temp_trial_identifier)
+            else:
+                parsed_row.append(None)
+        identifiers.append(parsed_row)
+
+
+    time_row_index=None
+    for i,row in enumerate(raw_data):
+        if 'Time [s]' in row:
+            time_row_index=i
+    data_start_index = time_row_index + 2
+    number_of_timepoints=len(raw_data[time_row_index])-1
+    for i,data_column_index in enumerate(range(1,number_of_timepoints+1)):
+        time=raw_data[time_row_index][data_column_index]
+        time=(time/3600)
+        for j,data_row_index in enumerate(range(data_start_index,data_start_index+96)):
+            if identifiers[int(j/12)][int(j%12)] is not None and raw_data[data_row_index][data_column_index] not in [None,'']:
+                temp_trial_identifier=identifiers[int(j/12)][int(j%12)]
+                temp_trial_identifier.analyte_type = 'biomass'
+                temp_trial_identifier.analyte_name = 'OD600'
+                try:
+                    temp_timepoint = TimePoint(temp_trial_identifier, time, float(raw_data[data_row_index][data_column_index]))
+                except Exception as e:
+                    print(raw_data[data_row_index][data_column_index])
+                    raise Exception(e)
+                timepoint_list.append(temp_timepoint)
+    replicate_trial_list = parse_time_point_list(timepoint_list)
+    for rep in replicate_trial_list:
+        experiment.add_replicate_trial(rep)
+
+    if live_calculations:   experiment.calculate()
 
 
 def parse_raw_data(format=None, id_type='CSV', file_name=None, data=None, experiment=None):
