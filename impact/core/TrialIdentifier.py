@@ -255,6 +255,8 @@ class Media(Base, TrialIdentifierMixin):
             self.formal_name += self.parent.name
         elif self.name:
             self.formal_name += self.name #This is wrong. Right way is to pass parent
+        else:
+            self.formal_name += "Unkown Base Media"
         if self.components:
             for component in self.components:
                 self.formal_name += ' + '

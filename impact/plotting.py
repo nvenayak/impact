@@ -158,7 +158,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         if len(replicateTrialList) > int(cl_scales[0]):
             colors = cl.interp(color_scale, 500)
             # Index the list
-            colors = [colors[int(x)] for x in np.arange(0, 500, 500 / round(len(replicateTrialList)))]
+            colors = [colors[int(x)] for x in np.arange(0, 500, round(500 /len(replicateTrialList)))]
         else:
             colors = color_scale
 
