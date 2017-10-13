@@ -295,7 +295,7 @@ class TimeCourse(Base):
 
         # Check if there is a reasonable difference between the min and max of the curve
         if (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector) > 2:
-
+            if verbose: print('Growth range: ', (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector))
 
             if use_filtered_data:
                 filteredData = savgol_filter(data_vector, 51, 3)
