@@ -453,16 +453,17 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
 
                         # Set knockouts
                         if attr1 == 'strain':
-                            if attr2 == 'parent':
-                                identifier_dict[attr1][attr2]=val.strip()
-                            if attr2 == 'ko':
-                                kos = val.split(',')
-                                for ko in kos:
-                                    identifier_dict[attr1][attr2].append(Knockout(gene=ko.strip()))
-                            if attr2 == 'plasmid':
-                                plasmids = val.split(',')
-                                for plasmid in plasmids:
-                                    identifier_dict[attr1][attr2].append(Plasmid(name=plasmid.strip()))
+                            if identifier_dict['strain']['name'].lower() not in ['blank', 'blanks']:
+                                if attr2 == 'parent':
+                                    identifier_dict[attr1][attr2]=val.strip()
+                                if attr2 == 'ko':
+                                    kos = val.split(',')
+                                    for ko in kos:
+                                        identifier_dict[attr1][attr2].append(Knockout(gene=ko.strip()))
+                                if attr2 == 'plasmid':
+                                    plasmids = val.split(',')
+                                    for plasmid in plasmids:
+                                        identifier_dict[attr1][attr2].append(Plasmid(name=plasmid.strip()))
                             #if attr2 == 'id':
                             #    if self.strain.id_1 == '':
                             #        self.strain.id_1 = val
