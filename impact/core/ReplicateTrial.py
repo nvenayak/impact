@@ -200,12 +200,6 @@ class ReplicateTrial(Base):
                 print(first_st.analyte_dict)
                 raise Exception(e)
 
-            # self.std.analyte_dict[analyte].trial_identifier = \
-            #     self.single_trial_dict[list(self.single_trial_dict.keys())[0]]\
-            #         .analyte_dict[analyte]\
-            #         .trial_identifier.\
-            #         get_analyte_data_statistic_identifier()
-
             self.replicate_df[analyte] = pd.DataFrame()
 
             # Get all the trials with the analyte
