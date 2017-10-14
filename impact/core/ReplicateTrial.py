@@ -6,13 +6,8 @@ import pandas as pd
 from scipy import stats
 
 from .AnalyteData import TimeCourse, FitParameter
-from .SingleTrial import SingleTrial, SpecificProductivityFactory, ProductYieldFactory
+from .SingleTrial import SingleTrial
 from .TrialIdentifier import ReplicateTrialIdentifier
-from .settings import settings
-
-default_outlier_cleaning_flag = settings.default_outlier_cleaning_flag
-max_fraction_replicates_to_remove = settings.max_fraction_replicates_to_remove
-verbose = settings.verbose
 
 from ..database import Base
 from sqlalchemy import Column, Integer, ForeignKey, PickleType, String, event
