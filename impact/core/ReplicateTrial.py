@@ -86,16 +86,6 @@ class ReplicateTrial(Base):
         if self.blank:  self.substract_blank()
         self.calculate_statistics()
 
-    # def serialize(self):
-    #     serialized_dict = {}
-    #
-    #     for replicate_id in self.single_trial_dict:
-    #         serialized_dict[str(replicate_id)] = self.single_trial_dict[replicate_id].serialize()
-    #     serialized_dict['avg'] = self.avg.serialize()
-    #     serialized_dict['std'] = self.std.serialize()
-    #     import json
-    #     return json.dumps(serialized_dict)
-
     def create_stage(self, stage_bounds):
         if stage_bounds is None:
             raise Exception('No stage_bounds provided')
