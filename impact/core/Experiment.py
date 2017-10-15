@@ -130,8 +130,8 @@ class Experiment(Base):
         # Precalculate the blank stats, otherwise they won't be available for subtraction
         self.set_blanks()
         if self.blank_reps:
-            for replicate_key in self.blank_reps:
-                self.replicate_trial_dict[replicate_key].calculate()
+            for replicate in self.blank_reps:
+                self.replicate_trial_dict[replicate.unique_id].calculate()
                 if self.stages:
                     for stage in self.stages:
                         for repstage in stage:
