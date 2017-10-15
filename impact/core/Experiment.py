@@ -133,17 +133,15 @@ class Experiment(Base):
             for replicate in self.blank_reps:
                 self.replicate_trial_dict[replicate.unique_id].calculate()
                 if self.stages:
-                    for stage in self.stages:
-                        for repstage in stage:
-                            repstage.calculate()
+                    for repstage in self.stages.values():
+                        repstage.calculate()
 
         for replicate_key in [replicate_key for replicate_key in self.replicate_trial_dict if
                               replicate_key not in self.blank_reps]:
             self.replicate_trial_dict[replicate_key].calculate()
             if self.stages:
-                for stage in self.stages:
-                    for repstage in stage:
-                        repstage.calculate()
+                for repstage in self.stages.values():
+                    repstage.calculate()
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
 
     def data(self):
