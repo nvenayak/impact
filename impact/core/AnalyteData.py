@@ -327,7 +327,7 @@ class TimeCourse(Base):
     def create_stage(self, stage_bounds):
         stage = TimeCourseStage(self)#, bounds = stage_bounds)
         stage.trial_identifier = self.trial_identifier
-
+        self.stages.append(stage)
         # Note pandas slices by index value, not index
         stage.pd_series = self.pd_series[stage_bounds[0]:stage_bounds[1]]
 

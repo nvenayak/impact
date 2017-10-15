@@ -82,8 +82,9 @@ class ReplicateTrial(Base):
         return list(self.single_trial_dict.values())
 
     def calculate(self):
-        for stage in self.stages:
-            stage.calculate()
+        #commented 2 lines below because stage calculation is done once in expt already. no need to do it again
+        #for stage in self.stages:
+        #    stage.calculate()
 
         for single_trial in self.single_trial_dict.values():
             single_trial.calculate()
