@@ -54,7 +54,7 @@ class SingleTrial(Base):
         # Contains information about the stages used in the experiment, TODO
         self.stage_indices = None
         self.stage_list = None
-
+        self.stages=[]
         # Data normalized to different features, not serialized
         self.normalized_data = dict()
 
@@ -131,7 +131,7 @@ class SingleTrial(Base):
         stage = SingleTrial()
         for analyte in self.analyte_dict:
             stage.add_analyte_data(self.analyte_dict[analyte].create_stage(stage_bounds))
-
+        self.stages.append(stage)
         return stage
 
     def summary(self, print=False):

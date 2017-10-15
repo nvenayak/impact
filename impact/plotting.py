@@ -664,3 +664,106 @@ def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600',
                                  legendgroup=legendgroup(replicate),
                                  name=label(replicate)))  # ,
     return traces
+
+def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600', colors=None,
+                        cl_scales=['8', 'qual', 'Set1'],
+                        label=lambda replicate: str(replicate.parent.start_date)
+                                                + ' '
+                                                + replicate.trial_identifier.strain.name
+                                                + ' '
+                                                + replicate.trial_identifier.id_1
+                                                + ' '
+                                                + replicate.trial_identifier.id_2,
+                        legendgroup=lambda x: None,
+                        showlegend = True,
+                        pts_per_hour = 60
+                        ):
+
+
+    traces = []
+
+    if colors is None:
+        color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
+        # https://plot.ly/ipython-notebooks/color-scales/
+        if len(replicate_trials) > int(cl_scales[0]):
+            print(len(replicate_trials))
+            print(int(cl_scales[0]))
+            print('interpolated')
+            num_pts = len(replicate_trials)
+            colors = cl.interp(color_scale, num_pts)
+            # Index the list
+            colors = [colors[int(x)] for x in np.arange(0, num_pts, num_pts / round(len(replicate_trials)))]
+        else:
+            colors = color_scale
+
+    for index, replicate in enumerate(replicate_trials):
+        # Determine how many points should be plotted
+        required_num_pts = replicate.t[-1] * pts_per_hour
+        removePointFraction = int(len(replicate.t) / required_num_pts)
+        if removePointFraction < 1:  removePointFraction = 1
+
+        traces.append(go.Scatter(x=replicate.t[::removePointFraction],
+                                 y=replicate.avg.analyte_dict[analyte].data_vector[::removePointFraction],
+                                 error_y={
+                                     'type'   : 'data',
+                                     'array'  : replicate.std.analyte_dict[analyte].data_vector[::removePointFraction],
+                                     'visible': True,
+                                     'color'  : colors[index]},
+                                 # mode=mode,
+                                 marker={
+                                     'color': colors[index]},
+                                 line={'color': colors[index]},
+                                 showlegend=showlegend,
+                                 legendgroup=legendgroup(replicate),
+                                 name=label(replicate)))  # ,
+    return traces
+
+
+#This function is to plot all singletrials for a particular replicatetrial
+def time_profile_traces_single_trials(replicate_trial=None, feature='titer', analyte='OD600', colors=None,
+                        cl_scales=['8', 'qual', 'Set1'],
+                        label=lambda replicate: str(replicate.parent.start_date)
+                                                + ' '
+                                                + replicate.trial_identifier.strain.name
+                                                + ' '
+                                                + replicate.trial_identifier.id_1
+                                                + ' '
+                                                + replicate.trial_identifier.id_2,
+                        legendgroup=lambda x: None,
+                        showlegend = True,
+                        pts_per_hour = 60
+                        ):
+
+
+    traces = []
+
+    if colors is None:
+        color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
+        # https://plot.ly/ipython-notebooks/color-scales/
+        if len(replicate_trial.single_trials) > int(cl_scales[0]):
+            print(len(replicate_trial.single_trials))
+            print(int(cl_scales[0]))
+            print('interpolated')
+            num_pts = len(replicate_trial.single_trials)
+            colors = cl.interp(color_scale, num_pts)
+            # Index the list
+            colors = [colors[int(x)] for x in np.arange(0, num_pts, num_pts / round(len(replicate_trial.single_trials)))]
+        else:
+            colors = color_scale
+
+    for index, singletrial in enumerate(replicate_trial.single_trials):
+        # Determine how many points should be plotted
+        required_num_pts = singletrial.t[-1] * pts_per_hour
+        removePointFraction = int(len(singletrial.t) / required_num_pts)
+        if removePointFraction < 1:  removePointFraction = 1
+
+        traces.append(go.Scatter(x=singletrial.t[::removePointFraction],
+                                 y=singletrial.analyte_dict[analyte].data_vector[::removePointFraction],
+                                 # mode=mode,
+                                 marker={
+                                     'color': colors[index]},
+                                 line={'color': colors[index]},
+                                 showlegend=showlegend,
+                                 legendgroup=legendgroup(singletrial),
+                                 name=label(singletrial)))  # ,
+    return traces

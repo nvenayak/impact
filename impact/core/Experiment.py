@@ -28,7 +28,7 @@ class Experiment(Base):
 
     id = Column(Integer, primary_key=True)
     # replicate_trials = relationship('ReplicateTrial')
-    stages = relationship('Stage')
+    stages = relationship('Stage',collection_class=attribute_mapped_collection('stage_id'),back_populates='parent')
     replicate_trial_dict = relationship('ReplicateTrial',
                                         collection_class=attribute_mapped_collection('unique_id'),
                                         back_populates='parent')
@@ -51,7 +51,7 @@ class Experiment(Base):
         for key in kwargs:
             if key in ['import_date', 'start_date', 'end_date', 'title', 'scientist_1', 'scientist_2', 'notes']:
                 setattr(self, key, kwargs[key])
-        self.blank_key_list = []
+        self.blank_reps = []
         self.replicate_trial_dict = dict()
         self.stage_indices = []
         self.blank = None
@@ -128,17 +128,20 @@ class Experiment(Base):
         print('Analyzing data...', end='')
 
         # Precalculate the blank stats, otherwise they won't be available for subtraction
-        if self.blank_key_list:
-            for replicate_key in self.blank_key_list:
-                self.replicate_trial_dict[replicate_key].calculate()
-                if self.stage_indices:
-                    self.replicate_trial_dict[replicate_key].calculate_stages(self.stage_indices)
+        self.set_blanks()
+        if self.blank_reps:
+            for replicate in self.blank_reps:
+                self.replicate_trial_dict[replicate.unique_id].calculate()
+                if self.stages:
+                    for repstage in self.stages.values():
+                        repstage.calculate()
 
         for replicate_key in [replicate_key for replicate_key in self.replicate_trial_dict if
-                              replicate_key not in self.blank_key_list]:
+                              replicate_key not in self.blank_reps]:
             self.replicate_trial_dict[replicate_key].calculate()
-            if self.stage_indices:
-                self.replicate_trial_dict[replicate_key].calculate_stages(self.stage_indices)
+            if self.stages:
+                for repstage in self.stages.values():
+                    repstage.calculate()
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
 
     def data(self):
@@ -203,7 +206,7 @@ class Experiment(Base):
         from ..parsers import parse_raw_data
         parse_raw_data(experiment=self, *args, **kwargs)
 
-    def set_blanks(self, mode='auto', common_id='environment'):
+    def set_blanks(self, mode='auto'):
         """
         Define how to associate blanks and perform blank subtraction.
         Parameters
@@ -211,58 +214,69 @@ class Experiment(Base):
         mode (str) : how to determine blanks
         common_id (str) : which identifier to use
 
+        NEW BLANKS DEFINITION.
+        Previously, a 'common_id' was used as an identifier to figure out blanks for each replicate
+        Blanks only need to be media dependent. This definition of blanks assigns a blank to a replicate trial
+        if the media are the same. If not, it calculates the number of common components and assigns the blank with
+        the most number of common components to that particular media. It is however good practice to have blanks
+        for each media used.
+
         """
+
+
         self.blank_reps = [rep for rep in self.replicate_trial_dict.values()
                            if rep.trial_identifier.strain.name
                            in ['Blank', 'blank']]
 
-        if common_id:
-            blank_ids = {getattr(rep.trial_identifier, common_id): rep
-                         for rep in self.blank_key_list}
+        if self.blank_reps:
 
-        for rep in [rep for rep in self.replicate_trial_dict.values()
-                    if rep not in self.blank_reps]:
-            if common_id:
-                rep.set_blank(
-                    self.replicate_trial_dict[blank_ids[getattr(rep.trial_identifier, common_id)]]
-                )
+            blank_ids = {getattr(rep.trial_identifier, 'media'): rep
+                             for rep in self.blank_reps}
+
+            for rep in [rep for rep in self.replicate_trial_dict.values()
+                        if rep not in self.blank_reps]:
+                temp_media=rep.trial_identifier.media
+                if (temp_media in blank_ids.keys()):
+                    rep.set_blank(blank_ids[temp_media])
+                else:
+                    common_components={}
+                    for i,blankmedia in enumerate(blank_ids):
+                        common_components[blankmedia]=0
+                        if blankmedia.parent.name==temp_media.parent.name:
+                            common_components[blankmedia]+=1
+                        common_components[blankmedia]+=len(set(blankmedia.components.keys())&set(temp_media.components.keys()))
+                    rep.set_blank(blank_ids[max(common_components,key=common_components.get)])
+            if mode == 'auto':
+                pass
             else:
-                rep.set_blank(self.blank_reps[0])
-
-        if mode == 'auto':
-            pass
+                raise Exception('Unimplemented')
         else:
-            raise Exception('Unimplemented')
+            print("No blanks were indicated. Blank subtraction will not be done.")
 
-    def set_stages(self, stage_indices=None, stage_times=None):
+    def set_stages(self, stage_indices=None):
         """
         Set the stages for the experiment. These stages can be defined manually based on growth kinetics
         or batch condition changes such as inducer additions.
 
         Parameters
         ----------
-        stage_times
+        stage_times -----> Removed because indices in pandas are the time values
         stage_indices
 
         """
         from .settings import settings
         live_calculations = settings.live_calculations
 
-        if all([stage_indices, stage_times]):
-            raise Exception('Cannot define both stage_indices and stage_times')
 
-        if stage_times:
-            # Find the closest time that matches
-            raise Exception('stage times not implemented')
-
-        # self.stage_indices = stage_indices
+        self.stage_indices = stage_indices
         for stage_tuple in stage_indices:
             stage = Stage()
             stage.start_time = stage_tuple[0]
             stage.end_time = stage_tuple[1]
+            stage.stage_id = str(stage.start_time)+'-'+str(stage.end_time)
             for replicate in self.replicate_trial_dict.values():
                 stage.add_replicate_trial(replicate.create_stage(stage_tuple))
-            self.stages.append(stage)
+            self.stages[stage.stage_id] = stage
 
         if live_calculations:
             for replicate_key in self.replicate_trial_dict:
@@ -276,8 +290,8 @@ class Stage(Experiment):
     parent_id = Column(Integer, ForeignKey('experiment.id'), primary_key=True)
     start_time = Column(Float)
     end_time = Column(Float)
-
-    parent = relationship('Experiment')
+    stage_id = Column(String)
+    parent = relationship('Experiment',back_populates='stages')
     # parent_id = Column(Integer, ForeignKey('experiment.id'))
 
     __mapper_args__ = {
