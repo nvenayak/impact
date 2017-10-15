@@ -14,30 +14,30 @@ except NameError:
     from plotly.offline import plot
 else:
     if 'ipykernel' in sys.modules:
-	    from plotly.offline import init_notebook_mode
-	    from plotly.offline import iplot as plot
-	    from IPython.display import HTML
+        from plotly.offline import init_notebook_mode
+        from plotly.offline import iplot as plot
+        from IPython.display import HTML
 
-	    # This is required for correct mathjax (latex) and documentation rendering
-	    HTML(
-	        """
-	        <script>
-	            var waitForPlotly = setInterval( function() {
-	                if( typeof(window.Plotly) !== "undefined" ){
-	                    MathJax.Hub.Config({ SVG: { font: "STIX-Web" }, displayAlign: "center" });
-	                    MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
-	                    clearInterval(waitForPlotly);
-	                }}, 250 );
-	        </script>
-	        """
-	    )
-	    init_notebook_mode(connected=True)
+        # This is required for correct mathjax (latex) and documentation rendering
+        HTML(
+            """
+            <script>
+                var waitForPlotly = setInterval( function() {
+                    if( typeof(window.Plotly) !== "undefined" ){
+                        MathJax.Hub.Config({ SVG: { font: "STIX-Web" }, displayAlign: "center" });
+                        MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
+                        clearInterval(waitForPlotly);
+                    }}, 250 );
+            </script>
+            """
+        )
+        init_notebook_mode(connected=True)
     elif 'IPython' in sys.modules:
-    	# in a terminal
-    	from plotly.offline import plot
+        # in a terminal
+        from plotly.offline import plot
     else:
-    	warn('Unknown ipython configuration')
-    	from plotly.offline import plot
+        warn('Unknown ipython configuration')
+        from plotly.offline import plot
 
 from plotly import tools
 import plotly.graph_objs as go
@@ -51,19 +51,20 @@ tools = tools
 cl = cl
 plot = plot
 
+
 def generic_timecourse(impact_core_instance_list=None):
     if impact_core_instance_list is None:
         raise ValueError('No data')
 
 
 def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsToPlot=[], titersToPlot=[],
-                                  secondary_y_axis_titers=None, pts_per_hour = 4,
+                                  secondary_y_axis_titers=None, pts_per_hour=4,
                                   output_type='html', stage_indices=None, stage=None,
                                   cl_scales=['10', 'qual', 'Paired'], colors=None,
                                   yieldFlag=False, titerFlag=True, endpointFlag=False, sortBy='strain_id',
                                   img_scale=1, fig_height=None, column_width=400, number_of_columns=3,
                                   horizontal_spacing=0.2, vertical_spacing=0.4, row_height=300,
-                                  format='web', single_subplot=False, plot_curve_fit = False):
+                                  format='web', single_subplot=False, plot_curve_fit=False):
     """
     Parameters
     ----------
@@ -109,14 +110,12 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         The format settings to use, the only option is poster
     """
 
-
     if yieldFlag:
         data_to_plot = 'yield'
     elif titerFlag:
         data_to_plot = 'titer'
     else:
         raise Exception('Neither yield nor titer selected')
-
 
     # Check for correct inputs
     if replicateTrialList is None and dbName is None:
@@ -158,7 +157,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
         if len(replicateTrialList) > int(cl_scales[0]):
             colors = cl.interp(color_scale, 500)
             # Index the list
-            colors = [colors[int(x)] for x in np.arange(0, 500, round(500 /len(replicateTrialList)))]
+            colors = [colors[int(x)] for x in np.arange(0, 500, round(500 / len(replicateTrialList)))]
         else:
             colors = color_scale
 
@@ -217,8 +216,6 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     else:
         showlegend_flag = True
 
-
-
     dataLabel = ''
     sort_by_flag = True
     sort_by_product_in_legend_flag = False
@@ -229,8 +226,8 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
     prepped_y_std = dict()
     prepped_legendgroup = dict()
     for name in [str(replicate.trial_identifier.strain.name) + '+'
-                 + replicate.trial_identifier.id_1 + ','
-                 + replicate.trial_identifier.id_2 for replicate in replicateTrialList]:
+                         + replicate.trial_identifier.id_1 + ','
+                         + replicate.trial_identifier.id_2 for replicate in replicateTrialList]:
         prepped_x[name] = []
         prepped_y_avg[name] = []
         prepped_y_std[name] = []
@@ -365,9 +362,12 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                     showlegend_flag = False
 
         else:  # time course (not end point)
-            final_plot_number = print_generic_timecourse_plotly(replicateTrialList, product, colors, pts_per_hour, showlegend_flag, fig,
-                                            sortBy, pltNum, number_of_columns, single_subplot, axis_params, chart_fonts,
-                                            height, legend_params, plot_curve_fit, data_to_plot=data_to_plot)
+            final_plot_number = print_generic_timecourse_plotly(replicateTrialList, product, colors, pts_per_hour,
+                                                                showlegend_flag, fig,
+                                                                sortBy, pltNum, number_of_columns, single_subplot,
+                                                                axis_params, chart_fonts,
+                                                                height, legend_params, plot_curve_fit,
+                                                                data_to_plot=data_to_plot)
             showlegend_flag = False
             # else:
             #     raise Exception('No plot type selection (endpointFlag or yieldFlag must be True)')
@@ -402,12 +402,13 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                                                         ticks='', showticklabels=False)
 
     return render_output_ploty(output_type, fig, number_of_columns=number_of_columns,
-                               column_width_multiplier=column_width, img_scale = img_scale
+                               column_width_multiplier=column_width, img_scale=img_scale
                                )
 
-def render_output_ploty(output_type, fig, number_of_columns = None, column_width_multiplier = None, img_scale = None):
+
+def render_output_ploty(output_type, fig, number_of_columns=None, column_width_multiplier=None, img_scale=None):
     if output_type == 'html':
-        return plot(fig, show_link=False, output_type='div', include_plotlyjs = False)
+        return plot(fig, show_link=False, output_type='div', include_plotlyjs=False)
     elif output_type == 'file':
         plot(fig, show_link=True)
     elif output_type == 'iPython':
@@ -443,10 +444,11 @@ def order_preserve_sort(seq, idfun=None):
         result.append(item)
     return result
 
+
 def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_per_hour, showlegend_flag, fig,
                                     sortBy, pltNum, number_of_columns, single_subplot, axis_params, chart_fonts, height,
                                     legend_params, plot_curve_fit,
-                                    data_to_plot = 'titer'
+                                    data_to_plot='titer'
                                     ):
     color_index = 0
 
@@ -511,18 +513,18 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
             if plot_curve_fit and len(replicate.avg.analyte_dict[product].fit_params.keys()) > 0:
                 # print(replicate_id.avg.titer_dict[product].fit_params)
                 trace_fit = go.Scatter(x=np.linspace(min(t), max(t), 50),
-                                   y=replicate.avg.analyte_dict[product].data_curve_fit(
-                                       np.linspace(min(t), max(t), 50)),
-                                   mode='line',
-                                   marker={
-                                       'color': colors[color_index]},
-                                   line={'color': colors[color_index]},
-                                   legendgroup=(replicate.trial_identifier.strain.name + '+' +
-                                                replicate.trial_identifier.id_1 +
-                                                replicate.trial_identifier.id_2).split('LMSE')[-1],
-                                   name=(replicate.trial_identifier.strain.name + '+' +
-                                         replicate.trial_identifier.id_1 +
-                                         replicate.trial_identifier.id_2).split('LMSE')[-1])  # ,
+                                       y=replicate.avg.analyte_dict[product].data_curve_fit(
+                                           np.linspace(min(t), max(t), 50)),
+                                       mode='line',
+                                       marker={
+                                           'color': colors[color_index]},
+                                       line={'color': colors[color_index]},
+                                       legendgroup=(replicate.trial_identifier.strain.name + '+' +
+                                                    replicate.trial_identifier.id_1 +
+                                                    replicate.trial_identifier.id_2).split('LMSE')[-1],
+                                       name=(replicate.trial_identifier.strain.name + '+' +
+                                             replicate.trial_identifier.id_1 +
+                                             replicate.trial_identifier.id_2).split('LMSE')[-1])  # ,
 
             #
             #     if pltNum > 4:
@@ -591,7 +593,7 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
             if sortBy == 'product_in_legend' or single_subplot:
                 fig.append_trace(trace, 1, 1)
                 if plot_curve_fit:
-                    fig.append_trace(trace_fit,1,1)
+                    fig.append_trace(trace_fit, 1, 1)
             else:
                 row = math.ceil(pltNum / number_of_columns)
                 col = pltNum - (row - 1) * number_of_columns
@@ -611,6 +613,7 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
     showlegend_flag = False
     return final_plot_number
 
+
 ## NEW PLOTTING
 def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600', colors=None,
                         cl_scales=['8', 'qual', 'Set1'],
@@ -622,11 +625,9 @@ def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600',
                                                 + ' '
                                                 + replicate.trial_identifier.id_2,
                         legendgroup=lambda x: None,
-                        showlegend = True,
-                        pts_per_hour = 60
+                        showlegend=True,
+                        pts_per_hour=60
                         ):
-
-
     traces = []
 
     if colors is None:
@@ -665,6 +666,24 @@ def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600',
                                  name=label(replicate)))  # ,
     return traces
 
+
+def get_colors(number_of_colors, colors=None, cl_scales=['8', 'qual', 'Set1']):
+    if colors is None:
+        color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
+        # https://plot.ly/ipython-notebooks/color-scales/
+        if number_of_colors > int(cl_scales[0]):
+            print('interpolated')
+            # num_pts = len(replicate_trials)
+            colors = cl.interp(color_scale, number_of_colors)
+            # Index the list
+            colors = [colors[int(x)] for x in np.arange(0,
+                                                        number_of_colors,
+                                                        number_of_colors / round(len(number_of_colors)))]
+        else:
+            colors = color_scale
+    return colors
+
+
 def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600', colors=None,
                         cl_scales=['8', 'qual', 'Set1'],
                         label=lambda replicate: str(replicate.parent.start_date)
@@ -675,26 +694,13 @@ def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600',
                                                 + ' '
                                                 + replicate.trial_identifier.id_2,
                         legendgroup=lambda x: None,
-                        showlegend = True,
-                        pts_per_hour = 60
+                        showlegend=True,
+                        pts_per_hour=60
                         ):
-
-
     traces = []
 
     if colors is None:
-        color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
-        # https://plot.ly/ipython-notebooks/color-scales/
-        if len(replicate_trials) > int(cl_scales[0]):
-            print(len(replicate_trials))
-            print(int(cl_scales[0]))
-            print('interpolated')
-            num_pts = len(replicate_trials)
-            colors = cl.interp(color_scale, num_pts)
-            # Index the list
-            colors = [colors[int(x)] for x in np.arange(0, num_pts, num_pts / round(len(replicate_trials)))]
-        else:
-            colors = color_scale
+        colors = get_colors(len(replicate_trials), colors=colors, cl_scales=cl_scales)
 
     for index, replicate in enumerate(replicate_trials):
         # Determine how many points should be plotted
@@ -753,20 +759,21 @@ def time_profile_traces_single_trials(replicate_trial=None, feature='titer', ana
     """
 
     traces = []
-
     if colors is None:
-        color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
-        # https://plot.ly/ipython-notebooks/color-scales/
-        if len(replicate_trial.single_trials) > int(cl_scales[0]):
-            print(len(replicate_trial.single_trials))
-            print(int(cl_scales[0]))
-            print('interpolated')
-            num_pts = len(replicate_trial.single_trials)
-            colors = cl.interp(color_scale, num_pts)
-            # Index the list
-            colors = [colors[int(x)] for x in np.arange(0, num_pts, num_pts / round(len(replicate_trial.single_trials)))]
-        else:
-            colors = color_scale
+        colors = get_colors(len(replicate_trial.single_trials), colors=colors, cl_scales=cl_scales)
+    # if colors is None:
+    #     color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
+    #     # https://plot.ly/ipython-notebooks/color-scales/
+    #     if len(replicate_trial.single_trials) > int(cl_scales[0]):
+    #         print(len(replicate_trial.single_trials))
+    #         print(int(cl_scales[0]))
+    #         print('interpolated')
+    #         num_pts = len(replicate_trial.single_trials)
+    #         colors = cl.interp(color_scale, num_pts)
+    #         # Index the list
+    #         colors = [colors[int(x)] for x in np.arange(0, num_pts, num_pts / round(len(replicate_trial.single_trials)))]
+    #     else:
+    #         colors = color_scale
 
     for index, singletrial in enumerate(replicate_trial.single_trials):
         # Determine how many points should be plotted
