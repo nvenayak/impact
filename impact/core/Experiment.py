@@ -278,7 +278,7 @@ class Experiment(Base):
             stage.stage_id = str(stage.start_time)+'-'+str(stage.end_time)
             for replicate in self.replicate_trial_dict.values():
                 stage.add_replicate_trial(replicate.create_stage(stage_tuple))
-            self.stages[stage_id] = stage
+            self.stages[stage.stage_id] = stage
 
         if live_calculations:
             for replicate_key in self.replicate_trial_dict:
