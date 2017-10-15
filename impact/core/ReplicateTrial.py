@@ -198,7 +198,6 @@ class ReplicateTrial(Base):
             # Copy a relevant trial identifier
             first_st = [single_trial for single_trial in self.single_trial_dict.values()
                         if analyte in single_trial.analyte_dict][0]
-            # first_st = list(self.single_trial_dict.values())[0]
             try:
                 self.avg.analyte_dict[analyte].trial_identifier = \
                         first_st\
@@ -224,8 +223,7 @@ class ReplicateTrial(Base):
             self.replicate_df[analyte] = pd.DataFrame()
 
             # Get all the trials with the analyte
-            trial_list = [self.single_trial_dict[replicate_id] for replicate_id in self.single_trial_dict
-                          if analyte in self.single_trial_dict[replicate_id].analyte_dict]
+            trial_list = [single_trial for single_trial in self.single_trials if analyte in single_trial.analyte_dict]
 
             # Merge the dataframes for relevant trials
             for trial in trial_list:
@@ -245,10 +243,10 @@ class ReplicateTrial(Base):
             # Calculate statistics for features
             for feature in self.features:
                 # Get all the analytes with the feature
-                trial_list = [self.single_trial_dict[replicate_id]
-                              for replicate_id in self.single_trial_dict
-                              if analyte in self.single_trial_dict[replicate_id].analyte_dict
-                              and feature.name in self.single_trial_dict[replicate_id].analyte_dict[analyte].__dict__]
+                trial_list = [single_trial
+                              for single_trial in self.single_trials
+                              if analyte in single_trial.analyte_dict
+                              and feature.name in single_trial.analyte_dict[analyte].__dict__]
 
 
 
@@ -269,9 +267,9 @@ class ReplicateTrial(Base):
         for analyte in unique_analytes:
             for stat, calc in zip(['avg', 'std'], [np.mean, np.std]):
                 # If a fit_params exists, calculate the stats
-                if None not in [self.single_trial_dict[replicate_id].analyte_dict[analyte].fit_params
-                                if analyte in self.single_trial_dict[replicate_id].analyte_dict else None
-                                for replicate_id in self.single_trial_dict]:
+                if None not in [single_trial.analyte_dict[analyte].fit_params
+                                if analyte in single_trial.analyte_dict else None
+                                for single_trial in self.single_trials]:
                     temp = dict()
                     for param in self.single_trial_dict[list(self.single_trial_dict.keys())[0]].analyte_dict[analyte].fit_params:
                         temp[param] = FitParameter(param,calc(
@@ -379,10 +377,10 @@ class ReplicateTrial(Base):
         self.blank_subtracted_analytes = []
 
         # for blank_analyte in analytes_with_blanks:
-        for single_trial_key in self.single_trial_dict:
-            single_trial = self.single_trial_dict[single_trial_key]
+        for single_trial in self.single_trials:
             for blank_analyte in analytes_with_blanks:
-                single_trial.analyte_dict[blank_analyte].data_vector = \
+                if blank_analyte in single_trial.analyte_dict:
+                    single_trial.analyte_dict[blank_analyte].data_vector = \
                     single_trial.analyte_dict[blank_analyte].data_vector \
                     - self.blank.avg.analyte_dict[blank_analyte].data_vector
 
