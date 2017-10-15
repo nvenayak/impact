@@ -719,21 +719,38 @@ def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600',
     return traces
 
 
-#This function is to plot all singletrials for a particular replicatetrial
 def time_profile_traces_single_trials(replicate_trial=None, feature='titer', analyte='OD600', colors=None,
-                        cl_scales=['8', 'qual', 'Set1'],
-                        label=lambda replicate: str(replicate.parent.start_date)
-                                                + ' '
-                                                + replicate.trial_identifier.strain.name
-                                                + ' '
-                                                + replicate.trial_identifier.id_1
-                                                + ' '
-                                                + replicate.trial_identifier.id_2,
-                        legendgroup=lambda x: None,
-                        showlegend = True,
-                        pts_per_hour = 60
-                        ):
+                                      cl_scales=['8', 'qual', 'Set1'],
+                                      label=lambda replicate: str(replicate.parent.start_date)
+                                                              + ' '
+                                                              + replicate.trial_identifier.strain.name
+                                                              + ' '
+                                                              + replicate.trial_identifier.id_1
+                                                              + ' '
+                                                              + replicate.trial_identifier.id_2,
+                                      legendgroup=lambda x: None,
+                                      showlegend=True,
+                                      pts_per_hour=60
+                                      ):
+    """
+    Return traces for the single trials which compose a replicate for a single analyte
 
+    Parameters
+    ----------
+    replicate_trial (`ReplicateTrial`): replicate to plot
+    feature (str): feature to plot
+    analyte (str): analyte to plot
+    colors (list): colors to use, will use cl_scales if none
+    cl_scales (dict): colorlover set of colors
+    label (function): lambda function to get identifiers from data
+    legendgroup (function):
+    showlegend (bool)
+    pts_per_hour
+
+    Returns
+    -------
+
+    """
 
     traces = []
 
