@@ -14,7 +14,7 @@ class BaseAnalyteFeature(object):
     def data(self):
         return 'Not implemented'
 
-class BaseAnalayteFeatureFactory(object):
+class BaseAnalyteFeatureFactory(object):
     requires = None
     name = None
 
@@ -69,7 +69,7 @@ class ProductYield(BaseAnalyteFeature):
              for dataPoint in self.substrate.data_vector]
         )
 
-class ProductYieldFactory(BaseAnalayteFeatureFactory):
+class ProductYieldFactory(BaseAnalyteFeatureFactory):
     requires = ['substrate','product', 'biomass']
     name = 'product_yield'
 
@@ -169,7 +169,7 @@ class NormalizedData(BaseAnalyteFeature):
         return self.analyte / self.normalization_analyte
 
 
-class NormalizedDataFactory(BaseAnalayteFeatureFactory):
+class NormalizedDataFactory(BaseAnalyteFeatureFactory):
     requires = ['product','substrate','biomass']
     name = 'normalized_data'
 
