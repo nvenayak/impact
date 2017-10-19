@@ -251,7 +251,7 @@ class Experiment(Base):
             else:
                 raise Exception('Unimplemented')
         else:
-            print("No blanks were indicated. Blank subtraction will not be done.")
+            print("No blanks were indicated. Blank subtraction will not be done.",end='')
 
     def set_stages(self, stage_indices=None):
         """
