@@ -14,6 +14,7 @@ class BaseAnalyteFeature(object):
     def data(self):
         return 'Not implemented'
 
+
 class BaseAnalyteFeatureFactory(object):
     requires = None
     name = None
@@ -49,7 +50,8 @@ class ODNormalizedData(BaseAnalyteFeature):
     # This data property assures that the data is returned, or calculated as needed
     @property
     def data(self):
-        if self.normalized_data is None: self.calculate()
+        if self.normalized_data is None:
+            self.calculate()
         return self.normalized_data
 
     # This is where the property is actually calculated and set
@@ -78,6 +80,7 @@ class ODNormalizedDataFactory(BaseAnalyteFeatureFactory):
 
         if self.reporter is not None and self.biomass is not None:
             setattr(analyte_data, self.name, ODNormalizedData(self.biomass, self.reporter))
+
 
 class ProductYield(BaseAnalyteFeature):
     def __init__(self, substrate, product):
@@ -108,6 +111,7 @@ class ProductYield(BaseAnalyteFeature):
             [(self.substrate.data_vector[0] - dataPoint)
              for dataPoint in self.substrate.data_vector]
         )
+
 
 class ProductYieldFactory(BaseAnalyteFeatureFactory):
     requires = ['substrate','product', 'biomass']
@@ -166,6 +170,7 @@ class SpecificProductivityFactory(object):
                 analyte_data.specific_productivity = SpecificProductivity(biomass=self.biomass, analyte=analyte_data)
             else:
                 self.pending_analytes.append(analyte_data)
+
 
 class SpecificProductivity(BaseAnalyteFeature):
     def __init__(self, biomass, analyte):
