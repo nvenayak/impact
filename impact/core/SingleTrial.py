@@ -340,5 +340,5 @@ class SingleTrial(Base):
             setattr(self.trial_identifier,attr,getattr(trial_identifier,attr))
 
 # Register known features
-for feature in [ProductYieldFactory,SpecificProductivityFactory]:
+for feature in [ProductYieldFactory,SpecificProductivityFactory,ODNormalizedDataFactory]:
     SingleTrial.register_feature(feature)
