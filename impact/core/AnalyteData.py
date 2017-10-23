@@ -369,7 +369,8 @@ class TimeCourse(Base):
                                            index=[timePoint.time for timePoint in self.time_points])
             else:
                 # Otherwise simply append
-                self.pd_series = self.pd_series.append(pd.Series([time_point.data],index=[time_point.time]))
+                self.pd_series[time_point.time] = time_point.data
+                # self.pd_series = self.pd_series.append(pd.Series([time_point.data],index=[time_point.time]))
 
         if sum(self.pd_series.index.duplicated()) > 0:
             print(self.pd_series)
