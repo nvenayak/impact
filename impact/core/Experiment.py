@@ -28,7 +28,7 @@ class Experiment(Base):
 
     id = Column(Integer, primary_key=True)
     # replicate_trials = relationship('ReplicateTrial')
-    stages = relationship('Stage',collection_class=attribute_mapped_collection('stage_id'),back_populates='parent')
+    stages = relationship('Stage', collection_class=attribute_mapped_collection('stage_id'), back_populates='parent')
     replicate_trial_dict = relationship('ReplicateTrial',
                                         collection_class=attribute_mapped_collection('unique_id'),
                                         back_populates='parent')
@@ -119,6 +119,7 @@ class Experiment(Base):
         return list(set([analyte for rep in self.replicate_trial_dict.values()
                          for st in rep.single_trial_dict.values()
                          for analyte in st.analyte_dict.keys()]))
+
     @property
     def replicate_trials(self):
         return list(self.replicate_trial_dict.values())
@@ -223,7 +224,6 @@ class Experiment(Base):
 
         """
 
-
         self.blank_reps = [rep for rep in self.replicate_trial_dict.values()
                            if rep.trial_identifier.strain.name
                            in ['Blank', 'blank']]
@@ -231,29 +231,30 @@ class Experiment(Base):
         if self.blank_reps:
 
             blank_ids = {getattr(rep.trial_identifier, 'media'): rep
-                             for rep in self.blank_reps}
+                         for rep in self.blank_reps}
 
             for rep in [rep for rep in self.replicate_trial_dict.values()
                         if rep not in self.blank_reps]:
-                temp_media=rep.trial_identifier.media
+                temp_media = rep.trial_identifier.media
                 if (temp_media in blank_ids.keys()):
                     rep.set_blank(blank_ids[temp_media])
                 else:
-                    common_components={}
-                    for i,blankmedia in enumerate(blank_ids):
-                        common_components[blankmedia]=0
+                    common_components = {}
+                    for i, blankmedia in enumerate(blank_ids):
+                        common_components[blankmedia] = 0
                         if blankmedia.parent:
-                            if blankmedia.parent.name==temp_media.parent.name:
-                                common_components[blankmedia]+=1
+                            if blankmedia.parent.name == temp_media.parent.name:
+                                common_components[blankmedia] += 1
                         if blankmedia.components:
-                            common_components[blankmedia]+=len(set(blankmedia.components.keys())&set(temp_media.components.keys()))
-                    rep.set_blank(blank_ids[max(common_components,key=common_components.get)])
+                            common_components[blankmedia] += len(
+                                set(blankmedia.components.keys()) & set(temp_media.components.keys()))
+                    rep.set_blank(blank_ids[max(common_components, key=common_components.get)])
             if mode == 'auto':
                 pass
             else:
                 raise Exception('Unimplemented')
         else:
-            print("No blanks were indicated. Blank subtraction will not be done.",end='')
+            print("No blanks were indicated. Blank subtraction will not be done.", end='')
 
     def set_stages(self, stage_indices=None):
         """
@@ -269,13 +270,12 @@ class Experiment(Base):
         from .settings import settings
         live_calculations = settings.live_calculations
 
-
         self.stage_indices = stage_indices
         for stage_tuple in stage_indices:
             stage = Stage()
             stage.start_time = stage_tuple[0]
             stage.end_time = stage_tuple[1]
-            stage.stage_id = str(stage.start_time)+'-'+str(stage.end_time)
+            stage.stage_id = str(stage.start_time) + '-' + str(stage.end_time)
             for replicate in self.replicate_trial_dict.values():
                 stage.add_replicate_trial(replicate.create_stage(stage_tuple))
             self.stages[stage.stage_id] = stage
@@ -293,7 +293,7 @@ class Stage(Experiment):
     start_time = Column(Float)
     end_time = Column(Float)
     stage_id = Column(String)
-    parent = relationship('Experiment',back_populates='stages')
+    parent = relationship('Experiment', back_populates='stages')
     # parent_id = Column(Integer, ForeignKey('experiment.id'))
 
     __mapper_args__ = {
