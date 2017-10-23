@@ -242,9 +242,11 @@ class Experiment(Base):
                     common_components={}
                     for i,blankmedia in enumerate(blank_ids):
                         common_components[blankmedia]=0
-                        if blankmedia.parent.name==temp_media.parent.name:
-                            common_components[blankmedia]+=1
-                        common_components[blankmedia]+=len(set(blankmedia.components.keys())&set(temp_media.components.keys()))
+                        if blankmedia.parent:
+                            if blankmedia.parent.name==temp_media.parent.name:
+                                common_components[blankmedia]+=1
+                        if blankmedia.components:
+                            common_components[blankmedia]+=len(set(blankmedia.components.keys())&set(temp_media.components.keys()))
                     rep.set_blank(blank_ids[max(common_components,key=common_components.get)])
             if mode == 'auto':
                 pass
