@@ -292,7 +292,7 @@ class SingleTrial(Base):
             raise Exception('A duplicate titer was added to the single trial,\n'
                             'Make sure replicates are defined properly,\n'
                             'Duplicate ReplicateTrialIdentifier: ',
-                            vars(analyte_data.trial_identifier))
+                            str(analyte_data.trial_identifier))
 
 
 
