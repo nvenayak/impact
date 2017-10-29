@@ -242,26 +242,12 @@ class Media(Base, TrialIdentifierMixin):
     def __init__(self, concentration=None, unit='a.u.', name='', **kwargs):
         self.parent = None
         self.name = name
-        self.formal_name = ''
+        # self.formal_name = ''
         for key in kwargs:
             if key in ['parent', 'name', 'components']:
                 setattr(self, key, kwargs[key])
 
         self._concentration = concentration
-        # Build formal name from parent, knockouts and plasmids
-        self.formal_name = ''
-        if self.parent:
-            self.formal_name += self.parent.name
-        elif self.name:
-            self.formal_name += self.name  # This is wrong. Right way is to pass parent
-        else:
-            self.formal_name += "Unkown Base Media"
-        if self.components:
-            for component in self.components:
-                self.formal_name += ' + '
-                self.formal_name += str(self.components[component].concentration)
-                self.formal_name += self.components[component].unit + ' '
-                self.formal_name += self.components[component].component_name
 
         if not self.name:
             self.name = self.formal_name
@@ -277,6 +263,24 @@ class Media(Base, TrialIdentifierMixin):
     # Everything that needs to go on here is already assigned to self.formal_name
     def __str__(self):
         return self.formal_name
+
+    @property
+    def formal_name(self):
+        # Build formal name from parent, knockouts and plasmids
+        formal_name = ''
+        if self.parent:
+            formal_name += self.parent.name
+        elif self.name:
+            formal_name += self.name  # This is wrong. Right way is to pass parent
+        else:
+            formal_name += "Unkown Base Media"
+        if self.components:
+            for component in self.components:
+                formal_name += ' + '
+                formal_name += str(self.components[component].concentration)
+                formal_name += self.components[component].unit + ' '
+                formal_name += self.components[component].component_name
+        return formal_name
 
     @property
     def unique_id(self):
@@ -317,6 +321,8 @@ class Environment(Base, TrialIdentifierMixin):
         for arg in kwargs:
             setattr(self, arg, kwargs[arg])
 
+        self.non_native_attributes = {}
+
     def __str__(self):
         env = ''
         if self.labware:
@@ -331,6 +337,8 @@ class Environment(Base, TrialIdentifierMixin):
             env += 'pH: ' + str(self.pH) + ' '
         if self.DO:
             env += 'DO: ' + str(self.DO) + ' '
+        for attr, value in self.non_native_attributes.items():
+            env += attr+': '+value
         return env
 
 
@@ -526,7 +534,11 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                 except ValueError:
                                     print('Invalid value entered for attribute')
                             else:
-                                raise Exception('Unkown attribute passed for environment identifier')
+                                warn('Creating non-native attribute: '+attr2)
+                                non_native_attributes = {'environment':{attr2:val.strip()}}
+                                # non_native_attributes['environment'] = {}
+                                # non_native_attribu
+                                # raise Exception('Unkown attribute passed for environment identifier')
                         else:
                             # Set other attrs
                             setattr(getattr(self, attr1), attr2, val)
@@ -549,13 +561,19 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         else:
             self.media = Media(name=identifier_dict['media']['name'],
                                components=identifier_dict['media']['cc'])
+
         self.environment = Environment(labware=identifier_dict['environment']['labware'],
                                        shaking_speed=identifier_dict['environment']['shaking_speed'],
                                        shaking_diameter=identifier_dict['environment']['shaking_diameter'],
                                        temperature=identifier_dict['environment']['temperature'],
-                                       pH=identifier_dict['environment']['pH'], DO=identifier_dict['environment']['DO'])
-
-
+                                       pH=identifier_dict['environment']['pH'],
+                                       DO=identifier_dict['environment']['DO'])
+        try:
+            self.environment.non_native_attributes = non_native_attributes['environment']
+        except NameError:
+            pass
+        # for attr, value in non_native_attributes['environment'].items():
+        #     setattr(self.environment,attr,value)
         # parameter_values = id.split('|')
         # old version commented
         # for parameter_value in parameter_values:
