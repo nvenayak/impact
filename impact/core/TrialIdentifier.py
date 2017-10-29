@@ -252,15 +252,6 @@ class Media(Base, TrialIdentifierMixin):
         if not self.name:
             self.name = self.formal_name
 
-
-            # self.unit = unit
-            # above line was commented because it does not make sense here. unit is an attribute of the class component_concentration
-            # self.unit_conversion_flag = False
-
-            # if concentration and unit:
-            #     self._convert_units()
-
-    # Everything that needs to go on here is already assigned to self.formal_name
     def __str__(self):
         return self.formal_name
 
