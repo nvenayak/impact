@@ -229,11 +229,8 @@ def HPLC_titer_parser(experiment, data, id_type='CSV'):
     print("Parsed %i timeCourseObjects in %0.3fs" % (len(timepoint_list), tf - t0), end='')
     print("...Number of lines skipped: ", skipped_lines)
     replicate_trial_list = parse_time_point_list(timepoint_list)
-    print(len(replicate_trial_list))
-    print(len(experiment.replicate_trials))
     for rep in replicate_trial_list:
         experiment.add_replicate_trial(rep)
-    print(len(experiment.replicate_trials))
     # experiment.calculate()
 
 
