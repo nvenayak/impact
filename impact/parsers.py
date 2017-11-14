@@ -389,7 +389,6 @@ def parse_time_point_list(time_point_list):
     return parse_analyte_data(list(analyte_dict.values()))
 
 def parse_single_trial_list(single_trial_list):
-    from pprint import pprint
     print('Parsing single trial list...',end='')
     t0 = time.time()
     uniques = list(set([single_trial.trial_identifier.unique_replicate_trial()
@@ -404,15 +403,9 @@ def parse_single_trial_list(single_trial_list):
         for replicate in related_trials:
             replicate_trial.add_replicate(replicate)
         replicate_trial_list.append(replicate_trial)
-        # for single_trial in single_trial_list:
-        #     if single_trial.trial_identifier.unique_replicate_trial() == unique:
-        #         replicate_trial.add_replicate(single_trial)
-        #     replicate_trial_list.append(replicate_trial)
+
     tf = time.time()
     print("Parsed %i replicates in %0.1fs" % (len(replicate_trial_list), (tf - t0)))
     return replicate_trial_list
 
-    # self.replicate_trial_dict = dict()
-    # for replicate_trial in replicate_trial_list:
-    #     self.add_replicate_trial(replicate_trial)
 
