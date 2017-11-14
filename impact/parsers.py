@@ -396,7 +396,6 @@ def parse_single_trial_list(single_trial_list):
                         for single_trial in single_trial_list]
                        )
                    )
-    pprint(sorted(uniques))
     replicate_trial_list = []
     for unique in uniques:
         related_trials = [single_trial for single_trial in single_trial_list if

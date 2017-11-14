@@ -119,10 +119,6 @@ class Experiment(Base):
                          for st in rep.single_trial_dict.values()
                          for analyte in st.analyte_dict.keys()]))
 
-    # @property
-    # def replicate_trials(self):
-    #     return list(self.replicate_trials)
-
     @property
     def replicate_trial_dict(self):
         return {str(rep.trial_identifier.unique_replicate_trial()):rep for rep in self.replicate_trials}
@@ -148,42 +144,42 @@ class Experiment(Base):
                     repstage.calculate()
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
 
-    # def data(self):
-    #     data = []
-    #     for replicate_key in self.replicate_trial_dict:
-    #         data.append([replicate_key])
-    #         single_trial = self.replicate_trial_dict[replicate_key].single_trial_dict[
-    #             list(self.replicate_trial_dict[replicate_key].single_trial_dict.keys())[0]]
-    #         for titer_key in single_trial.analyte_dict.keys():
-    #             data.append([titer_key])
-    #
-    #             data.append(['Time (hours)'] + list(
-    #                 self.replicate_trial_dict[replicate_key].replicate_df[titer_key].index))
-    #             for col in self.replicate_trial_dict[replicate_key].replicate_df[titer_key]:
-    #                 data.append(['rep #'
-    #                              + str(col)]
-    #                             + list(self.replicate_trial_dict[replicate_key].replicate_df[titer_key][col]))
-    #             data.append(['Average'] + list(
-    #                 self.replicate_trial_dict[replicate_key].avg.analyte_dict[titer_key].pd_series))
-    #             data.append(['Std'] + list(
-    #                 self.replicate_trial_dict[replicate_key].std.analyte_dict[titer_key].pd_series))
-    #
-    #             # Add spacing between the titers
-    #             data.append([])
-    #         # Add spacing between the replicates
-    #         data.append([])
-    #         data.append([])
-    #
-    #     # Remove the last three rows which will be excess if it is the last row to be written
-    #     del data[-1]
-    #     del data[-1]
-    #     del data[-1]
-    #
-    #     return data
+    def data(self):
+        data = []
+        for replicate_key in self.replicate_trial_dict:
+            data.append([replicate_key])
+            single_trial = self.replicate_trial_dict[replicate_key].single_trial_dict[
+                list(self.replicate_trial_dict[replicate_key].single_trial_dict.keys())[0]]
+            for titer_key in single_trial.analyte_dict.keys():
+                data.append([titer_key])
 
-    # def summary(self, level=None):
-    #     for replicate_key in self.replicate_trial_dict:
-    #         self.replicate_trial_dict[replicate_key].summary()
+                data.append(['Time (hours)'] + list(
+                    self.replicate_trial_dict[replicate_key].replicate_df[titer_key].index))
+                for col in self.replicate_trial_dict[replicate_key].replicate_df[titer_key]:
+                    data.append(['rep #'
+                                 + str(col)]
+                                + list(self.replicate_trial_dict[replicate_key].replicate_df[titer_key][col]))
+                data.append(['Average'] + list(
+                    self.replicate_trial_dict[replicate_key].avg.analyte_dict[titer_key].pd_series))
+                data.append(['Std'] + list(
+                    self.replicate_trial_dict[replicate_key].std.analyte_dict[titer_key].pd_series))
+
+                # Add spacing between the titers
+                data.append([])
+            # Add spacing between the replicates
+            data.append([])
+            data.append([])
+
+        # Remove the last three rows which will be excess if it is the last row to be written
+        del data[-1]
+        del data[-1]
+        del data[-1]
+
+        return data
+
+    def summary(self, level=None):
+        for replicate_key in self.replicate_trial_dict:
+            self.replicate_trial_dict[replicate_key].summary()
 
     # @event.listens_for(ReplicateTrial, 'load')
     def add_replicate_trial(self, replicateTrial):
