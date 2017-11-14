@@ -249,8 +249,8 @@ class Media(Base, TrialIdentifierMixin):
 
         self._concentration = concentration
 
-        if not self.name:
-            self.name = self.formal_name
+        # if not self.name:
+        #     self.name = self.formal_name
 
     def __str__(self):
         return self.formal_name
@@ -261,10 +261,8 @@ class Media(Base, TrialIdentifierMixin):
         formal_name = ''
         if self.parent:
             formal_name += self.parent.name
-        elif self.name:
-            formal_name += self.name  # This is wrong. Right way is to pass parent
         else:
-            formal_name += "Unknown Base Media"
+            formal_name += "Base"
         if self.components:
             for component in self.components:
                 formal_name += ' + '

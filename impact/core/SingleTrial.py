@@ -289,6 +289,10 @@ class SingleTrial(Base):
 
         # Check if this analyte already exists
         if analyte_data.trial_identifier.analyte_name in self.analyte_dict:
+            print('Duplicate ReplicateTrialIdentifier: ',
+                            str(analyte_data.trial_identifier))
+            print('Original ReplicateTrialIdentifier: ',
+                  str(self.analyte_dict[analyte_data.trial_identifier.analyte_name].trial_identifier))
             raise Exception('A duplicate titer was added to the single trial,\n'
                             'Make sure replicates are defined properly,\n'
                             'Duplicate ReplicateTrialIdentifier: ',

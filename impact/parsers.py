@@ -229,8 +229,11 @@ def HPLC_titer_parser(experiment, data, id_type='CSV'):
     print("Parsed %i timeCourseObjects in %0.3fs" % (len(timepoint_list), tf - t0), end='')
     print("...Number of lines skipped: ", skipped_lines)
     replicate_trial_list = parse_time_point_list(timepoint_list)
+    print(len(replicate_trial_list))
+    print(len(experiment.replicate_trials))
     for rep in replicate_trial_list:
         experiment.add_replicate_trial(rep)
+    print(len(experiment.replicate_trials))
     # experiment.calculate()
 
 
@@ -386,20 +389,26 @@ def parse_time_point_list(time_point_list):
     return parse_analyte_data(list(analyte_dict.values()))
 
 def parse_single_trial_list(single_trial_list):
+    from pprint import pprint
     print('Parsing single trial list...',end='')
     t0 = time.time()
     uniques = list(set([single_trial.trial_identifier.unique_replicate_trial()
                         for single_trial in single_trial_list]
                        )
                    )
-
+    pprint(sorted(uniques))
     replicate_trial_list = []
     for unique in uniques:
+        related_trials = [single_trial for single_trial in single_trial_list if
+                          single_trial.trial_identifier.unique_replicate_trial() == unique]
         replicate_trial = ReplicateTrial()
-        for single_trial in single_trial_list:
-            if single_trial.trial_identifier.unique_replicate_trial() == unique:
-                replicate_trial.add_replicate(single_trial)
-                replicate_trial_list.append(replicate_trial)
+        for replicate in related_trials:
+            replicate_trial.add_replicate(replicate)
+        replicate_trial_list.append(replicate_trial)
+        # for single_trial in single_trial_list:
+        #     if single_trial.trial_identifier.unique_replicate_trial() == unique:
+        #         replicate_trial.add_replicate(single_trial)
+        #     replicate_trial_list.append(replicate_trial)
     tf = time.time()
     print("Parsed %i replicates in %0.1fs" % (len(replicate_trial_list), (tf - t0)))
     return replicate_trial_list

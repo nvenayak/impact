@@ -43,7 +43,7 @@ class ReplicateTrial(Base):
     blank_id = Column(Integer,ForeignKey('single_trial.id'))
     blank = relationship('SingleTrial',uselist=False, foreign_keys=[blank_id])
 
-    parent = relationship('Experiment',back_populates="replicate_trial_dict")
+    parent = relationship('Experiment')#,back_populates="replicate_trials")
     parent_id = Column(Integer,ForeignKey('experiment.id'))
 
     bad_replicates = Column(PickleType)
