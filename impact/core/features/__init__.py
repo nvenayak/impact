@@ -128,7 +128,7 @@ class ProductYieldFactory(BaseAnalyteFeatureFactory):
 
                 if len(self.products) > 0:
                     for product in self.products:
-                        product.product_yield = ProductYield(substrate=self.substrate, product=analyte_data)
+                        product.product_yield = ProductYield(substrate=self.substrate, product=product)
 
                     # Once we've processed the waiting products we can delete them
                     self.product = []
