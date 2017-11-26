@@ -309,10 +309,10 @@ class ReplicateTrial(Base):
             # by a certain threshold, the replicate is flagged as removed
             if outlier_removal_method == 'iterative_removal':
                 bad_replicate_cols = []
-                good_replicate_cols = []
+                good_replicate_cols = df.columns.values
 
                 # Determine the max number of replicates to remove
-                for _ in range(int(len(df) * max_fraction_replicates_to_remove)):
+                for _ in range(int(len(self.single_trial_dict) * max_fraction_replicates_to_remove)):
                     # A value between 0 and 1, > 1 means removing the replicate makes the yield worse
                     std_deviation_cutoff = 0.1
                     # df = pd.DataFrame({key: np.random.randn(5) for key in ['a', 'b', 'c']})
