@@ -52,6 +52,23 @@ cl = cl
 plot = plot
 
 
+def svg_plot(fig, **kwargs):
+    """
+    Generates an svg plot from a plotly figure
+
+    Parameters
+    ----------
+    fig: plotly figure
+
+    """
+    from plotly.offline import plot as svg_plot
+    svg_plot(fig,
+             image_width=fig['layout']['width'],
+             image_height=fig['layout']['height'],
+             image='svg',
+             **kwargs)
+
+
 def generic_timecourse(impact_core_instance_list=None):
     if impact_core_instance_list is None:
         raise ValueError('No data')
