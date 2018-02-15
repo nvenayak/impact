@@ -9,14 +9,14 @@
     "\n",
     "This is an overview of the models:\n",
     "\n",
-    "| Model             | Function                                                                         |\n",
-    "|-------------------|----------------------------------------------------------------------------------|\n",
-    "| `TrialIdentifier` | Describes a trial (time, analyte, strain, media, etc.)                           |\n",
-    "| `AnalyteData`     | Time, data points and vectors for quantified data (g/L product, OD, etc.)        |\n",
-    "| `SingleTrial`     | All analytes for a given unit (e.g. a tube, well on plate, bioreactor, etc.)     |\n",
-    "| `ReplicateTrial`  | Contains a set of `SingleTrial`s with replicates grouped to calculate statistics |\n",
-    "| `Experiment`      | All of the trials performed on a given date                                      |\n",
-    "| `Project`         | Groups of experiments with overall goals                                         | \n",
+    "| Model                 | Function                                                                         |\n",
+    "|-----------------------|----------------------------------------------------------------------------------|\n",
+    "| TrialIdentifier       | Describes a trial (time, analyte, strain, media, etc.)                           |\n",
+    "| AnalyteData           | Time, data points and vectors for quantified data (g/L product, OD, etc.)        |\n",
+    "| SingleTrial           | All analytes for a given unit (e.g. a tube, well on plate, bioreactor, etc.)     |\n",
+    "| ReplicateTrial        | Contains a set of `SingleTrial`s with replicates grouped to calculate statistics |\n",
+    "| Experiment            | All of the trials performed on a given date                                      |\n",
+    "| Project               | Groups of experiments with overall goals                                         | \n",
     "\n",
     "## `TrialIdentifier` class\n",
     "\n",
@@ -24,11 +24,11 @@
     "\n",
     "The three fundamental units of a trial identifier are the `Strain`, `Media` and `Environment` classes. \n",
     "\n",
-    "| Model | Function |\n",
-    "|----|----|\n",
-    "| Strain | Describes the organism being characterized (e.g. strain, knockouts, plasmids, etc.)  |\n",
-    "| Media | Described the medium used to characterize the organism (e.g. M9 + 0.02% glc_D) |\n",
-    "| Environment | The conditions and labware used (e.g. 96-well plate, 250RPM, 37C) |\n",
+    "| Model             | Function                                                                             |\n",
+    "|-------------------|--------------------------------------------------------------------------------------|\n",
+    "| Strain            | Describes the organism being characterized (e.g. strain, knockouts, plasmids, etc.)  |\n",
+    "| Media             | Described the medium used to characterize the organism (e.g. M9 + 0.02% glc_D)       |\n",
+    "| Environment       | The conditions and labware used (e.g. 96-well plate, 250RPM, 37C)                    |\n",
     "\n",
     "We will build a trial identifier with all its components and use it to describe some data.s"
    ]
@@ -36,9 +36,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "metadata": {
-    "collapsed": false
-   },
+   "metadata": {},
    "outputs": [
     {
      "name": "stdout",
@@ -79,9 +77,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "metadata": {
-    "collapsed": false
-   },
+   "metadata": {},
    "outputs": [
     {
      "name": "stdout",
@@ -106,9 +102,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "metadata": {
-    "collapsed": false
-   },
+   "metadata": {},
    "outputs": [
     {
      "name": "stdout",
@@ -141,9 +135,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "metadata": {
-    "collapsed": false
-   },
+   "metadata": {},
    "outputs": [
     {
      "name": "stdout",
@@ -188,9 +180,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "metadata": {
-    "collapsed": false
-   },
+   "metadata": {},
    "outputs": [
     {
      "data": {
@@ -268,9 +258,9 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.5.2"
+   "version": "3.5.3"
   }
  },
  "nbformat": 4,
- "nbformat_minor": 0
+ "nbformat_minor": 1
 }

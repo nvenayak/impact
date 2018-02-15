@@ -1,43 +1,32 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Tutorials &mdash; impact 0.8.0 documentation</title>
-    
+    <title>Tutorials &#8212; impact 0.8.0 documentation</title>
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootswatch-3.3.6/simplex/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.8.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
-    <link rel="top" title="impact 0.8.0 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-default navbar-fixed-top">
     <div class="container">
@@ -69,7 +58,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#documentation">Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
@@ -80,12 +70,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="core_structure.html">Core structure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal notranslate"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal notranslate"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal notranslate"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal notranslate"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
@@ -98,6 +88,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parser.html">Adding custom functionality</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parser.html#Writing-a-new-parser">Writing a new parser</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
@@ -139,7 +133,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="_sources/tutorials_0.txt"
+  <a href="_sources/tutorials_0.ipynb.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -161,7 +155,31 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Tutorials</a><ul>
+<li><a class="reference internal" href="#Core">Core</a><ul>
+<li><a class="reference internal" href="#Importing-data">Importing data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div id="sourcelink">
+  <a href="_sources/tutorials_0.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+<form action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="col-md-9 content">
       
   
 <style>
@@ -169,13 +187,15 @@
 
 /* remove conflicting styling from Sphinx themes */
 div.nbinput,
-div.nbinput > div,
-div.nbinput div[class^=highlight],
-div.nbinput div[class^=highlight] pre,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
 div.nboutput,
-div.nboutput > div,
-div.nboutput div[class^=highlight],
-div.nboutput div[class^=highlight] pre {
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
     background: none;
     border: none;
     padding: 0 0;
@@ -184,7 +204,7 @@ div.nboutput div[class^=highlight] pre {
 }
 
 /* avoid gaps between output lines */
-div.nboutput div[class^=highlight] pre {
+div.nboutput div[class*=highlight] pre {
     line-height: normal;
 }
 
@@ -195,6 +215,13 @@ div.nboutput {
     display: flex;
     align-items: flex-start;
     margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
 }
 
 /* input container */
@@ -208,38 +235,58 @@ div.nblast {
 }
 
 /* input prompt */
-div.nbinput > :first-child pre {
+div.nbinput div.prompt pre {
     color: #303F9F;
 }
 
 /* output prompt */
-div.nboutput > :first-child pre {
+div.nboutput div.prompt pre {
     color: #D84315;
 }
 
 /* all prompts */
-div.nbinput > :first-child[class^=highlight],
-div.nboutput > :first-child[class^=highlight],
-div.nboutput > :first-child {
+div.nbinput div.prompt,
+div.nboutput div.prompt {
     min-width: 9ex;
     padding-top: 0.4em;
     padding-right: 0.4em;
     text-align: right;
     flex: 0;
 }
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
 
 /* input/output area */
-div.nbinput > :nth-child(2)[class^=highlight],
-div.nboutput > :nth-child(2),
-div.nboutput > :nth-child(2)[class^=highlight] {
+div.nbinput div.input_area,
+div.nboutput div.output_area {
     padding: 0.4em;
     -webkit-flex: 1;
     flex: 1;
     overflow: auto;
 }
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
 
 /* input area */
-div.nbinput > :nth-child(2)[class^=highlight] {
+div.nbinput div.input_area {
     border: 1px solid #cfcfcf;
     border-radius: 2px;
     background: #f7f7f7;
@@ -256,7 +303,7 @@ div.nboutput div.math p {
 }
 
 /* standard error */
-div.nboutput  > :nth-child(2).stderr {
+div.nboutput div.output_area.stderr {
     background: #fdd;
 }
 
@@ -294,7 +341,11 @@ div.nboutput  > :nth-child(2).stderr {
 .ansi-white-intense-fg { color: #A1A6B2; }
 .ansi-white-intense-bg { background-color: #A1A6B2; }
 
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
 .ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
 </style>
 <div class="section" id="Tutorials">
 <h1>Tutorials<a class="headerlink" href="#Tutorials" title="Permalink to this headline">¶</a></h1>
@@ -308,9 +359,9 @@ data, extracting features and visualization</p>
 files in various formats with appropriate identifiers. The two most
 important parsing formats are:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">default_titers</span></code>: where rows are time points and columns are
+<li><code class="docutils literal notranslate"><span class="pre">default_titers</span></code>: where rows are time points and columns are
 analytes</li>
-<li><code class="docutils literal"><span class="pre">default_OD</span></code>: for importing a time course for a single analyte
+<li><code class="docutils literal notranslate"><span class="pre">default_OD</span></code>: for importing a time course for a single analyte
 (such as biomass from a plate reader)</li>
 </ul>
 <p>Although all the core classes can be used independently, experiments are
@@ -318,22 +369,22 @@ generally used to parse raw data. This contains all of the trials
 performed at a specific point in time, such as a set of controls and
 treatments.</p>
 <p>Here, we create a new experiment and parse the raw data.</p>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [1]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">impact</span> <span class="kn">as</span> <span class="nn">impt</span>
 <span class="n">expt</span> <span class="o">=</span> <span class="n">impt</span><span class="o">.</span><span class="n">Experiment</span><span class="p">()</span>
 <span class="n">expt</span><span class="o">.</span><span class="n">parse_raw_data</span><span class="p">(</span><span class="s1">&#39;default_titers&#39;</span><span class="p">,</span><span class="s1">&#39;../tests/sample_input_data.xlsx&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <script type='text/javascript'>if(!window.Plotly){define('plotly', function(require, exports, module) {/**
 * plotly.js v1.16.2
 * Copyright 2012-2016, Plotly, Inc.
@@ -395,10 +446,10 @@ t.exit().remove(),t.text(a.text).attr({"class":"slicetext",transform:"","data-bb
 e.exports=function(t,e,r,o){function a(t,e){g.push(t._hovertitle+": "+i.tickText(t,e,"hover").text)}var s=n(t,e,r,o);if(s&&s[0].index!==!1){var l=s[0];if(void 0===l.index){var u=1-l.y0/t.ya._length,c=t.xa._length,h=c*u/2,f=c-h;return l.x0=Math.max(Math.min(l.x0,f),h),l.x1=Math.max(Math.min(l.x1,f),h),s}var d=l.cd[l.index];l.a=d.a,l.b=d.b,l.c=d.c,l.xLabelVal=void 0,l.yLabelVal=void 0;var p=l.trace,v=p._ternary,m=p.hoverinfo.split("+"),g=[];return-1!==m.indexOf("all")&&(m=["a","b","c"]),-1!==m.indexOf("a")&&a(v.aaxis,d.a),-1!==m.indexOf("b")&&a(v.baxis,d.b),-1!==m.indexOf("c")&&a(v.caxis,d.c),l.extraText=g.join("<br>"),s}}},{"../../plots/cartesian/axes":592,"../scatter/hover":759}],798:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("../scatter/colorbar"),n.calc=t("./calc"),n.plot=t("./plot"),n.style=t("./style"),n.hoverPoints=t("./hover"),n.selectPoints=t("./select"),n.moduleType="trace",n.name="scatterternary",n.basePlotModule=t("../../plots/ternary"),n.categories=["ternary","symbols","markerColorscale","showLegend"],n.meta={},e.exports=n},{"../../plots/ternary":655,"../scatter/colorbar":753,"./attributes":794,"./calc":795,"./defaults":796,"./hover":797,"./plot":799,"./select":800,"./style":801}],799:[function(t,e,r){"use strict";var n=t("../scatter/plot");e.exports=function(t,e){var r=t.plotContainer;r.select(".scatterlayer").selectAll("*").remove();for(var i={x:function(){return t.xaxis},y:function(){return t.yaxis},plot:r},o=new Array(e.length),a=t.graphDiv.calcdata,s=0;s<a.length;s++){var l=e.indexOf(a[s][0].trace);-1!==l&&(o[l]=a[s],e[l]._ternary=t)}n(t.graphDiv,i,o)}},{"../scatter/plot":766}],800:[function(t,e,r){"use strict";var n=t("../scatter/select");e.exports=function(t,e){var r=n(t,e);if(r){var i,o,a,s=t.cd;for(a=0;a<r.length;a++)i=r[a],o=s[i.pointNumber],i.a=o.a,i.b=o.b,i.c=o.c,delete i.x,delete i.y;return r}}},{"../scatter/select":767}],801:[function(t,e,r){"use strict";var n=t("../scatter/style");e.exports=function(t){for(var e=t._fullLayout._modules,r=0;r<e.length;r++)if("scatter"===e[r].name)return;n(t)}},{"../scatter/style":768}],802:[function(t,e,r){"use strict";function n(t){return{valType:"boolean",dflt:!1}}function i(t){return{show:{valType:"boolean",dflt:!1},project:{x:n("x"),y:n("y"),z:n("z")},color:{valType:"color",dflt:o.defaultLine},usecolormap:{valType:"boolean",dflt:!1},width:{valType:"number",min:1,max:16,dflt:2},highlight:{valType:"boolean",dflt:!0},highlightcolor:{valType:"color",dflt:o.defaultLine},highlightwidth:{valType:"number",min:1,max:16,dflt:2}}}var o=t("../../components/color"),a=t("../../components/colorscale/attributes"),s=t("../../lib/extend").extendFlat;e.exports={z:{valType:"data_array"},x:{valType:"data_array"},y:{valType:"data_array"},text:{valType:"data_array"},surfacecolor:{valType:"data_array"},cauto:a.zauto,cmin:a.zmin,cmax:a.zmax,colorscale:a.colorscale,autocolorscale:s({},a.autocolorscale,{dflt:!1}),reversescale:a.reversescale,showscale:a.showscale,contours:{x:i("x"),y:i("y"),z:i("z")},hidesurface:{valType:"boolean",dflt:!1},lightposition:{x:{valType:"number",min:-1e5,max:1e5,dflt:10},y:{valType:"number",min:-1e5,max:1e5,dflt:1e4},z:{valType:"number",min:-1e5,max:1e5,dflt:0}},lighting:{ambient:{valType:"number",min:0,max:1,dflt:.8},diffuse:{valType:"number",min:0,max:1,dflt:.8},specular:{valType:"number",min:0,max:2,dflt:.05},roughness:{valType:"number",min:0,max:1,dflt:.5},fresnel:{valType:"number",min:0,max:5,dflt:.2}},opacity:{valType:"number",min:0,max:1,dflt:1},_nestedModules:{colorbar:"Colorbar"},_deprecated:{zauto:s({},a.zauto,{}),zmin:s({},a.zmin,{}),zmax:s({},a.zmax,{})}}},{"../../components/color":483,"../../components/colorscale/attributes":489,"../../lib/extend":563}],803:[function(t,e,r){"use strict";var n=t("../../components/colorscale/calc");e.exports=function(t,e){e.surfacecolor?n(e,e.surfacecolor,"","c"):n(e,e.z,"","c")}},{"../../components/colorscale/calc":490}],804:[function(t,e,r){"use strict";var n=t("d3"),i=t("fast-isnumeric"),o=t("../../lib"),a=t("../../plots/plots"),s=t("../../components/colorscale/get_scale"),l=t("../../components/colorbar/draw");e.exports=function(t,e){var r=e[0].trace,u="cb"+r.uid,c=s(r.colorscale),h=r.cmin,f=r.cmax,d=r.surfacecolor||r.z;if(i(h)||(h=o.aggNums(Math.min,null,d)),i(f)||(f=o.aggNums(Math.max,null,d)),t._fullLayout._infolayer.selectAll("."+u).remove(),!r.showscale)return void a.autoMargin(t,u);var p=e[0].t.cb=l(t,u);p.fillcolor(n.scale.linear().domain(c.map(function(t){return h+t[0]*(f-h)})).range(c.map(function(t){return t[1]}))).filllevels({start:h,end:f,size:(f-h)/254}).options(r.colorbar)()}},{"../../components/colorbar/draw":486,"../../components/colorscale/get_scale":495,"../../lib":568,"../../plots/plots":648,d3:119,"fast-isnumeric":123}],805:[function(t,e,r){"use strict";function n(t,e,r){this.scene=t,this.uid=r,this.surface=e,this.data=null,this.showContour=[!1,!1,!1],this.dataScale=1}function i(t,e){return void 0===e&&(e=1),t.map(function(t){var r=t[0],n=d(t[1]),i=n.toRgb();return{index:r,rgb:[i.r,i.g,i.b,e]}})}function o(t){var e=t.shape,r=[e[0]+2,e[1]+2],n=u(new Float32Array(r[0]*r[1]),r);return f.assign(n.lo(1,1).hi(e[0],e[1]),t),f.assign(n.lo(1).hi(e[0],1),t.hi(e[0],1)),f.assign(n.lo(1,r[1]-1).hi(e[0],1),t.lo(0,e[1]-1).hi(e[0],1)),f.assign(n.lo(0,1).hi(1,e[1]),t.hi(1)),f.assign(n.lo(r[0]-1,1).hi(1,e[1]),t.lo(e[0]-1)),n.set(0,0,t.get(0,0)),n.set(0,r[1]-1,t.get(0,e[1]-1)),n.set(r[0]-1,0,t.get(e[0]-1,0)),n.set(r[0]-1,r[1]-1,t.get(e[0]-1,e[1]-1)),n}function a(t){var e=Math.max(t[0].shape[0],t[0].shape[1]);if(v>e){for(var r=v/e,n=[0|Math.floor(t[0].shape[0]*r+1),0|Math.floor(t[0].shape[1]*r+1)],i=n[0]*n[1],a=0;a<t.length;++a){var s=o(t[a]),l=u(new Float32Array(i),n);c(l,s,[r,0,0,0,r,0,0,0,1]),t[a]=l}return r}return 1}function s(t,e){var r=t.glplot.gl,i=l({gl:r}),o=new n(t,i,e.uid);return o.update(e),t.glplot.add(i),o}var l=t("gl-surface3d"),u=t("ndarray"),c=t("ndarray-homography"),h=t("ndarray-fill"),f=t("ndarray-ops"),d=t("tinycolor2"),p=t("../../lib/str2rgbarray"),v=128,m=n.prototype;m.handlePick=function(t){if(t.object===this.surface){var e=[Math.min(0|Math.round(t.data.index[0]/this.dataScale-1),this.data.z[0].length-1),Math.min(0|Math.round(t.data.index[1]/this.dataScale-1),this.data.z.length-1)],r=[0,0,0];Array.isArray(this.data.x[0])?r[0]=this.data.x[e[1]][e[0]]:r[0]=this.data.x[e[0]],Array.isArray(this.data.y[0])?r[1]=this.data.y[e[1]][e[0]]:r[1]=this.data.y[e[1]],r[2]=this.data.z[e[1]][e[0]],t.traceCoordinate=r;var n=this.scene.fullSceneLayout;t.dataCoordinate=[n.xaxis.d2l(r[0])*this.scene.dataScale[0],n.yaxis.d2l(r[1])*this.scene.dataScale[1],n.zaxis.d2l(r[2])*this.scene.dataScale[2]];var i=this.data.text;return i&&i[e[1]]&&void 0!==i[e[1]][e[0]]?t.textLabel=i[e[1]][e[0]]:t.textLabel="",t.data.dataCoordinate=t.dataCoordinate.slice(),this.surface.highlight(t.data),this.scene.glplot.spikes.position=t.dataCoordinate,!0}},m.setContourLevels=function(){for(var t=[[],[],[]],e=!1,r=0;3>r;++r)this.showContour[r]&&(e=!0,t[r]=this.scene.contourLevels[r]);e&&this.surface.update({levels:t})},m.update=function(t){var e,r=this.scene,n=r.fullSceneLayout,o=this.surface,s=t.opacity,l=i(t.colorscale,s),c=t.z,f=t.x,d=t.y,v=n.xaxis,m=n.yaxis,g=n.zaxis,y=r.dataScale,b=c[0].length,x=c.length,_=[u(new Float32Array(b*x),[b,x]),u(new Float32Array(b*x),[b,x]),u(new Float32Array(b*x),[b,x])],w=_[0],M=_[1],k=r.contourLevels;this.data=t,h(_[2],function(t,e){return g.d2l(c[e][t])*y[2]}),Array.isArray(f[0])?h(w,function(t,e){return v.d2l(f[e][t])*y[0]}):h(w,function(t){return v.d2l(f[t])*y[0]}),Array.isArray(d[0])?h(M,function(t,e){return m.d2l(d[e][t])*y[1]}):h(M,function(t,e){return m.d2l(d[e])*y[1]});var A={colormap:l,levels:[[],[],[]],showContour:[!0,!0,!0],showSurface:!t.hidesurface,contourProject:[[!1,!1,!1],[!1,!1,!1],[!1,!1,!1]],contourWidth:[1,1,1],contourColor:[[1,1,1,1],[1,1,1,1],[1,1,1,1]],contourTint:[1,1,1],dynamicColor:[[1,1,1,1],[1,1,1,1],[1,1,1,1]],dynamicWidth:[1,1,1],dynamicTint:[1,1,1],opacity:1};if(A.intensityBounds=[t.cmin,t.cmax],t.surfacecolor){var T=u(new Float32Array(b*x),[b,x]);h(T,function(e,r){return t.surfacecolor[r][e]}),_.push(T)}else A.intensityBounds[0]*=y[2],A.intensityBounds[1]*=y[2];this.dataScale=a(_),t.surfacecolor&&(A.intensity=_.pop()),"opacity"in t&&t.opacity<1&&(A.opacity=.25*t.opacity);var E=[!0,!0,!0],S=["x","y","z"];for(e=0;3>e;++e){var L=t.contours[S[e]];E[e]=L.highlight,A.showContour[e]=L.show||L.highlight,A.showContour[e]&&(A.contourProject[e]=[L.project.x,L.project.y,L.project.z],L.show?(this.showContour[e]=!0,A.levels[e]=k[e],o.highlightColor[e]=A.contourColor[e]=p(L.color),L.usecolormap?o.highlightTint[e]=A.contourTint[e]=0:o.highlightTint[e]=A.contourTint[e]=1,A.contourWidth[e]=L.width):this.showContour[e]=!1,L.highlight&&(A.dynamicColor[e]=p(L.highlightcolor),A.dynamicWidth[e]=L.highlightwidth))}A.coords=_,o.update(A),o.visible=t.visible,o.enableDynamic=E,o.snapToData=!0,"lighting"in t&&(o.ambientLight=t.lighting.ambient,o.diffuseLight=t.lighting.diffuse,o.specularLight=t.lighting.specular,o.roughness=t.lighting.roughness,o.fresnel=t.lighting.fresnel),"lightposition"in t&&(o.lightPosition=[t.lightposition.x,t.lightposition.y,t.lightposition.z]),s&&1>s&&(o.supportsTransparency=!0)},m.dispose=function(){this.scene.glplot.remove(this.surface),this.surface.dispose()},e.exports=s},{"../../lib/str2rgbarray":580,"gl-surface3d":227,ndarray:433,"ndarray-fill":426,"ndarray-homography":431,"ndarray-ops":432,tinycolor2:454}],806:[function(t,e,r){"use strict";function n(t,e,r){e in t&&!(r in t)&&(t[r]=t[e])}var i=t("../../lib"),o=t("../../components/colorscale/defaults"),a=t("./attributes");e.exports=function(t,e,r,s){function l(r,n){return i.coerce(t,e,a,r,n)}var u,c,h=l("z");if(!h)return void(e.visible=!1);var f=h[0].length,d=h.length;if(l("x"),l("y"),!Array.isArray(e.x))for(e.x=[],u=0;f>u;++u)e.x[u]=u;if(l("text"),!Array.isArray(e.y))for(e.y=[],u=0;d>u;++u)e.y[u]=u;["lighting.ambient","lighting.diffuse","lighting.specular","lighting.roughness","lighting.fresnel","lightposition.x","lightposition.y","lightposition.z","hidesurface","opacity"].forEach(function(t){l(t)});var p=l("surfacecolor");l("colorscale");var v=["x","y","z"];for(u=0;3>u;++u){var m="contours."+v[u],g=l(m+".show"),y=l(m+".highlight");if(g||y)for(c=0;3>c;++c)l(m+".project."+v[c]);g&&(l(m+".color"),l(m+".width"),l(m+".usecolormap")),y&&(l(m+".highlightcolor"),l(m+".highlightwidth"))}p||(n(t,"zmin","cmin"),n(t,"zmax","cmax"),n(t,"zauto","cauto")),o(t,e,s,l,{prefix:"",cLetter:"c"})}},{"../../components/colorscale/defaults":493,"../../lib":568,"./attributes":802}],807:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("./colorbar"),n.calc=t("./calc"),n.plot=t("./convert"),n.moduleType="trace",n.name="surface",n.basePlotModule=t("../../plots/gl3d"),n.categories=["gl3d","noOpacity"],n.meta={},e.exports=n},{"../../plots/gl3d":628,"./attributes":802,"./calc":803,"./colorbar":804,"./convert":805,"./defaults":806}]},{},[12])(12)});
 });require(['plotly'], function(Plotly) {window.Plotly = Plotly;});}</script></div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="stderr container">
+<div class="stderr output_area docutils container">
 <div class="highlight"><pre>
 C:\Users\Naveen\Anaconda3\lib\site-packages\IPython\html.py:14: ShimWarning:
 
@@ -406,10 +457,10 @@ The `IPython.html` package has been deprecated. You should import from `notebook
 
 </pre></div></div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <script type='text/javascript'>if(!window.Plotly){define('plotly', function(require, exports, module) {/**
 * plotly.js v1.16.2
 * Copyright 2012-2016, Plotly, Inc.
@@ -471,10 +522,10 @@ t.exit().remove(),t.text(a.text).attr({"class":"slicetext",transform:"","data-bb
 e.exports=function(t,e,r,o){function a(t,e){g.push(t._hovertitle+": "+i.tickText(t,e,"hover").text)}var s=n(t,e,r,o);if(s&&s[0].index!==!1){var l=s[0];if(void 0===l.index){var u=1-l.y0/t.ya._length,c=t.xa._length,h=c*u/2,f=c-h;return l.x0=Math.max(Math.min(l.x0,f),h),l.x1=Math.max(Math.min(l.x1,f),h),s}var d=l.cd[l.index];l.a=d.a,l.b=d.b,l.c=d.c,l.xLabelVal=void 0,l.yLabelVal=void 0;var p=l.trace,v=p._ternary,m=p.hoverinfo.split("+"),g=[];return-1!==m.indexOf("all")&&(m=["a","b","c"]),-1!==m.indexOf("a")&&a(v.aaxis,d.a),-1!==m.indexOf("b")&&a(v.baxis,d.b),-1!==m.indexOf("c")&&a(v.caxis,d.c),l.extraText=g.join("<br>"),s}}},{"../../plots/cartesian/axes":592,"../scatter/hover":759}],798:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("../scatter/colorbar"),n.calc=t("./calc"),n.plot=t("./plot"),n.style=t("./style"),n.hoverPoints=t("./hover"),n.selectPoints=t("./select"),n.moduleType="trace",n.name="scatterternary",n.basePlotModule=t("../../plots/ternary"),n.categories=["ternary","symbols","markerColorscale","showLegend"],n.meta={},e.exports=n},{"../../plots/ternary":655,"../scatter/colorbar":753,"./attributes":794,"./calc":795,"./defaults":796,"./hover":797,"./plot":799,"./select":800,"./style":801}],799:[function(t,e,r){"use strict";var n=t("../scatter/plot");e.exports=function(t,e){var r=t.plotContainer;r.select(".scatterlayer").selectAll("*").remove();for(var i={x:function(){return t.xaxis},y:function(){return t.yaxis},plot:r},o=new Array(e.length),a=t.graphDiv.calcdata,s=0;s<a.length;s++){var l=e.indexOf(a[s][0].trace);-1!==l&&(o[l]=a[s],e[l]._ternary=t)}n(t.graphDiv,i,o)}},{"../scatter/plot":766}],800:[function(t,e,r){"use strict";var n=t("../scatter/select");e.exports=function(t,e){var r=n(t,e);if(r){var i,o,a,s=t.cd;for(a=0;a<r.length;a++)i=r[a],o=s[i.pointNumber],i.a=o.a,i.b=o.b,i.c=o.c,delete i.x,delete i.y;return r}}},{"../scatter/select":767}],801:[function(t,e,r){"use strict";var n=t("../scatter/style");e.exports=function(t){for(var e=t._fullLayout._modules,r=0;r<e.length;r++)if("scatter"===e[r].name)return;n(t)}},{"../scatter/style":768}],802:[function(t,e,r){"use strict";function n(t){return{valType:"boolean",dflt:!1}}function i(t){return{show:{valType:"boolean",dflt:!1},project:{x:n("x"),y:n("y"),z:n("z")},color:{valType:"color",dflt:o.defaultLine},usecolormap:{valType:"boolean",dflt:!1},width:{valType:"number",min:1,max:16,dflt:2},highlight:{valType:"boolean",dflt:!0},highlightcolor:{valType:"color",dflt:o.defaultLine},highlightwidth:{valType:"number",min:1,max:16,dflt:2}}}var o=t("../../components/color"),a=t("../../components/colorscale/attributes"),s=t("../../lib/extend").extendFlat;e.exports={z:{valType:"data_array"},x:{valType:"data_array"},y:{valType:"data_array"},text:{valType:"data_array"},surfacecolor:{valType:"data_array"},cauto:a.zauto,cmin:a.zmin,cmax:a.zmax,colorscale:a.colorscale,autocolorscale:s({},a.autocolorscale,{dflt:!1}),reversescale:a.reversescale,showscale:a.showscale,contours:{x:i("x"),y:i("y"),z:i("z")},hidesurface:{valType:"boolean",dflt:!1},lightposition:{x:{valType:"number",min:-1e5,max:1e5,dflt:10},y:{valType:"number",min:-1e5,max:1e5,dflt:1e4},z:{valType:"number",min:-1e5,max:1e5,dflt:0}},lighting:{ambient:{valType:"number",min:0,max:1,dflt:.8},diffuse:{valType:"number",min:0,max:1,dflt:.8},specular:{valType:"number",min:0,max:2,dflt:.05},roughness:{valType:"number",min:0,max:1,dflt:.5},fresnel:{valType:"number",min:0,max:5,dflt:.2}},opacity:{valType:"number",min:0,max:1,dflt:1},_nestedModules:{colorbar:"Colorbar"},_deprecated:{zauto:s({},a.zauto,{}),zmin:s({},a.zmin,{}),zmax:s({},a.zmax,{})}}},{"../../components/color":483,"../../components/colorscale/attributes":489,"../../lib/extend":563}],803:[function(t,e,r){"use strict";var n=t("../../components/colorscale/calc");e.exports=function(t,e){e.surfacecolor?n(e,e.surfacecolor,"","c"):n(e,e.z,"","c")}},{"../../components/colorscale/calc":490}],804:[function(t,e,r){"use strict";var n=t("d3"),i=t("fast-isnumeric"),o=t("../../lib"),a=t("../../plots/plots"),s=t("../../components/colorscale/get_scale"),l=t("../../components/colorbar/draw");e.exports=function(t,e){var r=e[0].trace,u="cb"+r.uid,c=s(r.colorscale),h=r.cmin,f=r.cmax,d=r.surfacecolor||r.z;if(i(h)||(h=o.aggNums(Math.min,null,d)),i(f)||(f=o.aggNums(Math.max,null,d)),t._fullLayout._infolayer.selectAll("."+u).remove(),!r.showscale)return void a.autoMargin(t,u);var p=e[0].t.cb=l(t,u);p.fillcolor(n.scale.linear().domain(c.map(function(t){return h+t[0]*(f-h)})).range(c.map(function(t){return t[1]}))).filllevels({start:h,end:f,size:(f-h)/254}).options(r.colorbar)()}},{"../../components/colorbar/draw":486,"../../components/colorscale/get_scale":495,"../../lib":568,"../../plots/plots":648,d3:119,"fast-isnumeric":123}],805:[function(t,e,r){"use strict";function n(t,e,r){this.scene=t,this.uid=r,this.surface=e,this.data=null,this.showContour=[!1,!1,!1],this.dataScale=1}function i(t,e){return void 0===e&&(e=1),t.map(function(t){var r=t[0],n=d(t[1]),i=n.toRgb();return{index:r,rgb:[i.r,i.g,i.b,e]}})}function o(t){var e=t.shape,r=[e[0]+2,e[1]+2],n=u(new Float32Array(r[0]*r[1]),r);return f.assign(n.lo(1,1).hi(e[0],e[1]),t),f.assign(n.lo(1).hi(e[0],1),t.hi(e[0],1)),f.assign(n.lo(1,r[1]-1).hi(e[0],1),t.lo(0,e[1]-1).hi(e[0],1)),f.assign(n.lo(0,1).hi(1,e[1]),t.hi(1)),f.assign(n.lo(r[0]-1,1).hi(1,e[1]),t.lo(e[0]-1)),n.set(0,0,t.get(0,0)),n.set(0,r[1]-1,t.get(0,e[1]-1)),n.set(r[0]-1,0,t.get(e[0]-1,0)),n.set(r[0]-1,r[1]-1,t.get(e[0]-1,e[1]-1)),n}function a(t){var e=Math.max(t[0].shape[0],t[0].shape[1]);if(v>e){for(var r=v/e,n=[0|Math.floor(t[0].shape[0]*r+1),0|Math.floor(t[0].shape[1]*r+1)],i=n[0]*n[1],a=0;a<t.length;++a){var s=o(t[a]),l=u(new Float32Array(i),n);c(l,s,[r,0,0,0,r,0,0,0,1]),t[a]=l}return r}return 1}function s(t,e){var r=t.glplot.gl,i=l({gl:r}),o=new n(t,i,e.uid);return o.update(e),t.glplot.add(i),o}var l=t("gl-surface3d"),u=t("ndarray"),c=t("ndarray-homography"),h=t("ndarray-fill"),f=t("ndarray-ops"),d=t("tinycolor2"),p=t("../../lib/str2rgbarray"),v=128,m=n.prototype;m.handlePick=function(t){if(t.object===this.surface){var e=[Math.min(0|Math.round(t.data.index[0]/this.dataScale-1),this.data.z[0].length-1),Math.min(0|Math.round(t.data.index[1]/this.dataScale-1),this.data.z.length-1)],r=[0,0,0];Array.isArray(this.data.x[0])?r[0]=this.data.x[e[1]][e[0]]:r[0]=this.data.x[e[0]],Array.isArray(this.data.y[0])?r[1]=this.data.y[e[1]][e[0]]:r[1]=this.data.y[e[1]],r[2]=this.data.z[e[1]][e[0]],t.traceCoordinate=r;var n=this.scene.fullSceneLayout;t.dataCoordinate=[n.xaxis.d2l(r[0])*this.scene.dataScale[0],n.yaxis.d2l(r[1])*this.scene.dataScale[1],n.zaxis.d2l(r[2])*this.scene.dataScale[2]];var i=this.data.text;return i&&i[e[1]]&&void 0!==i[e[1]][e[0]]?t.textLabel=i[e[1]][e[0]]:t.textLabel="",t.data.dataCoordinate=t.dataCoordinate.slice(),this.surface.highlight(t.data),this.scene.glplot.spikes.position=t.dataCoordinate,!0}},m.setContourLevels=function(){for(var t=[[],[],[]],e=!1,r=0;3>r;++r)this.showContour[r]&&(e=!0,t[r]=this.scene.contourLevels[r]);e&&this.surface.update({levels:t})},m.update=function(t){var e,r=this.scene,n=r.fullSceneLayout,o=this.surface,s=t.opacity,l=i(t.colorscale,s),c=t.z,f=t.x,d=t.y,v=n.xaxis,m=n.yaxis,g=n.zaxis,y=r.dataScale,b=c[0].length,x=c.length,_=[u(new Float32Array(b*x),[b,x]),u(new Float32Array(b*x),[b,x]),u(new Float32Array(b*x),[b,x])],w=_[0],M=_[1],k=r.contourLevels;this.data=t,h(_[2],function(t,e){return g.d2l(c[e][t])*y[2]}),Array.isArray(f[0])?h(w,function(t,e){return v.d2l(f[e][t])*y[0]}):h(w,function(t){return v.d2l(f[t])*y[0]}),Array.isArray(d[0])?h(M,function(t,e){return m.d2l(d[e][t])*y[1]}):h(M,function(t,e){return m.d2l(d[e])*y[1]});var A={colormap:l,levels:[[],[],[]],showContour:[!0,!0,!0],showSurface:!t.hidesurface,contourProject:[[!1,!1,!1],[!1,!1,!1],[!1,!1,!1]],contourWidth:[1,1,1],contourColor:[[1,1,1,1],[1,1,1,1],[1,1,1,1]],contourTint:[1,1,1],dynamicColor:[[1,1,1,1],[1,1,1,1],[1,1,1,1]],dynamicWidth:[1,1,1],dynamicTint:[1,1,1],opacity:1};if(A.intensityBounds=[t.cmin,t.cmax],t.surfacecolor){var T=u(new Float32Array(b*x),[b,x]);h(T,function(e,r){return t.surfacecolor[r][e]}),_.push(T)}else A.intensityBounds[0]*=y[2],A.intensityBounds[1]*=y[2];this.dataScale=a(_),t.surfacecolor&&(A.intensity=_.pop()),"opacity"in t&&t.opacity<1&&(A.opacity=.25*t.opacity);var E=[!0,!0,!0],S=["x","y","z"];for(e=0;3>e;++e){var L=t.contours[S[e]];E[e]=L.highlight,A.showContour[e]=L.show||L.highlight,A.showContour[e]&&(A.contourProject[e]=[L.project.x,L.project.y,L.project.z],L.show?(this.showContour[e]=!0,A.levels[e]=k[e],o.highlightColor[e]=A.contourColor[e]=p(L.color),L.usecolormap?o.highlightTint[e]=A.contourTint[e]=0:o.highlightTint[e]=A.contourTint[e]=1,A.contourWidth[e]=L.width):this.showContour[e]=!1,L.highlight&&(A.dynamicColor[e]=p(L.highlightcolor),A.dynamicWidth[e]=L.highlightwidth))}A.coords=_,o.update(A),o.visible=t.visible,o.enableDynamic=E,o.snapToData=!0,"lighting"in t&&(o.ambientLight=t.lighting.ambient,o.diffuseLight=t.lighting.diffuse,o.specularLight=t.lighting.specular,o.roughness=t.lighting.roughness,o.fresnel=t.lighting.fresnel),"lightposition"in t&&(o.lightPosition=[t.lightposition.x,t.lightposition.y,t.lightposition.z]),s&&1>s&&(o.supportsTransparency=!0)},m.dispose=function(){this.scene.glplot.remove(this.surface),this.surface.dispose()},e.exports=s},{"../../lib/str2rgbarray":580,"gl-surface3d":227,ndarray:433,"ndarray-fill":426,"ndarray-homography":431,"ndarray-ops":432,tinycolor2:454}],806:[function(t,e,r){"use strict";function n(t,e,r){e in t&&!(r in t)&&(t[r]=t[e])}var i=t("../../lib"),o=t("../../components/colorscale/defaults"),a=t("./attributes");e.exports=function(t,e,r,s){function l(r,n){return i.coerce(t,e,a,r,n)}var u,c,h=l("z");if(!h)return void(e.visible=!1);var f=h[0].length,d=h.length;if(l("x"),l("y"),!Array.isArray(e.x))for(e.x=[],u=0;f>u;++u)e.x[u]=u;if(l("text"),!Array.isArray(e.y))for(e.y=[],u=0;d>u;++u)e.y[u]=u;["lighting.ambient","lighting.diffuse","lighting.specular","lighting.roughness","lighting.fresnel","lightposition.x","lightposition.y","lightposition.z","hidesurface","opacity"].forEach(function(t){l(t)});var p=l("surfacecolor");l("colorscale");var v=["x","y","z"];for(u=0;3>u;++u){var m="contours."+v[u],g=l(m+".show"),y=l(m+".highlight");if(g||y)for(c=0;3>c;++c)l(m+".project."+v[c]);g&&(l(m+".color"),l(m+".width"),l(m+".usecolormap")),y&&(l(m+".highlightcolor"),l(m+".highlightwidth"))}p||(n(t,"zmin","cmin"),n(t,"zmax","cmax"),n(t,"zauto","cauto")),o(t,e,s,l,{prefix:"",cLetter:"c"})}},{"../../components/colorscale/defaults":493,"../../lib":568,"./attributes":802}],807:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("./colorbar"),n.calc=t("./calc"),n.plot=t("./convert"),n.moduleType="trace",n.name="surface",n.basePlotModule=t("../../plots/gl3d"),n.categories=["gl3d","noOpacity"],n.meta={},e.exports=n},{"../../plots/gl3d":628,"./attributes":802,"./calc":803,"./colorbar":804,"./convert":805,"./defaults":806}]},{},[12])(12)});
 });require(['plotly'], function(Plotly) {window.Plotly = Plotly;});}</script></div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 Imported data from ../tests/sample_input_data.xlsx
 Parsed 2884 timeCourseObjects in 0.054s
@@ -506,22 +557,22 @@ well, tube, flask, etc.)</li>
 </ul>
 <p>We can also query the expt for these 7 replicates, and drill down
 further for the other data</p>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [9]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">expt</span><span class="o">.</span><span class="n">replicate_experiment_dict</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[9]:
 </pre></div>
 </div>
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
 <span></span>{&#39;strain1plasmid1&#39;: &lt;impact.ReplicateTrial.ReplicateTrial at 0x288f0cbda90&gt;,
  &#39;strain2plasmid1&#39;: &lt;impact.ReplicateTrial.ReplicateTrial at 0x288f0cb6b38&gt;,
  &#39;strain2plasmid2&#39;: &lt;impact.ReplicateTrial.ReplicateTrial at 0x288f0cc96d8&gt;,
@@ -532,12 +583,12 @@ further for the other data</p>
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [ ]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># expt.summary()</span>
 
 <span class="c1"># replicates:</span>
@@ -555,98 +606,88 @@ further for the other data</p>
 </pre></div>
 </div>
 </div>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [4]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">expt</span><span class="o">.</span><span class="n">replicate_experiment_dict</span><span class="p">[</span><span class="s1">&#39;strain2plasmid1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">avg</span><span class="o">.</span><span class="n">analyte_dict</span><span class="p">[</span><span class="s1">&#39;glucose&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data_vector</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[4]:
 </pre></div>
 </div>
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
 <span></span>array([ 30.7678267 ,  29.83576063,  30.85904873,  25.89099262,
         12.234536  ,   2.37147057,  31.41476264,  22.81685706,
         14.63098061,   9.12123527,   4.60721568,   1.27879918])
 </pre></div>
 </div>
 </div>
-<p>Let&#8217;s save all this data to the database. This will automatically create
+<p>Let’s save all this data to the database. This will automatically create
 a local sqlite3 database where data will be stored and can be queried.</p>
-<div class="nbinput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [7]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">session</span> <span class="o">=</span> <span class="n">impt</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">expt</span><span class="o">.</span><span class="n">replicate_experiment_dict</span><span class="p">[</span><span class="s1">&#39;strain2plasmid1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">avg</span><span class="o">.</span><span class="n">analyte_dict</span><span class="p">[</span><span class="s1">&#39;glucose&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [8]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">session</span><span class="o">.</span><span class="n">new</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[8]:
 </pre></div>
 </div>
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
 <span></span>IdentitySet([&lt;impact.AnalyteData.TimeCourseShell object at 0x00000288F1DB7240&gt;, None, &lt;impact.TrialIdentifier.StrainId object at 0x00000288F0C1B550&gt;])
 </pre></div>
 </div>
 </div>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [14]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">impt</span><span class="o">.</span><span class="n">TrialIdentifier</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[14]:
 </pre></div>
 </div>
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
 <span></span>[&lt;impact.TrialIdentifier.TrialIdentifier at 0x288f2093908&gt;]
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [15]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [ ]:
-</pre></div>
-</div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span>
 </pre></div>
 </div>
 </div>
@@ -667,7 +708,7 @@ a local sqlite3 database where data will be stored and can be queried.</p>
     </p>
     <p>
         &copy; Copyright 2016, Naveen Venayak.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.<br/>
     </p>
   </div>
 </footer>

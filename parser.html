@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Adding custom functionality &#8212; impact 0.8.0 documentation</title>
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/simplex/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="impact package" href="impact.html" />
+    <link rel="prev" title="Stages" href="2_features_1.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          impact</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.8</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="/">Home</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">impact <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Importing-data">Importing data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Querying-and-filtering-for-data">Querying and filtering for data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#Exploring-features">Exploring features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core_structure.html">Core structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal notranslate"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal notranslate"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal notranslate"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal notranslate"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="1_features_0.html#Rates">Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1_features_0.html#Specific-Productivity">Specific Productivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1_features_0.html#Metabolic-Model-Integration">Metabolic Model Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1_features_0.html#dFBA-Batch-Integration">dFBA Batch Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1_features_0.html#Carbon-Balance">Carbon Balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1_features_0.html#Flux-mapping-with-escher">Flux mapping with escher</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Adding custom functionality</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Writing-a-new-parser">Writing a new parser</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="impact.html#module-impact">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">This page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Adding custom functionality</a><ul>
+<li><a class="reference internal" href="#Writing-a-new-parser">Writing a new parser</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="2_features_1.html" title="Previous Chapter: Stages"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Stages</span>
+    </a>
+  </li>
+  <li>
+    <a href="impact.html" title="Next Chapter: impact package"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">impact package &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/parser.ipynb.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Adding custom functionality</a><ul>
+<li><a class="reference internal" href="#Writing-a-new-parser">Writing a new parser</a></li>
+</ul>
+</li>
+</ul>
+
+  <li>
+    <a href="2_features_1.html" title="Previous Chapter: Stages"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Stages</span>
+    </a>
+  </li>
+  <li>
+    <a href="impact.html" title="Next Chapter: impact package"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">impact package &raquo;</span>
+    </a>
+  </li>
+<div id="sourcelink">
+  <a href="_sources/parser.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+<form action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
+div.nboutput,
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput,
+div.nboutput {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput div.prompt pre {
+    color: #303F9F;
+}
+
+/* output prompt */
+div.nboutput div.prompt pre {
+    color: #D84315;
+}
+
+/* all prompts */
+div.nbinput div.prompt,
+div.nboutput div.prompt {
+    min-width: 9ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput div.input_area,
+div.nboutput div.output_area {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput div.input_area {
+    border: 1px solid #cfcfcf;
+    border-radius: 2px;
+    background: #f7f7f7;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.pngmath center alignment in output cells */
+div.nboutput div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+</style>
+<div class="section" id="Adding-custom-functionality">
+<h1>Adding custom functionality<a class="headerlink" href="#Adding-custom-functionality" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Writing-a-new-parser">
+<h2>Writing a new parser<a class="headerlink" href="#Writing-a-new-parser" title="Permalink to this headline">¶</a></h2>
+<p>Here we will go through the process of writing a parser that parses data
+from an arbitrary format, in this case the format is provided in the
+file <code class="docutils literal notranslate"><span class="pre">new_parser_data.xlsx</span></code> and consists of one sheet with data
+grouped by time point, and another sheet with the identifiers</p>
+<p>Generally, it makes sense to start with one of the existing parsers as a
+guide. In this case, the <code class="docutils literal notranslate"><span class="pre">spectromax_OD</span></code> parser would be most
+relevant. The sample data is available in
+<code class="docutils literal notranslate"><span class="pre">tests/test_data/sample_parser_docs_data.xlsx</span></code></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">impact.parsers</span> <span class="kn">import</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">parse_raw_identifier</span><span class="p">,</span> <span class="n">parse_time_point_list</span>
+<span class="kn">from</span> <span class="nn">impact</span> <span class="kn">import</span> <span class="n">TimePoint</span>
+
+<span class="k">def</span> <span class="nf">new_parser</span><span class="p">(</span><span class="n">experiment</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">id_type</span><span class="o">=</span><span class="s1">&#39;traverse&#39;</span><span class="p">):</span>
+    <span class="c1"># Define the layout of our data</span>
+    <span class="n">first_row_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">plate_size</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">spacing</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">time_row_col</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">data_row_col</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Define the type of data this parser accepts</span>
+    <span class="n">analyte_name</span> <span class="o">=</span> <span class="s1">&#39;OD600&#39;</span>
+    <span class="n">analyte_type</span> <span class="o">=</span> <span class="s1">&#39;biomass&#39;</span>
+
+    <span class="c1"># In this case, we can first prepare the data by extracting the relevant information from each sheet</span>
+    <span class="n">unparsed_identifiers</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;identifiers&#39;</span><span class="p">]</span>
+    <span class="n">raw_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+
+    <span class="c1"># The data starts at (1,1) and is in a 8x12 format</span>
+    <span class="n">timepoint_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># We first parse the identifiers, as these can be recycled (the only thing that is changing is the time)</span>
+    <span class="n">identifiers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unparsed_identifiers</span><span class="p">):</span>
+        <span class="n">parsed_row</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+            <span class="c1"># Here we can implement logic to exclude any data which is not present, for example when a plate is not full</span>
+            <span class="c1"># In this case, any cell which is empty, 0, or None will be excluded</span>
+            <span class="k">if</span> <span class="n">unparsed_identifiers</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">]:</span>
+                <span class="n">temp_trial_identifier</span> <span class="o">=</span> <span class="n">parse_raw_identifier</span><span class="p">(</span><span class="n">unparsed_identifiers</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">id_type</span><span class="p">)</span>
+                <span class="n">parsed_row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_trial_identifier</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parsed_row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+        <span class="n">identifiers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parsed_row</span><span class="p">)</span>
+
+
+    <span class="k">for</span> <span class="n">start_row_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first_row_index</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">),</span> <span class="n">plate_size</span><span class="o">+</span><span class="n">spacing</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">raw_data</span><span class="p">[</span><span class="n">start_row_index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;~End&#39;</span><span class="p">:</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="n">start_row_index</span><span class="o">+</span><span class="n">time_row_col</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">time_row_col</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+            <span class="c1"># Define the data for a single plate, single timepoint</span>
+            <span class="n">plate_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">14</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">raw_data</span><span class="p">[</span><span class="n">start_row_index</span><span class="p">:</span><span class="n">start_row_index</span><span class="o">+</span><span class="n">plate_size</span><span class="p">]]</span>
+
+            <span class="c1"># Load the data point by point</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plate_data</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+                    <span class="c1"># Skip wells where no identifier is listed or no data present</span>
+                    <span class="k">if</span> <span class="n">identifiers</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">data</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">]:</span>
+                        <span class="n">ti</span> <span class="o">=</span> <span class="n">identifiers</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                        <span class="n">ti</span><span class="o">.</span><span class="n">analyte_type</span><span class="p">,</span> <span class="n">ti</span><span class="o">.</span><span class="n">analyte_name</span> <span class="o">=</span> <span class="n">analyte_type</span><span class="p">,</span> <span class="n">analyte_name</span>
+                        <span class="n">time_point</span> <span class="o">=</span> <span class="n">TimePoint</span><span class="p">(</span><span class="n">ti</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                        <span class="n">timepoint_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time_point</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="c1"># Finally we parse all of the time points (into their logical strucutre based on identifiers)</span>
+    <span class="c1"># And add them to the experiment</span>
+    <span class="n">replicate_trial_list</span> <span class="o">=</span> <span class="n">parse_time_point_list</span><span class="p">(</span><span class="n">timepoint_list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="n">replicate_trial_list</span><span class="p">:</span>
+        <span class="n">experiment</span><span class="o">.</span><span class="n">add_replicate_trial</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="stderr output_area docutils container">
+<div class="highlight"><pre>
+C:\Users\Naveen\Anaconda3\lib\site-packages\IPython\html.py:14: ShimWarning: The `IPython.html` package has been deprecated since IPython 4.0. You should import from `notebook` instead. `IPython.html.widgets` has moved to `ipywidgets`.
+  &#34;`IPython.html.widgets` has moved to `ipywidgets`.&#34;, ShimWarning)
+</pre></div></div>
+</div>
+<p>With the new parser defined, we can register it to the Parser class, and
+directly parse our data. The parser will return an <code class="docutils literal notranslate"><span class="pre">Experiment</span></code>
+instance, containing all the data.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">Parser</span><span class="o">.</span><span class="n">register_parser</span><span class="p">(</span><span class="s1">&#39;my_new_format&#39;</span><span class="p">,</span><span class="n">new_parser</span><span class="p">)</span>
+<span class="n">expt</span> <span class="o">=</span> <span class="n">Parser</span><span class="o">.</span><span class="n">parse_raw_data</span><span class="p">(</span><span class="s1">&#39;my_new_format&#39;</span><span class="p">,</span><span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;../tests/test_data/sample_parser_docs_data.xlsx&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Importing data from ../tests/test_data/sample_parser_docs_data.xlsx...0.0s
+Parsing time point list...Parsed 246 time points in 0.2s
+Parsing analyte list...Parsed 82 analytes in 482.0ms
+Parsing single trial list...Parsed 32 replicates in 0.1s
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">print</span><span class="p">(</span><span class="n">expt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+strain             media                 environment    analytes
+-----------------  --------------------  -------------  ----------
+3KO-D1 + pKDL071   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+3KO-D1 + pKDL071   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+3KO-D28 + pKDL071  Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+3KO-D28 + pKDL071  Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+3KO-D59 + pKDL071  Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+3KO-D59 + pKDL071  Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT1 + pIMPT001   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT1 + pIMPT001   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT1 + pIMPT002   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT1 + pIMPT002   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT1 + pIMPT003   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT1 + pIMPT003   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT1 + pIMPT004   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT1 + pIMPT004   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT2 + pIMPT001   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT2 + pIMPT001   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT2 + pIMPT002   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT2 + pIMPT002   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT2 + pIMPT003   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT2 + pIMPT003   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT2 + pIMPT004   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT2 + pIMPT004   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT3 + pIMPT001   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT3 + pIMPT001   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT3 + pIMPT002   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT3 + pIMPT002   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT3 + pIMPT003   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT3 + pIMPT003   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+IMPT3 + pIMPT004   Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+IMPT3 + pIMPT004   Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+dlacI + pKDL071    Base + 1.0 a.u. aTc                  [&#39;OD600&#39;]
+dlacI + pKDL071    Base + 2.0 a.u. IPTG                 [&#39;OD600&#39;]
+</pre></div></div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2016, Naveen Venayak.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

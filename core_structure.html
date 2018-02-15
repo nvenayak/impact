@@ -1,36 +1,26 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Core structure &mdash; impact 0.8.0 documentation</title>
-    
+    <title>Core structure &#8212; impact 0.8.0 documentation</title>
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootswatch-3.3.6/simplex/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.8.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
-    <link rel="top" title="impact 0.8.0 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Analyzing Features" href="1_features_0.html" />
     <link rel="prev" title="Quickstart" href="quickstart.html" />
 <meta charset='utf-8'>
@@ -38,8 +28,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-default navbar-fixed-top">
     <div class="container">
@@ -71,7 +60,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#documentation">Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
@@ -81,13 +71,13 @@
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#Exploring-features">Exploring features</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Core structure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Core structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#TrialIdentifier-class"><code class="docutils literal notranslate"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AnalyteData"><code class="docutils literal notranslate"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#SingleTrial"><code class="docutils literal notranslate"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ReplicateTrial"><code class="docutils literal notranslate"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Experiment"><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
@@ -100,6 +90,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parser.html">Adding custom functionality</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parser.html#Writing-a-new-parser">Writing a new parser</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
@@ -120,15 +114,15 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Core structure</a><ul>
-<li><a class="reference internal" href="#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
-<li><a class="reference internal" href="#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a><ul>
-<li><a class="reference internal" href="#TimePoint-and-TimeCourse"><code class="docutils literal"><span class="pre">TimePoint</span></code> and <code class="docutils literal"><span class="pre">TimeCourse</span></code></a></li>
+<li><a class="reference internal" href="#TrialIdentifier-class"><code class="docutils literal notranslate"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li><a class="reference internal" href="#AnalyteData"><code class="docutils literal notranslate"><span class="pre">AnalyteData</span></code></a><ul>
+<li><a class="reference internal" href="#TimePoint-and-TimeCourse"><code class="docutils literal notranslate"><span class="pre">TimePoint</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeCourse</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
-<li><a class="reference internal" href="#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
-<li><a class="reference internal" href="#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
-<li><a class="reference internal" href="#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
+<li><a class="reference internal" href="#SingleTrial"><code class="docutils literal notranslate"><span class="pre">SingleTrial</span></code></a></li>
+<li><a class="reference internal" href="#ReplicateTrial"><code class="docutils literal notranslate"><span class="pre">ReplicateTrial</span></code></a></li>
+<li><a class="reference internal" href="#Experiment"><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a></li>
+<li><a class="reference internal" href="#Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -154,7 +148,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="_sources/core_structure.txt"
+  <a href="_sources/core_structure.ipynb.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -176,7 +170,44 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Core structure</a><ul>
+<li><a class="reference internal" href="#TrialIdentifier-class"><code class="docutils literal notranslate"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li><a class="reference internal" href="#AnalyteData"><code class="docutils literal notranslate"><span class="pre">AnalyteData</span></code></a><ul>
+<li><a class="reference internal" href="#TimePoint-and-TimeCourse"><code class="docutils literal notranslate"><span class="pre">TimePoint</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeCourse</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#SingleTrial"><code class="docutils literal notranslate"><span class="pre">SingleTrial</span></code></a></li>
+<li><a class="reference internal" href="#ReplicateTrial"><code class="docutils literal notranslate"><span class="pre">ReplicateTrial</span></code></a></li>
+<li><a class="reference internal" href="#Experiment"><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a></li>
+<li><a class="reference internal" href="#Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <li>
+    <a href="quickstart.html" title="Previous Chapter: Quickstart"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Quickstart</span>
+    </a>
+  </li>
+  <li>
+    <a href="1_features_0.html" title="Next Chapter: Analyzing Features"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Analyzing Features &raquo;</span>
+    </a>
+  </li>
+<div id="sourcelink">
+  <a href="_sources/core_structure.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+<form action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="col-md-9 content">
       
   
 <style>
@@ -184,13 +215,15 @@
 
 /* remove conflicting styling from Sphinx themes */
 div.nbinput,
-div.nbinput > div,
-div.nbinput div[class^=highlight],
-div.nbinput div[class^=highlight] pre,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
 div.nboutput,
-div.nboutput > div,
-div.nboutput div[class^=highlight],
-div.nboutput div[class^=highlight] pre {
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
     background: none;
     border: none;
     padding: 0 0;
@@ -199,7 +232,7 @@ div.nboutput div[class^=highlight] pre {
 }
 
 /* avoid gaps between output lines */
-div.nboutput div[class^=highlight] pre {
+div.nboutput div[class*=highlight] pre {
     line-height: normal;
 }
 
@@ -210,6 +243,13 @@ div.nboutput {
     display: flex;
     align-items: flex-start;
     margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
 }
 
 /* input container */
@@ -223,38 +263,58 @@ div.nblast {
 }
 
 /* input prompt */
-div.nbinput > :first-child pre {
+div.nbinput div.prompt pre {
     color: #303F9F;
 }
 
 /* output prompt */
-div.nboutput > :first-child pre {
+div.nboutput div.prompt pre {
     color: #D84315;
 }
 
 /* all prompts */
-div.nbinput > :first-child[class^=highlight],
-div.nboutput > :first-child[class^=highlight],
-div.nboutput > :first-child {
+div.nbinput div.prompt,
+div.nboutput div.prompt {
     min-width: 9ex;
     padding-top: 0.4em;
     padding-right: 0.4em;
     text-align: right;
     flex: 0;
 }
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
 
 /* input/output area */
-div.nbinput > :nth-child(2)[class^=highlight],
-div.nboutput > :nth-child(2),
-div.nboutput > :nth-child(2)[class^=highlight] {
+div.nbinput div.input_area,
+div.nboutput div.output_area {
     padding: 0.4em;
     -webkit-flex: 1;
     flex: 1;
     overflow: auto;
 }
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
 
 /* input area */
-div.nbinput > :nth-child(2)[class^=highlight] {
+div.nbinput div.input_area {
     border: 1px solid #cfcfcf;
     border-radius: 2px;
     background: #f7f7f7;
@@ -271,7 +331,7 @@ div.nboutput div.math p {
 }
 
 /* standard error */
-div.nboutput  > :nth-child(2).stderr {
+div.nboutput div.output_area.stderr {
     background: #fdd;
 }
 
@@ -309,7 +369,11 @@ div.nboutput  > :nth-child(2).stderr {
 .ansi-white-intense-fg { color: #A1A6B2; }
 .ansi-white-intense-bg { background-color: #A1A6B2; }
 
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
 .ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
 </style>
 <div class="section" id="Core-structure">
 <h1>Core structure<a class="headerlink" href="#Core-structure" title="Permalink to this headline">¶</a></h1>
@@ -318,6 +382,49 @@ physiology data by parsing it into a object-oriented and database-driven
 hierarchy. The data schema is based on the workflow of designing
 experiments and the associated data analysis process.</p>
 <p>This is an overview of the models:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Model</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TrialIdentifier</td>
+<td>Describes a trial (time, analyte, strain, media, etc.)</td>
+</tr>
+<tr class="row-odd"><td>AnalyteData</td>
+<td>Time, data points and vectors for quantified data (g/L
+product, OD, etc.)</td>
+</tr>
+<tr class="row-even"><td>SingleTrial</td>
+<td>All analytes for a given unit (e.g. a tube, well on
+plate, bioreactor, etc.)</td>
+</tr>
+<tr class="row-odd"><td>ReplicateTrial</td>
+<td>Contains a set of <code class="docutils literal notranslate"><span class="pre">SingleTrial</span></code>s with replicates
+grouped to calculate statistics</td>
+</tr>
+<tr class="row-even"><td>Experiment</td>
+<td>All of the trials performed on a given date</td>
+</tr>
+<tr class="row-odd"><td>Project</td>
+<td>Groups of experiments with overall goals</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="TrialIdentifier-class">
+<h2><code class="docutils literal notranslate"><span class="pre">TrialIdentifier</span></code> class<a class="headerlink" href="#TrialIdentifier-class" title="Permalink to this headline">¶</a></h2>
+<p>Before any data importing, a description should be generated. Data is
+described based on the strain (organism, plasmids, etc.), the media
+(salts, carbon sources, nitrogen sources, etc.) and the environment
+(temperature, labware, shaking speed, etc.) A trial identifier is
+everything required to uniquely identify a point of data.</p>
+<p>The three fundamental units of a trial identifier are the <code class="docutils literal notranslate"><span class="pre">Strain</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Media</span></code> and <code class="docutils literal notranslate"><span class="pre">Environment</span></code> classes.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="20%" />
@@ -329,124 +436,28 @@ experiments and the associated data analysis process.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">TrialIdenti</span>
-<span class="pre">fier</span></code></td>
-<td>Describes a trial (time, analyte, strain, media, etc.)</td>
-</tr>
-<tr class="row-odd"><td><a href="#id1"><span class="problematic" id="id2">``</span></a>AnalyteData
-``</td>
-<td>Time, data points and vectors for quantified data (g/L
-product, OD, etc.)</td>
-</tr>
-<tr class="row-even"><td><a href="#id3"><span class="problematic" id="id4">``</span></a>SingleTrial
-``</td>
-<td>All analytes for a given unit (e.g. a tube, well on plate,
-bioreactor, etc.)</td>
-</tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">ReplicateTr</span>
-<span class="pre">ial</span></code></td>
-<td>Contains a set of <code class="docutils literal"><span class="pre">SingleTrial</span></code>s with replicates
-grouped to calculate statistics</td>
-</tr>
-<tr class="row-even"><td><a href="#id5"><span class="problematic" id="id6">``</span></a>Experiment`
-`</td>
-<td>All of the trials performed on a given date</td>
-</tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">Project</span></code></td>
-<td>Groups of experiments with overall goals</td>
-</tr>
-</tbody>
-</table>
-<div class="section" id="TrialIdentifier-class">
-<h2><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class<a class="headerlink" href="#TrialIdentifier-class" title="Permalink to this headline">¶</a></h2>
-<p>Before any data importing, a description should be generated. Data is
-described based on the strain (organism, plasmids, etc.), the media
-(salts, carbon sources, nitrogen sources, etc.) and the environment
-(temperature, labware, shaking speed, etc.) A trial identifier is
-everything required to uniquely identify a point of data.</p>
-<p>The three fundamental units of a trial identifier are the <code class="docutils literal"><span class="pre">Strain</span></code>,
-<code class="docutils literal"><span class="pre">Media</span></code> and <code class="docutils literal"><span class="pre">Environment</span></code> classes.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="50%" />
-<col width="50%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Model</th>
-<th class="head">Funct
-ion</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>Strai
-n</td>
-<td>Descr
-ibes
-the
-organ
-ism
-being
-chara
-cteri
-zed
-(e.g.
-strai
-n,
-knock
-outs,
-plasm
-ids,
-etc.)</td>
+<tr class="row-even"><td>Strain</td>
+<td>Describes the organism being characterized (e.g. strain,
+knockouts, plasmids, etc.)</td>
 </tr>
 <tr class="row-odd"><td>Media</td>
-<td>Descr
-ibed
-the
-mediu
-m
-used
-to
-chara
-cteri
-ze
-the
-organ
-ism
-(e.g.
-M9 +
-0.02%
-glc_
-D)</td>
+<td>Described the medium used to characterize the organism
+(e.g. M9 + 0.02% glc_D)</td>
 </tr>
-<tr class="row-even"><td>Envir
-onmen
-t</td>
-<td>The
-condi
-tions
-and
-labwa
-re
-used
-(e.g.
-96-we
-ll
-plate
-,
-250RP
-M,
-37C)</td>
+<tr class="row-even"><td>Environment</td>
+<td>The conditions and labware used (e.g. 96-well plate,
+250RPM, 37C)</td>
 </tr>
 </tbody>
 </table>
 <p>We will build a trial identifier with all its components and use it to
 describe some data.s</p>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [12]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">impact</span> <span class="kn">as</span> <span class="nn">impt</span>
 <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="nb">reload</span>
 <span class="nb">reload</span><span class="p">(</span><span class="n">impt</span><span class="p">)</span>
@@ -466,10 +477,10 @@ describe some data.s</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 LMSE001+pTrc99a
 20g/L IPTG
@@ -477,34 +488,34 @@ LMSE001+pTrc99a
 </pre></div></div>
 </div>
 <p>With these fundamental units, we can construct a trial identifier.</p>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [13]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">ti</span> <span class="o">=</span> <span class="n">impt</span><span class="o">.</span><span class="n">TimeCourseIdentifier</span><span class="p">(</span><span class="n">strain</span><span class="o">=</span><span class="n">strain</span><span class="p">,</span><span class="n">media</span><span class="o">=</span><span class="n">media</span><span class="p">,</span><span class="n">environment</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">ti</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 strain: LMSE001+pTrc99a,        media: 20g/L IPTG,      env: 96MTP 250RPM 37C,  analyte: None,  rep: -1
 </pre></div></div>
 </div>
 <p>We see the strain, media and environment set and some empty values for
-analyte and replicate. Let&#8217;s fill in the missing values required to
+analyte and replicate. Let’s fill in the missing values required to
 fully describe the analyte.</p>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [14]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">ti</span><span class="o">.</span><span class="n">analyte_name</span> <span class="o">=</span> <span class="s1">&#39;glc__D&#39;</span>
 <span class="n">ti</span><span class="o">.</span><span class="n">analyte_type</span> <span class="o">=</span> <span class="s1">&#39;substrate&#39;</span>
 <span class="n">ti</span><span class="o">.</span><span class="n">replicate_id</span> <span class="o">=</span> <span class="mi">1</span>
@@ -512,10 +523,10 @@ fully describe the analyte.</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 strain: LMSE001+pTrc99a,        media: 20g/L IPTG,      env: 96MTP 250RPM 37C,  analyte: glc__D,        rep: 1
 </pre></div></div>
@@ -524,19 +535,19 @@ strain: LMSE001+pTrc99a,        media: 20g/L IPTG,      env: 96MTP 250RPM 37C,  
 data.</p>
 </div>
 <div class="section" id="AnalyteData">
-<h2><code class="docutils literal"><span class="pre">AnalyteData</span></code><a class="headerlink" href="#AnalyteData" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">AnalyteData</span></code><a class="headerlink" href="#AnalyteData" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="TimePoint-and-TimeCourse">
-<h3><code class="docutils literal"><span class="pre">TimePoint</span></code> and <code class="docutils literal"><span class="pre">TimeCourse</span></code><a class="headerlink" href="#TimePoint-and-TimeCourse" title="Permalink to this headline">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">TimePoint</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeCourse</span></code><a class="headerlink" href="#TimePoint-and-TimeCourse" title="Permalink to this headline">¶</a></h3>
 <p>These time points are rarely used directly, but are included in order to
 flatten data into a relational database. These time points can either be
 created and added individually, or a time vector and data vector can be
 provided and the associated time points will automatically be generated.</p>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [15]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">substrate</span> <span class="o">=</span> <span class="n">impt</span><span class="o">.</span><span class="n">Substrate</span><span class="p">()</span>
 <span class="c1"># Add each time point individually</span>
 <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]):</span>
@@ -549,10 +560,10 @@ provided and the associated time points will automatically be generated.</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 0    0
 1    1
@@ -566,7 +577,7 @@ dtype: int64
 <p>Here we instantiated a substrate object because we are dealing with a
 substrate - this differentiation allows impact to choose the appropriate
 model for the data, as well as calculate features. Any time series data
-can be imported as a <code class="docutils literal"><span class="pre">impt.TimeCourse</span></code>, but additional details can be
+can be imported as a <code class="docutils literal notranslate"><span class="pre">impt.TimeCourse</span></code>, but additional details can be
 extracted if a specific data type is chosen.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -579,26 +590,26 @@ extracted if a specific data type is chosen.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">Substrate</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">Substrate</span></code></td>
 <td>An analyte which is consumed</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">Product</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">Product</span></code></td>
 <td>An analyte which is produced</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">Biomass</span></code></td>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">Biomass</span></code></td>
 <td>A measurement of the biomass concentration</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">Reporter</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">Reporter</span></code></td>
 <td>A reporter, such as fluorescence from gfp or mCherry</td>
 </tr>
 </tbody>
 </table>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [25]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">impact.plotting</span> <span class="kn">as</span> <span class="nn">implot</span>
 
@@ -616,25 +627,25 @@ extracted if a specific data type is chosen.</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div id="7e235684-e6e3-4958-902a-148b22eb9552" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("7e235684-e6e3-4958-902a-148b22eb9552", [{"y": [0.05, 0.05555014705422354, 0.061716376754917215, 0.0685670760877903, 0.0761782231950977, 0.0846342300163428, 0.09402887846457647, 0.10446636052101872, 0.11606243378324244, 0.12894570528260402, 0.14325905780918444, 0.15916123456299414, 0.17682859970612186, 0.19645709434134995, 0.2182644096101492, 0.24249240101094138, 0.26940977071379074, 0.2993150476199145, 0.3325398982165634, 0.36945280494653254], "type": "scatter", "x": [0.0, 1.0526315789473684, 2.1052631578947367, 3.1578947368421053, 4.2105263157894735, 5.263157894736842, 6.315789473684211, 7.368421052631579, 8.421052631578947, 9.473684210526315, 10.526315789473683, 11.578947368421051, 12.631578947368421, 13.68421052631579, 14.736842105263158, 15.789473684210526, 16.842105263157894, 17.894736842105264, 18.94736842105263, 20.0]}], {}, {"linkText": "Export to plot.ly", "showLink": true})});</script></div>
 </div>
 </div>
 </div>
 <div class="section" id="SingleTrial">
-<h2><code class="docutils literal"><span class="pre">SingleTrial</span></code><a class="headerlink" href="#SingleTrial" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">SingleTrial</span></code><a class="headerlink" href="#SingleTrial" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="ReplicateTrial">
-<h2><code class="docutils literal"><span class="pre">ReplicateTrial</span></code><a class="headerlink" href="#ReplicateTrial" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">ReplicateTrial</span></code><a class="headerlink" href="#ReplicateTrial" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="Experiment">
-<h2><code class="docutils literal"><span class="pre">Experiment</span></code><a class="headerlink" href="#Experiment" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">Experiment</span></code><a class="headerlink" href="#Experiment" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="Project">
-<h2><code class="docutils literal"><span class="pre">Project</span></code><a class="headerlink" href="#Project" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">Project</span></code><a class="headerlink" href="#Project" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -651,7 +662,7 @@ extracted if a specific data type is chosen.</p>
     </p>
     <p>
         &copy; Copyright 2016, Naveen Venayak.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.<br/>
     </p>
   </div>
 </footer>

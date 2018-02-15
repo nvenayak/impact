@@ -1,45 +1,34 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Stages &mdash; impact 0.8.0 documentation</title>
-    
+    <title>Stages &#8212; impact 0.8.0 documentation</title>
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootswatch-3.3.6/simplex/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.8.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
-    <link rel="top" title="impact 0.8.0 documentation" href="index.html" />
-    <link rel="next" title="impact package" href="impact.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Adding custom functionality" href="parser.html" />
     <link rel="prev" title="Analyzing Features" href="1_features_0.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-default navbar-fixed-top">
     <div class="container">
@@ -71,7 +60,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#documentation">Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
@@ -82,12 +72,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="core_structure.html">Core structure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal notranslate"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal notranslate"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal notranslate"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal notranslate"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
@@ -99,7 +89,11 @@
 <li class="toctree-l2"><a class="reference internal" href="1_features_0.html#Flux-mapping-with-escher">Flux mapping with escher</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Stages</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Stages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parser.html">Adding custom functionality</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parser.html#Writing-a-new-parser">Writing a new parser</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
@@ -133,7 +127,7 @@
     </a>
   </li>
   <li>
-    <a href="impact.html" title="Next Chapter: impact package"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">impact package &raquo;</span>
+    <a href="parser.html" title="Next Chapter: Adding custom functionality"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Adding custom... &raquo;</span>
     </a>
   </li>
               
@@ -143,7 +137,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="_sources/2_features_1.txt"
+  <a href="_sources/2_features_1.ipynb.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -165,7 +159,33 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Stages</a></li>
+</ul>
+
+  <li>
+    <a href="1_features_0.html" title="Previous Chapter: Analyzing Features"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Analyzing Features</span>
+    </a>
+  </li>
+  <li>
+    <a href="parser.html" title="Next Chapter: Adding custom functionality"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Adding custom... &raquo;</span>
+    </a>
+  </li>
+<div id="sourcelink">
+  <a href="_sources/2_features_1.ipynb.txt"
+     rel="nofollow">Source</a>
+</div>
+<form action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="col-md-9 content">
       
   
 <style>
@@ -173,13 +193,15 @@
 
 /* remove conflicting styling from Sphinx themes */
 div.nbinput,
-div.nbinput > div,
-div.nbinput div[class^=highlight],
-div.nbinput div[class^=highlight] pre,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
 div.nboutput,
-div.nboutput > div,
-div.nboutput div[class^=highlight],
-div.nboutput div[class^=highlight] pre {
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
     background: none;
     border: none;
     padding: 0 0;
@@ -188,7 +210,7 @@ div.nboutput div[class^=highlight] pre {
 }
 
 /* avoid gaps between output lines */
-div.nboutput div[class^=highlight] pre {
+div.nboutput div[class*=highlight] pre {
     line-height: normal;
 }
 
@@ -199,6 +221,13 @@ div.nboutput {
     display: flex;
     align-items: flex-start;
     margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
 }
 
 /* input container */
@@ -212,38 +241,58 @@ div.nblast {
 }
 
 /* input prompt */
-div.nbinput > :first-child pre {
+div.nbinput div.prompt pre {
     color: #303F9F;
 }
 
 /* output prompt */
-div.nboutput > :first-child pre {
+div.nboutput div.prompt pre {
     color: #D84315;
 }
 
 /* all prompts */
-div.nbinput > :first-child[class^=highlight],
-div.nboutput > :first-child[class^=highlight],
-div.nboutput > :first-child {
+div.nbinput div.prompt,
+div.nboutput div.prompt {
     min-width: 9ex;
     padding-top: 0.4em;
     padding-right: 0.4em;
     text-align: right;
     flex: 0;
 }
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
 
 /* input/output area */
-div.nbinput > :nth-child(2)[class^=highlight],
-div.nboutput > :nth-child(2),
-div.nboutput > :nth-child(2)[class^=highlight] {
+div.nbinput div.input_area,
+div.nboutput div.output_area {
     padding: 0.4em;
     -webkit-flex: 1;
     flex: 1;
     overflow: auto;
 }
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
 
 /* input area */
-div.nbinput > :nth-child(2)[class^=highlight] {
+div.nbinput div.input_area {
     border: 1px solid #cfcfcf;
     border-radius: 2px;
     background: #f7f7f7;
@@ -260,7 +309,7 @@ div.nboutput div.math p {
 }
 
 /* standard error */
-div.nboutput  > :nth-child(2).stderr {
+div.nboutput div.output_area.stderr {
     background: #fdd;
 }
 
@@ -298,7 +347,11 @@ div.nboutput  > :nth-child(2).stderr {
 .ansi-white-intense-fg { color: #A1A6B2; }
 .ansi-white-intense-bg { background-color: #A1A6B2; }
 
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
 .ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
 </style>
 <div class="section" id="Stages">
 <h1>Stages<a class="headerlink" href="#Stages" title="Permalink to this headline">¶</a></h1>
@@ -306,14 +359,14 @@ div.nboutput  > :nth-child(2).stderr {
 phases), during which the objective changes. For example, early in the
 fermentation growth may be optimized, while production may be optimized
 later in the fermentation.</p>
-<p>Here, let&#8217;s analyze data with an aerobic growth stage and anaerobic
+<p>Here, let’s analyze data with an aerobic growth stage and anaerobic
 production stage.</p>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [1]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">impact</span>
 <span class="kn">import</span> <span class="nn">cobra</span>
 <span class="kn">import</span> <span class="nn">cobra.test</span>
@@ -357,19 +410,19 @@ production stage.</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="stderr container">
+<div class="stderr output_area docutils container">
 <div class="highlight"><pre>
 C:\Users\Naveen\Anaconda3\lib\site-packages\IPython\html.py:14: ShimWarning: The `IPython.html` package has been deprecated. You should import from `notebook` instead. `IPython.html.widgets` has moved to `ipywidgets`.
   &#34;`IPython.html.widgets` has moved to `ipywidgets`.&#34;, ShimWarning)
 </pre></div></div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <script type='text/javascript'>if(!window.Plotly){define('plotly', function(require, exports, module) {/**
 * plotly.js v1.16.2
 * Copyright 2012-2016, Plotly, Inc.
@@ -430,10 +483,10 @@ t.exit().remove(),t.text(a.text).attr({"class":"slicetext",transform:"","data-bb
 "../scatter/colorbar":753,"./attributes":772,"./calc":773,"./convert":775,"./defaults":776}],778:[function(t,e,r){"use strict";var n=t("../scatter/attributes"),i=t("../../plots/attributes"),o=t("../../components/colorscale/color_attributes"),a=t("../../lib/extend").extendFlat,s=n.marker,l=n.line,u=s.line;e.exports={lon:{valType:"data_array"},lat:{valType:"data_array"},locations:{valType:"data_array"},locationmode:{valType:"enumerated",values:["ISO-3","USA-states","country names"],dflt:"ISO-3"},mode:a({},n.mode,{dflt:"markers"}),text:a({},n.text,{}),line:{color:l.color,width:l.width,dash:l.dash},marker:a({},{symbol:s.symbol,opacity:s.opacity,size:s.size,sizeref:s.sizeref,sizemin:s.sizemin,sizemode:s.sizemode,showscale:s.showscale,line:a({},{width:u.width},o("marker.line"))},o("marker")),textfont:n.textfont,textposition:n.textposition,hoverinfo:a({},i.hoverinfo,{flags:["lon","lat","location","text","name"]}),_nestedModules:{"marker.colorbar":"Colorbar"}}},{"../../components/colorscale/color_attributes":491,"../../lib/extend":563,"../../plots/attributes":590,"../scatter/attributes":750}],779:[function(t,e,r){"use strict";var n=t("../scatter/colorscale_calc");e.exports=function(t,e){var r=[{x:!1,y:!1,trace:e,t:{}}];return n(e),r}},{"../scatter/colorscale_calc":754}],780:[function(t,e,r){"use strict";function n(t,e,r){var n,i,o=0,a=r("locations");return a?(r("locationmode"),o=a.length):(n=r("lon")||[],i=r("lat")||[],o=Math.min(n.length,i.length),o<n.length&&(e.lon=n.slice(0,o)),o<i.length&&(e.lat=i.slice(0,o)),o)}var i=t("../../lib"),o=t("../scatter/subtypes"),a=t("../scatter/marker_defaults"),s=t("../scatter/line_defaults"),l=t("../scatter/text_defaults"),u=t("./attributes");e.exports=function(t,e,r,c){function h(r,n){return i.coerce(t,e,u,r,n)}var f=n(t,e,h);return f?(h("text"),h("mode"),o.hasLines(e)&&s(t,e,r,c,h),o.hasMarkers(e)&&a(t,e,r,c,h),o.hasText(e)&&l(t,e,c,h),void h("hoverinfo",1===c._dataLength?"lon+lat+location+text":void 0)):void(e.visible=!1)}},{"../../lib":568,"../scatter/line_defaults":761,"../scatter/marker_defaults":765,"../scatter/subtypes":769,"../scatter/text_defaults":770,"./attributes":778}],781:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("../scatter/colorbar"),n.calc=t("./calc"),n.plot=t("./plot").plot,n.moduleType="trace",n.name="scattergeo",n.basePlotModule=t("../../plots/geo"),n.categories=["geo","symbols","markerColorscale","showLegend"],n.meta={},e.exports=n},{"../../plots/geo":613,"../scatter/colorbar":753,"./attributes":778,"./calc":779,"./defaults":780,"./plot":782}],782:[function(t,e,r){"use strict";function n(t,e,r){function n(t,n){f(t,e,n,r)}var i=t.marker;if(n(t.text,"tx"),n(t.textposition,"tp"),t.textfont&&(n(t.textfont.size,"ts"),n(t.textfont.color,"tc"),n(t.textfont.family,"tf")),i&&i.line){var o=i.line;n(i.opacity,"mo"),n(i.symbol,"mx"),n(i.color,"mc"),n(i.size,"ms"),n(o.color,"mlc"),n(o.width,"mlw")}}function i(t){for(var e=t.lon.length,r=new Array(e),n=0;e>n;n++)r[n]=[t.lon[n],t.lat[n]];return{type:"LineString",coordinates:r,trace:t}}function o(t,e){function r(e){var r=t.mockAxis;return u.tickText(r,r.c2l(e),"hover").text+"\xb0"}var n=e.hoverinfo;if("none"===n)return function(t){delete t.textLabel};var i="all"===n?m.hoverinfo.flags:n.split("+"),o=-1!==i.indexOf("location")&&Array.isArray(e.locations),a=-1!==i.indexOf("lon"),s=-1!==i.indexOf("lat"),l=-1!==i.indexOf("text");return function(t){var n=[];o?n.push(t.location):a&&s?n.push("("+r(t.lon)+", "+r(t.lat)+")"):a?n.push("lon: "+r(t.lon)):s&&n.push("lat: "+r(t.lat)),l&&n.push(t.tx||e.text),t.textLabel=n.join("<br>")}}function a(t){var e=Array.isArray(t.locations);return function(r,n){return{points:[{data:t._input,fullData:t,curveNumber:t.index,pointNumber:n,lon:r.lon,lat:r.lat,location:e?r.location:null}]}}}var s=t("d3"),l=t("../../plots/cartesian/graph_interact"),u=t("../../plots/cartesian/axes"),c=t("../../lib/topojson_utils").getTopojsonFeatures,h=t("../../lib/geo_location_utils").locationToFeature,f=t("../../lib/array_to_calc_item"),d=t("../../components/color"),p=t("../../components/drawing"),v=t("../scatter/subtypes"),m=t("./attributes"),g=e.exports={};g.calcGeoJSON=function(t,e){var r,i,o,a,s=[],l=Array.isArray(t.locations);l?(a=t.locations,r=a.length,i=c(t,e),o=function(t,e){var r=h(t.locationmode,a[e],i);return void 0!==r?r.properties.ct:void 0}):(r=t.lon.length,o=function(t,e){return[t.lon[e],t.lat[e]]});for(var u=0;r>u;u++){var f=o(t,u);if(f){var d={lon:f[0],lat:f[1],location:l?t.locations[u]:null};n(t,d,u),s.push(d)}}return s.length>0&&(s[0].trace=t),s},g.plot=function(t,e){var r=t.framework.select(".scattergeolayer").selectAll("g.trace.scattergeo").data(e,function(t){return t.uid});r.enter().append("g").attr("class","trace scattergeo"),r.exit().remove(),r.selectAll("*").remove(),r.each(function(t){var e=s.select(this);v.hasLines(t)&&e.selectAll("path.js-line").data([i(t)]).enter().append("path").classed("js-line",!0)}),r.each(function(e){function r(r,n){if(t.showHover){var i=t.projection([r.lon,r.lat]);f(r),l.loneHover({x:i[0],y:i[1],name:m?e.name:void 0,text:r.textLabel,color:r.mc||(e.marker||{}).color},{container:t.hoverContainer.node()}),y=d(r,n),t.graphDiv.emit("plotly_hover",y)}}function n(e,r){t.graphDiv.emit("plotly_click",d(e,r))}var i=s.select(this),u=v.hasMarkers(e),c=v.hasText(e);if(u||c){var h=g.calcGeoJSON(e,t.topojson),f=o(t,e),d=a(e),p=e.hoverinfo,m="all"===p||-1!==p.indexOf("name"),y=null;u&&i.selectAll("path.point").data(h).enter().append("path").classed("point",!0).on("mouseover",r).on("click",n).on("mouseout",function(){l.loneUnhover(t.hoverContainer),t.graphDiv.emit("plotly_unhover",y)}).on("mousedown",function(){l.loneUnhover(t.hoverContainer)}).on("mouseup",r),c&&i.selectAll("g").data(h).enter().append("g").append("text")}}),g.style(t)},g.style=function(t){var e=t.framework.selectAll("g.trace.scattergeo");e.style("opacity",function(t){return t.opacity}),e.each(function(t){s.select(this).selectAll("path.point").call(p.pointStyle,t),s.select(this).selectAll("text").call(p.textPointStyle,t)}),e.selectAll("path.js-line").style("fill","none").each(function(t){var e=t.trace,r=e.line||{};s.select(this).call(d.stroke,r.color).call(p.dashLine,r.dash||"",r.width||0)})}},{"../../components/color":483,"../../components/drawing":506,"../../lib/array_to_calc_item":559,"../../lib/geo_location_utils":565,"../../lib/topojson_utils":582,"../../plots/cartesian/axes":592,"../../plots/cartesian/graph_interact":599,"../scatter/subtypes":769,"./attributes":778,d3:119}],783:[function(t,e,r){"use strict";var n=t("../scatter/attributes"),i=t("../../components/colorscale/color_attributes"),o=t("../../constants/gl2d_dashes"),a=t("../../constants/gl_markers"),s=t("../../lib/extend").extendFlat,l=t("../../lib/extend").extendDeep,u=n.line,c=n.marker,h=c.line;e.exports={x:n.x,x0:n.x0,dx:n.dx,y:n.y,y0:n.y0,dy:n.dy,text:s({},n.text,{}),mode:{valType:"flaglist",flags:["lines","markers"],extras:["none"]},line:{color:u.color,width:u.width,dash:{valType:"enumerated",values:Object.keys(o),dflt:"solid"}},marker:l({},i("marker"),{symbol:{valType:"enumerated",values:Object.keys(a),dflt:"circle",arrayOk:!0},size:c.size,sizeref:c.sizeref,sizemin:c.sizemin,sizemode:c.sizemode,opacity:c.opacity,showscale:c.showscale,line:l({},i("marker.line"),{width:h.width})}),connectgaps:n.connectgaps,fill:s({},n.fill,{values:["none","tozeroy","tozerox"]}),fillcolor:n.fillcolor,_nestedModules:{error_x:"ErrorBars",error_y:"ErrorBars","marker.colorbar":"Colorbar"}}},{"../../components/colorscale/color_attributes":491,"../../constants/gl2d_dashes":552,"../../constants/gl_markers":554,"../../lib/extend":563,"../scatter/attributes":750}],784:[function(t,e,r){"use strict";function n(t,e){this.scene=t,this.uid=e,this.pickXData=[],this.pickYData=[],this.xData=[],this.yData=[],this.textLabels=[],this.color="rgb(0, 0, 0)",this.name="",this.hoverinfo="all",this.connectgaps=!0,this.idToIndex=[],this.bounds=[0,0,0,0],this.hasLines=!1,this.lineOptions={positions:new Float32Array(0),color:[0,0,0,1],width:1,fill:[!1,!1,!1,!1],fillColor:[[0,0,0,1],[0,0,0,1],[0,0,0,1],[0,0,0,1]],dashes:[1]},this.line=d(t.glplot,this.lineOptions),this.line._trace=this,this.hasErrorX=!1,this.errorXOptions={positions:new Float32Array(0),errors:new Float32Array(0),lineWidth:1,capSize:0,color:[0,0,0,1]},this.errorX=p(t.glplot,this.errorXOptions),this.errorX._trace=this,this.hasErrorY=!1,this.errorYOptions={positions:new Float32Array(0),errors:new Float32Array(0),lineWidth:1,capSize:0,color:[0,0,0,1]},this.errorY=p(t.glplot,this.errorYOptions),this.errorY._trace=this,this.hasMarkers=!1,this.scatterOptions={positions:new Float32Array(0),sizes:[],colors:[],glyphs:[],borderWidths:[],borderColors:[],size:12,color:[0,0,0,1],borderSize:1,borderColor:[0,0,0,1]},this.scatter=h(t.glplot,this.scatterOptions),this.scatter._trace=this,this.fancyScatter=f(t.glplot,this.scatterOptions),this.fancyScatter._trace=this}function i(t,e,r){return Array.isArray(e)||(e=[e]),o(t,e,r)}function o(t,e,r){for(var n=new Array(r),i=e[0],o=0;r>o;++o)n[o]=t(o>=e.length?i:e[o]);return n}function a(t,e,r){return l(L(t,r),S(e,r),r)}function s(t,e,r,n){var i=x(t,e,n);return i=Array.isArray(i[0])?i:o(m.identity,[i],n),l(i,S(r,n),n)}function l(t,e,r){for(var n=new Array(4*r),i=0;r>i;++i){for(var o=0;3>o;++o)n[4*i+o]=t[i][o];n[4*i+3]=t[i][3]*e[i]}return n}function u(t,e){if(void 0===Float32Array.slice){for(var r=new Float32Array(e),n=0;e>n;n++)r[n]=t[n];return r}return t.slice(0,e)}function c(t,e){var r=new n(t,e.uid);return r.update(e),r}var h=t("gl-scatter2d"),f=t("gl-scatter2d-fancy"),d=t("gl-line2d"),p=t("gl-error2d"),v=t("fast-isnumeric"),m=t("../../lib"),g=t("../../plots/cartesian/axes"),y=t("../../components/errorbars"),b=t("../../lib/str2rgbarray"),x=t("../../lib/gl_format_color"),_=t("../scatter/subtypes"),w=t("../scatter/make_bubble_size_func"),M=t("../scatter/get_trace_color"),k=t("../../constants/gl_markers"),A=t("../../constants/gl2d_dashes"),T=["xaxis","yaxis"],E=n.prototype;E.handlePick=function(t){var e=t.pointId;return(t.object!==this.line||this.connectgaps)&&(e=this.idToIndex[t.pointId]),{trace:this,dataCoord:t.dataCoord,traceCoord:[this.pickXData[e],this.pickYData[e]],textLabel:Array.isArray(this.textLabels)?this.textLabels[e]:this.textLabels,color:Array.isArray(this.color)?this.color[e]:this.color,name:this.name,hoverinfo:this.hoverinfo}},E.isFancy=function(t){if("linear"!==this.scene.xaxis.type)return!0;if("linear"!==this.scene.yaxis.type)return!0;if(!t.x||!t.y)return!0;if(this.hasMarkers){var e=t.marker||{};if(Array.isArray(e.symbol)||"circle"!==e.symbol||Array.isArray(e.size)||Array.isArray(e.color)||Array.isArray(e.line.width)||Array.isArray(e.line.color)||Array.isArray(e.opacity))return!0}return this.hasLines&&!this.connectgaps?!0:this.hasErrorX?!0:!!this.hasErrorY};var S=i.bind(null,function(t){return+t}),L=i.bind(null,b),z=i.bind(null,function(t){return k[t]||"\u25cf"});E.update=function(t){t.visible!==!0?(this.hasLines=!1,this.hasErrorX=!1,this.hasErrorY=!1,this.hasMarkers=!1):(this.hasLines=_.hasLines(t),this.hasErrorX=t.error_x.visible===!0,this.hasErrorY=t.error_y.visible===!0,this.hasMarkers=_.hasMarkers(t)),this.textLabels=t.text,this.name=t.name,this.hoverinfo=t.hoverinfo,this.bounds=[1/0,1/0,-(1/0),-(1/0)],this.connectgaps=!!t.connectgaps,this.isFancy(t)?this.updateFancy(t):this.updateFast(t),this.color=M(t,{})},E.updateFast=function(t){for(var e,r,n=this.xData=this.pickXData=t.x,i=this.yData=this.pickYData=t.y,o=n.length,a=new Array(o),s=new Float32Array(2*o),l=this.bounds,c=0,h=0,f=0;o>f;++f)e=n[f],r=i[f],v(e)&&v(r)&&(a[c++]=f,s[h++]=e,s[h++]=r,l[0]=Math.min(l[0],e),l[1]=Math.min(l[1],r),l[2]=Math.max(l[2],e),l[3]=Math.max(l[3],r));s=u(s,h),this.idToIndex=a,this.updateLines(t,s),this.updateError("X",t),this.updateError("Y",t);var d;if(this.hasMarkers){this.scatterOptions.positions=s;var p=b(t.marker.color),m=b(t.marker.line.color),g=t.opacity*t.marker.opacity;p[3]*=g,this.scatterOptions.color=p,m[3]*=g,this.scatterOptions.borderColor=m,d=t.marker.size,this.scatterOptions.size=d,this.scatterOptions.borderSize=t.marker.line.width,this.scatter.update(this.scatterOptions)}else this.scatterOptions.positions=new Float32Array(0),this.scatterOptions.glyphs=[],this.scatter.update(this.scatterOptions);this.scatterOptions.positions=new Float32Array(0),this.scatterOptions.glyphs=[],this.fancyScatter.update(this.scatterOptions),this.expandAxesFast(l,d)},E.updateFancy=function(t){var e=this.scene,r=e.xaxis,n=e.yaxis,o=this.bounds,a=this.pickXData=r.makeCalcdata(t,"x").slice(),l=this.pickYData=n.makeCalcdata(t,"y").slice();this.xData=a.slice(),this.yData=l.slice();var c,h,f,d,p,v,m,g,b=y.calcFromTrace(t,e.fullLayout),x=a.length,_=new Array(x),M=new Float32Array(2*x),k=new Float32Array(4*x),A=new Float32Array(4*x),T=0,E=0,L=0,I=0,P="log"===r.type?function(t){return r.d2l(t)}:function(t){return t},C="log"===n.type?function(t){return n.d2l(t)}:function(t){return t};for(c=0;x>c;++c)this.xData[c]=f=P(a[c]),this.yData[c]=d=C(l[c]),isNaN(f)||isNaN(d)||(_[T++]=c,M[E++]=f,M[E++]=d,p=k[L++]=f-b[c].xs||0,v=k[L++]=b[c].xh-f||0,k[L++]=0,k[L++]=0,A[I++]=0,A[I++]=0,m=A[I++]=d-b[c].ys||0,g=A[I++]=b[c].yh-d||0,o[0]=Math.min(o[0],f-p),o[1]=Math.min(o[1],d-m),o[2]=Math.max(o[2],f+v),o[3]=Math.max(o[3],d+g));M=u(M,E),this.idToIndex=_,this.updateLines(t,M),this.updateError("X",t,M,k),this.updateError("Y",t,M,A);var R;if(this.hasMarkers){this.scatterOptions.positions=M,this.scatterOptions.sizes=new Array(T),this.scatterOptions.glyphs=new Array(T),this.scatterOptions.borderWidths=new Array(T),this.scatterOptions.colors=new Array(4*T),this.scatterOptions.borderColors=new Array(4*T);var D,O=w(t),F=t.marker,j=F.opacity,N=t.opacity,B=s(F,j,N,x),U=z(F.symbol,x),V=S(F.line.width,x),q=s(F.line,j,N,x);for(R=i(O,F.size,x),c=0;T>c;++c)for(D=_[c],this.scatterOptions.sizes[c]=4*R[D],this.scatterOptions.glyphs[c]=U[D],this.scatterOptions.borderWidths[c]=.5*V[D],h=0;4>h;++h)this.scatterOptions.colors[4*c+h]=B[4*D+h],this.scatterOptions.borderColors[4*c+h]=q[4*D+h];this.fancyScatter.update(this.scatterOptions)}else this.scatterOptions.positions=new Float32Array(0),this.scatterOptions.glyphs=[],this.fancyScatter.update(this.scatterOptions);this.scatterOptions.positions=new Float32Array(0),this.scatterOptions.glyphs=[],this.scatter.update(this.scatterOptions),this.expandAxesFancy(a,l,R)},E.updateLines=function(t,e){var r;if(this.hasLines){var n=e;if(!t.connectgaps){var i=0,o=this.xData,s=this.yData;for(n=new Float32Array(2*o.length),r=0;r<o.length;++r)n[i++]=o[r],n[i++]=s[r]}this.lineOptions.positions=n;var l=a(t.line.color,t.opacity,1),u=Math.round(.5*this.lineOptions.width),c=(A[t.line.dash]||[1]).slice();for(r=0;r<c.length;++r)c[r]*=u;switch(t.fill){case"tozeroy":this.lineOptions.fill=[!1,!0,!1,!1];break;case"tozerox":this.lineOptions.fill=[!0,!1,!1,!1];break;default:this.lineOptions.fill=[!1,!1,!1,!1]}var h=b(t.fillcolor);this.lineOptions.color=l,this.lineOptions.width=2*t.line.width,this.lineOptions.dashes=c,this.lineOptions.fillColor=[h,h,h,h]}else this.lineOptions.positions=new Float32Array(0);this.line.update(this.lineOptions)},E.updateError=function(t,e,r,n){var i=this["error"+t],o=e["error_"+t.toLowerCase()],s=this["error"+t+"Options"];"x"===t.toLowerCase()&&o.copy_ystyle&&(o=e.error_y),this["hasError"+t]?(s.positions=r,s.errors=n,s.capSize=o.width,s.lineWidth=o.thickness/2,s.color=a(o.color,1,1)):s.positions=new Float32Array(0),i.update(s)},E.expandAxesFast=function(t,e){for(var r,n,i,o=e||10,a=0;2>a;a++)r=this.scene[T[a]],n=r._min,n||(n=[]),n.push({val:t[a],pad:o}),i=r._max,i||(i=[]),i.push({val:t[a+2],pad:o})},E.expandAxesFancy=function(t,e,r){var n=this.scene,i={padded:!0,ppad:r};g.expand(n.xaxis,t,i),g.expand(n.yaxis,e,i)},E.dispose=function(){this.line.dispose(),this.errorX.dispose(),this.errorY.dispose(),this.scatter.dispose(),this.fancyScatter.dispose()},e.exports=c},{"../../components/errorbars":512,"../../constants/gl2d_dashes":552,"../../constants/gl_markers":554,"../../lib":568,"../../lib/gl_format_color":566,"../../lib/str2rgbarray":580,"../../plots/cartesian/axes":592,"../scatter/get_trace_color":758,"../scatter/make_bubble_size_func":764,"../scatter/subtypes":769,"fast-isnumeric":123,"gl-error2d":125,"gl-line2d":131,"gl-scatter2d":196,"gl-scatter2d-fancy":191}],785:[function(t,e,r){"use strict";var n=t("../../lib"),i=t("../scatter/constants"),o=t("../scatter/subtypes"),a=t("../scatter/xy_defaults"),s=t("../scatter/marker_defaults"),l=t("../scatter/line_defaults"),u=t("../scatter/fillcolor_defaults"),c=t("../../components/errorbars/defaults"),h=t("./attributes");e.exports=function(t,e,r,f){function d(r,i){return n.coerce(t,e,h,r,i)}var p=a(t,e,d);return p?(d("text"),d("mode",p<i.PTS_LINESONLY?"lines+markers":"lines"),o.hasLines(e)&&(d("connectgaps"),l(t,e,r,f,d)),o.hasMarkers(e)&&s(t,e,r,f,d),d("fill"),"none"!==e.fill&&u(t,e,r,d),c(t,e,r,{axis:"y"}),void c(t,e,r,{axis:"x",inherit:"y"})):void(e.visible=!1)}},{"../../components/errorbars/defaults":511,"../../lib":568,"../scatter/constants":755,"../scatter/fillcolor_defaults":757,"../scatter/line_defaults":761,"../scatter/marker_defaults":765,"../scatter/subtypes":769,"../scatter/xy_defaults":771,"./attributes":783}],786:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("../scatter/colorbar"),n.calc=t("../scatter3d/calc"),n.plot=t("./convert"),n.moduleType="trace",n.name="scattergl",n.basePlotModule=t("../../plots/gl2d"),n.categories=["gl2d","symbols","errorBarsOK","markerColorscale","showLegend"],n.meta={},e.exports=n},{"../../plots/gl2d":625,"../scatter/colorbar":753,"../scatter3d/calc":773,"./attributes":783,"./convert":784,"./defaults":785}],787:[function(t,e,r){"use strict";var n=t("../scattergeo/attributes"),i=t("../scatter/attributes"),o=t("../../plots/mapbox/layout_attributes"),a=t("../../plots/attributes"),s=t("../../lib/extend").extendFlat,l=n.line,u=n.marker;e.exports={lon:n.lon,lat:n.lat,mode:{valType:"flaglist",flags:["lines","markers","text"],dflt:"markers",extras:["none"]},text:s({},i.text,{}),line:{color:l.color,width:l.width,dash:l.dash},connectgaps:i.connectgaps,marker:{symbol:{valType:"string",dflt:"circle",arrayOk:!0},opacity:s({},u.opacity,{arrayOk:!1}),size:u.size,sizeref:u.sizeref,sizemin:u.sizemin,sizemode:u.sizemode,color:u.color,colorscale:u.colorscale,cauto:u.cauto,cmax:u.cmax,cmin:u.cmin,autocolorscale:u.autocolorscale,reversescale:u.reversescale,showscale:u.showscale},fill:{valType:"enumerated",values:["none","toself"],dflt:"none"},fillcolor:i.fillcolor,textfont:o.layers.symbol.textfont,textposition:o.layers.symbol.textposition,hoverinfo:s({},a.hoverinfo,{flags:["lon","lat","text","name"]}),_nestedModules:{"marker.colorbar":"Colorbar"}}},{"../../lib/extend":563,"../../plots/attributes":590,"../../plots/mapbox/layout_attributes":645,"../scatter/attributes":750,"../scattergeo/attributes":778}],788:[function(t,e,r){"use strict";var n=t("fast-isnumeric"),i=t("../../lib"),o=t("../../components/colorscale/has_colorscale"),a=t("../../components/colorscale/make_scale_function"),s=t("../scatter/subtypes"),l=t("../scatter/colorscale_calc"),u=t("../scatter/make_bubble_size_func");e.exports=function(t,e){var r=e.lon.length,c=e.marker,h=s.hasMarkers(e),f=h&&Array.isArray(c.color),d=h&&Array.isArray(c.size),p=h&&Array.isArray(c.symbol),v=Array.isArray(e.text);l(e);for(var m=o(e,"marker")?a(c.colorscale,c.cmin,c.cmax):i.identity,g=s.isBubble(e)?u(e):i.identity,y=[],b=0,x=0;r>x;x++){var _=e.lon[x],w=e.lat[x];if(n(_)&&n(w)){var M={};if(b++,M.lonlat=[+_,+w],h){if(f){var k=c.color[x];M.mc=k,M.mcc=m(k)}if(d){var A=c.size[x];M.ms=A,M.mrc=g(A)}if(p){var T=c.symbol[x];M.mx="string"==typeof T?T:"circle"}}if(v){var E=e.text[x];M.tx="string"==typeof E?E:""}y.push(M)}else b>0&&(y[b-1].gapAfter=!0)}return y}},{"../../components/colorscale/has_colorscale":496,"../../components/colorscale/make_scale_function":500,"../../lib":568,"../scatter/colorscale_calc":754,"../scatter/make_bubble_size_func":764,"../scatter/subtypes":769,"fast-isnumeric":123}],789:[function(t,e,r){"use strict";function n(){return{geojson:i(),layout:{visibility:"none"},paint:{}}}function i(){return{type:"Point",coordinates:[]}}function o(t,e){return{type:"Polygon",coordinates:e}}function a(t,e){return{type:"MultiLineString",coordinates:e}}function s(t,e){function r(t,r,n,i){void 0===e[r][n]&&(e[r][n]=i),t[r]=e[r][n]}for(var n=t[0].trace,i=n.marker,o=Array.isArray(i.color),a=Array.isArray(i.size),s=[],l=0;l<t.length;l++){var u=t[l],c={};o&&r(c,g,u.mcc,l),a&&r(c,y,u.mrc,l),s.push({type:"Feature",geometry:{type:"Point",coordinates:u.lonlat},properties:c})}return{type:"FeatureCollection",features:s}}function l(t){for(var e=t[0].trace,r=e.marker||{},n=r.symbol,i=e.text,o="circle"!==n?f(n):d,a=v.hasText(e)?f(i):d,s=[],l=0;l<t.length;l++){var u=t[l];s.push({type:"Feature",geometry:{type:"Point",coordinates:u.lonlat},properties:{symbol:o(u.mx),text:a(u.tx)}})}return{type:"FeatureCollection",features:s}}function u(t,e){var r,n=t.marker;if(Array.isArray(n.color)){for(var i=Object.keys(e[g]),o=[],a=0;a<i.length;a++){var s=i[a];o.push([e[g][s],s])}r={property:g,stops:o}}else r=n.color;return r}function c(t,e){var r,n=t.marker;if(Array.isArray(n.size)){for(var i=Object.keys(e[y]),o=[],a=0;a<i.length;a++){var s=i[a];o.push([e[y][s],+s])}o.sort(function(t,e){return t[0]-e[0]}),r={property:y,stops:o}}else r=n.size/2;return r}function h(t){for(var e=t[0].trace,r=e.connectgaps,n=[],i=[],o=0;o<t.length;o++){var a=t[o];i.push(a.lonlat),!r&&a.gapAfter&&i.length>0&&(n.push(i),i=[])}return n.push(i),n}function f(t){return Array.isArray(t)?function(t){return t}:t?function(){return t}:d}function d(){return""}var p=t("../../lib"),v=t("../scatter/subtypes"),m=t("../../plots/mapbox/convert_text_opts"),g="circle-color",y="circle-radius";e.exports=function(t){var e=t[0].trace,r=e.visible===!0,i="none"!==e.fill,f=v.hasLines(e),d=v.hasMarkers(e),b=v.hasText(e),x=d&&"circle"===e.marker.symbol,_=d&&"circle"!==e.marker.symbol,w=n(),M=n(),k=n(),A=n(),T={fill:w,line:M,circle:k,symbol:A};if(!r)return T;var E;if((i||f)&&(E=h(t)),i&&(w.geojson=o(t,E),w.layout.visibility="visible",p.extendFlat(w.paint,{"fill-color":e.fillcolor})),f&&(M.geojson=a(t,E),M.layout.visibility="visible",p.extendFlat(M.paint,{"line-width":e.line.width,"line-color":e.line.color,"line-opacity":e.opacity})),x){var S={};S[g]={},S[y]={},k.geojson=s(t,S),k.layout.visibility="visible",p.extendFlat(k.paint,{"circle-opacity":e.opacity*e.marker.opacity,"circle-color":u(e,S),"circle-radius":c(e,S)})}if((_||b)&&(A.geojson=l(t),p.extendFlat(A.layout,{visibility:"visible","icon-image":"{symbol}-15","text-field":"{text}"}),_&&(p.extendFlat(A.layout,{"icon-size":e.marker.size/10}),p.extendFlat(A.paint,{"icon-opacity":e.opacity*e.marker.opacity,"icon-color":e.marker.color})),b)){var L=(e.marker||{}).size,z=m(e.textposition,L);p.extendFlat(A.layout,{"text-size":e.textfont.size,"text-anchor":z.anchor,"text-offset":z.offset}),p.extendFlat(A.paint,{"text-color":e.textfont.color,"text-opacity":e.opacity})}return T}},{"../../lib":568,"../../plots/mapbox/convert_text_opts":642,"../scatter/subtypes":769}],790:[function(t,e,r){"use strict";function n(t,e,r){var n=r("lon")||[],i=r("lat")||[],o=Math.min(n.length,i.length);return o<n.length&&(e.lon=n.slice(0,o)),o<i.length&&(e.lat=i.slice(0,o)),o}var i=t("../../lib"),o=t("../scatter/subtypes"),a=t("../scatter/marker_defaults"),s=t("../scatter/line_defaults"),l=t("../scatter/text_defaults"),u=t("../scatter/fillcolor_defaults"),c=t("./attributes"),h=t("../scatter/attributes");e.exports=function(t,e,r,f){function d(r,n){return i.coerce(t,e,c,r,n)}function p(r,n){var o=-1===r.indexOf(".line")?c:h;return i.coerce(t,e,o,r,n)}var v=n(t,e,d);if(!v)return void(e.visible=!1);if(d("text"),d("mode"),o.hasLines(e)&&(s(t,e,r,f,d),d("connectgaps")),o.hasMarkers(e)){a(t,e,r,f,p);var m=e.marker;"circle"!==m.symbol&&(Array.isArray(m.size)&&(m.size=m.size[0]),Array.isArray(m.color)&&(m.color=m.color[0]))}o.hasText(e)&&l(t,e,f,d),d("fill"),"none"!==e.fill&&u(t,e,r,d),d("hoverinfo",1===f._dataLength?"lon+lat+text":void 0)}},{"../../lib":568,"../scatter/attributes":750,"../scatter/fillcolor_defaults":757,"../scatter/line_defaults":761,"../scatter/marker_defaults":765,"../scatter/subtypes":769,"../scatter/text_defaults":770,"./attributes":787}],791:[function(t,e,r){"use strict";function n(t,e){function r(t){return t+"\xb0"}var n=t.hoverinfo.split("+"),i=-1!==n.indexOf("all"),o=-1!==n.indexOf("lon"),a=-1!==n.indexOf("lat"),s=e.lonlat,l=[];return i||o&&a?l.push("("+r(s[0])+", "+r(s[1])+")"):o?l.push("lon: "+r(s[0])):a&&l.push("lat: "+r(s[1])),(i||-1!==n.indexOf("text"))&&l.push(e.tx||t.text),l.join("<br>")}var i=t("../../plots/cartesian/graph_interact"),o=t("../scatter/get_trace_color");e.exports=function(t,e,r){function a(t){var e=t.lonlat,n=Math.abs(u.c2p(e)-u.c2p([d,e[1]])),i=Math.abs(c.c2p(e)-c.c2p([e[0],r])),o=Math.max(3,t.mrc||0);return Math.max(Math.sqrt(n*n+i*i)-o,1-3/o)}var s=t.cd,l=s[0].trace,u=t.xa,c=t.ya,h=e>=0?Math.floor((e+180)/360):Math.ceil((e-180)/360),f=360*h,d=e-f;if(i.getClosest(s,a,t),t.index!==!1){var p=s[t.index],v=p.lonlat,m=[v[0]+f,v[1]],g=u.c2p(m),y=c.c2p(m),b=p.mrc||1;return t.x0=g-b,t.x1=g+b,t.y0=y-b,t.y1=y+b,t.color=o(l,p),t.extraText=n(l,p),[t]}}},{"../../plots/cartesian/graph_interact":599,"../scatter/get_trace_color":758}],792:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("../scatter/colorbar"),n.calc=t("./calc"),n.hoverPoints=t("./hover"),n.plot=t("./plot"),n.moduleType="trace",n.name="scattermapbox",n.basePlotModule=t("../../plots/mapbox"),n.categories=["mapbox","gl","symbols","markerColorscale","showLegend"],n.meta={},e.exports=n},{"../../plots/mapbox":643,"../scatter/colorbar":753,"./attributes":787,"./calc":788,"./defaults":790,"./hover":791,"./plot":793}],793:[function(t,e,r){"use strict";function n(t,e){this.mapbox=t,this.map=t.map,this.uid=e,this.idSourceFill=e+"-source-fill",this.idSourceLine=e+"-source-line",this.idSourceCircle=e+"-source-circle",this.idSourceSymbol=e+"-source-symbol",this.idLayerFill=e+"-layer-fill",this.idLayerLine=e+"-layer-line",this.idLayerCircle=e+"-layer-circle",this.idLayerSymbol=e+"-layer-symbol",this.sourceFill=t.createGeoJSONSource(),this.map.addSource(this.idSourceFill,this.sourceFill),this.sourceLine=t.createGeoJSONSource(),this.map.addSource(this.idSourceLine,this.sourceLine),this.sourceCircle=t.createGeoJSONSource(),this.map.addSource(this.idSourceCircle,this.sourceCircle),this.sourceSymbol=t.createGeoJSONSource(),this.map.addSource(this.idSourceSymbol,this.sourceSymbol),this.map.addLayer({id:this.idLayerFill,source:this.idSourceFill,type:"fill"}),this.map.addLayer({id:this.idLayerLine,source:this.idSourceLine,type:"line"}),this.map.addLayer({id:this.idLayerCircle,source:this.idSourceCircle,type:"circle"}),this.map.addLayer({id:this.idLayerSymbol,source:this.idSourceSymbol,type:"symbol"})}function i(t){return"visible"===t.layout.visibility}var o=t("./convert"),a=n.prototype;a.update=function(t){var e=this.mapbox,r=o(t);e.setOptions(this.idLayerFill,"setLayoutProperty",r.fill.layout),e.setOptions(this.idLayerLine,"setLayoutProperty",r.line.layout),e.setOptions(this.idLayerCircle,"setLayoutProperty",r.circle.layout),e.setOptions(this.idLayerSymbol,"setLayoutProperty",r.symbol.layout),i(r.fill)&&(this.sourceFill.setData(r.fill.geojson),e.setOptions(this.idLayerFill,"setPaintProperty",r.fill.paint)),i(r.line)&&(this.sourceLine.setData(r.line.geojson),e.setOptions(this.idLayerLine,"setPaintProperty",r.line.paint)),i(r.circle)&&(this.sourceCircle.setData(r.circle.geojson),e.setOptions(this.idLayerCircle,"setPaintProperty",r.circle.paint)),i(r.symbol)&&(this.sourceSymbol.setData(r.symbol.geojson),e.setOptions(this.idLayerSymbol,"setPaintProperty",r.symbol.paint))},a.dispose=function(){var t=this.map;t.removeLayer(this.idLayerFill),t.removeLayer(this.idLayerLine),t.removeLayer(this.idLayerCircle),t.removeLayer(this.idLayerSymbol),t.removeSource(this.idSourceFill),t.removeSource(this.idSourceLine),t.removeSource(this.idSourceCircle),t.removeSource(this.idSourceSymbol)},e.exports=function(t,e){var r=e[0].trace,i=new n(t,r.uid);return i.update(e),i}},{"./convert":789}],794:[function(t,e,r){"use strict";var n=t("../scatter/attributes"),i=t("../../plots/attributes"),o=t("../../components/colorscale/color_attributes"),a=t("../../lib/extend").extendFlat,s=n.marker,l=n.line,u=s.line;e.exports={a:{valType:"data_array"},b:{valType:"data_array"},c:{valType:"data_array"},sum:{valType:"number",dflt:0,min:0},mode:a({},n.mode,{dflt:"markers"}),text:a({},n.text,{}),line:{color:l.color,width:l.width,dash:l.dash,shape:a({},l.shape,{values:["linear","spline"]}),smoothing:l.smoothing},connectgaps:n.connectgaps,fill:a({},n.fill,{values:["none","toself","tonext"]}),fillcolor:n.fillcolor,marker:a({},{symbol:s.symbol,opacity:s.opacity,maxdisplayed:s.maxdisplayed,size:s.size,sizeref:s.sizeref,sizemin:s.sizemin,sizemode:s.sizemode,showscale:s.showscale,line:a({},{width:u.width},o("marker".line))},o("marker")),textfont:n.textfont,textposition:n.textposition,hoverinfo:a({},i.hoverinfo,{flags:["a","b","c","text","name"]}),hoveron:n.hoveron,_nestedModules:{"marker.colorbar":"Colorbar"}}},{"../../components/colorscale/color_attributes":491,"../../lib/extend":563,"../../plots/attributes":590,"../scatter/attributes":750}],795:[function(t,e,r){"use strict";var n=t("fast-isnumeric"),i=t("../../plots/cartesian/axes"),o=t("../../lib"),a=t("../scatter/subtypes"),s=t("../scatter/colorscale_calc"),l=["a","b","c"],u={a:["b","c"],b:["a","c"],c:["a","b"]};e.exports=function(t,e){var r,c,h,f,d,p,v=t._fullLayout[e.subplot],m=v.sum,g=e.sum||m;for(r=0;r<l.length;r++)if(h=l[r],!e[h]){for(d=e[u[h][0]],p=e[u[h][1]],f=new Array(d.length),c=0;c<d.length;c++)f[c]=g-d[c]-p[c];e[h]=f}var y,b,x,_,w,M,k=e.a.length,A=new Array(k);for(r=0;k>r;r++)y=e.a[r],b=e.b[r],x=e.c[r],n(y)&&n(b)&&n(x)?(y=+y,b=+b,x=+x,_=m/(y+b+x),1!==_&&(y*=_,b*=_,x*=_),M=y,w=x-b,A[r]={x:w,y:M,a:y,b:b,c:x}):A[r]={x:!1,y:!1};var T,E;if(a.hasMarkers(e)&&(T=e.marker,E=T.size,Array.isArray(E))){var S={type:"linear"};i.setConvert(S),E=S.makeCalcdata(e.marker,"size"),E.length>k&&E.splice(k,E.length-k)}return s(e),void 0!==typeof E&&o.mergeArray(E,A,"ms"),A}},{"../../lib":568,"../../plots/cartesian/axes":592,"../scatter/colorscale_calc":754,"../scatter/subtypes":769,"fast-isnumeric":123}],796:[function(t,e,r){"use strict";var n=t("../../lib"),i=t("../scatter/constants"),o=t("../scatter/subtypes"),a=t("../scatter/marker_defaults"),s=t("../scatter/line_defaults"),l=t("../scatter/line_shape_defaults"),u=t("../scatter/text_defaults"),c=t("../scatter/fillcolor_defaults"),h=t("./attributes");e.exports=function(t,e,r,f){function d(r,i){return n.coerce(t,e,h,r,i)}var p,v=d("a"),m=d("b"),g=d("c");if(v?(p=v.length,m?(p=Math.min(p,m.length),g&&(p=Math.min(p,g.length))):p=g?Math.min(p,g.length):0):m&&g&&(p=Math.min(m.length,g.length)),!p)return void(e.visible=!1);v&&p<v.length&&(e.a=v.slice(0,p)),m&&p<m.length&&(e.b=m.slice(0,p)),g&&p<g.length&&(e.c=g.slice(0,p)),d("sum"),d("text");var y=p<i.PTS_LINESONLY?"lines+markers":"lines";d("mode",y),o.hasLines(e)&&(s(t,e,r,f,d),l(t,e,d),d("connectgaps")),o.hasMarkers(e)&&a(t,e,r,f,d),o.hasText(e)&&u(t,e,f,d);var b=[];(o.hasMarkers(e)||o.hasText(e))&&(d("marker.maxdisplayed"),b.push("points")),d("fill"),"none"!==e.fill&&(c(t,e,r,d),o.hasLines(e)||l(t,e,d)),d("hoverinfo",1===f._dataLength?"a+b+c+text":void 0),"tonext"!==e.fill&&"toself"!==e.fill||b.push("fills"),d("hoveron",b.join("+")||"points")}},{"../../lib":568,"../scatter/constants":755,"../scatter/fillcolor_defaults":757,"../scatter/line_defaults":761,"../scatter/line_shape_defaults":763,"../scatter/marker_defaults":765,"../scatter/subtypes":769,"../scatter/text_defaults":770,"./attributes":794}],797:[function(t,e,r){"use strict";var n=t("../scatter/hover"),i=t("../../plots/cartesian/axes");
 e.exports=function(t,e,r,o){function a(t,e){g.push(t._hovertitle+": "+i.tickText(t,e,"hover").text)}var s=n(t,e,r,o);if(s&&s[0].index!==!1){var l=s[0];if(void 0===l.index){var u=1-l.y0/t.ya._length,c=t.xa._length,h=c*u/2,f=c-h;return l.x0=Math.max(Math.min(l.x0,f),h),l.x1=Math.max(Math.min(l.x1,f),h),s}var d=l.cd[l.index];l.a=d.a,l.b=d.b,l.c=d.c,l.xLabelVal=void 0,l.yLabelVal=void 0;var p=l.trace,v=p._ternary,m=p.hoverinfo.split("+"),g=[];return-1!==m.indexOf("all")&&(m=["a","b","c"]),-1!==m.indexOf("a")&&a(v.aaxis,d.a),-1!==m.indexOf("b")&&a(v.baxis,d.b),-1!==m.indexOf("c")&&a(v.caxis,d.c),l.extraText=g.join("<br>"),s}}},{"../../plots/cartesian/axes":592,"../scatter/hover":759}],798:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("../scatter/colorbar"),n.calc=t("./calc"),n.plot=t("./plot"),n.style=t("./style"),n.hoverPoints=t("./hover"),n.selectPoints=t("./select"),n.moduleType="trace",n.name="scatterternary",n.basePlotModule=t("../../plots/ternary"),n.categories=["ternary","symbols","markerColorscale","showLegend"],n.meta={},e.exports=n},{"../../plots/ternary":655,"../scatter/colorbar":753,"./attributes":794,"./calc":795,"./defaults":796,"./hover":797,"./plot":799,"./select":800,"./style":801}],799:[function(t,e,r){"use strict";var n=t("../scatter/plot");e.exports=function(t,e){var r=t.plotContainer;r.select(".scatterlayer").selectAll("*").remove();for(var i={x:function(){return t.xaxis},y:function(){return t.yaxis},plot:r},o=new Array(e.length),a=t.graphDiv.calcdata,s=0;s<a.length;s++){var l=e.indexOf(a[s][0].trace);-1!==l&&(o[l]=a[s],e[l]._ternary=t)}n(t.graphDiv,i,o)}},{"../scatter/plot":766}],800:[function(t,e,r){"use strict";var n=t("../scatter/select");e.exports=function(t,e){var r=n(t,e);if(r){var i,o,a,s=t.cd;for(a=0;a<r.length;a++)i=r[a],o=s[i.pointNumber],i.a=o.a,i.b=o.b,i.c=o.c,delete i.x,delete i.y;return r}}},{"../scatter/select":767}],801:[function(t,e,r){"use strict";var n=t("../scatter/style");e.exports=function(t){for(var e=t._fullLayout._modules,r=0;r<e.length;r++)if("scatter"===e[r].name)return;n(t)}},{"../scatter/style":768}],802:[function(t,e,r){"use strict";function n(t){return{valType:"boolean",dflt:!1}}function i(t){return{show:{valType:"boolean",dflt:!1},project:{x:n("x"),y:n("y"),z:n("z")},color:{valType:"color",dflt:o.defaultLine},usecolormap:{valType:"boolean",dflt:!1},width:{valType:"number",min:1,max:16,dflt:2},highlight:{valType:"boolean",dflt:!0},highlightcolor:{valType:"color",dflt:o.defaultLine},highlightwidth:{valType:"number",min:1,max:16,dflt:2}}}var o=t("../../components/color"),a=t("../../components/colorscale/attributes"),s=t("../../lib/extend").extendFlat;e.exports={z:{valType:"data_array"},x:{valType:"data_array"},y:{valType:"data_array"},text:{valType:"data_array"},surfacecolor:{valType:"data_array"},cauto:a.zauto,cmin:a.zmin,cmax:a.zmax,colorscale:a.colorscale,autocolorscale:s({},a.autocolorscale,{dflt:!1}),reversescale:a.reversescale,showscale:a.showscale,contours:{x:i("x"),y:i("y"),z:i("z")},hidesurface:{valType:"boolean",dflt:!1},lightposition:{x:{valType:"number",min:-1e5,max:1e5,dflt:10},y:{valType:"number",min:-1e5,max:1e5,dflt:1e4},z:{valType:"number",min:-1e5,max:1e5,dflt:0}},lighting:{ambient:{valType:"number",min:0,max:1,dflt:.8},diffuse:{valType:"number",min:0,max:1,dflt:.8},specular:{valType:"number",min:0,max:2,dflt:.05},roughness:{valType:"number",min:0,max:1,dflt:.5},fresnel:{valType:"number",min:0,max:5,dflt:.2}},opacity:{valType:"number",min:0,max:1,dflt:1},_nestedModules:{colorbar:"Colorbar"},_deprecated:{zauto:s({},a.zauto,{}),zmin:s({},a.zmin,{}),zmax:s({},a.zmax,{})}}},{"../../components/color":483,"../../components/colorscale/attributes":489,"../../lib/extend":563}],803:[function(t,e,r){"use strict";var n=t("../../components/colorscale/calc");e.exports=function(t,e){e.surfacecolor?n(e,e.surfacecolor,"","c"):n(e,e.z,"","c")}},{"../../components/colorscale/calc":490}],804:[function(t,e,r){"use strict";var n=t("d3"),i=t("fast-isnumeric"),o=t("../../lib"),a=t("../../plots/plots"),s=t("../../components/colorscale/get_scale"),l=t("../../components/colorbar/draw");e.exports=function(t,e){var r=e[0].trace,u="cb"+r.uid,c=s(r.colorscale),h=r.cmin,f=r.cmax,d=r.surfacecolor||r.z;if(i(h)||(h=o.aggNums(Math.min,null,d)),i(f)||(f=o.aggNums(Math.max,null,d)),t._fullLayout._infolayer.selectAll("."+u).remove(),!r.showscale)return void a.autoMargin(t,u);var p=e[0].t.cb=l(t,u);p.fillcolor(n.scale.linear().domain(c.map(function(t){return h+t[0]*(f-h)})).range(c.map(function(t){return t[1]}))).filllevels({start:h,end:f,size:(f-h)/254}).options(r.colorbar)()}},{"../../components/colorbar/draw":486,"../../components/colorscale/get_scale":495,"../../lib":568,"../../plots/plots":648,d3:119,"fast-isnumeric":123}],805:[function(t,e,r){"use strict";function n(t,e,r){this.scene=t,this.uid=r,this.surface=e,this.data=null,this.showContour=[!1,!1,!1],this.dataScale=1}function i(t,e){return void 0===e&&(e=1),t.map(function(t){var r=t[0],n=d(t[1]),i=n.toRgb();return{index:r,rgb:[i.r,i.g,i.b,e]}})}function o(t){var e=t.shape,r=[e[0]+2,e[1]+2],n=u(new Float32Array(r[0]*r[1]),r);return f.assign(n.lo(1,1).hi(e[0],e[1]),t),f.assign(n.lo(1).hi(e[0],1),t.hi(e[0],1)),f.assign(n.lo(1,r[1]-1).hi(e[0],1),t.lo(0,e[1]-1).hi(e[0],1)),f.assign(n.lo(0,1).hi(1,e[1]),t.hi(1)),f.assign(n.lo(r[0]-1,1).hi(1,e[1]),t.lo(e[0]-1)),n.set(0,0,t.get(0,0)),n.set(0,r[1]-1,t.get(0,e[1]-1)),n.set(r[0]-1,0,t.get(e[0]-1,0)),n.set(r[0]-1,r[1]-1,t.get(e[0]-1,e[1]-1)),n}function a(t){var e=Math.max(t[0].shape[0],t[0].shape[1]);if(v>e){for(var r=v/e,n=[0|Math.floor(t[0].shape[0]*r+1),0|Math.floor(t[0].shape[1]*r+1)],i=n[0]*n[1],a=0;a<t.length;++a){var s=o(t[a]),l=u(new Float32Array(i),n);c(l,s,[r,0,0,0,r,0,0,0,1]),t[a]=l}return r}return 1}function s(t,e){var r=t.glplot.gl,i=l({gl:r}),o=new n(t,i,e.uid);return o.update(e),t.glplot.add(i),o}var l=t("gl-surface3d"),u=t("ndarray"),c=t("ndarray-homography"),h=t("ndarray-fill"),f=t("ndarray-ops"),d=t("tinycolor2"),p=t("../../lib/str2rgbarray"),v=128,m=n.prototype;m.handlePick=function(t){if(t.object===this.surface){var e=[Math.min(0|Math.round(t.data.index[0]/this.dataScale-1),this.data.z[0].length-1),Math.min(0|Math.round(t.data.index[1]/this.dataScale-1),this.data.z.length-1)],r=[0,0,0];Array.isArray(this.data.x[0])?r[0]=this.data.x[e[1]][e[0]]:r[0]=this.data.x[e[0]],Array.isArray(this.data.y[0])?r[1]=this.data.y[e[1]][e[0]]:r[1]=this.data.y[e[1]],r[2]=this.data.z[e[1]][e[0]],t.traceCoordinate=r;var n=this.scene.fullSceneLayout;t.dataCoordinate=[n.xaxis.d2l(r[0])*this.scene.dataScale[0],n.yaxis.d2l(r[1])*this.scene.dataScale[1],n.zaxis.d2l(r[2])*this.scene.dataScale[2]];var i=this.data.text;return i&&i[e[1]]&&void 0!==i[e[1]][e[0]]?t.textLabel=i[e[1]][e[0]]:t.textLabel="",t.data.dataCoordinate=t.dataCoordinate.slice(),this.surface.highlight(t.data),this.scene.glplot.spikes.position=t.dataCoordinate,!0}},m.setContourLevels=function(){for(var t=[[],[],[]],e=!1,r=0;3>r;++r)this.showContour[r]&&(e=!0,t[r]=this.scene.contourLevels[r]);e&&this.surface.update({levels:t})},m.update=function(t){var e,r=this.scene,n=r.fullSceneLayout,o=this.surface,s=t.opacity,l=i(t.colorscale,s),c=t.z,f=t.x,d=t.y,v=n.xaxis,m=n.yaxis,g=n.zaxis,y=r.dataScale,b=c[0].length,x=c.length,_=[u(new Float32Array(b*x),[b,x]),u(new Float32Array(b*x),[b,x]),u(new Float32Array(b*x),[b,x])],w=_[0],M=_[1],k=r.contourLevels;this.data=t,h(_[2],function(t,e){return g.d2l(c[e][t])*y[2]}),Array.isArray(f[0])?h(w,function(t,e){return v.d2l(f[e][t])*y[0]}):h(w,function(t){return v.d2l(f[t])*y[0]}),Array.isArray(d[0])?h(M,function(t,e){return m.d2l(d[e][t])*y[1]}):h(M,function(t,e){return m.d2l(d[e])*y[1]});var A={colormap:l,levels:[[],[],[]],showContour:[!0,!0,!0],showSurface:!t.hidesurface,contourProject:[[!1,!1,!1],[!1,!1,!1],[!1,!1,!1]],contourWidth:[1,1,1],contourColor:[[1,1,1,1],[1,1,1,1],[1,1,1,1]],contourTint:[1,1,1],dynamicColor:[[1,1,1,1],[1,1,1,1],[1,1,1,1]],dynamicWidth:[1,1,1],dynamicTint:[1,1,1],opacity:1};if(A.intensityBounds=[t.cmin,t.cmax],t.surfacecolor){var T=u(new Float32Array(b*x),[b,x]);h(T,function(e,r){return t.surfacecolor[r][e]}),_.push(T)}else A.intensityBounds[0]*=y[2],A.intensityBounds[1]*=y[2];this.dataScale=a(_),t.surfacecolor&&(A.intensity=_.pop()),"opacity"in t&&t.opacity<1&&(A.opacity=.25*t.opacity);var E=[!0,!0,!0],S=["x","y","z"];for(e=0;3>e;++e){var L=t.contours[S[e]];E[e]=L.highlight,A.showContour[e]=L.show||L.highlight,A.showContour[e]&&(A.contourProject[e]=[L.project.x,L.project.y,L.project.z],L.show?(this.showContour[e]=!0,A.levels[e]=k[e],o.highlightColor[e]=A.contourColor[e]=p(L.color),L.usecolormap?o.highlightTint[e]=A.contourTint[e]=0:o.highlightTint[e]=A.contourTint[e]=1,A.contourWidth[e]=L.width):this.showContour[e]=!1,L.highlight&&(A.dynamicColor[e]=p(L.highlightcolor),A.dynamicWidth[e]=L.highlightwidth))}A.coords=_,o.update(A),o.visible=t.visible,o.enableDynamic=E,o.snapToData=!0,"lighting"in t&&(o.ambientLight=t.lighting.ambient,o.diffuseLight=t.lighting.diffuse,o.specularLight=t.lighting.specular,o.roughness=t.lighting.roughness,o.fresnel=t.lighting.fresnel),"lightposition"in t&&(o.lightPosition=[t.lightposition.x,t.lightposition.y,t.lightposition.z]),s&&1>s&&(o.supportsTransparency=!0)},m.dispose=function(){this.scene.glplot.remove(this.surface),this.surface.dispose()},e.exports=s},{"../../lib/str2rgbarray":580,"gl-surface3d":227,ndarray:433,"ndarray-fill":426,"ndarray-homography":431,"ndarray-ops":432,tinycolor2:454}],806:[function(t,e,r){"use strict";function n(t,e,r){e in t&&!(r in t)&&(t[r]=t[e])}var i=t("../../lib"),o=t("../../components/colorscale/defaults"),a=t("./attributes");e.exports=function(t,e,r,s){function l(r,n){return i.coerce(t,e,a,r,n)}var u,c,h=l("z");if(!h)return void(e.visible=!1);var f=h[0].length,d=h.length;if(l("x"),l("y"),!Array.isArray(e.x))for(e.x=[],u=0;f>u;++u)e.x[u]=u;if(l("text"),!Array.isArray(e.y))for(e.y=[],u=0;d>u;++u)e.y[u]=u;["lighting.ambient","lighting.diffuse","lighting.specular","lighting.roughness","lighting.fresnel","lightposition.x","lightposition.y","lightposition.z","hidesurface","opacity"].forEach(function(t){l(t)});var p=l("surfacecolor");l("colorscale");var v=["x","y","z"];for(u=0;3>u;++u){var m="contours."+v[u],g=l(m+".show"),y=l(m+".highlight");if(g||y)for(c=0;3>c;++c)l(m+".project."+v[c]);g&&(l(m+".color"),l(m+".width"),l(m+".usecolormap")),y&&(l(m+".highlightcolor"),l(m+".highlightwidth"))}p||(n(t,"zmin","cmin"),n(t,"zmax","cmax"),n(t,"zauto","cauto")),o(t,e,s,l,{prefix:"",cLetter:"c"})}},{"../../components/colorscale/defaults":493,"../../lib":568,"./attributes":802}],807:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("./colorbar"),n.calc=t("./calc"),n.plot=t("./convert"),n.moduleType="trace",n.name="surface",n.basePlotModule=t("../../plots/gl3d"),n.categories=["gl3d","noOpacity"],n.meta={},e.exports=n},{"../../plots/gl3d":628,"./attributes":802,"./calc":803,"./colorbar":804,"./convert":805,"./defaults":806}]},{},[12])(12)});});require(['plotly'], function(Plotly) {window.Plotly = Plotly;});}</script></div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="stderr container">
+<div class="stderr output_area docutils container">
 <div class="highlight"><pre>
 C:\Users\Naveen\Anaconda3\lib\site-packages\cobra\io\__init__.py:10: UserWarning:
 
@@ -441,10 +494,10 @@ cobra.io.sbml requires libsbml
 
 </pre></div></div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 IN FLUXES                     OUT FLUXES                    OBJECTIVES
 o2_e        -17.58            h2o_e       45.62             Ec_biomass_iJO1366_core_53p95M    0.982
@@ -465,19 +518,19 @@ mobd_e       -0.00
 cobalt2_e    -0.00
 </pre></div></div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <img alt="_images/2_features_1_1_4.png" src="_images/2_features_1_1_4.png" />
 </div>
 </div>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [2]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Optimize the model after simulating anaerobic conditions,</span>
 <span class="c1"># we don&#39;t get many products aerobically</span>
 <span class="n">model</span><span class="o">.</span><span class="n">reactions</span><span class="o">.</span><span class="n">get_by_id</span><span class="p">(</span><span class="s1">&#39;EX_o2_e&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">=</span> <span class="mi">0</span>
@@ -492,10 +545,10 @@ cobalt2_e    -0.00
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 IN FLUXES                     OUT FLUXES                    OBJECTIVES
 glc__D_e    -10.00            h_e         27.87             Ec_biomass_iJO1366_core_53p95M    0.242
@@ -518,19 +571,19 @@ mobd_e       -0.00
 cobalt2_e    -0.00
 </pre></div></div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <img alt="_images/2_features_1_2_1.png" src="_images/2_features_1_2_1.png" />
 </div>
 </div>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [3]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Plot the whole profile</span>
 <span class="n">combined_profiles</span> <span class="o">=</span> <span class="p">{</span><span class="n">analyte</span><span class="p">:</span>
                      <span class="n">dFBA_profiles_aerobic</span><span class="p">[</span><span class="n">analyte</span><span class="p">]</span><span class="o">+</span>
@@ -561,39 +614,39 @@ cobalt2_e    -0.00
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[3]:
 </pre></div>
 </div>
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
 <span></span>&lt;matplotlib.legend.Legend at 0x14d22326c50&gt;
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <img alt="_images/2_features_1_3_1.png" src="_images/2_features_1_3_1.png" />
 </div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <img alt="_images/2_features_1_3_2.png" src="_images/2_features_1_3_2.png" />
 </div>
 </div>
-<p>Now that we have a simulated &#8216;two-stage&#8217; fermentation data, let&#8217;s try to
-analyze it. First let&#8217;s try to curve fit and pull parameters from the
+<p>Now that we have a simulated ‘two-stage’ fermentation data, let’s try to
+analyze it. First let’s try to curve fit and pull parameters from the
 overall data</p>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [4]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># These time courses together form a single trial</span>
 <span class="n">single_trial</span> <span class="o">=</span> <span class="n">impact</span><span class="o">.</span><span class="n">SingleTrial</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">analyte</span> <span class="ow">in</span> <span class="n">analyte_keys</span><span class="p">:</span>
@@ -635,20 +688,20 @@ overall data</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 Started fit
 1000
 Finished fit
 </pre></div></div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <script type='text/javascript'>if(!window.Plotly){define('plotly', function(require, exports, module) {/**
 * plotly.js v1.16.2
 * Copyright 2012-2016, Plotly, Inc.
@@ -709,31 +762,31 @@ t.exit().remove(),t.text(a.text).attr({"class":"slicetext",transform:"","data-bb
 "../scatter/colorbar":753,"./attributes":772,"./calc":773,"./convert":775,"./defaults":776}],778:[function(t,e,r){"use strict";var n=t("../scatter/attributes"),i=t("../../plots/attributes"),o=t("../../components/colorscale/color_attributes"),a=t("../../lib/extend").extendFlat,s=n.marker,l=n.line,u=s.line;e.exports={lon:{valType:"data_array"},lat:{valType:"data_array"},locations:{valType:"data_array"},locationmode:{valType:"enumerated",values:["ISO-3","USA-states","country names"],dflt:"ISO-3"},mode:a({},n.mode,{dflt:"markers"}),text:a({},n.text,{}),line:{color:l.color,width:l.width,dash:l.dash},marker:a({},{symbol:s.symbol,opacity:s.opacity,size:s.size,sizeref:s.sizeref,sizemin:s.sizemin,sizemode:s.sizemode,showscale:s.showscale,line:a({},{width:u.width},o("marker.line"))},o("marker")),textfont:n.textfont,textposition:n.textposition,hoverinfo:a({},i.hoverinfo,{flags:["lon","lat","location","text","name"]}),_nestedModules:{"marker.colorbar":"Colorbar"}}},{"../../components/colorscale/color_attributes":491,"../../lib/extend":563,"../../plots/attributes":590,"../scatter/attributes":750}],779:[function(t,e,r){"use strict";var n=t("../scatter/colorscale_calc");e.exports=function(t,e){var r=[{x:!1,y:!1,trace:e,t:{}}];return n(e),r}},{"../scatter/colorscale_calc":754}],780:[function(t,e,r){"use strict";function n(t,e,r){var n,i,o=0,a=r("locations");return a?(r("locationmode"),o=a.length):(n=r("lon")||[],i=r("lat")||[],o=Math.min(n.length,i.length),o<n.length&&(e.lon=n.slice(0,o)),o<i.length&&(e.lat=i.slice(0,o)),o)}var i=t("../../lib"),o=t("../scatter/subtypes"),a=t("../scatter/marker_defaults"),s=t("../scatter/line_defaults"),l=t("../scatter/text_defaults"),u=t("./attributes");e.exports=function(t,e,r,c){function h(r,n){return i.coerce(t,e,u,r,n)}var f=n(t,e,h);return f?(h("text"),h("mode"),o.hasLines(e)&&s(t,e,r,c,h),o.hasMarkers(e)&&a(t,e,r,c,h),o.hasText(e)&&l(t,e,c,h),void h("hoverinfo",1===c._dataLength?"lon+lat+location+text":void 0)):void(e.visible=!1)}},{"../../lib":568,"../scatter/line_defaults":761,"../scatter/marker_defaults":765,"../scatter/subtypes":769,"../scatter/text_defaults":770,"./attributes":778}],781:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("../scatter/colorbar"),n.calc=t("./calc"),n.plot=t("./plot").plot,n.moduleType="trace",n.name="scattergeo",n.basePlotModule=t("../../plots/geo"),n.categories=["geo","symbols","markerColorscale","showLegend"],n.meta={},e.exports=n},{"../../plots/geo":613,"../scatter/colorbar":753,"./attributes":778,"./calc":779,"./defaults":780,"./plot":782}],782:[function(t,e,r){"use strict";function n(t,e,r){function n(t,n){f(t,e,n,r)}var i=t.marker;if(n(t.text,"tx"),n(t.textposition,"tp"),t.textfont&&(n(t.textfont.size,"ts"),n(t.textfont.color,"tc"),n(t.textfont.family,"tf")),i&&i.line){var o=i.line;n(i.opacity,"mo"),n(i.symbol,"mx"),n(i.color,"mc"),n(i.size,"ms"),n(o.color,"mlc"),n(o.width,"mlw")}}function i(t){for(var e=t.lon.length,r=new Array(e),n=0;e>n;n++)r[n]=[t.lon[n],t.lat[n]];return{type:"LineString",coordinates:r,trace:t}}function o(t,e){function r(e){var r=t.mockAxis;return u.tickText(r,r.c2l(e),"hover").text+"\xb0"}var n=e.hoverinfo;if("none"===n)return function(t){delete t.textLabel};var i="all"===n?m.hoverinfo.flags:n.split("+"),o=-1!==i.indexOf("location")&&Array.isArray(e.locations),a=-1!==i.indexOf("lon"),s=-1!==i.indexOf("lat"),l=-1!==i.indexOf("text");return function(t){var n=[];o?n.push(t.location):a&&s?n.push("("+r(t.lon)+", "+r(t.lat)+")"):a?n.push("lon: "+r(t.lon)):s&&n.push("lat: "+r(t.lat)),l&&n.push(t.tx||e.text),t.textLabel=n.join("<br>")}}function a(t){var e=Array.isArray(t.locations);return function(r,n){return{points:[{data:t._input,fullData:t,curveNumber:t.index,pointNumber:n,lon:r.lon,lat:r.lat,location:e?r.location:null}]}}}var s=t("d3"),l=t("../../plots/cartesian/graph_interact"),u=t("../../plots/cartesian/axes"),c=t("../../lib/topojson_utils").getTopojsonFeatures,h=t("../../lib/geo_location_utils").locationToFeature,f=t("../../lib/array_to_calc_item"),d=t("../../components/color"),p=t("../../components/drawing"),v=t("../scatter/subtypes"),m=t("./attributes"),g=e.exports={};g.calcGeoJSON=function(t,e){var r,i,o,a,s=[],l=Array.isArray(t.locations);l?(a=t.locations,r=a.length,i=c(t,e),o=function(t,e){var r=h(t.locationmode,a[e],i);return void 0!==r?r.properties.ct:void 0}):(r=t.lon.length,o=function(t,e){return[t.lon[e],t.lat[e]]});for(var u=0;r>u;u++){var f=o(t,u);if(f){var d={lon:f[0],lat:f[1],location:l?t.locations[u]:null};n(t,d,u),s.push(d)}}return s.length>0&&(s[0].trace=t),s},g.plot=function(t,e){var r=t.framework.select(".scattergeolayer").selectAll("g.trace.scattergeo").data(e,function(t){return t.uid});r.enter().append("g").attr("class","trace scattergeo"),r.exit().remove(),r.selectAll("*").remove(),r.each(function(t){var e=s.select(this);v.hasLines(t)&&e.selectAll("path.js-line").data([i(t)]).enter().append("path").classed("js-line",!0)}),r.each(function(e){function r(r,n){if(t.showHover){var i=t.projection([r.lon,r.lat]);f(r),l.loneHover({x:i[0],y:i[1],name:m?e.name:void 0,text:r.textLabel,color:r.mc||(e.marker||{}).color},{container:t.hoverContainer.node()}),y=d(r,n),t.graphDiv.emit("plotly_hover",y)}}function n(e,r){t.graphDiv.emit("plotly_click",d(e,r))}var i=s.select(this),u=v.hasMarkers(e),c=v.hasText(e);if(u||c){var h=g.calcGeoJSON(e,t.topojson),f=o(t,e),d=a(e),p=e.hoverinfo,m="all"===p||-1!==p.indexOf("name"),y=null;u&&i.selectAll("path.point").data(h).enter().append("path").classed("point",!0).on("mouseover",r).on("click",n).on("mouseout",function(){l.loneUnhover(t.hoverContainer),t.graphDiv.emit("plotly_unhover",y)}).on("mousedown",function(){l.loneUnhover(t.hoverContainer)}).on("mouseup",r),c&&i.selectAll("g").data(h).enter().append("g").append("text")}}),g.style(t)},g.style=function(t){var e=t.framework.selectAll("g.trace.scattergeo");e.style("opacity",function(t){return t.opacity}),e.each(function(t){s.select(this).selectAll("path.point").call(p.pointStyle,t),s.select(this).selectAll("text").call(p.textPointStyle,t)}),e.selectAll("path.js-line").style("fill","none").each(function(t){var e=t.trace,r=e.line||{};s.select(this).call(d.stroke,r.color).call(p.dashLine,r.dash||"",r.width||0)})}},{"../../components/color":483,"../../components/drawing":506,"../../lib/array_to_calc_item":559,"../../lib/geo_location_utils":565,"../../lib/topojson_utils":582,"../../plots/cartesian/axes":592,"../../plots/cartesian/graph_interact":599,"../scatter/subtypes":769,"./attributes":778,d3:119}],783:[function(t,e,r){"use strict";var n=t("../scatter/attributes"),i=t("../../components/colorscale/color_attributes"),o=t("../../constants/gl2d_dashes"),a=t("../../constants/gl_markers"),s=t("../../lib/extend").extendFlat,l=t("../../lib/extend").extendDeep,u=n.line,c=n.marker,h=c.line;e.exports={x:n.x,x0:n.x0,dx:n.dx,y:n.y,y0:n.y0,dy:n.dy,text:s({},n.text,{}),mode:{valType:"flaglist",flags:["lines","markers"],extras:["none"]},line:{color:u.color,width:u.width,dash:{valType:"enumerated",values:Object.keys(o),dflt:"solid"}},marker:l({},i("marker"),{symbol:{valType:"enumerated",values:Object.keys(a),dflt:"circle",arrayOk:!0},size:c.size,sizeref:c.sizeref,sizemin:c.sizemin,sizemode:c.sizemode,opacity:c.opacity,showscale:c.showscale,line:l({},i("marker.line"),{width:h.width})}),connectgaps:n.connectgaps,fill:s({},n.fill,{values:["none","tozeroy","tozerox"]}),fillcolor:n.fillcolor,_nestedModules:{error_x:"ErrorBars",error_y:"ErrorBars","marker.colorbar":"Colorbar"}}},{"../../components/colorscale/color_attributes":491,"../../constants/gl2d_dashes":552,"../../constants/gl_markers":554,"../../lib/extend":563,"../scatter/attributes":750}],784:[function(t,e,r){"use strict";function n(t,e){this.scene=t,this.uid=e,this.pickXData=[],this.pickYData=[],this.xData=[],this.yData=[],this.textLabels=[],this.color="rgb(0, 0, 0)",this.name="",this.hoverinfo="all",this.connectgaps=!0,this.idToIndex=[],this.bounds=[0,0,0,0],this.hasLines=!1,this.lineOptions={positions:new Float32Array(0),color:[0,0,0,1],width:1,fill:[!1,!1,!1,!1],fillColor:[[0,0,0,1],[0,0,0,1],[0,0,0,1],[0,0,0,1]],dashes:[1]},this.line=d(t.glplot,this.lineOptions),this.line._trace=this,this.hasErrorX=!1,this.errorXOptions={positions:new Float32Array(0),errors:new Float32Array(0),lineWidth:1,capSize:0,color:[0,0,0,1]},this.errorX=p(t.glplot,this.errorXOptions),this.errorX._trace=this,this.hasErrorY=!1,this.errorYOptions={positions:new Float32Array(0),errors:new Float32Array(0),lineWidth:1,capSize:0,color:[0,0,0,1]},this.errorY=p(t.glplot,this.errorYOptions),this.errorY._trace=this,this.hasMarkers=!1,this.scatterOptions={positions:new Float32Array(0),sizes:[],colors:[],glyphs:[],borderWidths:[],borderColors:[],size:12,color:[0,0,0,1],borderSize:1,borderColor:[0,0,0,1]},this.scatter=h(t.glplot,this.scatterOptions),this.scatter._trace=this,this.fancyScatter=f(t.glplot,this.scatterOptions),this.fancyScatter._trace=this}function i(t,e,r){return Array.isArray(e)||(e=[e]),o(t,e,r)}function o(t,e,r){for(var n=new Array(r),i=e[0],o=0;r>o;++o)n[o]=t(o>=e.length?i:e[o]);return n}function a(t,e,r){return l(L(t,r),S(e,r),r)}function s(t,e,r,n){var i=x(t,e,n);return i=Array.isArray(i[0])?i:o(m.identity,[i],n),l(i,S(r,n),n)}function l(t,e,r){for(var n=new Array(4*r),i=0;r>i;++i){for(var o=0;3>o;++o)n[4*i+o]=t[i][o];n[4*i+3]=t[i][3]*e[i]}return n}function u(t,e){if(void 0===Float32Array.slice){for(var r=new Float32Array(e),n=0;e>n;n++)r[n]=t[n];return r}return t.slice(0,e)}function c(t,e){var r=new n(t,e.uid);return r.update(e),r}var h=t("gl-scatter2d"),f=t("gl-scatter2d-fancy"),d=t("gl-line2d"),p=t("gl-error2d"),v=t("fast-isnumeric"),m=t("../../lib"),g=t("../../plots/cartesian/axes"),y=t("../../components/errorbars"),b=t("../../lib/str2rgbarray"),x=t("../../lib/gl_format_color"),_=t("../scatter/subtypes"),w=t("../scatter/make_bubble_size_func"),M=t("../scatter/get_trace_color"),k=t("../../constants/gl_markers"),A=t("../../constants/gl2d_dashes"),T=["xaxis","yaxis"],E=n.prototype;E.handlePick=function(t){var e=t.pointId;return(t.object!==this.line||this.connectgaps)&&(e=this.idToIndex[t.pointId]),{trace:this,dataCoord:t.dataCoord,traceCoord:[this.pickXData[e],this.pickYData[e]],textLabel:Array.isArray(this.textLabels)?this.textLabels[e]:this.textLabels,color:Array.isArray(this.color)?this.color[e]:this.color,name:this.name,hoverinfo:this.hoverinfo}},E.isFancy=function(t){if("linear"!==this.scene.xaxis.type)return!0;if("linear"!==this.scene.yaxis.type)return!0;if(!t.x||!t.y)return!0;if(this.hasMarkers){var e=t.marker||{};if(Array.isArray(e.symbol)||"circle"!==e.symbol||Array.isArray(e.size)||Array.isArray(e.color)||Array.isArray(e.line.width)||Array.isArray(e.line.color)||Array.isArray(e.opacity))return!0}return this.hasLines&&!this.connectgaps?!0:this.hasErrorX?!0:!!this.hasErrorY};var S=i.bind(null,function(t){return+t}),L=i.bind(null,b),z=i.bind(null,function(t){return k[t]||"\u25cf"});E.update=function(t){t.visible!==!0?(this.hasLines=!1,this.hasErrorX=!1,this.hasErrorY=!1,this.hasMarkers=!1):(this.hasLines=_.hasLines(t),this.hasErrorX=t.error_x.visible===!0,this.hasErrorY=t.error_y.visible===!0,this.hasMarkers=_.hasMarkers(t)),this.textLabels=t.text,this.name=t.name,this.hoverinfo=t.hoverinfo,this.bounds=[1/0,1/0,-(1/0),-(1/0)],this.connectgaps=!!t.connectgaps,this.isFancy(t)?this.updateFancy(t):this.updateFast(t),this.color=M(t,{})},E.updateFast=function(t){for(var e,r,n=this.xData=this.pickXData=t.x,i=this.yData=this.pickYData=t.y,o=n.length,a=new Array(o),s=new Float32Array(2*o),l=this.bounds,c=0,h=0,f=0;o>f;++f)e=n[f],r=i[f],v(e)&&v(r)&&(a[c++]=f,s[h++]=e,s[h++]=r,l[0]=Math.min(l[0],e),l[1]=Math.min(l[1],r),l[2]=Math.max(l[2],e),l[3]=Math.max(l[3],r));s=u(s,h),this.idToIndex=a,this.updateLines(t,s),this.updateError("X",t),this.updateError("Y",t);var d;if(this.hasMarkers){this.scatterOptions.positions=s;var p=b(t.marker.color),m=b(t.marker.line.color),g=t.opacity*t.marker.opacity;p[3]*=g,this.scatterOptions.color=p,m[3]*=g,this.scatterOptions.borderColor=m,d=t.marker.size,this.scatterOptions.size=d,this.scatterOptions.borderSize=t.marker.line.width,this.scatter.update(this.scatterOptions)}else this.scatterOptions.positions=new Float32Array(0),this.scatterOptions.glyphs=[],this.scatter.update(this.scatterOptions);this.scatterOptions.positions=new Float32Array(0),this.scatterOptions.glyphs=[],this.fancyScatter.update(this.scatterOptions),this.expandAxesFast(l,d)},E.updateFancy=function(t){var e=this.scene,r=e.xaxis,n=e.yaxis,o=this.bounds,a=this.pickXData=r.makeCalcdata(t,"x").slice(),l=this.pickYData=n.makeCalcdata(t,"y").slice();this.xData=a.slice(),this.yData=l.slice();var c,h,f,d,p,v,m,g,b=y.calcFromTrace(t,e.fullLayout),x=a.length,_=new Array(x),M=new Float32Array(2*x),k=new Float32Array(4*x),A=new Float32Array(4*x),T=0,E=0,L=0,I=0,P="log"===r.type?function(t){return r.d2l(t)}:function(t){return t},C="log"===n.type?function(t){return n.d2l(t)}:function(t){return t};for(c=0;x>c;++c)this.xData[c]=f=P(a[c]),this.yData[c]=d=C(l[c]),isNaN(f)||isNaN(d)||(_[T++]=c,M[E++]=f,M[E++]=d,p=k[L++]=f-b[c].xs||0,v=k[L++]=b[c].xh-f||0,k[L++]=0,k[L++]=0,A[I++]=0,A[I++]=0,m=A[I++]=d-b[c].ys||0,g=A[I++]=b[c].yh-d||0,o[0]=Math.min(o[0],f-p),o[1]=Math.min(o[1],d-m),o[2]=Math.max(o[2],f+v),o[3]=Math.max(o[3],d+g));M=u(M,E),this.idToIndex=_,this.updateLines(t,M),this.updateError("X",t,M,k),this.updateError("Y",t,M,A);var R;if(this.hasMarkers){this.scatterOptions.positions=M,this.scatterOptions.sizes=new Array(T),this.scatterOptions.glyphs=new Array(T),this.scatterOptions.borderWidths=new Array(T),this.scatterOptions.colors=new Array(4*T),this.scatterOptions.borderColors=new Array(4*T);var D,O=w(t),F=t.marker,j=F.opacity,N=t.opacity,B=s(F,j,N,x),U=z(F.symbol,x),V=S(F.line.width,x),q=s(F.line,j,N,x);for(R=i(O,F.size,x),c=0;T>c;++c)for(D=_[c],this.scatterOptions.sizes[c]=4*R[D],this.scatterOptions.glyphs[c]=U[D],this.scatterOptions.borderWidths[c]=.5*V[D],h=0;4>h;++h)this.scatterOptions.colors[4*c+h]=B[4*D+h],this.scatterOptions.borderColors[4*c+h]=q[4*D+h];this.fancyScatter.update(this.scatterOptions)}else this.scatterOptions.positions=new Float32Array(0),this.scatterOptions.glyphs=[],this.fancyScatter.update(this.scatterOptions);this.scatterOptions.positions=new Float32Array(0),this.scatterOptions.glyphs=[],this.scatter.update(this.scatterOptions),this.expandAxesFancy(a,l,R)},E.updateLines=function(t,e){var r;if(this.hasLines){var n=e;if(!t.connectgaps){var i=0,o=this.xData,s=this.yData;for(n=new Float32Array(2*o.length),r=0;r<o.length;++r)n[i++]=o[r],n[i++]=s[r]}this.lineOptions.positions=n;var l=a(t.line.color,t.opacity,1),u=Math.round(.5*this.lineOptions.width),c=(A[t.line.dash]||[1]).slice();for(r=0;r<c.length;++r)c[r]*=u;switch(t.fill){case"tozeroy":this.lineOptions.fill=[!1,!0,!1,!1];break;case"tozerox":this.lineOptions.fill=[!0,!1,!1,!1];break;default:this.lineOptions.fill=[!1,!1,!1,!1]}var h=b(t.fillcolor);this.lineOptions.color=l,this.lineOptions.width=2*t.line.width,this.lineOptions.dashes=c,this.lineOptions.fillColor=[h,h,h,h]}else this.lineOptions.positions=new Float32Array(0);this.line.update(this.lineOptions)},E.updateError=function(t,e,r,n){var i=this["error"+t],o=e["error_"+t.toLowerCase()],s=this["error"+t+"Options"];"x"===t.toLowerCase()&&o.copy_ystyle&&(o=e.error_y),this["hasError"+t]?(s.positions=r,s.errors=n,s.capSize=o.width,s.lineWidth=o.thickness/2,s.color=a(o.color,1,1)):s.positions=new Float32Array(0),i.update(s)},E.expandAxesFast=function(t,e){for(var r,n,i,o=e||10,a=0;2>a;a++)r=this.scene[T[a]],n=r._min,n||(n=[]),n.push({val:t[a],pad:o}),i=r._max,i||(i=[]),i.push({val:t[a+2],pad:o})},E.expandAxesFancy=function(t,e,r){var n=this.scene,i={padded:!0,ppad:r};g.expand(n.xaxis,t,i),g.expand(n.yaxis,e,i)},E.dispose=function(){this.line.dispose(),this.errorX.dispose(),this.errorY.dispose(),this.scatter.dispose(),this.fancyScatter.dispose()},e.exports=c},{"../../components/errorbars":512,"../../constants/gl2d_dashes":552,"../../constants/gl_markers":554,"../../lib":568,"../../lib/gl_format_color":566,"../../lib/str2rgbarray":580,"../../plots/cartesian/axes":592,"../scatter/get_trace_color":758,"../scatter/make_bubble_size_func":764,"../scatter/subtypes":769,"fast-isnumeric":123,"gl-error2d":125,"gl-line2d":131,"gl-scatter2d":196,"gl-scatter2d-fancy":191}],785:[function(t,e,r){"use strict";var n=t("../../lib"),i=t("../scatter/constants"),o=t("../scatter/subtypes"),a=t("../scatter/xy_defaults"),s=t("../scatter/marker_defaults"),l=t("../scatter/line_defaults"),u=t("../scatter/fillcolor_defaults"),c=t("../../components/errorbars/defaults"),h=t("./attributes");e.exports=function(t,e,r,f){function d(r,i){return n.coerce(t,e,h,r,i)}var p=a(t,e,d);return p?(d("text"),d("mode",p<i.PTS_LINESONLY?"lines+markers":"lines"),o.hasLines(e)&&(d("connectgaps"),l(t,e,r,f,d)),o.hasMarkers(e)&&s(t,e,r,f,d),d("fill"),"none"!==e.fill&&u(t,e,r,d),c(t,e,r,{axis:"y"}),void c(t,e,r,{axis:"x",inherit:"y"})):void(e.visible=!1)}},{"../../components/errorbars/defaults":511,"../../lib":568,"../scatter/constants":755,"../scatter/fillcolor_defaults":757,"../scatter/line_defaults":761,"../scatter/marker_defaults":765,"../scatter/subtypes":769,"../scatter/xy_defaults":771,"./attributes":783}],786:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("../scatter/colorbar"),n.calc=t("../scatter3d/calc"),n.plot=t("./convert"),n.moduleType="trace",n.name="scattergl",n.basePlotModule=t("../../plots/gl2d"),n.categories=["gl2d","symbols","errorBarsOK","markerColorscale","showLegend"],n.meta={},e.exports=n},{"../../plots/gl2d":625,"../scatter/colorbar":753,"../scatter3d/calc":773,"./attributes":783,"./convert":784,"./defaults":785}],787:[function(t,e,r){"use strict";var n=t("../scattergeo/attributes"),i=t("../scatter/attributes"),o=t("../../plots/mapbox/layout_attributes"),a=t("../../plots/attributes"),s=t("../../lib/extend").extendFlat,l=n.line,u=n.marker;e.exports={lon:n.lon,lat:n.lat,mode:{valType:"flaglist",flags:["lines","markers","text"],dflt:"markers",extras:["none"]},text:s({},i.text,{}),line:{color:l.color,width:l.width,dash:l.dash},connectgaps:i.connectgaps,marker:{symbol:{valType:"string",dflt:"circle",arrayOk:!0},opacity:s({},u.opacity,{arrayOk:!1}),size:u.size,sizeref:u.sizeref,sizemin:u.sizemin,sizemode:u.sizemode,color:u.color,colorscale:u.colorscale,cauto:u.cauto,cmax:u.cmax,cmin:u.cmin,autocolorscale:u.autocolorscale,reversescale:u.reversescale,showscale:u.showscale},fill:{valType:"enumerated",values:["none","toself"],dflt:"none"},fillcolor:i.fillcolor,textfont:o.layers.symbol.textfont,textposition:o.layers.symbol.textposition,hoverinfo:s({},a.hoverinfo,{flags:["lon","lat","text","name"]}),_nestedModules:{"marker.colorbar":"Colorbar"}}},{"../../lib/extend":563,"../../plots/attributes":590,"../../plots/mapbox/layout_attributes":645,"../scatter/attributes":750,"../scattergeo/attributes":778}],788:[function(t,e,r){"use strict";var n=t("fast-isnumeric"),i=t("../../lib"),o=t("../../components/colorscale/has_colorscale"),a=t("../../components/colorscale/make_scale_function"),s=t("../scatter/subtypes"),l=t("../scatter/colorscale_calc"),u=t("../scatter/make_bubble_size_func");e.exports=function(t,e){var r=e.lon.length,c=e.marker,h=s.hasMarkers(e),f=h&&Array.isArray(c.color),d=h&&Array.isArray(c.size),p=h&&Array.isArray(c.symbol),v=Array.isArray(e.text);l(e);for(var m=o(e,"marker")?a(c.colorscale,c.cmin,c.cmax):i.identity,g=s.isBubble(e)?u(e):i.identity,y=[],b=0,x=0;r>x;x++){var _=e.lon[x],w=e.lat[x];if(n(_)&&n(w)){var M={};if(b++,M.lonlat=[+_,+w],h){if(f){var k=c.color[x];M.mc=k,M.mcc=m(k)}if(d){var A=c.size[x];M.ms=A,M.mrc=g(A)}if(p){var T=c.symbol[x];M.mx="string"==typeof T?T:"circle"}}if(v){var E=e.text[x];M.tx="string"==typeof E?E:""}y.push(M)}else b>0&&(y[b-1].gapAfter=!0)}return y}},{"../../components/colorscale/has_colorscale":496,"../../components/colorscale/make_scale_function":500,"../../lib":568,"../scatter/colorscale_calc":754,"../scatter/make_bubble_size_func":764,"../scatter/subtypes":769,"fast-isnumeric":123}],789:[function(t,e,r){"use strict";function n(){return{geojson:i(),layout:{visibility:"none"},paint:{}}}function i(){return{type:"Point",coordinates:[]}}function o(t,e){return{type:"Polygon",coordinates:e}}function a(t,e){return{type:"MultiLineString",coordinates:e}}function s(t,e){function r(t,r,n,i){void 0===e[r][n]&&(e[r][n]=i),t[r]=e[r][n]}for(var n=t[0].trace,i=n.marker,o=Array.isArray(i.color),a=Array.isArray(i.size),s=[],l=0;l<t.length;l++){var u=t[l],c={};o&&r(c,g,u.mcc,l),a&&r(c,y,u.mrc,l),s.push({type:"Feature",geometry:{type:"Point",coordinates:u.lonlat},properties:c})}return{type:"FeatureCollection",features:s}}function l(t){for(var e=t[0].trace,r=e.marker||{},n=r.symbol,i=e.text,o="circle"!==n?f(n):d,a=v.hasText(e)?f(i):d,s=[],l=0;l<t.length;l++){var u=t[l];s.push({type:"Feature",geometry:{type:"Point",coordinates:u.lonlat},properties:{symbol:o(u.mx),text:a(u.tx)}})}return{type:"FeatureCollection",features:s}}function u(t,e){var r,n=t.marker;if(Array.isArray(n.color)){for(var i=Object.keys(e[g]),o=[],a=0;a<i.length;a++){var s=i[a];o.push([e[g][s],s])}r={property:g,stops:o}}else r=n.color;return r}function c(t,e){var r,n=t.marker;if(Array.isArray(n.size)){for(var i=Object.keys(e[y]),o=[],a=0;a<i.length;a++){var s=i[a];o.push([e[y][s],+s])}o.sort(function(t,e){return t[0]-e[0]}),r={property:y,stops:o}}else r=n.size/2;return r}function h(t){for(var e=t[0].trace,r=e.connectgaps,n=[],i=[],o=0;o<t.length;o++){var a=t[o];i.push(a.lonlat),!r&&a.gapAfter&&i.length>0&&(n.push(i),i=[])}return n.push(i),n}function f(t){return Array.isArray(t)?function(t){return t}:t?function(){return t}:d}function d(){return""}var p=t("../../lib"),v=t("../scatter/subtypes"),m=t("../../plots/mapbox/convert_text_opts"),g="circle-color",y="circle-radius";e.exports=function(t){var e=t[0].trace,r=e.visible===!0,i="none"!==e.fill,f=v.hasLines(e),d=v.hasMarkers(e),b=v.hasText(e),x=d&&"circle"===e.marker.symbol,_=d&&"circle"!==e.marker.symbol,w=n(),M=n(),k=n(),A=n(),T={fill:w,line:M,circle:k,symbol:A};if(!r)return T;var E;if((i||f)&&(E=h(t)),i&&(w.geojson=o(t,E),w.layout.visibility="visible",p.extendFlat(w.paint,{"fill-color":e.fillcolor})),f&&(M.geojson=a(t,E),M.layout.visibility="visible",p.extendFlat(M.paint,{"line-width":e.line.width,"line-color":e.line.color,"line-opacity":e.opacity})),x){var S={};S[g]={},S[y]={},k.geojson=s(t,S),k.layout.visibility="visible",p.extendFlat(k.paint,{"circle-opacity":e.opacity*e.marker.opacity,"circle-color":u(e,S),"circle-radius":c(e,S)})}if((_||b)&&(A.geojson=l(t),p.extendFlat(A.layout,{visibility:"visible","icon-image":"{symbol}-15","text-field":"{text}"}),_&&(p.extendFlat(A.layout,{"icon-size":e.marker.size/10}),p.extendFlat(A.paint,{"icon-opacity":e.opacity*e.marker.opacity,"icon-color":e.marker.color})),b)){var L=(e.marker||{}).size,z=m(e.textposition,L);p.extendFlat(A.layout,{"text-size":e.textfont.size,"text-anchor":z.anchor,"text-offset":z.offset}),p.extendFlat(A.paint,{"text-color":e.textfont.color,"text-opacity":e.opacity})}return T}},{"../../lib":568,"../../plots/mapbox/convert_text_opts":642,"../scatter/subtypes":769}],790:[function(t,e,r){"use strict";function n(t,e,r){var n=r("lon")||[],i=r("lat")||[],o=Math.min(n.length,i.length);return o<n.length&&(e.lon=n.slice(0,o)),o<i.length&&(e.lat=i.slice(0,o)),o}var i=t("../../lib"),o=t("../scatter/subtypes"),a=t("../scatter/marker_defaults"),s=t("../scatter/line_defaults"),l=t("../scatter/text_defaults"),u=t("../scatter/fillcolor_defaults"),c=t("./attributes"),h=t("../scatter/attributes");e.exports=function(t,e,r,f){function d(r,n){return i.coerce(t,e,c,r,n)}function p(r,n){var o=-1===r.indexOf(".line")?c:h;return i.coerce(t,e,o,r,n)}var v=n(t,e,d);if(!v)return void(e.visible=!1);if(d("text"),d("mode"),o.hasLines(e)&&(s(t,e,r,f,d),d("connectgaps")),o.hasMarkers(e)){a(t,e,r,f,p);var m=e.marker;"circle"!==m.symbol&&(Array.isArray(m.size)&&(m.size=m.size[0]),Array.isArray(m.color)&&(m.color=m.color[0]))}o.hasText(e)&&l(t,e,f,d),d("fill"),"none"!==e.fill&&u(t,e,r,d),d("hoverinfo",1===f._dataLength?"lon+lat+text":void 0)}},{"../../lib":568,"../scatter/attributes":750,"../scatter/fillcolor_defaults":757,"../scatter/line_defaults":761,"../scatter/marker_defaults":765,"../scatter/subtypes":769,"../scatter/text_defaults":770,"./attributes":787}],791:[function(t,e,r){"use strict";function n(t,e){function r(t){return t+"\xb0"}var n=t.hoverinfo.split("+"),i=-1!==n.indexOf("all"),o=-1!==n.indexOf("lon"),a=-1!==n.indexOf("lat"),s=e.lonlat,l=[];return i||o&&a?l.push("("+r(s[0])+", "+r(s[1])+")"):o?l.push("lon: "+r(s[0])):a&&l.push("lat: "+r(s[1])),(i||-1!==n.indexOf("text"))&&l.push(e.tx||t.text),l.join("<br>")}var i=t("../../plots/cartesian/graph_interact"),o=t("../scatter/get_trace_color");e.exports=function(t,e,r){function a(t){var e=t.lonlat,n=Math.abs(u.c2p(e)-u.c2p([d,e[1]])),i=Math.abs(c.c2p(e)-c.c2p([e[0],r])),o=Math.max(3,t.mrc||0);return Math.max(Math.sqrt(n*n+i*i)-o,1-3/o)}var s=t.cd,l=s[0].trace,u=t.xa,c=t.ya,h=e>=0?Math.floor((e+180)/360):Math.ceil((e-180)/360),f=360*h,d=e-f;if(i.getClosest(s,a,t),t.index!==!1){var p=s[t.index],v=p.lonlat,m=[v[0]+f,v[1]],g=u.c2p(m),y=c.c2p(m),b=p.mrc||1;return t.x0=g-b,t.x1=g+b,t.y0=y-b,t.y1=y+b,t.color=o(l,p),t.extraText=n(l,p),[t]}}},{"../../plots/cartesian/graph_interact":599,"../scatter/get_trace_color":758}],792:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("../scatter/colorbar"),n.calc=t("./calc"),n.hoverPoints=t("./hover"),n.plot=t("./plot"),n.moduleType="trace",n.name="scattermapbox",n.basePlotModule=t("../../plots/mapbox"),n.categories=["mapbox","gl","symbols","markerColorscale","showLegend"],n.meta={},e.exports=n},{"../../plots/mapbox":643,"../scatter/colorbar":753,"./attributes":787,"./calc":788,"./defaults":790,"./hover":791,"./plot":793}],793:[function(t,e,r){"use strict";function n(t,e){this.mapbox=t,this.map=t.map,this.uid=e,this.idSourceFill=e+"-source-fill",this.idSourceLine=e+"-source-line",this.idSourceCircle=e+"-source-circle",this.idSourceSymbol=e+"-source-symbol",this.idLayerFill=e+"-layer-fill",this.idLayerLine=e+"-layer-line",this.idLayerCircle=e+"-layer-circle",this.idLayerSymbol=e+"-layer-symbol",this.sourceFill=t.createGeoJSONSource(),this.map.addSource(this.idSourceFill,this.sourceFill),this.sourceLine=t.createGeoJSONSource(),this.map.addSource(this.idSourceLine,this.sourceLine),this.sourceCircle=t.createGeoJSONSource(),this.map.addSource(this.idSourceCircle,this.sourceCircle),this.sourceSymbol=t.createGeoJSONSource(),this.map.addSource(this.idSourceSymbol,this.sourceSymbol),this.map.addLayer({id:this.idLayerFill,source:this.idSourceFill,type:"fill"}),this.map.addLayer({id:this.idLayerLine,source:this.idSourceLine,type:"line"}),this.map.addLayer({id:this.idLayerCircle,source:this.idSourceCircle,type:"circle"}),this.map.addLayer({id:this.idLayerSymbol,source:this.idSourceSymbol,type:"symbol"})}function i(t){return"visible"===t.layout.visibility}var o=t("./convert"),a=n.prototype;a.update=function(t){var e=this.mapbox,r=o(t);e.setOptions(this.idLayerFill,"setLayoutProperty",r.fill.layout),e.setOptions(this.idLayerLine,"setLayoutProperty",r.line.layout),e.setOptions(this.idLayerCircle,"setLayoutProperty",r.circle.layout),e.setOptions(this.idLayerSymbol,"setLayoutProperty",r.symbol.layout),i(r.fill)&&(this.sourceFill.setData(r.fill.geojson),e.setOptions(this.idLayerFill,"setPaintProperty",r.fill.paint)),i(r.line)&&(this.sourceLine.setData(r.line.geojson),e.setOptions(this.idLayerLine,"setPaintProperty",r.line.paint)),i(r.circle)&&(this.sourceCircle.setData(r.circle.geojson),e.setOptions(this.idLayerCircle,"setPaintProperty",r.circle.paint)),i(r.symbol)&&(this.sourceSymbol.setData(r.symbol.geojson),e.setOptions(this.idLayerSymbol,"setPaintProperty",r.symbol.paint))},a.dispose=function(){var t=this.map;t.removeLayer(this.idLayerFill),t.removeLayer(this.idLayerLine),t.removeLayer(this.idLayerCircle),t.removeLayer(this.idLayerSymbol),t.removeSource(this.idSourceFill),t.removeSource(this.idSourceLine),t.removeSource(this.idSourceCircle),t.removeSource(this.idSourceSymbol)},e.exports=function(t,e){var r=e[0].trace,i=new n(t,r.uid);return i.update(e),i}},{"./convert":789}],794:[function(t,e,r){"use strict";var n=t("../scatter/attributes"),i=t("../../plots/attributes"),o=t("../../components/colorscale/color_attributes"),a=t("../../lib/extend").extendFlat,s=n.marker,l=n.line,u=s.line;e.exports={a:{valType:"data_array"},b:{valType:"data_array"},c:{valType:"data_array"},sum:{valType:"number",dflt:0,min:0},mode:a({},n.mode,{dflt:"markers"}),text:a({},n.text,{}),line:{color:l.color,width:l.width,dash:l.dash,shape:a({},l.shape,{values:["linear","spline"]}),smoothing:l.smoothing},connectgaps:n.connectgaps,fill:a({},n.fill,{values:["none","toself","tonext"]}),fillcolor:n.fillcolor,marker:a({},{symbol:s.symbol,opacity:s.opacity,maxdisplayed:s.maxdisplayed,size:s.size,sizeref:s.sizeref,sizemin:s.sizemin,sizemode:s.sizemode,showscale:s.showscale,line:a({},{width:u.width},o("marker".line))},o("marker")),textfont:n.textfont,textposition:n.textposition,hoverinfo:a({},i.hoverinfo,{flags:["a","b","c","text","name"]}),hoveron:n.hoveron,_nestedModules:{"marker.colorbar":"Colorbar"}}},{"../../components/colorscale/color_attributes":491,"../../lib/extend":563,"../../plots/attributes":590,"../scatter/attributes":750}],795:[function(t,e,r){"use strict";var n=t("fast-isnumeric"),i=t("../../plots/cartesian/axes"),o=t("../../lib"),a=t("../scatter/subtypes"),s=t("../scatter/colorscale_calc"),l=["a","b","c"],u={a:["b","c"],b:["a","c"],c:["a","b"]};e.exports=function(t,e){var r,c,h,f,d,p,v=t._fullLayout[e.subplot],m=v.sum,g=e.sum||m;for(r=0;r<l.length;r++)if(h=l[r],!e[h]){for(d=e[u[h][0]],p=e[u[h][1]],f=new Array(d.length),c=0;c<d.length;c++)f[c]=g-d[c]-p[c];e[h]=f}var y,b,x,_,w,M,k=e.a.length,A=new Array(k);for(r=0;k>r;r++)y=e.a[r],b=e.b[r],x=e.c[r],n(y)&&n(b)&&n(x)?(y=+y,b=+b,x=+x,_=m/(y+b+x),1!==_&&(y*=_,b*=_,x*=_),M=y,w=x-b,A[r]={x:w,y:M,a:y,b:b,c:x}):A[r]={x:!1,y:!1};var T,E;if(a.hasMarkers(e)&&(T=e.marker,E=T.size,Array.isArray(E))){var S={type:"linear"};i.setConvert(S),E=S.makeCalcdata(e.marker,"size"),E.length>k&&E.splice(k,E.length-k)}return s(e),void 0!==typeof E&&o.mergeArray(E,A,"ms"),A}},{"../../lib":568,"../../plots/cartesian/axes":592,"../scatter/colorscale_calc":754,"../scatter/subtypes":769,"fast-isnumeric":123}],796:[function(t,e,r){"use strict";var n=t("../../lib"),i=t("../scatter/constants"),o=t("../scatter/subtypes"),a=t("../scatter/marker_defaults"),s=t("../scatter/line_defaults"),l=t("../scatter/line_shape_defaults"),u=t("../scatter/text_defaults"),c=t("../scatter/fillcolor_defaults"),h=t("./attributes");e.exports=function(t,e,r,f){function d(r,i){return n.coerce(t,e,h,r,i)}var p,v=d("a"),m=d("b"),g=d("c");if(v?(p=v.length,m?(p=Math.min(p,m.length),g&&(p=Math.min(p,g.length))):p=g?Math.min(p,g.length):0):m&&g&&(p=Math.min(m.length,g.length)),!p)return void(e.visible=!1);v&&p<v.length&&(e.a=v.slice(0,p)),m&&p<m.length&&(e.b=m.slice(0,p)),g&&p<g.length&&(e.c=g.slice(0,p)),d("sum"),d("text");var y=p<i.PTS_LINESONLY?"lines+markers":"lines";d("mode",y),o.hasLines(e)&&(s(t,e,r,f,d),l(t,e,d),d("connectgaps")),o.hasMarkers(e)&&a(t,e,r,f,d),o.hasText(e)&&u(t,e,f,d);var b=[];(o.hasMarkers(e)||o.hasText(e))&&(d("marker.maxdisplayed"),b.push("points")),d("fill"),"none"!==e.fill&&(c(t,e,r,d),o.hasLines(e)||l(t,e,d)),d("hoverinfo",1===f._dataLength?"a+b+c+text":void 0),"tonext"!==e.fill&&"toself"!==e.fill||b.push("fills"),d("hoveron",b.join("+")||"points")}},{"../../lib":568,"../scatter/constants":755,"../scatter/fillcolor_defaults":757,"../scatter/line_defaults":761,"../scatter/line_shape_defaults":763,"../scatter/marker_defaults":765,"../scatter/subtypes":769,"../scatter/text_defaults":770,"./attributes":794}],797:[function(t,e,r){"use strict";var n=t("../scatter/hover"),i=t("../../plots/cartesian/axes");
 e.exports=function(t,e,r,o){function a(t,e){g.push(t._hovertitle+": "+i.tickText(t,e,"hover").text)}var s=n(t,e,r,o);if(s&&s[0].index!==!1){var l=s[0];if(void 0===l.index){var u=1-l.y0/t.ya._length,c=t.xa._length,h=c*u/2,f=c-h;return l.x0=Math.max(Math.min(l.x0,f),h),l.x1=Math.max(Math.min(l.x1,f),h),s}var d=l.cd[l.index];l.a=d.a,l.b=d.b,l.c=d.c,l.xLabelVal=void 0,l.yLabelVal=void 0;var p=l.trace,v=p._ternary,m=p.hoverinfo.split("+"),g=[];return-1!==m.indexOf("all")&&(m=["a","b","c"]),-1!==m.indexOf("a")&&a(v.aaxis,d.a),-1!==m.indexOf("b")&&a(v.baxis,d.b),-1!==m.indexOf("c")&&a(v.caxis,d.c),l.extraText=g.join("<br>"),s}}},{"../../plots/cartesian/axes":592,"../scatter/hover":759}],798:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("../scatter/colorbar"),n.calc=t("./calc"),n.plot=t("./plot"),n.style=t("./style"),n.hoverPoints=t("./hover"),n.selectPoints=t("./select"),n.moduleType="trace",n.name="scatterternary",n.basePlotModule=t("../../plots/ternary"),n.categories=["ternary","symbols","markerColorscale","showLegend"],n.meta={},e.exports=n},{"../../plots/ternary":655,"../scatter/colorbar":753,"./attributes":794,"./calc":795,"./defaults":796,"./hover":797,"./plot":799,"./select":800,"./style":801}],799:[function(t,e,r){"use strict";var n=t("../scatter/plot");e.exports=function(t,e){var r=t.plotContainer;r.select(".scatterlayer").selectAll("*").remove();for(var i={x:function(){return t.xaxis},y:function(){return t.yaxis},plot:r},o=new Array(e.length),a=t.graphDiv.calcdata,s=0;s<a.length;s++){var l=e.indexOf(a[s][0].trace);-1!==l&&(o[l]=a[s],e[l]._ternary=t)}n(t.graphDiv,i,o)}},{"../scatter/plot":766}],800:[function(t,e,r){"use strict";var n=t("../scatter/select");e.exports=function(t,e){var r=n(t,e);if(r){var i,o,a,s=t.cd;for(a=0;a<r.length;a++)i=r[a],o=s[i.pointNumber],i.a=o.a,i.b=o.b,i.c=o.c,delete i.x,delete i.y;return r}}},{"../scatter/select":767}],801:[function(t,e,r){"use strict";var n=t("../scatter/style");e.exports=function(t){for(var e=t._fullLayout._modules,r=0;r<e.length;r++)if("scatter"===e[r].name)return;n(t)}},{"../scatter/style":768}],802:[function(t,e,r){"use strict";function n(t){return{valType:"boolean",dflt:!1}}function i(t){return{show:{valType:"boolean",dflt:!1},project:{x:n("x"),y:n("y"),z:n("z")},color:{valType:"color",dflt:o.defaultLine},usecolormap:{valType:"boolean",dflt:!1},width:{valType:"number",min:1,max:16,dflt:2},highlight:{valType:"boolean",dflt:!0},highlightcolor:{valType:"color",dflt:o.defaultLine},highlightwidth:{valType:"number",min:1,max:16,dflt:2}}}var o=t("../../components/color"),a=t("../../components/colorscale/attributes"),s=t("../../lib/extend").extendFlat;e.exports={z:{valType:"data_array"},x:{valType:"data_array"},y:{valType:"data_array"},text:{valType:"data_array"},surfacecolor:{valType:"data_array"},cauto:a.zauto,cmin:a.zmin,cmax:a.zmax,colorscale:a.colorscale,autocolorscale:s({},a.autocolorscale,{dflt:!1}),reversescale:a.reversescale,showscale:a.showscale,contours:{x:i("x"),y:i("y"),z:i("z")},hidesurface:{valType:"boolean",dflt:!1},lightposition:{x:{valType:"number",min:-1e5,max:1e5,dflt:10},y:{valType:"number",min:-1e5,max:1e5,dflt:1e4},z:{valType:"number",min:-1e5,max:1e5,dflt:0}},lighting:{ambient:{valType:"number",min:0,max:1,dflt:.8},diffuse:{valType:"number",min:0,max:1,dflt:.8},specular:{valType:"number",min:0,max:2,dflt:.05},roughness:{valType:"number",min:0,max:1,dflt:.5},fresnel:{valType:"number",min:0,max:5,dflt:.2}},opacity:{valType:"number",min:0,max:1,dflt:1},_nestedModules:{colorbar:"Colorbar"},_deprecated:{zauto:s({},a.zauto,{}),zmin:s({},a.zmin,{}),zmax:s({},a.zmax,{})}}},{"../../components/color":483,"../../components/colorscale/attributes":489,"../../lib/extend":563}],803:[function(t,e,r){"use strict";var n=t("../../components/colorscale/calc");e.exports=function(t,e){e.surfacecolor?n(e,e.surfacecolor,"","c"):n(e,e.z,"","c")}},{"../../components/colorscale/calc":490}],804:[function(t,e,r){"use strict";var n=t("d3"),i=t("fast-isnumeric"),o=t("../../lib"),a=t("../../plots/plots"),s=t("../../components/colorscale/get_scale"),l=t("../../components/colorbar/draw");e.exports=function(t,e){var r=e[0].trace,u="cb"+r.uid,c=s(r.colorscale),h=r.cmin,f=r.cmax,d=r.surfacecolor||r.z;if(i(h)||(h=o.aggNums(Math.min,null,d)),i(f)||(f=o.aggNums(Math.max,null,d)),t._fullLayout._infolayer.selectAll("."+u).remove(),!r.showscale)return void a.autoMargin(t,u);var p=e[0].t.cb=l(t,u);p.fillcolor(n.scale.linear().domain(c.map(function(t){return h+t[0]*(f-h)})).range(c.map(function(t){return t[1]}))).filllevels({start:h,end:f,size:(f-h)/254}).options(r.colorbar)()}},{"../../components/colorbar/draw":486,"../../components/colorscale/get_scale":495,"../../lib":568,"../../plots/plots":648,d3:119,"fast-isnumeric":123}],805:[function(t,e,r){"use strict";function n(t,e,r){this.scene=t,this.uid=r,this.surface=e,this.data=null,this.showContour=[!1,!1,!1],this.dataScale=1}function i(t,e){return void 0===e&&(e=1),t.map(function(t){var r=t[0],n=d(t[1]),i=n.toRgb();return{index:r,rgb:[i.r,i.g,i.b,e]}})}function o(t){var e=t.shape,r=[e[0]+2,e[1]+2],n=u(new Float32Array(r[0]*r[1]),r);return f.assign(n.lo(1,1).hi(e[0],e[1]),t),f.assign(n.lo(1).hi(e[0],1),t.hi(e[0],1)),f.assign(n.lo(1,r[1]-1).hi(e[0],1),t.lo(0,e[1]-1).hi(e[0],1)),f.assign(n.lo(0,1).hi(1,e[1]),t.hi(1)),f.assign(n.lo(r[0]-1,1).hi(1,e[1]),t.lo(e[0]-1)),n.set(0,0,t.get(0,0)),n.set(0,r[1]-1,t.get(0,e[1]-1)),n.set(r[0]-1,0,t.get(e[0]-1,0)),n.set(r[0]-1,r[1]-1,t.get(e[0]-1,e[1]-1)),n}function a(t){var e=Math.max(t[0].shape[0],t[0].shape[1]);if(v>e){for(var r=v/e,n=[0|Math.floor(t[0].shape[0]*r+1),0|Math.floor(t[0].shape[1]*r+1)],i=n[0]*n[1],a=0;a<t.length;++a){var s=o(t[a]),l=u(new Float32Array(i),n);c(l,s,[r,0,0,0,r,0,0,0,1]),t[a]=l}return r}return 1}function s(t,e){var r=t.glplot.gl,i=l({gl:r}),o=new n(t,i,e.uid);return o.update(e),t.glplot.add(i),o}var l=t("gl-surface3d"),u=t("ndarray"),c=t("ndarray-homography"),h=t("ndarray-fill"),f=t("ndarray-ops"),d=t("tinycolor2"),p=t("../../lib/str2rgbarray"),v=128,m=n.prototype;m.handlePick=function(t){if(t.object===this.surface){var e=[Math.min(0|Math.round(t.data.index[0]/this.dataScale-1),this.data.z[0].length-1),Math.min(0|Math.round(t.data.index[1]/this.dataScale-1),this.data.z.length-1)],r=[0,0,0];Array.isArray(this.data.x[0])?r[0]=this.data.x[e[1]][e[0]]:r[0]=this.data.x[e[0]],Array.isArray(this.data.y[0])?r[1]=this.data.y[e[1]][e[0]]:r[1]=this.data.y[e[1]],r[2]=this.data.z[e[1]][e[0]],t.traceCoordinate=r;var n=this.scene.fullSceneLayout;t.dataCoordinate=[n.xaxis.d2l(r[0])*this.scene.dataScale[0],n.yaxis.d2l(r[1])*this.scene.dataScale[1],n.zaxis.d2l(r[2])*this.scene.dataScale[2]];var i=this.data.text;return i&&i[e[1]]&&void 0!==i[e[1]][e[0]]?t.textLabel=i[e[1]][e[0]]:t.textLabel="",t.data.dataCoordinate=t.dataCoordinate.slice(),this.surface.highlight(t.data),this.scene.glplot.spikes.position=t.dataCoordinate,!0}},m.setContourLevels=function(){for(var t=[[],[],[]],e=!1,r=0;3>r;++r)this.showContour[r]&&(e=!0,t[r]=this.scene.contourLevels[r]);e&&this.surface.update({levels:t})},m.update=function(t){var e,r=this.scene,n=r.fullSceneLayout,o=this.surface,s=t.opacity,l=i(t.colorscale,s),c=t.z,f=t.x,d=t.y,v=n.xaxis,m=n.yaxis,g=n.zaxis,y=r.dataScale,b=c[0].length,x=c.length,_=[u(new Float32Array(b*x),[b,x]),u(new Float32Array(b*x),[b,x]),u(new Float32Array(b*x),[b,x])],w=_[0],M=_[1],k=r.contourLevels;this.data=t,h(_[2],function(t,e){return g.d2l(c[e][t])*y[2]}),Array.isArray(f[0])?h(w,function(t,e){return v.d2l(f[e][t])*y[0]}):h(w,function(t){return v.d2l(f[t])*y[0]}),Array.isArray(d[0])?h(M,function(t,e){return m.d2l(d[e][t])*y[1]}):h(M,function(t,e){return m.d2l(d[e])*y[1]});var A={colormap:l,levels:[[],[],[]],showContour:[!0,!0,!0],showSurface:!t.hidesurface,contourProject:[[!1,!1,!1],[!1,!1,!1],[!1,!1,!1]],contourWidth:[1,1,1],contourColor:[[1,1,1,1],[1,1,1,1],[1,1,1,1]],contourTint:[1,1,1],dynamicColor:[[1,1,1,1],[1,1,1,1],[1,1,1,1]],dynamicWidth:[1,1,1],dynamicTint:[1,1,1],opacity:1};if(A.intensityBounds=[t.cmin,t.cmax],t.surfacecolor){var T=u(new Float32Array(b*x),[b,x]);h(T,function(e,r){return t.surfacecolor[r][e]}),_.push(T)}else A.intensityBounds[0]*=y[2],A.intensityBounds[1]*=y[2];this.dataScale=a(_),t.surfacecolor&&(A.intensity=_.pop()),"opacity"in t&&t.opacity<1&&(A.opacity=.25*t.opacity);var E=[!0,!0,!0],S=["x","y","z"];for(e=0;3>e;++e){var L=t.contours[S[e]];E[e]=L.highlight,A.showContour[e]=L.show||L.highlight,A.showContour[e]&&(A.contourProject[e]=[L.project.x,L.project.y,L.project.z],L.show?(this.showContour[e]=!0,A.levels[e]=k[e],o.highlightColor[e]=A.contourColor[e]=p(L.color),L.usecolormap?o.highlightTint[e]=A.contourTint[e]=0:o.highlightTint[e]=A.contourTint[e]=1,A.contourWidth[e]=L.width):this.showContour[e]=!1,L.highlight&&(A.dynamicColor[e]=p(L.highlightcolor),A.dynamicWidth[e]=L.highlightwidth))}A.coords=_,o.update(A),o.visible=t.visible,o.enableDynamic=E,o.snapToData=!0,"lighting"in t&&(o.ambientLight=t.lighting.ambient,o.diffuseLight=t.lighting.diffuse,o.specularLight=t.lighting.specular,o.roughness=t.lighting.roughness,o.fresnel=t.lighting.fresnel),"lightposition"in t&&(o.lightPosition=[t.lightposition.x,t.lightposition.y,t.lightposition.z]),s&&1>s&&(o.supportsTransparency=!0)},m.dispose=function(){this.scene.glplot.remove(this.surface),this.surface.dispose()},e.exports=s},{"../../lib/str2rgbarray":580,"gl-surface3d":227,ndarray:433,"ndarray-fill":426,"ndarray-homography":431,"ndarray-ops":432,tinycolor2:454}],806:[function(t,e,r){"use strict";function n(t,e,r){e in t&&!(r in t)&&(t[r]=t[e])}var i=t("../../lib"),o=t("../../components/colorscale/defaults"),a=t("./attributes");e.exports=function(t,e,r,s){function l(r,n){return i.coerce(t,e,a,r,n)}var u,c,h=l("z");if(!h)return void(e.visible=!1);var f=h[0].length,d=h.length;if(l("x"),l("y"),!Array.isArray(e.x))for(e.x=[],u=0;f>u;++u)e.x[u]=u;if(l("text"),!Array.isArray(e.y))for(e.y=[],u=0;d>u;++u)e.y[u]=u;["lighting.ambient","lighting.diffuse","lighting.specular","lighting.roughness","lighting.fresnel","lightposition.x","lightposition.y","lightposition.z","hidesurface","opacity"].forEach(function(t){l(t)});var p=l("surfacecolor");l("colorscale");var v=["x","y","z"];for(u=0;3>u;++u){var m="contours."+v[u],g=l(m+".show"),y=l(m+".highlight");if(g||y)for(c=0;3>c;++c)l(m+".project."+v[c]);g&&(l(m+".color"),l(m+".width"),l(m+".usecolormap")),y&&(l(m+".highlightcolor"),l(m+".highlightwidth"))}p||(n(t,"zmin","cmin"),n(t,"zmax","cmax"),n(t,"zauto","cauto")),o(t,e,s,l,{prefix:"",cLetter:"c"})}},{"../../components/colorscale/defaults":493,"../../lib":568,"./attributes":802}],807:[function(t,e,r){"use strict";var n={};n.attributes=t("./attributes"),n.supplyDefaults=t("./defaults"),n.colorbar=t("./colorbar"),n.calc=t("./calc"),n.plot=t("./convert"),n.moduleType="trace",n.name="surface",n.basePlotModule=t("../../plots/gl3d"),n.categories=["gl3d","noOpacity"],n.meta={},e.exports=n},{"../../plots/gl3d":628,"./attributes":802,"./calc":803,"./colorbar":804,"./convert":805,"./defaults":806}]},{},[12])(12)});});require(['plotly'], function(Plotly) {window.Plotly = Plotly;});}</script></div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 This is the format of your plot grid:
 [ (1,1) x1,y1 ]  [ (1,2) x2,y2 ]  [ (1,3) x3,y3 ]
 
 </pre></div></div>
 </div>
-<div class="nboutput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>Out[4]:
 </pre></div>
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <img alt="_images/2_features_1_5_3.png" src="_images/2_features_1_5_3.png" />
 </div>
 </div>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [5]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="k">for</span> <span class="n">single_trial</span> <span class="ow">in</span> <span class="n">replicate_trial</span><span class="o">.</span><span class="n">single_trial_list</span><span class="p">:</span>
     <span class="k">print</span><span class="p">(</span><span class="n">replicate_trial</span><span class="o">.</span><span class="n">single_trial_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">analyte_dict</span><span class="p">[</span><span class="n">biomass_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">rate</span><span class="p">)</span>
@@ -742,27 +795,27 @@ This is the format of your plot grid:
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 {&#39;A&#39;: 38.794397885882105, &#39;lam&#39;: 5.4900330240132948, &#39;growth_rate&#39;: 4.9999996572528627}
 </pre></div></div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <img alt="_images/2_features_1_6_1.png" src="_images/2_features_1_6_1.png" />
 </div>
 </div>
-<div class="nbinput container">
-<div class="highlight-none"><div class="highlight"><pre>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [6]:
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># We can break the trials into stages</span>
 <span class="n">replicate_trial</span><span class="o">.</span><span class="n">calculate_stages</span><span class="p">(</span><span class="n">stage_indices</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">600</span><span class="p">],[</span><span class="mi">600</span><span class="p">,</span><span class="mi">1000</span><span class="p">]])</span>
 
@@ -782,10 +835,10 @@ This is the format of your plot grid:
 </pre></div>
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 [0, 600]
 Started fit
@@ -799,37 +852,27 @@ Stage:  0
 {&#39;A&#39;: 18.09275269452317, &#39;lam&#39;: 50.209771541246589, &#39;growth_rate&#39;: 3.0339841137990837}
 </pre></div></div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <img alt="_images/2_features_1_7_1.png" src="_images/2_features_1_7_1.png" />
 </div>
 </div>
-<div class="nboutput container">
-<div class="container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
 Stage:  1
 {&#39;A&#39;: 38.794398023096186, &#39;lam&#39;: 4.4741197722850785, &#39;growth_rate&#39;: 4.9999859144920213}
 </pre></div></div>
 </div>
-<div class="nboutput nblast container">
-<div class="container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
 </div>
-<div class="container">
+<div class="output_area docutils container">
 <img alt="_images/2_features_1_7_3.png" src="_images/2_features_1_7_3.png" />
-</div>
-</div>
-<div class="nbinput nblast container">
-<div class="highlight-none"><div class="highlight"><pre>
-<span></span>In [ ]:
-</pre></div>
-</div>
-<div class="highlight-ipython3"><div class="highlight"><pre>
-<span></span>
-</pre></div>
 </div>
 </div>
 </div>
@@ -847,7 +890,7 @@ Stage:  1
     </p>
     <p>
         &copy; Copyright 2016, Naveen Venayak.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.<br/>
     </p>
   </div>
 </footer>

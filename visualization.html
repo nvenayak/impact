@@ -1,43 +1,32 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Dashboards &mdash; impact 0.8.0 documentation</title>
-    
+    <title>Dashboards &#8212; impact 0.8.0 documentation</title>
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootswatch-3.3.6/simplex/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.8.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
-    <link rel="top" title="impact 0.8.0 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-default navbar-fixed-top">
     <div class="container">
@@ -69,7 +58,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="readme.html">Impact: a framework for analyzing microbial physiology</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#quick-start-guide">Quick Start Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#documentation">Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
@@ -80,12 +70,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="core_structure.html">Core structure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal"><span class="pre">TrialIdentifier</span></code> class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal"><span class="pre">AnalyteData</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal"><span class="pre">SingleTrial</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal"><span class="pre">ReplicateTrial</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal"><span class="pre">Experiment</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal"><span class="pre">Project</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#TrialIdentifier-class"><code class="docutils literal notranslate"><span class="pre">TrialIdentifier</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#AnalyteData"><code class="docutils literal notranslate"><span class="pre">AnalyteData</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#SingleTrial"><code class="docutils literal notranslate"><span class="pre">SingleTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#ReplicateTrial"><code class="docutils literal notranslate"><span class="pre">ReplicateTrial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Experiment"><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core_structure.html#Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="1_features_0.html">Analyzing Features</a><ul>
@@ -98,6 +88,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="2_features_1.html">Stages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parser.html">Adding custom functionality</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parser.html#Writing-a-new-parser">Writing a new parser</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="impact.html">impact package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="impact.html#submodules">Submodules</a></li>
@@ -141,7 +135,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="_sources/visualization.txt"
+  <a href="_sources/visualization.md.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -163,13 +157,39 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Dashboards</a><ul>
+<li><a class="reference internal" href="#subplots">subplots</a><ul>
+<li><a class="reference internal" href="#features">features</a></li>
+<li><a class="reference internal" href="#"></a></li>
+<li><a class="reference internal" href="#options">options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div id="sourcelink">
+  <a href="_sources/visualization.md.txt"
+     rel="nofollow">Source</a>
+</div>
+<form action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="col-md-9 content">
       
   <div class="section" id="dashboards">
 <span id="dashboards"></span><h1>Dashboards<a class="headerlink" href="#dashboards" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li>Dashboards make it easy to extract insight from data</li>
-<li>Choose what you&#8217;re interested in</li>
+<li>Choose what you’re interested in</li>
 <li>Choose your layout</li>
 </ul>
 <p>options</p>
@@ -206,29 +226,29 @@
 <div class="section" id="">
 <span id="id1"></span><h3><a class="headerlink" href="#" title="Permalink to this headline">¶</a></h3>
 <p>Degree of abstractions</p>
-<pre class="literal-block">
-0. Raw time-course data
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.</span> <span class="n">Raw</span> <span class="n">time</span><span class="o">-</span><span class="n">course</span> <span class="n">data</span>
 
-a. with savgol filter
+<span class="n">a</span><span class="o">.</span> <span class="k">with</span> <span class="n">savgol</span> <span class="nb">filter</span>
 
-b. with blank subtraction
+<span class="n">b</span><span class="o">.</span> <span class="k">with</span> <span class="n">blank</span> <span class="n">subtraction</span>
 
-c. with curve-fit
+<span class="n">c</span><span class="o">.</span> <span class="k">with</span> <span class="n">curve</span><span class="o">-</span><span class="n">fit</span>
 
-d. with parameter
+<span class="n">d</span><span class="o">.</span> <span class="k">with</span> <span class="n">parameter</span>
 
-e. statistic of above
+<span class="n">e</span><span class="o">.</span> <span class="n">statistic</span> <span class="n">of</span> <span class="n">above</span>
 
-f. statistic with outliers removed
+<span class="n">f</span><span class="o">.</span> <span class="n">statistic</span> <span class="k">with</span> <span class="n">outliers</span> <span class="n">removed</span>
 
-g. calculated flux value from constrained GEM
+<span class="n">g</span><span class="o">.</span> <span class="n">calculated</span> <span class="n">flux</span> <span class="n">value</span> <span class="kn">from</span> <span class="nn">constrained</span> <span class="n">GEM</span>
 
-h. 
+<span class="n">h</span><span class="o">.</span> 
 
-h. Flux-visualization
+<span class="n">h</span><span class="o">.</span> <span class="n">Flux</span><span class="o">-</span><span class="n">visualization</span>
 
-e. 
-</pre>
+<span class="n">e</span><span class="o">.</span> 
+</pre></div>
+</div>
 <ol class="simple">
 <li></li>
 </ol>
@@ -237,7 +257,7 @@ e.
 <span id="options"></span><h3>options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>stages (ON/OFF)</li>
-<li>time-slice (slider, js &lt;&#8211;ajax&#8211;&gt; api &lt;&#8211;flask rest&#8211;&gt; impact &lt;&#8211; sql alchemy&#8211;&gt; db)</li>
+<li>time-slice (slider, js &lt;–ajax–&gt; api &lt;–flask rest–&gt; impact &lt;– sql alchemy–&gt; db)</li>
 </ul>
 </div>
 </div>
@@ -256,7 +276,7 @@ e.
     </p>
     <p>
         &copy; Copyright 2016, Naveen Venayak.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.<br/>
     </p>
   </div>
 </footer>
