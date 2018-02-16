@@ -90,6 +90,9 @@ ENV/
 .idea/
 
 docs/WIPdocs/
+docs/deprecated/
+docs/.ipynb_checkpoints
+docs/assets/
 
 *secrets.py
 /impact/custom_parsers.py
@@ -103,3 +106,4 @@ docs/WIPdocs/
 /tests/Untitled*
 *Untitled*
 
+/docs/_build/*
