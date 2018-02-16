@@ -278,7 +278,7 @@ class ReplicateTrial(Base):
         verbose = settings.verbose
         max_fraction_replicates_to_remove = settings.max_fraction_replicates_to_remove
         outlier_cleaning_flag = settings.outlier_cleaning_flag
-
+        std_deviation_cutoff = settings.std_deviation_cutoff
         # http://stackoverflow.com/questions/23199796/detect-and-exclude-outliers-in-pandas-dataframe
         df = self.replicate_df[analyte]
         col_names = list(df.columns.values)

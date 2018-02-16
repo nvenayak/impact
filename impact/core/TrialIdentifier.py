@@ -7,8 +7,9 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 
 
 class TrialIdentifierMixin(object):
-    # eq_attrs = []
-    # __table_args__ = (UniqueConstraint(*eq_attrs),)
+    """
+    Provides hash and equality functionality for trial identifiers
+    """
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
