@@ -41,4 +41,4 @@ To update to the latest version, run the following in the root folder:
     
 ## Documentation
 
-The documentation is available in `docs` or a rendered version is available [here](http://nvenayak.github.io/impact/)
+The documentation is available in `docs` or a rendered version is available [here](http://impact.readthedocs.io/en/latest/)
