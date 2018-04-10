@@ -59,8 +59,8 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # General information about the project.
-project = 'impact'
-copyright = '2016, Naveen Venayak'
+project = 'Impact'
+copyright = '2018, Naveen Venayak'
 author = 'Naveen Venayak'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -143,9 +143,9 @@ html_theme_options = {
     #    (name, "http://example.com", True) # arbitrary absolute url
     # Note the "1" or "True" value above as the third argument to indicate
     # an arbitrary url.
-    'navbar_links': [
-        ("Home", "/", True),
-    ],
+    # 'navbar_links': [
+    #     ("Home", "/", True),
+    # ],
 
     # Render the next and previous page links in navbar. (Default: true)
     'navbar_sidebarrel': True,
@@ -278,7 +278,7 @@ html_extra_path = ['_root_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'impact'
+htmlhelp_basename = 'Impact'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -300,7 +300,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'impact.tex', 'impact: Fermentation Analysis Toolbox',
+  (master_doc, 'impact.tex', 'Impact: A python framework for microbial physiology workflows',
    'Naveen Venayak', 'manual'),
 ]
 
@@ -330,7 +330,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'fermentationdataanalysisandplottinginventory', 'Fermentation Data Analysis and Plotting Inventory Documentation',
+    (master_doc, 'Impact', 'Impact: A python framework for microbial physiology workflows',
      [author], 1)
 ]
 
@@ -344,8 +344,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'FermentationDataAnalysisandPlottingInventory', 'Fermentation Data Analysis and Plotting Inventory Documentation',
-   author, 'FermentationDataAnalysisandPlottingInventory', 'One line description of project.',
+  (master_doc, 'Impact', 'Impact: A python framework for microbial physiology workflows',
+   author, 'Impact', 'Impact: A python framework for microbial physiology workflows',
    'Miscellaneous'),
 ]
 
