@@ -1,5 +1,0 @@
-autodoc
-ipython
-numpydoc
-sphinx_bootstrap_theme
-nbsphinx
