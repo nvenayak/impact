@@ -3,5 +3,4 @@ from .AnalyteData import TimeCourse, TimePoint, Substrate, Product, Biomass, Rep
 from .SingleTrial import SingleTrial
 from .ReplicateTrial import ReplicateTrial
 from .Experiment import Experiment
-from .Project import Project
 from .settings import settings

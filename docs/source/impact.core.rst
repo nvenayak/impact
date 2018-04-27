@@ -16,7 +16,6 @@ Submodules
    impact.core.AnalyteData
    impact.core.Experiment
    impact.core.OmicsData
-   impact.core.Project
    impact.core.ReplicateTrial
    impact.core.SingleTrial
    impact.core.TrialIdentifier
