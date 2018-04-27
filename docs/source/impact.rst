@@ -15,7 +15,6 @@ Submodules
 
 .. toctree::
 
-   impact.custom_parsers
    impact.database
    impact.parsers
    impact.plotting
