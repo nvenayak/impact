@@ -1,5 +1,6 @@
 from .Base import *
 
+
 class SpecificProductivityFactory(object):
     requires = ['substrate', 'product', 'biomass']
     name = 'specific_productivity'
@@ -12,14 +13,14 @@ class SpecificProductivityFactory(object):
         if analyte_data.trial_identifier.analyte_type == 'biomass':
             self.biomass = analyte_data
             analyte_data.specific_productivity = SpecificProductivity(biomass=analyte_data,
-                                                                              analyte=analyte_data)
+                                                                      analyte=analyte_data)
 
             if len(self.pending_analytes) > 1:
                 for analyte_data in self.pending_analytes:
                     analyte_data.specific_productivity = SpecificProductivity(biomass=self.biomass,
                                                                               analyte=analyte_data)
 
-        if analyte_data.trial_identifier.analyte_type in ['substrate','product']:
+        if analyte_data.trial_identifier.analyte_type in ['substrate', 'product']:
             if self.biomass is not None:
                 analyte_data.specific_productivity = SpecificProductivity(biomass=self.biomass, analyte=analyte_data)
             else:
@@ -48,7 +49,7 @@ class SpecificProductivity(BaseAnalyteFeature):
 
         try:
             if len(self.analyte.data_vector) > 2:
-                self.analyte.calculate()    # Need gradient calculated before accessing
+                self.analyte.calculate()  # Need gradient calculated before accessing
                 self.specific_productivity = self.analyte.gradient / self.biomass.data_vector
         except Exception as e:
             print(self.analyte.data_vector)

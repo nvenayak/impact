@@ -26,10 +26,9 @@ def create_session(engine='default'):
 def create_db():
     Base.metadata.create_all(bind_engine())
 
-
 session = create_session()
 
-
+# Code to remove duplicates and consolidate references to common elements in database
 # @event.listens_for(session, 'before_flush')
 # def remove_duplicates(session, flush_context, instances):
 #     for cls in [ti.Environment, ti.Media, ti.Strain]:

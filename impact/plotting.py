@@ -274,8 +274,6 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                 # just so the function call doesn't return an error
                 sort_by_flag = False
 
-            # if len(replicateTrialList) >= 6:
-            #     colors = cl.interp(color_scale, len(uniques))
             if colors is None:
                 colors = color_scale
 
@@ -294,13 +292,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                              if getattr(replicate.trial_identifier, sortBy) == unique or sort_by_flag is False]
                     label = ' titer (g/L)'
 
-                # legendgroup = ''
-                # for attribute in ['strain.name', 'id_1', 'id_2']:
-                #     if attribute != sortBy:
-                #         legendgroup += getattr(replicateTrialList[0].trial_identifier, attribute)
-
                 if sort_by_flag:
-
                     legendgroup = unique
 
                     if sortBy == 'strain_id':
@@ -386,8 +378,7 @@ def printGenericTimeCourse_plotly(replicateTrialList=None, dbName=None, strainsT
                                                                 height, legend_params, plot_curve_fit,
                                                                 data_to_plot=data_to_plot)
             showlegend_flag = False
-            # else:
-            #     raise Exception('No plot type selection (endpointFlag or yieldFlag must be True)')
+
     if sort_by_product_in_legend_flag:
         for name in prepped_x:
             trace = go.Bar(x=prepped_x[name],
@@ -542,69 +533,6 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
                                        name=(replicate.trial_identifier.strain.name + '+' +
                                              replicate.trial_identifier.id_1 +
                                              replicate.trial_identifier.id_2).split('LMSE')[-1])  # ,
-
-            #
-            #     if pltNum > 4:
-            #         row = 2
-            #         col = pltNum - 4
-            #     else:
-            #         row = 1
-            #         col = pltNum
-            #     fig.append_trace(trace, row, col)
-            #     trace = go.Scatter(x=t[::removePointFraction],
-            #                        y=replicate_id.avg.titer_dict[product].data_vector[::removePointFraction],
-            #                        error_y={
-            #                            'type'   : 'data',
-            #                            'array'  : replicate_id.std.titer_dict[product].data_vector[
-            #                                       ::removePointFraction],
-            #                            'visible': True,
-            #                            'color'  : colors[color_index]},
-            #                        mode='markers',
-            #                        marker={
-            #                            'color': colors[color_index]},
-            #                        legendgroup=replicate_id.trial_identifier.strain.name + '\t' +
-            #                                    replicate_id.trial_identifier.id_1 + '\t' +
-            #                                    replicate_id.trial_identifier.id_2,
-            #                        name=replicate_id.trial_identifier.strain.name + replicate_id.trial_identifier.id_1 + replicate_id.trial_identifier.id_2)
-            #     dataLabel = 'AnalyteData g/L'
-            # elif replicate_id.avg.titer_dict[
-            #     product].trial_identifier.titerType == 'product' and dataType == 'yields':
-            #     # Plot the data
-            #     trace = go.Scatter(x=t[::removePointFraction],
-            #                        y=replicate_id.avg.yields[product][::removePointFraction],
-            #                        error_y={
-            #                            'type'   : 'data',
-            #                            'array'  : replicate_id.std.yields[product][::removePointFraction],
-            #                            'visible': True,
-            #                            'color'  : colors[color_index]},
-            #                        mode='markers',
-            #                        marker={
-            #                            'color': colors[color_index]},
-            #                        legendgroup=replicate_id.trial_identifier.strain.name + '\t' +
-            #                                    replicate_id.trial_identifier.id_1 + '\t' +
-            #                                    replicate_id.trial_identifier.id_2,
-            #                        name=replicate_id.trial_identifier.strain.name + replicate_id.trial_identifier.id_1 + replicate_id.trial_identifier.id_2)
-            #     dataLabel = 'Yield mmol/mmol'
-            # else:
-            #     trace = go.Scatter(x=t[::removePointFraction],
-            #                        y=replicate_id.avg.titer_dict[product].data_vector[::removePointFraction],
-            #                        error_y={
-            #                            'type'   : 'data',
-            #                            'array'  : replicate_id.std.titer_dict[product].data_vector[
-            #                                       ::removePointFraction],
-            #                            'visible': True,
-            #                            'color'  : colors[color_index]},
-            #                        mode='lines+markers',
-            #                        marker={
-            #                            'color': colors[color_index]},
-            #                        line={'color': colors[color_index]},
-            #                        showlegend=showlegend_flag,
-            #                        legendgroup=replicate_id.trial_identifier.strain.name + '\t' +
-            #                                    replicate_id.trial_identifier.id_1 + '\t' +
-            #                                    replicate_id.trial_identifier.id_2,
-            #                        name=replicate_id.trial_identifier.strain.name + replicate_id.trial_identifier.id_1 + replicate_id.trial_identifier.id_2)  # ,
-            #     #                    label = '$\mu$ = '+'{:.2f}'.format(replicate_id.avg.OD.fit_params[1]) + ' $\pm$ ' + '{:.2f}'.format(replicate_id.std.OD.fit_params[1])+', n='+str(len(replicate_id.replicate_ids)-len(replicate_id.bad_replicates)))
-            #     dataLabel = 'AnalyteData g/L'
 
             # Append the plot if it was created
             if sortBy == 'product_in_legend' or single_subplot:
@@ -778,19 +706,6 @@ def time_profile_traces_single_trials(replicate_trial=None, feature='titer', ana
     traces = []
     if colors is None:
         colors = get_colors(len(replicate_trial.single_trials), colors=colors, cl_scales=cl_scales)
-    # if colors is None:
-    #     color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
-    #     # https://plot.ly/ipython-notebooks/color-scales/
-    #     if len(replicate_trial.single_trials) > int(cl_scales[0]):
-    #         print(len(replicate_trial.single_trials))
-    #         print(int(cl_scales[0]))
-    #         print('interpolated')
-    #         num_pts = len(replicate_trial.single_trials)
-    #         colors = cl.interp(color_scale, num_pts)
-    #         # Index the list
-    #         colors = [colors[int(x)] for x in np.arange(0, num_pts, num_pts / round(len(replicate_trial.single_trials)))]
-    #     else:
-    #         colors = color_scale
 
     for index, singletrial in enumerate(replicate_trial.single_trials):
         # Determine how many points should be plotted
@@ -808,3 +723,4 @@ def time_profile_traces_single_trials(replicate_trial=None, feature='titer', ana
                                  legendgroup=legendgroup(singletrial),
                                  name=label(singletrial)))  # ,
     return traces
+

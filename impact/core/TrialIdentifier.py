@@ -328,7 +328,7 @@ class Environment(Base, TrialIdentifierMixin):
         if self.DO:
             env += 'DO: ' + str(self.DO) + ' '
         for attr, value in self.non_native_attributes.items():
-            env += attr+': '+value
+            env += attr + ': ' + value
         return env
 
 
@@ -524,8 +524,8 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                 except ValueError:
                                     print('Invalid value entered for attribute')
                             else:
-                                warn('Creating non-native attribute: '+attr2)
-                                non_native_attributes = {'environment':{attr2:val.strip()}}
+                                warn('Creating non-native attribute: ' + attr2)
+                                non_native_attributes = {'environment': {attr2: val.strip()}}
                                 # non_native_attributes['environment'] = {}
                                 # non_native_attribu
                                 # raise Exception('Unkown attribute passed for environment identifier')
@@ -562,80 +562,6 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
             self.environment.non_native_attributes = non_native_attributes['environment']
         except NameError:
             pass
-        # for attr, value in non_native_attributes['environment'].items():
-        #     setattr(self.environment,attr,value)
-        # parameter_values = id.split('|')
-        # old version commented
-        # for parameter_value in parameter_values:
-        #     if parameter_value != '':
-        #         if len(parameter_value.split(':')) == 1:
-        #             if parameter_value in ['blank','Blank']:
-        #                 self.blank = True
-        #             else:
-        #                 raise Exception('Identifier malformed: '+parameter_value)
-        #         elif len(parameter_value.split(':')) == 2:
-        #             key, val = parameter_value.split(':')
-        #
-        #             if len(key.split('__')) == 1:
-        #                 if key in ['strain', 'media', 'environment']:
-        #                     getattr(self, key).name = val.strip()
-        #                 elif key == 'rep':
-        #                     self.replicate_id = int(val)
-        #                 elif key in ['time','t']:
-        #                     self.time = float(val)
-        #                 else:
-        #                     raise Exception('Unknown key: ' + str(key))
-        #             elif len(key.split('__')) == 2:
-        #                 attr1, attr2 = key.split('__')
-        #
-        #                 # Set knockouts
-        #                 if attr1 == 'strain':
-        #                     if attr2 == 'ko':
-        #                         kos = val.split(',')
-        #                         for ko in kos:
-        #                             self.strain.knockouts.append(Knockout(gene=ko))
-        #                     if attr2 == 'plasmids':
-        #                         plasmids = val.split(',')
-        #                         for plasmid in plasmids:
-        #                             self.strain.plasmids.append(Plasmid(name=plasmid))
-        #                     if attr2 == 'id':
-        #                         if self.strain.id_1 == '':
-        #                             self.strain.id_1 = val
-        #                         elif self.strain.id_2 == '':
-        #                             self.strain.id_2 = val
-        #                         else:
-        #                             raise Exception('Only two generic strain ids permitted')
-        #
-        #                 # Set component concentrations
-        #                 elif attr1 == 'media':
-        #                     if attr2 == 'cc':
-        #                         conc, comp = val.split(' ')
-        #                         try:
-        #                             # Try format concentration component (0.2 glc)
-        #                             self.media.add_component(ComponentConcentration(MediaComponent(comp), float(conc)))
-        #                         except ValueError:
-        #                             # Try format component concentration (glc 0.2)
-        #                             self.media.add_component(ComponentConcentration(MediaComponent(conc), float(comp)))
-        #                     elif attr2 == 'base':
-        #                         self.media.parent = Media(name=val)
-        #                     else:
-        #                         setattr(self.media,attr2,val)
-        #
-        #
-        #                 elif attr1 == 'environment':
-        #                     if attr2 == 'labware':
-        #                         self.environment.labware.name = val
-        #                     elif attr2 in ['shaking_speed','temperature','pH','DO']:
-        #                         setattr(self.environment,attr2,float(val))
-        #                     else:
-        #                         setattr(self.environment,attr2,val)
-        #                 else:
-        #                     # Set other attrs
-        #                     setattr(getattr(self, attr1), attr2, val)
-        #             else:
-        #                 raise Exception('Too many subparameters traversed' + str(key))
-        #         else:
-        #             raise Exception('Malformed parameter: '+id)
 
     def parse_trial_identifier_from_csv(self, csv_trial_identifier):
         """
@@ -716,7 +642,7 @@ class SingleTrialIdentifier(ReplicateTrialIdentifier):
 
     def __str__(self):
         return "strain: %s,\tmedia: %s,\tenv: %s,\tt: %sh,\trep: %s" % (
-        self.strain, self.media, self.environment, self.time, self.replicate_id)
+            self.strain, self.media, self.environment, self.time, self.replicate_id)
 
 
 class TimeCourseIdentifier(SingleTrialIdentifier):
@@ -751,4 +677,4 @@ class TimeCourseIdentifier(SingleTrialIdentifier):
 
     def __str__(self):
         return "strain: %s,\tmedia: %s,\tenv: %s,\tanalyte: %s,\trep: %s" % (
-        self.strain, self.media, self.environment, self.analyte_name, self.replicate_id)
+            self.strain, self.media, self.environment, self.analyte_name, self.replicate_id)

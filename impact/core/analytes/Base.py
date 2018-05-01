@@ -14,6 +14,7 @@ from sqlalchemy.orm import relationship, reconstructor
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy import event
 
+
 class TimePoint(Base):
     __tablename__ = 'time_point'
 
@@ -41,9 +42,6 @@ class TimePoint(Base):
 
     def get_unique_timepoint_id(self):
         return self.trial_identifier.unique_time_point()
-
-            # str(self.trial_identifier.strain) + self.trial_identifier.id_1 + self.trial_identifier.id_2 + str(
-            # self.trial_identifier.replicate_id) + self.trial_identifier.analyte_name
 
 
 class TimeCourse(Base):
@@ -95,7 +93,6 @@ class TimeCourse(Base):
             for time_point in kwargs['time_points']:
                 self.add_timepoint(time_point)
 
-
         # Overwrite user-set parameters
         for arg in kwargs:
             setattr(self,arg,kwargs[arg])
@@ -105,7 +102,6 @@ class TimeCourse(Base):
 
         # Keep track of whether or not calculations need to be updated
         self.calculations_uptodate = False
-
 
         self.fit_params = dict()
 
@@ -171,14 +167,6 @@ class TimeCourse(Base):
     @trial_identifier.setter
     def trial_identifier(self, trial_identifier):
         self._trial_identifier = trial_identifier
-        #
-        # self.analyte_name = trial_identifier.analyte_name
-        # self.analyte_type = trial_identifier.analyte_type
-        # if self.analyte_type == 'product':
-        #     self.fit_type = 'productionEquation_generalized_logistic'
-        # if self.analyte_type == 'biomass':
-        #     self.fit_type = 'janoschek_no_limits'
-        #     #'janoschek'#'gompertz'#'richard_5','growthEquation_generalized_logistic'
 
     @property
     def time_vector(self):
@@ -305,14 +293,6 @@ class TimeCourse(Base):
         self.stages.append(stage)
         # Note pandas slices by index value, not index
         stage.pd_series = self.pd_series[stage_bounds[0]:stage_bounds[1]]
-
-
-        # if len(self.gradient) > 0:
-        #     stage.gradient = self.gradient[stage_bounds[0]:stage_bounds[1] + 1]
-        # if self._specific_productivity is not None:
-        #     # Set the private variable to prevent any calculations
-        #     stage._specific_productivity = self._specific_productivity[stage_bounds[0]:stage_bounds[1] + 1]
-
         return stage
 
     def data_curve_fit(self, t):
@@ -358,54 +338,7 @@ class TimeCourse(Base):
 
     def curve_fit_data(self):
         raise Exception('This must be implemented in a child')
-        #
-        # from .settings import settings
-        # verbose = settings.verbose
-        #
-        # if self.trial_identifier.analyte_type == 'titer' or self.trial_identifier.analyte_type in ['substrate', 'product']:
-        #     print(
-        #         'Curve fitting for titers unimplemented in restructured curve fitting. Please see Depricated\depicratedCurveFittingCode.py')
-        #
-        # elif self.trial_identifier.analyte_type in ['biomass']:
-        #     # from scipy.interpolate import InterpolatedUnivariateSpline
-        #     # spl = InterpolatedUnivariateSpline(self.time_vector, self.data_vector)
-        #     # spl.set_smoothing_factor(0.2)
-        #     # spl_grad = np.gradient(spl(self.time_vector)) / np.gradient(self.time_vector)
-        #     # self.fit_params['growth_rate'] = max(spl_grad)
-        #     #
-        #     # import matplotlib.pyplot as plt
-        #     # plt.figure()
-        #     # plt.plot(self.time_vector,self.data_vector,'o')
-        #     # plt.plot(self.time_vector,spl(self.time_vector),lw=2)
-        #     # plt.show()
-        #     # return max(spl_grad)
-        #
-        #
-        #
-        #     if verbose:
-        #         print('Started fit')
-        #         print('Death phase start: ', self.death_phase_start)
-        #
-        #     result = curve_fit_dict[self.fit_type].calcFit(self.time_vector[0:self.death_phase_start],
-        #                                                    self.data_vector[0:self.death_phase_start])
-        #     #,fit_kws = {'xatol':1E-10, 'fatol':1E-10})  # , fit_kws = {'maxfev': 20000, 'xtol': 1E-12, 'ftol': 1E-12})
-        #     if verbose: print('Finished fit')
-        #
-        #     for key in result.best_values:
-        #         temp_param = FitParameter(key, result.best_values[key])
-        #         self.fit_params[key] = temp_param # result.best_values[key]
-        #
-        #     if verbose:
-        #         import matplotlib.pyplot as plt
-        #         plt.figure()
-        #         plt.plot(self.time_vector[0:self.death_phase_start], self.data_vector[0:self.death_phase_start], 'bo')
-        #         plt.plot(self.time_vector[0:self.death_phase_start], result.best_fit, 'r-')
-        #
-        #     if verbose: print(result.fit_report())
-        # else:
-        #     print('Unidentified titer type:' + self.trial_identifier.analyte_type)
-        #     print('Ensure that the trial identifier is described before adding data. This will allow curve fitting'
-        #           'to be appropriate to the analyte type.')
+
 
 class GradientTimePoint(TimePoint):
     __mapper_args__ = {
@@ -417,7 +350,6 @@ class SpecificProductivityTimePoint(TimePoint):
     __mapper_args__ = {
         'polymorphic_identity':'specific_productivity'
     }
-
 
 
 class TimeCourseStage(TimeCourse):
@@ -435,23 +367,3 @@ class TimeCourseStage(TimeCourse):
         # print(type(parent))
 
         super().__init__(*args, **kwargs)
-
-
-class EndPoint(TimeCourse):
-    """
-    This is a child of :class:`~AnalyteData` which does not calcualte any time-based data
-    """
-
-    __mapper_args__ = {'polymorphic_identity': 'endpoint'}
-
-    def __init__(self, runID, t, data):
-        AnalyteData.__init__(self, runID, t, data)
-
-    def add_timepoint(self, time_point):
-        if len(self.time_points) < 2:
-            self.time_points.append(time_point)
-        else:
-            raise Exception("Cannot have more than two timePoints for an endPoint Object")
-
-        if len(self.time_points) == 2:
-            self.time_points.sort(key=lambda timePoint: timePoint.time)

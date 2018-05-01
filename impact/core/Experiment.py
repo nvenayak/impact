@@ -12,11 +12,6 @@ except ImportError as e:
     print(e)
     pass
 
-import matplotlib.pyplot as plt
-import numpy as np
-
-from warnings import warn
-
 from ..database import Base
 from sqlalchemy import Column, Integer, ForeignKey, Float, Date, String, event
 from sqlalchemy.orm import relationship
@@ -121,7 +116,7 @@ class Experiment(Base):
 
     @property
     def replicate_trial_dict(self):
-        return {str(rep.trial_identifier.unique_replicate_trial()):rep for rep in self.replicate_trials}
+        return {str(rep.trial_identifier.unique_replicate_trial()): rep for rep in self.replicate_trials}
 
     def calculate(self):
         t0 = time.time()

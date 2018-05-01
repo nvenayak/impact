@@ -1,10 +1,12 @@
 from .Base import *
 import numpy as np
 
+
 class MassBalance(BaseAnalyteFeature):
     """
     Base multi analyte feature. Use this to create new features.
     """
+
     def __init__(self):
         self.analyte_list = []
         self.name = ''
@@ -12,6 +14,7 @@ class MassBalance(BaseAnalyteFeature):
     @property
     def data(self):
         return 'Not implemented'
+
 
 class MassBalance(BaseAnalyteFeature):
     def __init__(self, substrate, product=None, biomass=None):
@@ -57,6 +60,7 @@ class MassBalance(BaseAnalyteFeature):
              for dataPoint in self.substrate.data_vector]
         )
 
+
 class MassBalanceFactory(object):
     def __init__(self):
-        self.requires = ['biomass','substrate','product']
+        self.requires = ['biomass', 'substrate', 'product']

@@ -1,6 +1,7 @@
 from .Base import *
 import numpy as np
 
+
 class ProductYield(BaseAnalyteFeature):
     def __init__(self, substrate, product):
         self.substrate = substrate
@@ -17,7 +18,7 @@ class ProductYield(BaseAnalyteFeature):
         self.calculate_substrate_consumed()
         try:
             self.product_yield = np.divide(
-                self.product.data_vector - np.tile(self.product.data_vector[0],[len(self.product.data_vector)]),
+                self.product.data_vector - np.tile(self.product.data_vector[0], [len(self.product.data_vector)]),
                 self.substrate_consumed
             )
         except Exception as e:
@@ -33,7 +34,7 @@ class ProductYield(BaseAnalyteFeature):
 
 
 class ProductYieldFactory(BaseAnalyteFeatureFactory):
-    requires = ['substrate','product', 'biomass']
+    requires = ['substrate', 'product', 'biomass']
     name = 'product_yield'
 
     def __init__(self):
@@ -57,10 +58,9 @@ class ProductYieldFactory(BaseAnalyteFeatureFactory):
                                 ' ',
                                 str(analyte_data.trial_identifier))
 
-        if analyte_data.trial_identifier.analyte_type in ['biomass','product']:
+        if analyte_data.trial_identifier.analyte_type in ['biomass', 'product']:
             if self.substrate is not None:
                 analyte_data.product_yield = ProductYield(substrate=self.substrate, product=analyte_data)
             else:
                 # Hold on to the product until a substrate is defined
                 self.products.append(analyte_data)
-

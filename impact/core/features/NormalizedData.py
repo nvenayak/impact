@@ -1,5 +1,6 @@
 from .Base import *
 
+
 class ODNormalizedData(BaseAnalyteFeature):
     # The constructor should accept all required analytes as parameters
     def __init__(self, biomass, reporter):
@@ -46,6 +47,7 @@ class NormalizedData(BaseAnalyteFeature):
     """
     Normalizes a given analyte to another
     """
+
     def __init__(self, analyte, normalization_analyte):
         self.analyte = analyte
         self.normalization_analyte = normalization_analyte
@@ -56,7 +58,7 @@ class NormalizedData(BaseAnalyteFeature):
 
 
 class NormalizedDataFactory(BaseAnalyteFeatureFactory):
-    requires = ['product','substrate','biomass']
+    requires = ['product', 'substrate', 'biomass']
     name = 'normalized_data'
 
     def __init__(self):
@@ -81,4 +83,4 @@ class NormalizedDataFactory(BaseAnalyteFeatureFactory):
         self.analytes.append(analyte)
 
         for analyte in self.analytes:
-            analyte.normalized_data = NormalizedData(analyte,self.analytes[-1])
+            analyte.normalized_data = NormalizedData(analyte, self.analytes[-1])
