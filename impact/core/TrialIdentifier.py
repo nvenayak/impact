@@ -262,8 +262,10 @@ class Media(Base, TrialIdentifierMixin):
         formal_name = ''
         if self.parent:
             formal_name += self.parent.name
+        elif self.name != '':
+            formal_name += self.name
         else:
-            formal_name += "Base"
+            formal_name += "NA"
         if self.components:
             for component in self.components:
                 formal_name += ' + '
