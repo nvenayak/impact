@@ -107,9 +107,6 @@ class Strain(Base, TrialIdentifierMixin):
 
     eq_attrs = ['name', 'formal_name', 'plasmids', 'knockouts', 'parent', 'id_1', 'id_2']
 
-    # __table_args__ = (UniqueConstraint(*eq_attrs),)
-
-    # UniqueConstraint('name','formal_name','plasmids','knockouts','parent','id_1','id_2')
     def __init__(self, name='', **kwargs):
         self.id_1 = ''
         self.id_2 = ''
@@ -147,8 +144,6 @@ class Strain(Base, TrialIdentifierMixin):
         else:
             self.name = self.formal_name
 
-            # models.Model.__init__(self, *args, **kwargs)
-
     def __str__(self):
         # already built formal_name using similar code in __init__.
         return self.formal_name
@@ -156,8 +151,6 @@ class Strain(Base, TrialIdentifierMixin):
     @property
     def unique_id(self):
         return self.name
-
-        # def add_plasmid(self):
 
 
 class MediaComponent(Base, TrialIdentifierMixin):
@@ -387,24 +380,23 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
     strain_id = Column(Integer, ForeignKey('strain.id'))
     strain = relationship("Strain")
 
-    media_name = Column(String, ForeignKey('media.name'))
+    media_id = Column(Integer, ForeignKey('media.id'))
     media = relationship("Media")
 
     environment_id = Column(Integer, ForeignKey('environment.id'))
     environment = relationship('Environment')
 
-    # What are these?
+    # These are generic ids which should be deprecated
     id_1 = Column(String)
     id_2 = Column(String)
     id_3 = Column(String)
 
     eq_attrs = ['strain', 'media', 'environment', 'id_1', 'id_2', 'id_3']
 
-    # @reconstructor
     def __init__(self, strain=None, media=None, environment=None):
         self.strain = Strain() if strain is None else strain
         self.media = Media() if media is None else media
-        self.environment = Environment() if strain is None else environment
+        self.environment = Environment() if environment is None else environment
 
         for var in ['id_1', 'id_2', 'id_3']:
             setattr(self, var, '')
@@ -426,7 +418,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         parameter_values = id.split('|')
         identifier_dict = {'strain'     : {'name': '', 'plasmid': [], 'ko': [], 'parent': ''},
                            'media'      : {'name': '', 'cc': {}, 'parent': ''},
-                           'environment': {'labware'    : '', 'shaking_speed': '', 'shaking_diameter': '',
+                           'environment': {'labware'    : Labware(), 'shaking_speed': '', 'shaking_diameter': '',
                                            'temperature': '',
                                            'pH'         : '', 'DO': ''}}
 
@@ -457,7 +449,8 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                             if identifier_dict['strain']['name'].lower() not in ['blank', 'blanks']:
                                 if attr2 == 'parent':
                                     identifier_dict[attr1][attr2] = val.strip()
-                                if attr2 == 'ko':
+                                if attr2 in ['ko', 'knockout']:
+                                    attr2 = 'ko'
                                     kos = val.split(',')
                                     for ko in kos:
                                         identifier_dict[attr1][attr2].append(Knockout(gene=ko.strip()))
@@ -465,13 +458,6 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                     plasmids = val.split(',')
                                     for plasmid in plasmids:
                                         identifier_dict[attr1][attr2].append(Plasmid(name=plasmid.strip()))
-                                        # if attr2 == 'id':
-                                        #    if self.strain.id_1 == '':
-                                        #        self.strain.id_1 = val
-                                        #    elif self.strain.id_2 == '':
-                                        #        self.strain.id_2 = val
-                                        #    else:
-                                        #        raise Exception('Only two generic strain ids permitted')
 
                         # Set component concentrations
                         elif attr1 == 'media':
@@ -508,6 +494,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                                                        concentration=float(unit), unit=' ' + comp))
                                     else:
                                         raise Exception('Unknown format for component concentration')
+
                                 for comp in cclist:
                                     identifier_dict[attr1][attr2][comp.component_name] = comp
 
@@ -515,8 +502,6 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                 identifier_dict[attr1]['parent'] = val.strip()
                             else:
                                 raise Exception('Unknown attribute passed for media identifier')
-
-
                         elif attr1 == 'environment':
                             if attr2 == 'labware':
                                 identifier_dict[attr1][attr2] = Labware(val.strip())
@@ -528,9 +513,6 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                             else:
                                 warn('Creating non-native attribute: ' + attr2)
                                 non_native_attributes = {'environment': {attr2: val.strip()}}
-                                # non_native_attributes['environment'] = {}
-                                # non_native_attribu
-                                # raise Exception('Unkown attribute passed for environment identifier')
                         else:
                             # Set other attrs
                             setattr(getattr(self, attr1), attr2, val)
@@ -540,12 +522,15 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                     raise Exception('Malformed parameter: ' + id)
 
         if identifier_dict['strain']['parent']:
-            self.strain = Strain(name=identifier_dict['strain']['name'], plasmids=identifier_dict['strain']['plasmid'],
+            self.strain = Strain(name=identifier_dict['strain']['name'],
+                                 plasmids=identifier_dict['strain']['plasmid'],
                                  knockouts=identifier_dict['strain']['ko'],
                                  parent=Strain(name=identifier_dict['strain']['parent']))
         else:
-            self.strain = Strain(name=identifier_dict['strain']['name'], plasmids=identifier_dict['strain']['plasmid'],
+            self.strain = Strain(name=identifier_dict['strain']['name'],
+                                 plasmids=identifier_dict['strain']['plasmid'],
                                  knockouts=identifier_dict['strain']['ko'], )
+
         if identifier_dict['media']['parent']:
             self.media = Media(name=identifier_dict['media']['name'],
                                parent=Media(name=identifier_dict['media']['parent']),
