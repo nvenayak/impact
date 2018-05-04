@@ -672,13 +672,7 @@ def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600',
 
 def time_profile_traces_single_trials(replicate_trial=None, feature='titer', analyte='OD600', colors=None,
                                       cl_scales=['8', 'qual', 'Set1'],
-                                      label=lambda replicate: str(replicate.parent.start_date)
-                                                              + ' '
-                                                              + replicate.trial_identifier.strain.name
-                                                              + ' '
-                                                              + replicate.trial_identifier.id_1
-                                                              + ' '
-                                                              + replicate.trial_identifier.id_2,
+                                      label=lambda replicate: str(replicate),
                                       legendgroup=lambda x: None,
                                       showlegend=True,
                                       pts_per_hour=60

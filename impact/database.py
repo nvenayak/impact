@@ -1,8 +1,5 @@
 # coding=utf-8
-from sqlalchemy import event
-from sqlalchemy.orm import mapper
 from sqlalchemy.ext.declarative import declarative_base
-from .core import TrialIdentifier as ti
 from sqlalchemy import create_engine
 
 Base = declarative_base()
@@ -19,8 +16,8 @@ def create_session(engine='default'):
         engine = bind_engine()
 
     # create_db()
-    session_maker = sessionmaker(bind=engine,autoflush=True,expire_on_commit=False)
-    return session_maker()
+    Session = sessionmaker(bind=engine,autoflush=True,expire_on_commit=False)
+    return Session()
 
 
 def create_db():
