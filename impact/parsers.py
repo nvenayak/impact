@@ -222,7 +222,6 @@ def tecan_OD(experiment, data, id_type='CSV'):
     unparsed_identifiers = data['identifiers']
     raw_data = data['data']
 
-    # The data starts at (3,2) and is in a 8x12 format
     timepoint_list = []
 
     # Parse identifiers (to prevent parsing at every time point)
@@ -247,6 +246,7 @@ def tecan_OD(experiment, data, id_type='CSV'):
     for i, row in enumerate(raw_data):
         if 'Time [s]' in row:
             time_row_index = i
+            break
     data_start_index = time_row_index + 2
     number_of_timepoints = len(raw_data[time_row_index]) - 1
     for i, data_column_index in enumerate(range(1, number_of_timepoints + 1)):
@@ -301,7 +301,7 @@ class Parser(object):
             experiment = Experiment()
 
         t0 = time.time()
-        if format is None:
+        if data_format is None:
             raise Exception('No format defined')
 
         if data is None:

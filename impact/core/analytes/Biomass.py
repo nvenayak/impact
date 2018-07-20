@@ -1,5 +1,4 @@
 from .Base import *
-
 class Biomass(TimeCourse):
     fit_type = 'gompertz'
     id = Column(Integer,ForeignKey('time_course.id'),primary_key=True)
@@ -27,6 +26,7 @@ class Biomass(TimeCourse):
         if self.trial_identifier.analyte_type == 'biomass':
             from ..settings import settings
             verbose = settings.verbose
+            self.find_death_phase(self.data_vector)
 
             # from scipy.interpolate import InterpolatedUnivariateSpline
             # spl = InterpolatedUnivariateSpline(self.time_vector, self.data_vector)

@@ -99,7 +99,10 @@ class ReplicateTrial(Base):
             #     stage.set_blank(blank_stage)
             single_trial = self.single_trial_dict[replicate_id]
             stage.add_replicate(single_trial.create_stage(stage_bounds))
+        #Added this to ensure avg and std are calculated for the stages
+        stage.calculate_statistics()
         self.stages.append(stage)
+
         return stage
 
     def get_normalized_data(self, normalize_to):
@@ -219,8 +222,10 @@ class ReplicateTrial(Base):
             # Set statistics
             self.avg.analyte_dict[analyte].pd_series = self.replicate_df[analyte].mean(axis=1)
             self.std.analyte_dict[analyte].pd_series = self.replicate_df[analyte].std(axis=1)
-
             # Calculate statistics for features
+            # TODO, This may be wrong. Not all analyte features can calculate stdev this way.
+            # TODO, For example, for OD normalization, you cannot calculate stdev this way.
+            # TODO, Maybe implement stat calculation in features or have separate stat calc for each feature
             for feature in self.features:
                 # Get all the analytes with the feature
                 trial_list = [single_trial
