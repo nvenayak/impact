@@ -106,7 +106,7 @@ class Experiment(Base):
 
     @property
     def strains(self):
-        return [str(replicate) for replicate in self.replicate_trials]
+        return [str(replicate.trial_identifier.strain) for replicate in self.replicate_trials]
 
     @property
     def analyte_names(self):
@@ -139,6 +139,7 @@ class Experiment(Base):
                     repstage.calculate()
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
 
+    #TODO, Figure out what this is for. Does not work in it's current form
     def data(self):
         data = []
         for replicate_key in self.replicate_trial_dict:
@@ -172,6 +173,8 @@ class Experiment(Base):
 
         return data
 
+
+    #TODO, Doesn't work. Implement ReplicateTrial.Summary()
     def summary(self, level=None):
         for replicate_key in self.replicate_trial_dict:
             self.replicate_trial_dict[replicate_key].summary()
@@ -275,6 +278,8 @@ class Experiment(Base):
                 stage.add_replicate_trial(replicate.create_stage(stage_tuple))
             self.stages[stage.stage_id] = stage
 
+
+        # TODO, This function (calculate_stages) does not exist.
         if live_calculations:
             for replicate in self.replicate_trials:
                 replicate.calculate_stages()
