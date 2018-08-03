@@ -537,6 +537,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                components=identifier_dict['media']['cc'])
         else:
             self.media = Media(name=identifier_dict['media']['name'],
+                               parent=identifier_dict['media']['name'],
                                components=identifier_dict['media']['cc'])
 
         self.environment = Environment(labware=identifier_dict['environment']['labware'],
@@ -545,6 +546,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                        temperature=identifier_dict['environment']['temperature'],
                                        pH=identifier_dict['environment']['pH'],
                                        DO=identifier_dict['environment']['DO'])
+        self.media.name = self.media.formal_name
         try:
             self.environment.non_native_attributes = non_native_attributes['environment']
         except NameError:

@@ -35,7 +35,7 @@ class SingleTrial(Base):
     stages = relationship('SingleTrial', foreign_keys='SingleTrial.stage_parent_id')
 
     class_features = []
-    analyte_types = ['biomass', 'substrate', 'product']
+    analyte_types = ['biomass', 'substrate', 'product', 'reporter']
 
     @classmethod
     def register_feature(cls, feature):

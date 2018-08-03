@@ -60,12 +60,12 @@ class ReplicateTrial(Base):
         self.single_trial_dict = {}
 
         self.trial_identifier = ReplicateTrialIdentifier()
-        self.bad_replicates = []
+        self.bad_replicates = dict()
         self.replicate_df = dict()
 
         self.stages = []
         self.features = []
-
+        self.blank_subtraction_flag = False
         for arg in kwargs:
             setattr(self, arg, kwargs[arg])
 
@@ -85,7 +85,7 @@ class ReplicateTrial(Base):
         for single_trial in self.single_trial_dict.values():
             single_trial.calculate()
 
-        if self.blank:  self.substract_blank()
+        if self.blank and not self.blank_subtraction_flag:  self.substract_blank()
         self.calculate_statistics()
 
     def create_stage(self, stage_bounds):
@@ -151,6 +151,11 @@ class ReplicateTrial(Base):
 
         # Get info from single trial
         self.single_trial_dict[str(single_trial.trial_identifier.replicate_id)] = single_trial
+        # Adding a bad replicates list for each analyte
+        for analyte in single_trial.analyte_dict:
+            if analyte not in self.bad_replicates.keys():
+                self.bad_replicates[analyte] = []
+
         if len(self.single_trial_dict) == 1:
             self.t = self.single_trial_dict[str(single_trial.trial_identifier.replicate_id)].t
             self.trial_identifier = single_trial.trial_identifier.get_replicate_trial_trial_identifier()
@@ -222,11 +227,51 @@ class ReplicateTrial(Base):
             # Set statistics
             self.avg.analyte_dict[analyte].pd_series = self.replicate_df[analyte].mean(axis=1)
             self.std.analyte_dict[analyte].pd_series = self.replicate_df[analyte].std(axis=1)
+
+            #This is the right way to calculate standard deviations for blank subtraction. You must add the two variances
+            if self.blank_subtraction_flag and analyte in self.blank_subtracted_analytes:
+                self.std.analyte_dict[analyte].pd_series = np.sqrt(np.square(self.std.analyte_dict[analyte].pd_series)
+                                                            + np.square(self.blank.std.analyte_dict[analyte].pd_series))
+            #Assume that stdev for all values <0 is simply 0 since negative values are forced to be 0.
+            #Negative values of any analyte in this context is not possible
+            #self.std.analyte_dict[analyte].pd_series[self.avg.analyte_dict[analyte].pd_series<=0] = 0
             # Calculate statistics for features
-            # TODO, This may be wrong. Not all analyte features can calculate stdev this way.
-            # TODO, For example, for OD normalization, you cannot calculate stdev this way.
-            # TODO, Maybe implement stat calculation in features or have separate stat calc for each feature
+
             for feature in self.features:
+
+                if feature.name == 'od_normalized_data':
+                    trial_list = [single_trial
+                                  for single_trial in self.single_trials
+                                  if analyte in single_trial.analyte_dict
+                                  and feature.name in single_trial.analyte_dict[analyte].__dict__]
+
+                    single_trial_var = []
+                    single_trial_data = []
+                    for trial in trial_list:
+                        feature_object = getattr(trial.analyte_dict[analyte], feature.name)
+                        feature_data = feature_object.data
+                        single_trial_data.append(feature_data)
+                        if self.blank:
+                            with np.errstate(divide='ignore'):
+                                temp_var = feature_data*(np.square(self.blank.std.analyte_dict[analyte].pd_series\
+                                           /trial.analyte_dict[analyte].pd_series)+
+                                            np.square(self.blank.std.analyte_dict['OD600'].pd_series
+                                                      /trial.analyte_dict['OD600'].pd_series))
+                                temp_var[trial.analyte_dict[analyte].pd_series == 0] = 0
+                                temp_var[trial.analyte_dict['OD600'].pd_series == 0] = 0
+                                single_trial_var.append(temp_var)
+                        else:
+                            single_trial_var.append(0)
+                    rep_mean = sum(single_trial_data)/len(trial_list)
+
+                    # Variance on dataset due to blanks is average of individual standard deviation squared.
+                    rep_var = sum(single_trial_var)/np.square(len(single_trial_var))
+                    # Total variance is variance due to blanks + variance between individual normalized datapoints
+                    rep_var = np.var(single_trial_var) + rep_var
+                    setattr(self.std.analyte_dict[analyte], feature.name, np.sqrt(rep_var))
+                    setattr(self.avg.analyte_dict[analyte], feature.name, rep_mean)
+
+
                 # Get all the analytes with the feature
                 trial_list = [single_trial
                               for single_trial in self.single_trials
@@ -261,7 +306,7 @@ class ReplicateTrial(Base):
                                  param].parameter_value
                              for replicate_id in self.single_trial_dict
                              if self.single_trial_dict[
-                                 replicate_id].trial_identifier.replicate_id not in self.bad_replicates]))
+                                 replicate_id].trial_identifier.replicate_id not in self.bad_replicates[analyte]]))
 
                     getattr(self, stat).analyte_dict[analyte].fit_params = temp
                     # else:
@@ -320,8 +365,9 @@ class ReplicateTrial(Base):
                 # Determine the max number of replicates to remove
                 for _ in range(int(len(self.single_trial_dict) * max_fraction_replicates_to_remove)):
                     # A value between 0 and 1, > 1 means removing the replicate makes the yield worse
-                    std_deviation_cutoff = 0.1
+
                     # df = pd.DataFrame({key: np.random.randn(5) for key in ['a', 'b', 'c']})
+                    std_by_mean = np.mean(abs(backup.std(axis = 1)/backup.mean(axis = 1)))
                     temp_std_by_mean = {}
                     for temp_remove_replicate in list(df.columns.values):
                         indices = [replicate for i, replicate in enumerate(df.columns.values) if
@@ -332,14 +378,14 @@ class ReplicateTrial(Base):
                         temp_std_by_mean[temp_remove_replicate] = np.mean(abs(temp_std / temp_mean))
 
                     temp_min_val = min([temp_std_by_mean[key] for key in temp_std_by_mean])
-                    if temp_min_val < std_deviation_cutoff:
+                    if temp_min_val < std_deviation_cutoff and temp_min_val < std_by_mean:
                         bad_replicate_cols.append(
                             [key for key in temp_std_by_mean if temp_std_by_mean[key] == temp_min_val][0])
 
                     good_replicate_cols = [key for key in temp_std_by_mean if key not in bad_replicate_cols]
                     df = df[good_replicate_cols]
-            self.replicate_df[analyte] = df[good_replicate_cols]
-            self.bad_replicates = bad_replicate_cols
+                self.replicate_df[analyte] = df[good_replicate_cols]
+                self.bad_replicates[analyte] = bad_replicate_cols
             # Plot the results of replicate removal
             if verbose:
                 plt.figure()
@@ -371,7 +417,11 @@ class ReplicateTrial(Base):
                         single_trial.analyte_dict[blank_analyte].data_vector \
                         - self.blank.avg.analyte_dict[blank_analyte].data_vector
 
-        self.blank_subtracted_analytes.append(blank_analyte)
+                    #single_trial.analyte_dict[blank_analyte].data_vector = \
+                    #    single_trial.analyte_dict[blank_analyte].data_vector.clip(min = 0)
+                    self.blank_subtracted_analytes.append(blank_analyte)
+        self.blank_subtracted_analytes = list(set(self.blank_subtracted_analytes))
+        self.blank_subtraction_flag = True
 
     def get_unique_analytes(self):
         return list(set([analyte

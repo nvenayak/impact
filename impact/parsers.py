@@ -272,6 +272,96 @@ def tecan_OD(experiment, data, id_type='CSV'):
     if live_calculations:   experiment.calculate()
 
 
+def tecan_OD_GFP_mCherry(experiment, data, id_type='CSV'):
+    from .core.settings import settings
+    live_calculations = settings.live_calculations
+
+    unparsed_identifiers = data['identifiers']
+    raw_data = data['data']
+
+    timepoint_list = []
+
+    # Parse identifiers (to prevent parsing at every time point)
+    #Need to have 3 different variables at each step. Otherwise all identifier labels are pointers to the same identifier
+
+    identifiers_1 = []
+    identifiers_2 = []
+    identifiers_3 = []
+    for i, row in enumerate(unparsed_identifiers):
+        parsed_row_1 = []
+        parsed_row_2 = []
+        parsed_row_3 = []
+        for j, data in enumerate(row):
+            if unparsed_identifiers[i][j] not in ['', 0, '0', None]:
+                temp_trial_identifier_1 = TimeCourseIdentifier()
+                temp_trial_identifier_2 = TimeCourseIdentifier()
+                temp_trial_identifier_3 = TimeCourseIdentifier()
+
+                if id_type == 'CSV':
+                    temp_trial_identifier_1.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
+                    temp_trial_identifier_2.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
+                    temp_trial_identifier_3.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
+
+                elif id_type == 'traverse':
+                    temp_trial_identifier_1.parse_identifier(unparsed_identifiers[i][j])
+                    temp_trial_identifier_2.parse_identifier(unparsed_identifiers[i][j])
+                    temp_trial_identifier_3.parse_identifier(unparsed_identifiers[i][j])
+
+                parsed_row_1.append(temp_trial_identifier_1)
+                parsed_row_2.append(temp_trial_identifier_2)
+                parsed_row_3.append(temp_trial_identifier_3)
+            else:
+                parsed_row_1.append(None)
+                parsed_row_2.append(None)
+                parsed_row_3.append(None)
+        identifiers_1.append(parsed_row_1)
+        identifiers_2.append(parsed_row_2)
+        identifiers_3.append(parsed_row_3)
+
+    time_row_index = None
+    for i, row in enumerate(raw_data):
+        if 'Time [s]' in row:
+            time_row_index = i
+            break
+    data_start_index = time_row_index + 2
+    number_of_timepoints = len(raw_data[time_row_index]) - 1
+    for i, data_column_index in enumerate(range(1, number_of_timepoints + 1)):
+        time = raw_data[time_row_index][data_column_index]
+        time = (time / 3600)
+        for j, data_row_index in enumerate(range(data_start_index, data_start_index + 96)):
+            if identifiers_1[int(j / 12)][int(j % 12)] is not None and raw_data[data_row_index][
+                data_column_index] not in [None, '']:
+                temp_trial_identifier_1 = identifiers_1[int(j / 12)][int(j % 12)]
+                temp_trial_identifier_1.analyte_type = 'biomass'
+                temp_trial_identifier_1.analyte_name = 'OD600'
+                temp_trial_identifier_2 = identifiers_2[int(j / 12)][int(j % 12)]
+                temp_trial_identifier_2.analyte_type = 'reporter'
+                temp_trial_identifier_2.analyte_name = 'GFP'
+                temp_trial_identifier_3 = identifiers_3[int(j / 12)][int(j % 12)]
+                temp_trial_identifier_3.analyte_type = 'reporter'
+                temp_trial_identifier_3.analyte_name = 'mCherry'
+                try:
+                    temp_timepoint_1 = TimePoint(temp_trial_identifier_1, time,
+                                                 float(raw_data[data_row_index][data_column_index]))
+                    temp_timepoint_2 = TimePoint(temp_trial_identifier_2, time,
+                                                 float(raw_data[data_row_index + 101][data_column_index]))
+                    temp_timepoint_3 = TimePoint(temp_trial_identifier_3, time,
+                                                 float(raw_data[data_row_index + 202][data_column_index]))
+
+                except Exception as e:
+                    print(raw_data[data_row_index][data_column_index])
+                    raise Exception(e)
+                timepoint_list.append(temp_timepoint_1)
+                timepoint_list.append(temp_timepoint_2)
+                timepoint_list.append(temp_timepoint_3)
+
+    replicate_trial_list = parse_time_point_list(timepoint_list)
+    for rep in replicate_trial_list:
+        experiment.add_replicate_trial(rep)
+
+    if live_calculations:   experiment.calculate()
+
+
 class Parser(object):
     parser_case_dict = {}
 
@@ -331,6 +421,8 @@ Parser.register_parser('spectromax_OD', spectromax_OD)
 Parser.register_parser('tecan_OD', tecan_OD)
 Parser.register_parser('default_titers', HPLC_titer_parser)
 Parser.register_parser('spectromax_OD_triplicate', spectromax_OD_triplicate)
+Parser.register_parser('tecan_OD_GFP_mCherry', tecan_OD_GFP_mCherry)
+
 
 
 def parse_raw_data(format=None, id_type='CSV', file_name=None, data=None, experiment=None):
