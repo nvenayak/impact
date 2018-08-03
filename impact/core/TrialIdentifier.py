@@ -98,8 +98,10 @@ class Strain(Base, TrialIdentifierMixin):
     plasmids = relationship('Plasmid')
     knockouts = relationship('Knockout')
 
-    parent = relationship('Strain', uselist=False)
-    parent_id = Column(Integer, ForeignKey('strain.id'))
+    #This will create problems with database management. IF strain parent is specified in the trial identifiers,
+    #It will cause an error since sqlalchemy will look for a strain object and instead get a string object!
+    parent = Column(String)
+    #parent_id = Column(Integer, ForeignKey('strain.id'))
 
     ALE_time = Column(String)
     id_1 = Column(String)
@@ -223,8 +225,10 @@ class Media(Base, TrialIdentifierMixin):
                               collection_class=attribute_mapped_collection('component_name'),
                               cascade='all')
 
-    parent = relationship('Media', uselist=False)
-    parent_id = Column(Integer, ForeignKey('media.id'), nullable=True)
+    #No point in having a media object as parent for media. Also needed to do this to prevent an error related to database mgmt
+
+    parent = Column(String, nullable=True)
+    #parent_id = Column(Integer, ForeignKey('media.id'), nullable=True)
 
     # unit = Column(String)
 
