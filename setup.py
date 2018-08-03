@@ -10,7 +10,7 @@ for extra in ['docs','plotting','modeling']:
 
 setup(
     name='impact',
-    version='0.1',
+    version='1.0.0',
     packages=['impact'],
     url='www.github.com/nvenayak/impact',
     license='',

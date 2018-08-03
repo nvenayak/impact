@@ -12,11 +12,6 @@ except ImportError as e:
     print(e)
     pass
 
-import matplotlib.pyplot as plt
-import numpy as np
-
-from warnings import warn
-
 from ..database import Base
 from sqlalchemy import Column, Integer, ForeignKey, Float, Date, String, event
 from sqlalchemy.orm import relationship
@@ -27,11 +22,11 @@ class Experiment(Base):
     __tablename__ = 'experiment'
 
     id = Column(Integer, primary_key=True)
-    # replicate_trials = relationship('ReplicateTrial')
-    stages = relationship('Stage',collection_class=attribute_mapped_collection('stage_id'),back_populates='parent')
-    replicate_trial_dict = relationship('ReplicateTrial',
-                                        collection_class=attribute_mapped_collection('unique_id'),
-                                        back_populates='parent')
+    replicate_trials = relationship('ReplicateTrial')
+    stages = relationship('Stage', collection_class=attribute_mapped_collection('stage_id'), back_populates='parent')
+    # replicate_trial_dict = relationship('ReplicateTrial',
+    #                                     collection_class=attribute_mapped_collection('unique_id'),
+    #                                     back_populates='parent')
     import_date = Column(Date)
     start_date = Column(Date)
     end_date = Column(Date)
@@ -52,7 +47,8 @@ class Experiment(Base):
             if key in ['import_date', 'start_date', 'end_date', 'title', 'scientist_1', 'scientist_2', 'notes']:
                 setattr(self, key, kwargs[key])
         self.blank_reps = []
-        self.replicate_trial_dict = dict()
+        # self.replicate_trial_dict = dict()
+        self.replicate_trials = []
         self.stage_indices = []
         self.blank = None
 
@@ -69,14 +65,14 @@ class Experiment(Base):
             from tabulate import tabulate
         except:
             return '\n'.join(['Trials', '-----']
-                             + sorted([str(rep.trial_identifier) for rep in self.replicate_trial_dict.values()])
+                             + sorted([str(rep.trial_identifier) for rep in self.replicate_trials])
                              + ['\n', 'Analytes', '-----']
                              + self.analyte_names)
         else:
             data = [[str(rep.trial_identifier.strain),
                      str(rep.trial_identifier.media),
                      str(rep.trial_identifier.environment),
-                     str(rep.get_analytes())] for rep in sorted(self.replicate_trial_dict.values(),
+                     str(rep.get_analytes())] for rep in sorted(self.replicate_trials,
                                                                 key=lambda rep: str(rep.trial_identifier))]
 
             return tabulate(data, headers=['strain', 'media', 'environment', 'analytes'])
@@ -92,11 +88,9 @@ class Experiment(Base):
         from ..parsers import parse_analyte_data
 
         # Break the experiment into its base analytes
-        analyte_list = []
-        for replicate in list(self.replicate_trial_dict.values()) + list(experiment.replicate_trial_dict.values()):
-            for singleTrial in replicate.single_trial_dict.values():
-                for analyte in singleTrial.analyte_dict.values():
-                    analyte_list.append(analyte)
+        analyte_list = [analyte for replicate in self.replicate_trials + experiment.replicate_trials
+                        for singleTrial in replicate.single_trial_dict.values()
+                        for analyte in singleTrial.analyte_dict.values()]
 
         combined_experiment = Experiment()
         for attr in ['title', 'scientist_1', 'scientist_2', 'notes',
@@ -112,16 +106,17 @@ class Experiment(Base):
 
     @property
     def strains(self):
-        return [str(replicate) for replicate in self.replicate_trial_dict.values()]
+        return [str(replicate.trial_identifier.strain) for replicate in self.replicate_trials]
 
     @property
     def analyte_names(self):
-        return list(set([analyte for rep in self.replicate_trial_dict.values()
+        return list(set([analyte for rep in self.replicate_trials
                          for st in rep.single_trial_dict.values()
                          for analyte in st.analyte_dict.keys()]))
+
     @property
-    def replicate_trials(self):
-        return list(self.replicate_trial_dict.values())
+    def replicate_trial_dict(self):
+        return {str(rep.trial_identifier.unique_replicate_trial()): rep for rep in self.replicate_trials}
 
     def calculate(self):
         t0 = time.time()
@@ -144,6 +139,7 @@ class Experiment(Base):
                     repstage.calculate()
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
 
+    #TODO, Figure out what this is for. Does not work in it's current form
     def data(self):
         data = []
         for replicate_key in self.replicate_trial_dict:
@@ -177,6 +173,8 @@ class Experiment(Base):
 
         return data
 
+
+    #TODO, Doesn't work. Implement ReplicateTrial.Summary()
     def summary(self, level=None):
         for replicate_key in self.replicate_trial_dict:
             self.replicate_trial_dict[replicate_key].summary()
@@ -191,7 +189,8 @@ class Experiment(Base):
         replicateTrial : :class:`~ReplicateTrial`
         """
         replicateTrial.parent = self
-        self.replicate_trial_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
+        self.replicate_trials.append(replicateTrial)
+        # self.replicate_trial_dict[replicateTrial.trial_identifier.unique_replicate_trial()] = replicateTrial
 
     def parse_raw_data(self, *args, **kwargs):
         """
@@ -223,35 +222,37 @@ class Experiment(Base):
 
         """
 
-
-        self.blank_reps = [rep for rep in self.replicate_trial_dict.values()
+        self.blank_reps = [rep for rep in self.replicate_trials
                            if rep.trial_identifier.strain.name
                            in ['Blank', 'blank']]
 
         if self.blank_reps:
 
             blank_ids = {getattr(rep.trial_identifier, 'media'): rep
-                             for rep in self.blank_reps}
+                         for rep in self.blank_reps}
 
-            for rep in [rep for rep in self.replicate_trial_dict.values()
+            for rep in [rep for rep in self.replicate_trials
                         if rep not in self.blank_reps]:
-                temp_media=rep.trial_identifier.media
+                temp_media = rep.trial_identifier.media
                 if (temp_media in blank_ids.keys()):
                     rep.set_blank(blank_ids[temp_media])
                 else:
-                    common_components={}
-                    for i,blankmedia in enumerate(blank_ids):
-                        common_components[blankmedia]=0
-                        if blankmedia.parent.name==temp_media.parent.name:
-                            common_components[blankmedia]+=1
-                        common_components[blankmedia]+=len(set(blankmedia.components.keys())&set(temp_media.components.keys()))
-                    rep.set_blank(blank_ids[max(common_components,key=common_components.get)])
+                    common_components = {}
+                    for i, blankmedia in enumerate(blank_ids):
+                        common_components[blankmedia] = 0
+                        if blankmedia.parent:
+                            if blankmedia.parent.name == temp_media.parent.name:
+                                common_components[blankmedia] += 1
+                        if blankmedia.components:
+                            common_components[blankmedia] += len(
+                                set(blankmedia.components.keys()) & set(temp_media.components.keys()))
+                    rep.set_blank(blank_ids[max(common_components, key=common_components.get)])
             if mode == 'auto':
                 pass
             else:
                 raise Exception('Unimplemented')
         else:
-            print("No blanks were indicated. Blank subtraction will not be done.")
+            print("No blanks were indicated. Blank subtraction will not be done.", end='')
 
     def set_stages(self, stage_indices=None):
         """
@@ -267,20 +268,20 @@ class Experiment(Base):
         from .settings import settings
         live_calculations = settings.live_calculations
 
-
         self.stage_indices = stage_indices
         for stage_tuple in stage_indices:
             stage = Stage()
             stage.start_time = stage_tuple[0]
             stage.end_time = stage_tuple[1]
-            stage.stage_id = str(stage.start_time)+'-'+str(stage.end_time)
-            for replicate in self.replicate_trial_dict.values():
+            stage.stage_id = str(stage.start_time) + '-' + str(stage.end_time)
+            for replicate in self.replicate_trials:
                 stage.add_replicate_trial(replicate.create_stage(stage_tuple))
             self.stages[stage.stage_id] = stage
 
+
+        # TODO, This function (calculate_stages) does not exist.
         if live_calculations:
-            for replicate_key in self.replicate_trial_dict:
-                replicate = self.replicate_trial_dict[replicate_key]
+            for replicate in self.replicate_trials:
                 replicate.calculate_stages()
 
 
@@ -291,7 +292,7 @@ class Stage(Experiment):
     start_time = Column(Float)
     end_time = Column(Float)
     stage_id = Column(String)
-    parent = relationship('Experiment',back_populates='stages')
+    parent = relationship('Experiment', back_populates='stages')
     # parent_id = Column(Integer, ForeignKey('experiment.id'))
 
     __mapper_args__ = {

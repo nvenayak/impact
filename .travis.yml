@@ -1,6 +1,8 @@
 # Config file for automatic testing at travis-ci.com
 #sudo: false  # http://docs.travis-ci.com/user/migrating-from-legacy/
 language: python
+os:
+  - linux
 python:
   - 3.5
   - 3.6
