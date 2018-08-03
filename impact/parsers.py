@@ -26,7 +26,7 @@ def parse_raw_identifier(raw_identifier, id_type):
     return ti
 
 
-def spectromax_OD(experiment, data, id_type='CSV'):
+def spectromax_OD(experiment, data, id_type='traverse', plate_type='96 Wells'):
     from .core.settings import settings
     live_calculations = settings.live_calculations
 
@@ -90,7 +90,7 @@ def spectromax_OD(experiment, data, id_type='CSV'):
     if live_calculations:   experiment.calculate()
 
 
-def spectromax_OD_triplicate(experiment, data, id_type='CSV'):
+def spectromax_OD_triplicate(experiment, data, id_type='traverse', plate_type='96 Well'):
     from .core.settings import settings
     live_calculations = settings.live_calculations
 
@@ -159,7 +159,7 @@ def spectromax_OD_triplicate(experiment, data, id_type='CSV'):
     if live_calculations:   experiment.calculate()
 
 
-def HPLC_titer_parser(experiment, data, id_type='CSV'):
+def HPLC_titer_parser(experiment, data, id_type='CSV', plate_type='96 Wells'):
     t0 = sys_time.time()
 
     # Parameters
@@ -215,9 +215,13 @@ def HPLC_titer_parser(experiment, data, id_type='CSV'):
         experiment.add_replicate_trial(rep)
 
 
-def tecan_OD(experiment, data, id_type='CSV'):
+def tecan_OD(experiment, data, id_type='traverse', plate_type='96 Wells'):
     from .core.settings import settings
     live_calculations = settings.live_calculations
+
+    plate_dict = {'96 Wells':{'num_of_wells':96, 'num_of_columns': 12},
+                  '48 Wells':{'num_of_wells':48, 'num_of_columns': 8},
+                  '24 Wells': {'num_of_wells': 24, 'num_of_columns': 6}}
 
     unparsed_identifiers = data['identifiers']
     raw_data = data['data']
@@ -252,10 +256,13 @@ def tecan_OD(experiment, data, id_type='CSV'):
     for i, data_column_index in enumerate(range(1, number_of_timepoints + 1)):
         time = raw_data[time_row_index][data_column_index]
         time = (time / 3600)
-        for j, data_row_index in enumerate(range(data_start_index, data_start_index + 96)):
-            if identifiers[int(j / 12)][int(j % 12)] is not None and raw_data[data_row_index][
-                data_column_index] not in [None, '']:
-                temp_trial_identifier = identifiers[int(j / 12)][int(j % 12)]
+        for j, data_row_index in enumerate(range(data_start_index, data_start_index + plate_dict[plate_type]\
+                ['num_of_wells'])):
+            if identifiers[int(j / plate_dict[plate_type]['num_of_columns'])]\
+                [int(j % plate_dict[plate_type]['num_of_columns'])] is not None and raw_data[data_row_index]\
+                [data_column_index] not in [None, '']:
+                temp_trial_identifier = identifiers[int(j / plate_dict[plate_type]['num_of_columns'])]\
+                [int(j % plate_dict[plate_type]['num_of_columns'])]
                 temp_trial_identifier.analyte_type = 'biomass'
                 temp_trial_identifier.analyte_name = 'OD600'
                 try:
@@ -272,7 +279,7 @@ def tecan_OD(experiment, data, id_type='CSV'):
     if live_calculations:   experiment.calculate()
 
 
-def tecan_OD_GFP_mCherry(experiment, data, id_type='CSV'):
+def tecan_OD_GFP_mCherry(experiment, data, id_type='traverse', plate_type = '96 Wells'):
     from .core.settings import settings
     live_calculations = settings.live_calculations
 
@@ -370,7 +377,7 @@ class Parser(object):
         cls.parser_case_dict[parser_name] = parser_method
 
     @classmethod
-    def parse_raw_data(cls, data_format=None, id_type='traverse', file_name=None, data=None, experiment=None):
+    def parse_raw_data(cls, data_format=None, id_type='traverse', file_name=None, data=None, experiment=None, plate_type = '96 Wells'):
         """
         Parses raw data into an experiment object
 
@@ -409,7 +416,7 @@ class Parser(object):
                                   for row in xls_data[sheet.title]] for sheet in xls_data}
 
         if data_format in cls.parser_case_dict.keys():
-            cls.parser_case_dict[data_format](experiment, data=data, id_type=id_type)
+            cls.parser_case_dict[data_format](experiment, data=data, id_type=id_type, plate_type = plate_type)
         else:
             raise Exception('Parser %s not found', data_format)
 
