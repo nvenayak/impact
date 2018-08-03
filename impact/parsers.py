@@ -202,7 +202,7 @@ def HPLC_titer_parser(experiment, data, id_type='CSV'):
                     data[i][analyte_nameColumn[key]] = np.nan
                 timepoint_list.append(
                     TimePoint(trial_identifier=trial_identifier,
-                              time=trial_identifier.time,
+                              time=float(trial_identifier.time),
                               data=data[i][analyte_nameColumn[key]]))
 
         else:
