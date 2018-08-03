@@ -222,8 +222,11 @@ class TimeCourse(Base):
         return self._gradient
 
     def generate_time_point_list(self):
-        # TODO, ensure new time point aren't created and previous ones are referenced
-        self.time_points = [TimePoint(time=time, data=data)
+        if self.time_points:
+            for time_point in self.time_points:
+                time_point.data = self.pd_series[time_point.time]
+        else:
+            self.time_points = [TimePoint(time=time, data=data, trial_identifier = self.trial_identifier)
                             for time, data in zip(self.pd_series.index, self.pd_series)]
 
     def calculate(self):

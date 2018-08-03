@@ -244,32 +244,32 @@ class ReplicateTrial(Base):
                                   for single_trial in self.single_trials
                                   if analyte in single_trial.analyte_dict
                                   and feature.name in single_trial.analyte_dict[analyte].__dict__]
+                    if len(trial_list)>0:
+                        single_trial_var = []
+                        single_trial_data = []
+                        for trial in trial_list:
+                            feature_object = getattr(trial.analyte_dict[analyte], feature.name)
+                            feature_data = feature_object.data
+                            single_trial_data.append(feature_data)
+                            if self.blank:
+                                with np.errstate(divide='ignore'):
+                                    temp_var = feature_data*(np.square(self.blank.std.analyte_dict[analyte].pd_series\
+                                               /trial.analyte_dict[analyte].pd_series)+
+                                                np.square(self.blank.std.analyte_dict['OD600'].pd_series
+                                                          /trial.analyte_dict['OD600'].pd_series))
+                                    temp_var[trial.analyte_dict[analyte].pd_series == 0] = 0
+                                    temp_var[trial.analyte_dict['OD600'].pd_series == 0] = 0
+                                    single_trial_var.append(temp_var)
+                            else:
+                                single_trial_var.append(0)
+                        rep_mean = sum(single_trial_data)/len(trial_list)
 
-                    single_trial_var = []
-                    single_trial_data = []
-                    for trial in trial_list:
-                        feature_object = getattr(trial.analyte_dict[analyte], feature.name)
-                        feature_data = feature_object.data
-                        single_trial_data.append(feature_data)
-                        if self.blank:
-                            with np.errstate(divide='ignore'):
-                                temp_var = feature_data*(np.square(self.blank.std.analyte_dict[analyte].pd_series\
-                                           /trial.analyte_dict[analyte].pd_series)+
-                                            np.square(self.blank.std.analyte_dict['OD600'].pd_series
-                                                      /trial.analyte_dict['OD600'].pd_series))
-                                temp_var[trial.analyte_dict[analyte].pd_series == 0] = 0
-                                temp_var[trial.analyte_dict['OD600'].pd_series == 0] = 0
-                                single_trial_var.append(temp_var)
-                        else:
-                            single_trial_var.append(0)
-                    rep_mean = sum(single_trial_data)/len(trial_list)
-
-                    # Variance on dataset due to blanks is average of individual standard deviation squared.
-                    rep_var = sum(single_trial_var)/np.square(len(single_trial_var))
-                    # Total variance is variance due to blanks + variance between individual normalized datapoints
-                    rep_var = np.var(single_trial_var) + rep_var
-                    setattr(self.std.analyte_dict[analyte], feature.name, np.sqrt(rep_var))
-                    setattr(self.avg.analyte_dict[analyte], feature.name, rep_mean)
+                        # Variance on dataset due to blanks is average of individual standard deviation squared.
+                        rep_var = sum(single_trial_var)/np.square(len(single_trial_var))
+                        # Total variance is variance due to blanks + variance between individual normalized datapoints
+                        rep_var = np.var(single_trial_var) + rep_var
+                        setattr(self.std.analyte_dict[analyte], feature.name, np.sqrt(rep_var))
+                        setattr(self.avg.analyte_dict[analyte], feature.name, rep_mean)
 
 
                 # Get all the analytes with the feature

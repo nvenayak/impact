@@ -36,12 +36,14 @@ class ODNormalizedDataFactory(BaseAnalyteFeatureFactory):
     def add_analyte_data(self, analyte_data):
         if analyte_data.trial_identifier.analyte_type == 'biomass':
             self.biomass = analyte_data
-
+            analyte_data.od_normalized_data = ODNormalizedData(biomass=analyte_data, analyte=analyte_data)
             if len(self.pending_analytes) >= 1:
                 for analyte_data in self.pending_analytes:
                     analyte_data.od_normalized_data = ODNormalizedData(biomass=self.biomass, analyte=analyte_data)
-        if analyte_data.trial_identifier.analyte_type in ['product', 'substrate', 'reporter','biomass']:
-            if self.biomass is not None:
+                self.pending_analytes = []
+
+        if analyte_data.trial_identifier.analyte_type in ['product', 'substrate', 'reporter']:
+            if self.biomass:
                 analyte_data.od_normalized_data = ODNormalizedData(biomass=self.biomass, analyte=analyte_data)
             else:
                 self.pending_analytes.append(analyte_data)
