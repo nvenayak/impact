@@ -127,7 +127,7 @@ class Strain(Base, TrialIdentifierMixin):
         # Build formal name from parent, knockouts and plasmids
         self.formal_name = ''
         if self.parent:
-            self.formal_name += self.parent.name
+            self.formal_name += self.parent
         elif self.name:
             self.formal_name += self.name  # This is actually wrong. Proper way is to give the parent's name appropriately
         else:
@@ -258,7 +258,7 @@ class Media(Base, TrialIdentifierMixin):
         # Build formal name from parent, knockouts and plasmids
         formal_name = ''
         if self.parent:
-            formal_name += self.parent.name
+            formal_name += self.parent
         elif self.name != '':
             formal_name += self.name
         else:
@@ -529,15 +529,16 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
             self.strain = Strain(name=identifier_dict['strain']['name'],
                                  plasmids=identifier_dict['strain']['plasmid'],
                                  knockouts=identifier_dict['strain']['ko'],
-                                 parent=Strain(name=identifier_dict['strain']['parent']))
+                                 parent=identifier_dict['strain']['parent'])
         else:
             self.strain = Strain(name=identifier_dict['strain']['name'],
                                  plasmids=identifier_dict['strain']['plasmid'],
-                                 knockouts=identifier_dict['strain']['ko'], )
+                                 knockouts=identifier_dict['strain']['ko'],
+                                 parent=identifier_dict['strain']['name'])
 
         if identifier_dict['media']['parent']:
             self.media = Media(name=identifier_dict['media']['name'],
-                               parent=Media(name=identifier_dict['media']['parent']),
+                               parent=identifier_dict['media']['parent'],
                                components=identifier_dict['media']['cc'])
         else:
             self.media = Media(name=identifier_dict['media']['name'],
