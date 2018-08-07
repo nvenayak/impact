@@ -24,7 +24,7 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(ti.environment.labware.name,'Falcon96')
         self.assertEqual(ti.environment.shaking_speed,250)
         self.assertEqual(ti.environment.temperature,37)
-        self.assertEqual(ti.media.parent.name,'LIMS')
+        self.assertEqual(ti.media.parent,'LIMS')
         print(ti.media.components)
         self.assertEqual(ti.media.components['glc__D'].component_name,'glc__D')
         self.assertEqual(ti.media.components['glc__D'].concentration,10)
