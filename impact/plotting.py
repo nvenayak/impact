@@ -780,7 +780,7 @@ def plot_media_by_strain(expt=None):
 
 def plot_strain_by_media(expt=None):
     if expt is not None:
-        media_list = list(set([str(rep.trial_identifier.media.parent) for rep in expt.replicate_trials]))
+        media_list = list(set([str(rep.trial_identifier.media) for rep in expt.replicate_trials]))
         strain_list = list(set([str(rep.trial_identifier.strain) for rep in expt.replicate_trials]))
         analyte_list = []
         for rep in expt.replicate_trials:
@@ -789,7 +789,7 @@ def plot_strain_by_media(expt=None):
         for analyte in analyte_list:
             for media in media_list:
                 rep_list = [replicate for replicate in expt.replicate_trials if
-                            str(replicate.trial_identifier.media.parent) == media
+                            str(replicate.trial_identifier.media) == media
                             and (replicate.trial_identifier.strain.name) != 'blank']
                 rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain))
 

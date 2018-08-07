@@ -241,7 +241,7 @@ class Experiment(Base):
                     for i, blankmedia in enumerate(blank_ids):
                         common_components[blankmedia] = 0
                         if blankmedia.parent:
-                            if blankmedia.parent.name == temp_media.parent.name:
+                            if blankmedia.parent == temp_media.parent:
                                 common_components[blankmedia] += 1
                         if blankmedia.components:
                             common_components[blankmedia] += len(

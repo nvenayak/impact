@@ -127,7 +127,7 @@ class Strain(Base, TrialIdentifierMixin):
         # Build formal name from parent, knockouts and plasmids
         self.formal_name = ''
         if self.parent:
-            self.formal_name += self.parent.name
+            self.formal_name += self.parent
         elif self.name:
             self.formal_name += self.name  # This is actually wrong. Proper way is to give the parent's name appropriately
         else:
@@ -258,7 +258,7 @@ class Media(Base, TrialIdentifierMixin):
         # Build formal name from parent, knockouts and plasmids
         formal_name = ''
         if self.parent:
-            formal_name += self.parent.name
+            formal_name += self.parent
         elif self.name != '':
             formal_name += self.name
         else:
