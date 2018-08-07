@@ -529,15 +529,16 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
             self.strain = Strain(name=identifier_dict['strain']['name'],
                                  plasmids=identifier_dict['strain']['plasmid'],
                                  knockouts=identifier_dict['strain']['ko'],
-                                 parent=Strain(name=identifier_dict['strain']['parent']))
+                                 parent=identifier_dict['strain']['parent'])
         else:
             self.strain = Strain(name=identifier_dict['strain']['name'],
                                  plasmids=identifier_dict['strain']['plasmid'],
-                                 knockouts=identifier_dict['strain']['ko'], )
+                                 knockouts=identifier_dict['strain']['ko'],
+                                 parent=identifier_dict['strain']['name'])
 
         if identifier_dict['media']['parent']:
             self.media = Media(name=identifier_dict['media']['name'],
-                               parent=Media(name=identifier_dict['media']['parent']),
+                               parent=identifier_dict['media']['parent'],
                                components=identifier_dict['media']['cc'])
         else:
             self.media = Media(name=identifier_dict['media']['name'],
