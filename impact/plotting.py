@@ -750,10 +750,10 @@ def time_profile_traces(replicate_trials=None, feature=None, analyte='OD600', co
     return traces
 
 
-def plot_media_by_strain(expt=None):
+def plot_by_strain(expt=None):
     if expt is not None:
-        media_list = list(set([str(rep.trial_identifier.media) for rep in expt.replicate_trials]))
         strain_list = list(set([str(rep.trial_identifier.strain) for rep in expt.replicate_trials]))
+        strain_list = sorted(strain_list)
         analyte_list = []
         for rep in expt.replicate_trials:
             analyte_list += rep.get_analytes()
@@ -766,7 +766,7 @@ def plot_media_by_strain(expt=None):
 
                 tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
                                                        label=lambda rep: str(rep.trial_identifier.media),
-                                                       legendgroup=lambda rep: str(rep.trial_identifier),
+                                                       legendgroup=lambda rep: str(rep.trial_identifier.strain),
                                                        cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
                                                        pts_per_hour=4)
 
@@ -778,10 +778,10 @@ def plot_media_by_strain(expt=None):
         print("An experiment object must be specified to plot data.")
 
 
-def plot_strain_by_media(expt=None):
+def plot_by_media(expt=None):
     if expt is not None:
         media_list = list(set([str(rep.trial_identifier.media) for rep in expt.replicate_trials]))
-        strain_list = list(set([str(rep.trial_identifier.strain) for rep in expt.replicate_trials]))
+        media_list = sorted(media_list)
         analyte_list = []
         for rep in expt.replicate_trials:
             analyte_list += rep.get_analytes()
@@ -794,10 +794,8 @@ def plot_strain_by_media(expt=None):
                 rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain))
 
                 tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
-                                                       label=lambda rep: str(
-                                                           rep.trial_identifier.strain.name) + ', ' + str(
-                                                           rep.trial_identifier.media),
-                                                       legendgroup=lambda rep: str(rep.trial_identifier),
+                                                       label=lambda rep: str(rep.trial_identifier.strain),
+                                                       legendgroup=lambda rep: str(rep.trial_identifier.media),
                                                        cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
                                                        pts_per_hour=4)
 
