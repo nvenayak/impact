@@ -1,6 +1,7 @@
 from .Base import *
 class Biomass(TimeCourse):
-    fit_type = 'gompertz'
+
+
     id = Column(Integer,ForeignKey('time_course.id'),primary_key=True)
 
     # def __init__(self):
@@ -11,6 +12,10 @@ class Biomass(TimeCourse):
     __mapper_args__ = {
         'polymorphic_identity': 'biomass',
     }
+
+    def __init__(self):
+        TimeCourse.__init__(self)
+        self.fit_type = 'gompertz'
 
     @property
     def trial_identifier(self):
