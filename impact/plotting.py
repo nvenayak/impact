@@ -619,11 +619,12 @@ def get_colors(number_of_colors, colors=None, cl_scales=['8', 'qual', 'Set1']):
         if number_of_colors > int(cl_scales[0]):
             print('interpolated')
             # num_pts = len(replicate_trials)
-            colors = cl.interp(color_scale, number_of_colors)
+            colors = cl.interp(color_scale, 500)
+            # Index the list
             # Index the list
             colors = [colors[int(x)] for x in np.arange(0,
-                                                        number_of_colors,
-                                                        number_of_colors / round(len(number_of_colors)))]
+                                                        500,
+                                                       round( 500 / len(number_of_colors)))]
         else:
             colors = color_scale
     return colors
