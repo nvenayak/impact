@@ -254,6 +254,7 @@ class TimeCourse(Base):
         # The hyper_parameter determines the number of points
         # which need to have a negative diff to consider it death phase
 
+
         death_phase_start = len(data_vector)
 
         # Check if there is a reasonable difference between the min and max of the curve
@@ -261,7 +262,7 @@ class TimeCourse(Base):
             if verbose: print('Growth range: ', (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector))
 
             if use_filtered_data:
-                filteredData = savgol_filter(data_vector, 51, 3)
+                filteredData = savgol_filter(data_vector, self.savgol_filter_window_size, 3)
             else:
                 filteredData = np.array(data_vector)
             diff = np.diff(filteredData)
