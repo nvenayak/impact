@@ -13,9 +13,6 @@ class Biomass(TimeCourse):
         'polymorphic_identity': 'biomass',
     }
 
-    def __init__(self):
-        TimeCourse.__init__(self)
-        self.fit_type = 'gompertz'
 
     @property
     def trial_identifier(self):

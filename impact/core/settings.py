@@ -58,5 +58,5 @@ class Settings(Base):
         self.std_deviation_cutoff = 0.1
 
         # curve_fitting
-        self.fit_type = {}
+        self.fit_type = 'gompertz'
 settings = Settings()
