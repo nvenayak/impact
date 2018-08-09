@@ -767,7 +767,7 @@ def plot_by_strain(expt=None):
 
                 tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
                                                        label=lambda rep: str(rep.trial_identifier.media),
-                                                       legendgroup=lambda rep: str(rep.trial_identifier.strain),
+                                                       legendgroup=lambda rep: str(rep.trial_identifier.media),
                                                        cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
                                                        pts_per_hour=4)
 
@@ -796,7 +796,7 @@ def plot_by_media(expt=None):
 
                 tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
                                                        label=lambda rep: str(rep.trial_identifier.strain),
-                                                       legendgroup=lambda rep: str(rep.trial_identifier.media),
+                                                       legendgroup=lambda rep: str(rep.trial_identifier.strain),
                                                        cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
                                                        pts_per_hour=4)
 
