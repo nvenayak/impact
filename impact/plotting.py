@@ -624,7 +624,7 @@ def get_colors(number_of_colors, colors=None, cl_scales=['8', 'qual', 'Set1']):
             # Index the list
             colors = [colors[int(x)] for x in np.arange(0,
                                                         500,
-                                                       round( 500 / len(number_of_colors)))]
+                                                       round( 500 / (number_of_colors)))]
         else:
             colors = color_scale
     return colors
