@@ -118,7 +118,7 @@ class TimeCourse(Base):
         self._stage_indices = None
 
         # Declare the default curve fit
-        self.fit_type = setings.fit_type
+        self.fit_type = settings.fit_type
 
     def __str__(self):
         return str(self.trial_identifier.unique_analyte_data())
