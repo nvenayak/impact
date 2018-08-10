@@ -819,6 +819,7 @@ def plot_growth_curve_fit(expt=None, format=None):
         error_list = []
         for rep in rep_list:
             st_list = [st for st in rep.single_trials]
+            st_list = sorted(st_list, key=lambda st: st.trial_identifier.replicate_id)
             num_of_reps = len(st_list)
             fig = tools.make_subplots(rows=1, cols=num_of_reps,
                                       subplot_titles=['Replicate ' + str(x + 1) for x in range(num_of_reps)],
