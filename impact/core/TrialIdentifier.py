@@ -154,6 +154,10 @@ class Strain(Base, TrialIdentifierMixin):
     def unique_id(self):
         return self.name
 
+    @property
+    def knockout_list(self):
+        return sorted([knockout.gene for knockout in self.knockouts])
+
 
 class MediaComponent(Base, TrialIdentifierMixin):
     """
