@@ -118,7 +118,7 @@ class TimeCourse(Base):
         self._stage_indices = None
 
         # Declare the default curve fit
-        self.fit_type = None
+        self.fit_type = settings.fit_type
 
     def __str__(self):
         return str(self.trial_identifier.unique_analyte_data())
@@ -254,6 +254,8 @@ class TimeCourse(Base):
         # The hyper_parameter determines the number of points
         # which need to have a negative diff to consider it death phase
 
+        from ..settings import settings
+        savgol_filter_window_size = settings.savgolFilterWindowSize
         death_phase_start = len(data_vector)
 
         # Check if there is a reasonable difference between the min and max of the curve
@@ -261,7 +263,7 @@ class TimeCourse(Base):
             if verbose: print('Growth range: ', (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector))
 
             if use_filtered_data:
-                filteredData = savgol_filter(data_vector, 51, 3)
+                filteredData = savgol_filter(data_vector, savgol_filter_window_size, 3)
             else:
                 filteredData = np.array(data_vector)
             diff = np.diff(filteredData)
