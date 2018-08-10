@@ -864,7 +864,40 @@ def plot_growth_curve_fit(expt=None, format=None):
         growth_report = growth_report[['Strain', 'Average Growth Rate', '% Error', '% Difference from Max']]
         d = dict(selector="th",
                  props=[('text-align', 'left')])
-        expt.growth_report = growth_report.style.set_properties(**{'text-align': 'left'}).set_table_styles([d])
+        expt.growth_report_html = growth_report.style.set_properties(**{'text-align': 'left'}).set_table_styles([d])
+        expt.growth_report = growth_report
+    else:
+        print("An experiment object must be specified to plot data.")
+
+def plot_by_ko(expt=None, format=None):
+    if expt is not None:
+        knockout_list = [rep.trial_identifier.strain.knockout_list for rep in expt.replicate_trials]
+        knockout_set = set(tuple(x) for x in knockout_list)
+        unique_knockout_list = [list(x) for x in knockout_set]
+        unique_knockout_list = sorted(unique_knockout_list)
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            for unique_knockout in unique_knockout_list:
+                rep_list = [replicate for replicate in expt.replicate_trials if
+                            replicate.trial_identifier.strain.knockout_list == unique_knockout
+                            and (replicate.trial_identifier.strain.name) not in ['blank', 'none']]
+                rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain))
+
+                tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
+                                                       label=lambda rep: str(rep.trial_identifier.strain),
+                                                       legendgroup=lambda rep: str(rep.trial_identifier.strain),
+                                                       cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
+                                                       pts_per_hour=4)
+
+                fig = go.Figure(data=tracelist)
+                fig['layout'].update(
+                    title=str(analyte + ' vs time for ' + str(rep_list[0].trial_identifier.strain) + ' in different media'))
+                plot(fig, image=format)
+
 
     else:
         print("An experiment object must be specified to plot data.")
+
