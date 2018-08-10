@@ -753,7 +753,7 @@ def time_profile_traces(replicate_trials=None, feature=None, analyte='OD600', co
     return traces
 
 
-def plot_by_strain(expt=None):
+def plot_by_strain(expt=None, format=None):
     if expt is not None:
         strain_list = list(set([str(rep.trial_identifier.strain) for rep in expt.replicate_trials]))
         strain_list = sorted(strain_list)
