@@ -861,7 +861,7 @@ def plot_growth_curve_fit(expt=None, format=None):
                                       'Average Growth Rate': avg_list,
                                       '% Difference from Max': percent_diff_max,
                                       '% Error': error_list})
-        growth_report = growth_report[['Strain', 'Average Growth Rate', '% Difference from Max', '% Error']]
+        growth_report = growth_report[['Strain', 'Average Growth Rate', '% Error', '% Difference from Max']]
         d = dict(selector="th",
                  props=[('text-align', 'left')])
         expt.growth_report = growth_report.style.set_properties(**{'text-align': 'left'}).set_table_styles([d])
