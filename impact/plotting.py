@@ -6,6 +6,8 @@ from warnings import warn
 
 from .core.ReplicateTrial import ReplicateTrial
 from .core.settings import plotly_username, plotly_api_key
+from .curve_fitting.methods import *
+import pandas as pd
 
 # If in the iPython environment, initialize notebook mode
 try:
@@ -773,13 +775,13 @@ def plot_by_strain(expt=None):
 
                 fig = go.Figure(data=tracelist)
                 fig['layout'].update(title=str(analyte + ' vs time for ' + strain + ' in different media'))
-                plot(fig)
+                plot(fig, image=format)
 
     else:
         print("An experiment object must be specified to plot data.")
 
 
-def plot_by_media(expt=None):
+def plot_by_media(expt=None, format=None):
     if expt is not None:
         media_list = list(set([str(rep.trial_identifier.media) for rep in expt.replicate_trials]))
         media_list = sorted(media_list)
@@ -802,8 +804,66 @@ def plot_by_media(expt=None):
 
                 fig = go.Figure(data=tracelist)
                 fig['layout'].update(title=str(analyte + ' vs time for different strains in ' + media + ' media'))
-                plot(fig)
+                plot(fig, image=format)
 
     else:
         print("An experiment object must be specified to plot data.")
 
+
+def plot_growth_curve_fit(expt=None, format=None):
+    if expt is not None:
+        colors = cl.scales['5']['qual']['Set1'][0:2]
+        rep_list = [rep for rep in expt.replicate_trials if rep.trial_identifier.strain.name not in ['blank', 'none']]
+        rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain))
+        avg_list = []
+        error_list = []
+        for rep in rep_list:
+            st_list = [st for st in rep.single_trials]
+            num_of_reps = len(st_list)
+            fig = tools.make_subplots(rows=1, cols=num_of_reps,
+                                      subplot_titles=['Replicate ' + str(x + 1) for x in range(num_of_reps)],
+                                      print_grid=False)
+            for i, st in enumerate(st_list):
+                if 'OD600' in st.analyte_dict:
+                    biomass = st.analyte_dict['OD600']
+                    time_vector = biomass.time_vector[:biomass.death_phase_start]
+                    data_vector = biomass.data_vector[:biomass.death_phase_start]
+                    fit_curve = fit_data(time_vector, biomass.fit_params, biomass.fit_type)
+                    trace1 = (go.Scatter(x=time_vector, y=data_vector,
+                                         mode='markers', name='Actual Data', legendgroup='Actual Data',
+                                         marker={'color': colors[0]}, showlegend=False))
+                    trace2 = (go.Scatter(x=time_vector, y=fit_curve,
+                                         mode='lines', name='Curve Fit', legendgroup='Curve Fit',
+                                         marker={'color': colors[1]}, showlegend=False))
+
+                    if i == len(st_list) - 1:
+                        trace1['showlegend'] = True
+                        trace2['showlegend'] = True
+                    fig.append_trace(trace1, 1, i + 1)
+                    fig.append_trace(trace2, 1, i + 1)
+                    fig['layout']['xaxis' + str(i + 1)].update(title='Time (h)')
+            fig['layout'].update(title='Growth curve fit for ' + str(rep.trial_identifier))
+            fig['layout']['yaxis1'].update(title='OD600')
+            trace1['showlegend'] = True
+            trace2['showlegend'] = True
+            plot(fig, image=format)
+            avg_growth = rep.avg.analyte_dict['OD600'].fit_params['growth_rate'].parameter_value
+            std_growth = rep.std.analyte_dict['OD600'].fit_params['growth_rate'].parameter_value
+            avg_list.append(avg_growth)
+            error_list.append(std_growth / avg_growth * 100)
+            print("\u03BC\u2090\u1D65 = %3.3f \u00B1 %3.3f /h" % (avg_growth, std_growth))
+
+        max_growth_rate = max(avg_list)
+        percent_diff_max = (max_growth_rate - avg_list) / max_growth_rate * 100
+
+        growth_report = pd.DataFrame({'Strain': [str(rep.trial_identifier.strain) for rep in rep_list],
+                                      'Average Growth Rate': avg_list,
+                                      '% Difference from Max': percent_diff_max,
+                                      '% Error': error_list})
+        growth_report = growth_report[['Strain', 'Average Growth Rate', '% Difference from Max', '% Error']]
+        d = dict(selector="th",
+                 props=[('text-align', 'left')])
+        expt.growth_report = growth_report.style.set_properties(**{'text-align': 'left'}).set_table_styles([d])
+
+    else:
+        print("An experiment object must be specified to plot data.")
