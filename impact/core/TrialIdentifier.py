@@ -459,13 +459,15 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                     identifier_dict[attr1][attr2] = val.strip()
                                 if attr2 in ['ko', 'knockout']:
                                     attr2 = 'ko'
-                                    kos = val.split(',')
-                                    for ko in kos:
-                                        identifier_dict[attr1][attr2].append(Knockout(gene=ko.strip()))
+                                    if val != '':
+                                        kos = val.split(',')
+                                        for ko in kos:
+                                            identifier_dict[attr1][attr2].append(Knockout(gene=ko.strip()))
                                 if attr2 == 'plasmid':
-                                    plasmids = val.split(',')
-                                    for plasmid in plasmids:
-                                        identifier_dict[attr1][attr2].append(Plasmid(name=plasmid.strip()))
+                                    if val != '':
+                                        plasmids = val.split(',')
+                                        for plasmid in plasmids:
+                                            identifier_dict[attr1][attr2].append(Plasmid(name=plasmid.strip()))
 
                         # Set component concentrations
                         elif attr1 == 'media':
@@ -473,9 +475,9 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                 compconcs = val.split(',')
                                 cclist = []
                                 for compconc in compconcs:
-                                    if (len(compconc.split(' ')) == 2):
+                                    if (len(compconc.split()) == 2):
                                         # if units are not given in the identifier
-                                        conc, comp = compconc.split(' ')
+                                        conc, comp = compconc.split()
                                         try:
                                             # Try format concentration component (0.2 glc)
                                             cclist.append(
@@ -487,11 +489,11 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                                 ComponentConcentration(component=MediaComponent(conc),
                                                                        concentration=float(comp)))
 
-                                    elif (len(val.split(' ')) == 3):
+                                    elif (len(val.split()) == 3):
                                         # if units are given in the identifier
-                                        conc, unit, comp = val.split(' ')
+                                        conc, unit, comp = val.split()
                                         try:
-                                            # Try format concentration component (0.2 glc mM)
+                                            # Try format concentration component (0.2 mM glc)
                                             cclist.append(
                                                 ComponentConcentration(component=MediaComponent(comp),
                                                                        concentration=float(conc), unit=' ' + unit))
