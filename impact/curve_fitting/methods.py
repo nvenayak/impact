@@ -185,3 +185,29 @@ curve_fit_dict['three_param'] = CurveFitObject(
     three_param_growth,
     method='leastsq'
 )
+
+def fit_data(t, param_dict, fit_type = 'gompertz'):
+
+    if fit_type == 'gompertz':
+        return gompertz(t, param_dict['A'].parameter_value, param_dict['growth_rate'].parameter_value,
+                        param_dict['lam'].parameter_value)
+
+    if fit_type == 'three_param':
+        return three_param_growth(t, param_dict['A'].parameter_value, param_dict['B'].parameter_value,
+                                  param_dict['mu'].parameter_value)
+
+    if fit_type == 'richard_5':
+        return richard_5(t, param_dict['B'].parameter_value, param_dict['k'].parameter_value,
+                         param_dict['L'].parameter_value, param_dict['t_m'].parameter_value,
+                         param_dict['T'].parameter_value)
+
+    if fit_type == 'janoschek':
+        return janoschek(t, param_dict['B'].parameter_value, param_dict['k'].parameter_value,
+                         param_dict['L'].parameter_value, param_dict['delta'].parameter_value)
+
+    if fit_type == 'generalized_logistic':
+        return generalized_logistic(t, param_dict['A'].parameter_value, param_dict['k'].parameter_value,
+                                    param_dict['C'].parameter_value, param_dict['Q'].parameter_value,
+                                    param_dict['K'].parameter_value, param_dict['nu'].parameter_value)
+
+    return None

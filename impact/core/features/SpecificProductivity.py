@@ -15,10 +15,11 @@ class SpecificProductivityFactory(object):
             analyte_data.specific_productivity = SpecificProductivity(biomass=analyte_data,
                                                                       analyte=analyte_data)
 
-            if len(self.pending_analytes) > 1:
+            if len(self.pending_analytes) >= 1:
                 for analyte_data in self.pending_analytes:
                     analyte_data.specific_productivity = SpecificProductivity(biomass=self.biomass,
                                                                               analyte=analyte_data)
+                self.pending_analytes = []
 
         if analyte_data.trial_identifier.analyte_type in ['substrate', 'product']:
             if self.biomass is not None:
