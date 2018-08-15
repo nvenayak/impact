@@ -94,7 +94,7 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(num_replicates,32)
         self.assertEqual(num_single_trials,88)
         self.assertEqual(num_analyte_data,88)
-        self.assertEqual(num_time_points,10032)
+        self.assertEqual(num_time_points,880)
 
 
     def test_tecan_OD_parser(self):
@@ -124,7 +124,7 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(num_replicates,56)
         self.assertEqual(num_single_trials,96)
         self.assertEqual(num_analyte_data,96)
-        self.assertEqual(num_time_points,2304)
+        self.assertEqual(num_time_points,960)
 
     def test_tecan_OD_reporter_parser(self):
         expt = impact.Experiment()
