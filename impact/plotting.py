@@ -843,6 +843,24 @@ def plot_growth_curve_fit(expt=None, format=None):
                     fig.append_trace(trace1, 1, i + 1)
                     fig.append_trace(trace2, 1, i + 1)
                     fig['layout']['xaxis' + str(i + 1)].update(title='Time (h)')
+                if 'OD700' in st.analyte_dict:
+                    biomass = st.analyte_dict['OD700']
+                    time_vector = biomass.time_vector[:biomass.death_phase_start]
+                    data_vector = biomass.data_vector[:biomass.death_phase_start]
+                    fit_curve = fit_data(time_vector, biomass.fit_params, biomass.fit_type)
+                    trace1 = (go.Scatter(x=time_vector, y=data_vector,
+                                         mode='markers', name='Actual Data', legendgroup='Actual Data',
+                                         marker={'color': colors[0]}, showlegend=False))
+                    trace2 = (go.Scatter(x=time_vector, y=fit_curve,
+                                         mode='lines', name='Curve Fit', legendgroup='Curve Fit',
+                                         marker={'color': colors[1]}, showlegend=False))
+
+                    if i == len(st_list) - 1:
+                        trace1['showlegend'] = True
+                        trace2['showlegend'] = True
+                    fig.append_trace(trace1, 1, i + 1)
+                    fig.append_trace(trace2, 1, i + 1)
+                    fig['layout']['xaxis' + str(i + 1)].update(title='Time (h)')
             fig['layout'].update(title='Growth curve fit for ' + str(rep.trial_identifier))
             fig['layout']['yaxis1'].update(title='OD600')
             trace1['showlegend'] = True
@@ -858,10 +876,11 @@ def plot_growth_curve_fit(expt=None, format=None):
         percent_diff_max = (max_growth_rate - avg_list) / max_growth_rate * 100
 
         growth_report = pd.DataFrame({'Strain': [str(rep.trial_identifier.strain) for rep in rep_list],
+                                      'Media' : [str(rep.trial_identifier.media) for rep in rep_list],
                                       'Average Growth Rate': avg_list,
                                       '% Difference from Max': percent_diff_max,
                                       '% Error': error_list})
-        growth_report = growth_report[['Strain', 'Average Growth Rate', '% Error', '% Difference from Max']]
+        growth_report = growth_report[['Strain', 'Media', 'Average Growth Rate', '% Error', '% Difference from Max']]
         d = dict(selector="th",
                  props=[('text-align', 'left')])
         expt.growth_report_html = growth_report.style.set_properties(**{'text-align': 'left'}).set_table_styles([d])
