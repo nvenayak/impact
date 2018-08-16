@@ -250,6 +250,7 @@ def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
         if row[0] == 'Mode':
             num_of_analytes += 1
             mode = (next((mode for mode in reversed(row) if mode is not None)))
+            print(raw_data[i + 1])
             if mode == 'Absorbance':
                 wavelength = (next((wavelength for wavelength in reversed(raw_data[i + 1]) if type(wavelength) == int)))
                 if wavelength in mode_dict[mode].keys():
@@ -271,22 +272,21 @@ def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
         elif 'Time [s]' in row:
             time_row_index.append(i)
     timepoint_list = []
+    identifiers = []
+    for i, row in enumerate(unparsed_identifiers):
+        parsed_row = []
+        for j, data in enumerate(row):
+            if unparsed_identifiers[i][j] not in ['', 0, '0', None]:
+                temp_trial_identifier = TimeCourseIdentifier()
+                if id_type == 'CSV':
+                    temp_trial_identifier.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
+                elif id_type == 'traverse':
+                    temp_trial_identifier.parse_identifier(unparsed_identifiers[i][j])
+                parsed_row.append(temp_trial_identifier)
+            else:
+                parsed_row.append(None)
+        identifiers.append(parsed_row)
     for analyte_num in range(num_of_analytes):
-        identifiers = []
-        for i, row in enumerate(unparsed_identifiers):
-            parsed_row = []
-            for j, data in enumerate(row):
-                if unparsed_identifiers[i][j] not in ['', 0, '0', None]:
-                    temp_trial_identifier = TimeCourseIdentifier()
-                    if id_type == 'CSV':
-                        temp_trial_identifier.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
-                    elif id_type == 'traverse':
-                        temp_trial_identifier.parse_identifier(unparsed_identifiers[i][j])
-                    parsed_row.append(temp_trial_identifier)
-                else:
-                    parsed_row.append(None)
-            identifiers.append(parsed_row)
-
         data_start_index = time_row_index[analyte_num] + 2
         num_of_timepoints = len(raw_data[time_row_index[analyte_num]]) - 1
         for i, data_column_index in enumerate(range(1, num_of_timepoints + 1)):
@@ -297,8 +297,8 @@ def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
                 if identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
                         [int(j % plate_dict[plate_type]['num_of_columns'])] is not None and raw_data[data_row_index] \
                         [data_column_index] not in [None, '']:
-                    temp_trial_identifier = identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
-                        [int(j % plate_dict[plate_type]['num_of_columns'])]
+                    temp_trial_identifier = copy.deepcopy(identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
+                                                              [int(j % plate_dict[plate_type]['num_of_columns'])])
                     temp_trial_identifier.analyte_type = analyte_dict[analyte_num + 1]['analyte_type']
                     temp_trial_identifier.analyte_name = analyte_dict[analyte_num + 1]['analyte_name']
                     try:
