@@ -630,17 +630,17 @@ def parse_time_point_list(time_point_list):
     t0 = time.time()
     analyte_dict = {}
     for timePoint in time_point_list:
-        if str(timePoint.trial_identifier) in analyte_dict:
-            analyte_dict[str(timePoint.trial_identifier)].add_timepoint(timePoint)
+        if timePoint.get_unique_timepoint_id() in analyte_dict:
+            analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
         else:
             case_dict = {'biomass'  : Biomass,
                          'substrate': Substrate,
                          'product'  : Product,
                          'reporter' : Reporter}
             if timePoint.trial_identifier.analyte_type in case_dict.keys():
-                analyte_dict[str(timePoint.trial_identifier)] = \
+                analyte_dict[timePoint.get_unique_timepoint_id()] = \
                     case_dict[timePoint.trial_identifier.analyte_type]()
-                analyte_dict[str(timePoint.trial_identifier)].add_timepoint(timePoint)
+                analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
             else:
                 raise Exception('Unexpected analyte type %s' % timePoint.trial_identifier.analyte_type)
     for analyte in analyte_dict.values():
