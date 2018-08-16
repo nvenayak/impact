@@ -99,7 +99,7 @@ class TestParsers(unittest.TestCase):
 
     def test_tecan_OD_parser(self):
         expt = impact.Experiment()
-        parsers.Parser.parse_raw_data(data_format='tecan_OD', id_type='traverse', file_name=os.path.join(BASE_DIR,'tests/test_data/sample_tecan_OD_data.xlsx'), experiment=expt)
+        parsers.Parser.parse_raw_data(data_format='tecan', id_type='traverse', file_name=os.path.join(BASE_DIR,'tests/test_data/sample_tecan_OD_data.xlsx'), experiment=expt)
 
         num_replicates = (len(expt.replicate_trial_dict.keys()))
 
@@ -128,7 +128,7 @@ class TestParsers(unittest.TestCase):
 
     def test_tecan_OD_reporter_parser(self):
         expt = impact.Experiment()
-        parsers.Parser.parse_raw_data(data_format='tecan_OD_GFP_mCherry', id_type='traverse',
+        parsers.Parser.parse_raw_data(data_format='tecan', id_type='traverse',
                                       file_name=os.path.join(BASE_DIR,
                                                              'tests/test_data/sample_tecan_OD_reporter_data.xlsx'),
                                       experiment=expt)

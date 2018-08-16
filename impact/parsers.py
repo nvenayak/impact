@@ -575,7 +575,7 @@ def parse_raw_data(format=None, id_type='CSV', file_name=None, data=None, experi
 
     # Import parsers
     parser_case_dict = {'spectromax_OD'           : spectromax_OD,
-                        'tecan_OD'                : tecan_OD,
+                        'tecan_OD'                : tecan,
                         'default_titers'          : HPLC_titer_parser,
                         'tecan'                   : tecan
                         #'spectromax_OD_triplicate': spectromax_OD_triplicate
