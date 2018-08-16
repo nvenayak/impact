@@ -217,158 +217,256 @@ def HPLC_titer_parser(experiment, data, id_type='CSV', plate_type='96 Wells'):
         experiment.add_replicate_trial(rep)
 
 
-def tecan_OD(experiment, data, id_type='traverse', plate_type='96 Wells'):
+def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
     from .core.settings import settings
     live_calculations = settings.live_calculations
 
-    plate_dict = {'96 Wells':{'num_of_wells':96, 'num_of_columns': 12},
-                  '48 Wells':{'num_of_wells':48, 'num_of_columns': 8},
+    plate_dict = {'96 Wells': {'num_of_wells': 96, 'num_of_columns': 12},
+                  '48 Wells': {'num_of_wells': 48, 'num_of_columns': 8},
                   '24 Wells': {'num_of_wells': 24, 'num_of_columns': 6}}
 
     unparsed_identifiers = data['identifiers']
     raw_data = data['data']
 
-    timepoint_list = []
+    mode_dict = {'Absorbance': {600: {'analyte_name': 'OD600', 'analyte_type': 'biomass'},
 
-    # Parse identifiers (to prevent parsing at every time point)
-    identifiers = []
-    for i, row in enumerate(unparsed_identifiers):
-        parsed_row = []
-        for j, data in enumerate(row):
-            if unparsed_identifiers[i][j] not in ['', 0, '0', None]:
-                temp_trial_identifier = TimeCourseIdentifier()
+                                700: {'analyte_name': 'OD700', 'analyte_type': 'biomass'}},
 
-                if id_type == 'CSV':
-                    temp_trial_identifier.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
-                elif id_type == 'traverse':
-                    temp_trial_identifier.parse_identifier(unparsed_identifiers[i][j])
+                 'Fluorescence Top Reading': {(488, 525): {'analyte_name': 'GFP',
+                                                           'analyte_type': 'reporter'},
 
-                parsed_row.append(temp_trial_identifier)
-            else:
-                parsed_row.append(None)
-        identifiers.append(parsed_row)
+                                              (570, 610): {'analyte_name': 'mCherry',
+                                                           'analyte_type': 'reporter'}},
 
-    time_row_index = None
+                 'Fluorescence Bottom Reading': {(488, 525): {'analyte_name': 'GFP',
+                                                              'analyte_type': 'reporter'},
+
+                                                 (570, 610): {'analyte_name': 'mCherry',
+                                                              'analyte_type': 'reporter'}}}
+    time_row_index = []
+    analyte_dict = {}
+    num_of_analytes = 0
     for i, row in enumerate(raw_data):
-        if 'Time [s]' in row:
-            time_row_index = i
-            break
-    data_start_index = time_row_index + 2
-    number_of_timepoints = len(raw_data[time_row_index]) - 1
-    for i, data_column_index in enumerate(range(1, number_of_timepoints + 1)):
-        time = raw_data[time_row_index][data_column_index]
-        time = (time / 3600)
-        for j, data_row_index in enumerate(range(data_start_index, data_start_index + plate_dict[plate_type]\
-                ['num_of_wells'])):
-            if identifiers[int(j / plate_dict[plate_type]['num_of_columns'])]\
-                [int(j % plate_dict[plate_type]['num_of_columns'])] is not None and raw_data[data_row_index]\
-                [data_column_index] not in [None, '']:
-                temp_trial_identifier = identifiers[int(j / plate_dict[plate_type]['num_of_columns'])]\
-                [int(j % plate_dict[plate_type]['num_of_columns'])]
-                temp_trial_identifier.analyte_type = 'biomass'
-                temp_trial_identifier.analyte_name = 'OD600'
-                try:
-                    temp_timepoint = TimePoint(temp_trial_identifier, time,
-                                               float(raw_data[data_row_index][data_column_index]))
-                except Exception as e:
-                    print(raw_data[data_row_index][data_column_index])
-                    raise Exception(e)
-                timepoint_list.append(temp_timepoint)
+        if row[0] == 'Mode':
+            num_of_analytes += 1
+            mode = (next((mode for mode in reversed(row) if mode is not None)))
+            if mode == 'Absorbance':
+                wavelength = (next((wavelength for wavelength in reversed(raw_data[i + 1]) if type(wavelength) == int)))
+                if wavelength in mode_dict[mode].keys():
+                    analyte_dict[num_of_analytes] = mode_dict[mode][wavelength]
+                else:
+                    analyte_dict[num_of_analytes] = {'analyte_name': 'Reporter' + str(wavelength),
+                                                     'analyte_type': Reporter}
+            elif 'Fluorescence' in mode:
+                ex = (next((wavelength for wavelength in reversed(raw_data[i + 1]) if type(wavelength) == int)))
+                em = (next((wavelength for wavelength in reversed(raw_data[i + 2]) if type(wavelength) == int)))
+                if (ex, em) in mode_dict[mode].keys():
+                    analyte_dict[num_of_analytes] = mode_dict[mode][(ex, em)]
+                else:
+                    analyte_dict[num_of_analytes] = {'analyte_name': 'Reporter' + str(ex) + '/' + str(em),
+                                                     'analyte_type': Reporter}
+            else:
+                raise Exception('Unknown Measurement Mode')
+
+        elif 'Time [s]' in row:
+            time_row_index.append(i)
+    timepoint_list = []
+    for analyte_num in range(num_of_analytes):
+        identifiers = []
+        for i, row in enumerate(unparsed_identifiers):
+            parsed_row = []
+            for j, data in enumerate(row):
+                if unparsed_identifiers[i][j] not in ['', 0, '0', None]:
+                    temp_trial_identifier = TimeCourseIdentifier()
+                    if id_type == 'CSV':
+                        temp_trial_identifier.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
+                    elif id_type == 'traverse':
+                        temp_trial_identifier.parse_identifier(unparsed_identifiers[i][j])
+                    parsed_row.append(temp_trial_identifier)
+                else:
+                    parsed_row.append(None)
+            identifiers.append(parsed_row)
+
+        data_start_index = time_row_index[analyte_num] + 2
+        num_of_timepoints = len(raw_data[time_row_index[analyte_num]]) - 1
+        for i, data_column_index in enumerate(range(1, num_of_timepoints + 1)):
+            time = raw_data[time_row_index[analyte_num]][data_column_index]
+            time = (time / 3600)
+            for j, data_row_index in enumerate(range(data_start_index, data_start_index + plate_dict[plate_type] \
+                    ['num_of_wells'])):
+                if identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
+                        [int(j % plate_dict[plate_type]['num_of_columns'])] is not None and raw_data[data_row_index] \
+                        [data_column_index] not in [None, '']:
+                    temp_trial_identifier = identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
+                        [int(j % plate_dict[plate_type]['num_of_columns'])]
+                    temp_trial_identifier.analyte_type = analyte_dict[analyte_num + 1]['analyte_type']
+                    temp_trial_identifier.analyte_name = analyte_dict[analyte_num + 1]['analyte_name']
+                    try:
+                        temp_timepoint = TimePoint(temp_trial_identifier, time,
+                                                   float(raw_data[data_row_index][data_column_index]))
+                    except Exception as e:
+                        print(raw_data[data_row_index][data_column_index])
+                        raise Exception(e)
+                    timepoint_list.append(temp_timepoint)
     replicate_trial_list = parse_time_point_list(timepoint_list)
     for rep in replicate_trial_list:
         experiment.add_replicate_trial(rep)
 
     if live_calculations:   experiment.calculate()
 
-
-def tecan_OD_GFP_mCherry(experiment, data, id_type='traverse', plate_type = '96 Wells'):
-    from .core.settings import settings
-    live_calculations = settings.live_calculations
-
-    unparsed_identifiers = data['identifiers']
-    raw_data = data['data']
-
-    timepoint_list = []
-
-    # Parse identifiers (to prevent parsing at every time point)
-    #Need to have 3 different variables at each step. Otherwise all identifier labels are pointers to the same identifier
-
-    identifiers_1 = []
-    identifiers_2 = []
-    identifiers_3 = []
-    for i, row in enumerate(unparsed_identifiers):
-        parsed_row_1 = []
-        parsed_row_2 = []
-        parsed_row_3 = []
-        for j, data in enumerate(row):
-            if unparsed_identifiers[i][j] not in ['', 0, '0', None]:
-                temp_trial_identifier_1 = TimeCourseIdentifier()
-                temp_trial_identifier_2 = TimeCourseIdentifier()
-                temp_trial_identifier_3 = TimeCourseIdentifier()
-
-                if id_type == 'CSV':
-                    temp_trial_identifier_1.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
-                    temp_trial_identifier_2.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
-                    temp_trial_identifier_3.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
-
-                elif id_type == 'traverse':
-                    temp_trial_identifier_1.parse_identifier(unparsed_identifiers[i][j])
-                    temp_trial_identifier_2.parse_identifier(unparsed_identifiers[i][j])
-                    temp_trial_identifier_3.parse_identifier(unparsed_identifiers[i][j])
-
-                parsed_row_1.append(temp_trial_identifier_1)
-                parsed_row_2.append(temp_trial_identifier_2)
-                parsed_row_3.append(temp_trial_identifier_3)
-            else:
-                parsed_row_1.append(None)
-                parsed_row_2.append(None)
-                parsed_row_3.append(None)
-        identifiers_1.append(parsed_row_1)
-        identifiers_2.append(parsed_row_2)
-        identifiers_3.append(parsed_row_3)
-
-    time_row_index = None
-    for i, row in enumerate(raw_data):
-        if 'Time [s]' in row:
-            time_row_index = i
-            break
-    data_start_index = time_row_index + 2
-    number_of_timepoints = len(raw_data[time_row_index]) - 1
-    for i, data_column_index in enumerate(range(1, number_of_timepoints + 1)):
-        time = raw_data[time_row_index][data_column_index]
-        time = (time / 3600)
-        for j, data_row_index in enumerate(range(data_start_index, data_start_index + 96)):
-            if identifiers_1[int(j / 12)][int(j % 12)] is not None and raw_data[data_row_index][
-                data_column_index] not in [None, '']:
-                temp_trial_identifier_1 = identifiers_1[int(j / 12)][int(j % 12)]
-                temp_trial_identifier_1.analyte_type = 'biomass'
-                temp_trial_identifier_1.analyte_name = 'OD600'
-                temp_trial_identifier_2 = identifiers_2[int(j / 12)][int(j % 12)]
-                temp_trial_identifier_2.analyte_type = 'reporter'
-                temp_trial_identifier_2.analyte_name = 'GFP'
-                temp_trial_identifier_3 = identifiers_3[int(j / 12)][int(j % 12)]
-                temp_trial_identifier_3.analyte_type = 'reporter'
-                temp_trial_identifier_3.analyte_name = 'mCherry'
-                try:
-                    temp_timepoint_1 = TimePoint(temp_trial_identifier_1, time,
-                                                 float(raw_data[data_row_index][data_column_index]))
-                    temp_timepoint_2 = TimePoint(temp_trial_identifier_2, time,
-                                                 float(raw_data[data_row_index + 101][data_column_index]))
-                    temp_timepoint_3 = TimePoint(temp_trial_identifier_3, time,
-                                                 float(raw_data[data_row_index + 202][data_column_index]))
-
-                except Exception as e:
-                    print(raw_data[data_row_index][data_column_index])
-                    raise Exception(e)
-                timepoint_list.append(temp_timepoint_1)
-                timepoint_list.append(temp_timepoint_2)
-                timepoint_list.append(temp_timepoint_3)
-
-    replicate_trial_list = parse_time_point_list(timepoint_list)
-    for rep in replicate_trial_list:
-        experiment.add_replicate_trial(rep)
-
-    if live_calculations:   experiment.calculate()
+#
+# def tecan_OD(experiment, data, id_type='traverse', plate_type='96 Wells'):
+#     from .core.settings import settings
+#     live_calculations = settings.live_calculations
+#
+#     plate_dict = {'96 Wells':{'num_of_wells':96, 'num_of_columns': 12},
+#                   '48 Wells':{'num_of_wells':48, 'num_of_columns': 8},
+#                   '24 Wells': {'num_of_wells': 24, 'num_of_columns': 6}}
+#
+#     unparsed_identifiers = data['identifiers']
+#     raw_data = data['data']
+#
+#     timepoint_list = []
+#
+#     # Parse identifiers (to prevent parsing at every time point)
+#     identifiers = []
+#     for i, row in enumerate(unparsed_identifiers):
+#         parsed_row = []
+#         for j, data in enumerate(row):
+#             if unparsed_identifiers[i][j] not in ['', 0, '0', None]:
+#                 temp_trial_identifier = TimeCourseIdentifier()
+#
+#                 if id_type == 'CSV':
+#                     temp_trial_identifier.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
+#                 elif id_type == 'traverse':
+#                     temp_trial_identifier.parse_identifier(unparsed_identifiers[i][j])
+#
+#                 parsed_row.append(temp_trial_identifier)
+#             else:
+#                 parsed_row.append(None)
+#         identifiers.append(parsed_row)
+#
+#     time_row_index = None
+#     for i, row in enumerate(raw_data):
+#         if 'Time [s]' in row:
+#             time_row_index = i
+#             break
+#     data_start_index = time_row_index + 2
+#     number_of_timepoints = len(raw_data[time_row_index]) - 1
+#     for i, data_column_index in enumerate(range(1, number_of_timepoints + 1)):
+#         time = raw_data[time_row_index][data_column_index]
+#         time = (time / 3600)
+#         for j, data_row_index in enumerate(range(data_start_index, data_start_index + plate_dict[plate_type]\
+#                 ['num_of_wells'])):
+#             if identifiers[int(j / plate_dict[plate_type]['num_of_columns'])]\
+#                 [int(j % plate_dict[plate_type]['num_of_columns'])] is not None and raw_data[data_row_index]\
+#                 [data_column_index] not in [None, '']:
+#                 temp_trial_identifier = identifiers[int(j / plate_dict[plate_type]['num_of_columns'])]\
+#                 [int(j % plate_dict[plate_type]['num_of_columns'])]
+#                 temp_trial_identifier.analyte_type = 'biomass'
+#                 temp_trial_identifier.analyte_name = 'OD600'
+#                 try:
+#                     temp_timepoint = TimePoint(temp_trial_identifier, time,
+#                                                float(raw_data[data_row_index][data_column_index]))
+#                 except Exception as e:
+#                     print(raw_data[data_row_index][data_column_index])
+#                     raise Exception(e)
+#                 timepoint_list.append(temp_timepoint)
+#     replicate_trial_list = parse_time_point_list(timepoint_list)
+#     for rep in replicate_trial_list:
+#         experiment.add_replicate_trial(rep)
+#
+#     if live_calculations:   experiment.calculate()
+#
+#
+# def tecan_OD_GFP_mCherry(experiment, data, id_type='traverse', plate_type = '96 Wells'):
+#     from .core.settings import settings
+#     live_calculations = settings.live_calculations
+#
+#     unparsed_identifiers = data['identifiers']
+#     raw_data = data['data']
+#
+#     timepoint_list = []
+#
+#     # Parse identifiers (to prevent parsing at every time point)
+#     #Need to have 3 different variables at each step. Otherwise all identifier labels are pointers to the same identifier
+#
+#     identifiers_1 = []
+#     identifiers_2 = []
+#     identifiers_3 = []
+#     for i, row in enumerate(unparsed_identifiers):
+#         parsed_row_1 = []
+#         parsed_row_2 = []
+#         parsed_row_3 = []
+#         for j, data in enumerate(row):
+#             if unparsed_identifiers[i][j] not in ['', 0, '0', None]:
+#                 temp_trial_identifier_1 = TimeCourseIdentifier()
+#                 temp_trial_identifier_2 = TimeCourseIdentifier()
+#                 temp_trial_identifier_3 = TimeCourseIdentifier()
+#
+#                 if id_type == 'CSV':
+#                     temp_trial_identifier_1.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
+#                     temp_trial_identifier_2.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
+#                     temp_trial_identifier_3.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
+#
+#                 elif id_type == 'traverse':
+#                     temp_trial_identifier_1.parse_identifier(unparsed_identifiers[i][j])
+#                     temp_trial_identifier_2.parse_identifier(unparsed_identifiers[i][j])
+#                     temp_trial_identifier_3.parse_identifier(unparsed_identifiers[i][j])
+#
+#                 parsed_row_1.append(temp_trial_identifier_1)
+#                 parsed_row_2.append(temp_trial_identifier_2)
+#                 parsed_row_3.append(temp_trial_identifier_3)
+#             else:
+#                 parsed_row_1.append(None)
+#                 parsed_row_2.append(None)
+#                 parsed_row_3.append(None)
+#         identifiers_1.append(parsed_row_1)
+#         identifiers_2.append(parsed_row_2)
+#         identifiers_3.append(parsed_row_3)
+#
+#     time_row_index = None
+#     for i, row in enumerate(raw_data):
+#         if 'Time [s]' in row:
+#             time_row_index = i
+#             break
+#     data_start_index = time_row_index + 2
+#     number_of_timepoints = len(raw_data[time_row_index]) - 1
+#     for i, data_column_index in enumerate(range(1, number_of_timepoints + 1)):
+#         time = raw_data[time_row_index][data_column_index]
+#         time = (time / 3600)
+#         for j, data_row_index in enumerate(range(data_start_index, data_start_index + 96)):
+#             if identifiers_1[int(j / 12)][int(j % 12)] is not None and raw_data[data_row_index][
+#                 data_column_index] not in [None, '']:
+#                 temp_trial_identifier_1 = identifiers_1[int(j / 12)][int(j % 12)]
+#                 temp_trial_identifier_1.analyte_type = 'biomass'
+#                 temp_trial_identifier_1.analyte_name = 'OD600'
+#                 temp_trial_identifier_2 = identifiers_2[int(j / 12)][int(j % 12)]
+#                 temp_trial_identifier_2.analyte_type = 'reporter'
+#                 temp_trial_identifier_2.analyte_name = 'GFP'
+#                 temp_trial_identifier_3 = identifiers_3[int(j / 12)][int(j % 12)]
+#                 temp_trial_identifier_3.analyte_type = 'reporter'
+#                 temp_trial_identifier_3.analyte_name = 'mCherry'
+#                 try:
+#                     temp_timepoint_1 = TimePoint(temp_trial_identifier_1, time,
+#                                                  float(raw_data[data_row_index][data_column_index]))
+#                     temp_timepoint_2 = TimePoint(temp_trial_identifier_2, time,
+#                                                  float(raw_data[data_row_index + 101][data_column_index]))
+#                     temp_timepoint_3 = TimePoint(temp_trial_identifier_3, time,
+#                                                  float(raw_data[data_row_index + 202][data_column_index]))
+#
+#                 except Exception as e:
+#                     print(raw_data[data_row_index][data_column_index])
+#                     raise Exception(e)
+#                 timepoint_list.append(temp_timepoint_1)
+#                 timepoint_list.append(temp_timepoint_2)
+#                 timepoint_list.append(temp_timepoint_3)
+#
+#     replicate_trial_list = parse_time_point_list(timepoint_list)
+#     for rep in replicate_trial_list:
+#         experiment.add_replicate_trial(rep)
+#
+#     if live_calculations:   experiment.calculate()
 
 
 class Parser(object):
@@ -427,10 +525,11 @@ class Parser(object):
 
 # Register known parsers
 Parser.register_parser('spectromax_OD', spectromax_OD)
-Parser.register_parser('tecan_OD', tecan_OD)
+Parser.register_parser('tecan_OD', tecan)
 Parser.register_parser('default_titers', HPLC_titer_parser)
 #Parser.register_parser('spectromax_OD_triplicate', spectromax_OD_triplicate)
-Parser.register_parser('tecan_OD_GFP_mCherry', tecan_OD_GFP_mCherry)
+Parser.register_parser('tecan_OD_GFP_mCherry', tecan)
+Parser.register_parser('tecan', tecan)
 
 
 
@@ -477,7 +576,8 @@ def parse_raw_data(format=None, id_type='CSV', file_name=None, data=None, experi
     # Import parsers
     parser_case_dict = {'spectromax_OD'           : spectromax_OD,
                         'tecan_OD'                : tecan_OD,
-                        'default_titers'          : HPLC_titer_parser#,
+                        'default_titers'          : HPLC_titer_parser,
+                        'tecan'                   : tecan
                         #'spectromax_OD_triplicate': spectromax_OD_triplicate
                         }
     if format in parser_case_dict.keys():
@@ -503,7 +603,7 @@ def parse_analyte_data(analyte_data_list):
         single_trial_list.append(single_trial)
 
     tf = time.time()
-    print("Parsed %i analytes in %0.1fms" % (len(single_trial_list), (tf - t0) * 1000))
+    print("Parsed %i single trials in %0.1fms" % (len(single_trial_list), (tf - t0) * 1000))
 
     return parse_single_trial_list(single_trial_list)
 
