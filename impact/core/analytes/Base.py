@@ -1,3 +1,5 @@
+from ..AnalyteData import *
+
 from ..TrialIdentifier import TimeCourseIdentifier
 from ...curve_fitting import *
 
