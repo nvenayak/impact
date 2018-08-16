@@ -250,7 +250,6 @@ def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
         if row[0] == 'Mode':
             num_of_analytes += 1
             mode = (next((mode for mode in reversed(row) if mode is not None)))
-            print(raw_data[i + 1])
             if mode == 'Absorbance':
                 wavelength = (next((wavelength for wavelength in reversed(raw_data[i + 1]) if type(wavelength) == int)))
                 if wavelength in mode_dict[mode].keys():
