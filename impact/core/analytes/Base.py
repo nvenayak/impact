@@ -322,12 +322,7 @@ class TimeCourse(Base):
             # Check if ordering is broken
             if self.time_points[-1].time < self.time_points[-2].time:
                 self.time_points.sort(key=lambda timePoint: timePoint.time)
-                #self.pd_series = pd.Series([timePoint.data for timePoint in self.time_points],
-                                           #index=[timePoint.time for timePoint in self.time_points])
-            #else:
-                # Otherwise simply append
-                #self.pd_series[time_point.time] = time_point.data
-                # self.pd_series = self.pd_series.append(pd.Series([time_point.data],index=[time_point.time]))
+
 
         if sum(self.pd_series.index.duplicated()) > 0:
             print(self.pd_series)
