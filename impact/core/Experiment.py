@@ -139,7 +139,6 @@ class Experiment(Base):
                     repstage.calculate()
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
 
-    #TODO, Figure out what this is for. Does not work in it's current form
     def data(self):
         data = []
         for replicate_key in self.replicate_trial_dict:
