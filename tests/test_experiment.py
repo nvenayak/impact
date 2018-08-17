@@ -74,10 +74,10 @@ class TestExperiment(unittest.TestCase):
         self.assertCountEqual(expt.analyte_names,['OD600'])
         stage_tc1 = expt.stages['0-2'].replicate_trials[1].single_trials[0].analyte_dict['OD600']
         self.assertCountEqual(stage_tc1.data_vector,[1,2])
-        self.assertCountEqual(stagetc1.time_vector,[0,1])
+        self.assertCountEqual(stage_tc1.time_vector,[0,1])
         stage_tc2 = expt.stages['0-2'].replicate_trials[0].single_trials[0].analyte_dict['OD600']
         self.assertCountEqual(stage_tc2.data_vector,[0,5])
-        self.assertCountEqual(stagetc2.time_vector,[0,1])
+        self.assertCountEqual(stage_tc2.time_vector,[0,1])
 
 
 
