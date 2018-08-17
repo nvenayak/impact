@@ -441,7 +441,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                     key, val = parameter_value.split(':')
 
                     if len(key.split('__')) == 1:
-                        if key in ['strain', 'media']:
+                        if key in ['strain', 'media'] and value != '':
                             identifier_dict[key]['name'] = val.strip()
                         elif key == 'rep':
                             self.replicate_id = int(val)
