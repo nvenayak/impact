@@ -3,8 +3,10 @@ import impact as impt
 import os
 import pandas as pd
 
+
 class TestExperiment(unittest.TestCase):
     def test_add_experiment(self):
+        impt.settings.savgolFilterWindowSize = 9
         LIMS = impt.Media('LIMS')
         components = [impt.ComponentConcentration(impt.MediaComponent(name), concentration, unit)
                            for name, concentration, unit in [
@@ -19,9 +21,19 @@ class TestExperiment(unittest.TestCase):
         ti1.analyte_name = 'OD600'
         strain1 = impt.Strain(name='test strain1')
         ti1.strain = strain1
-        tc1 = impt.TimeCourse()
+        tc1 = impt.Biomass()
         tc1.trial_identifier = ti1
-        for time, data in ((0, 0), (1, 5), (2, 10)):
+        for time, data in ((0, 0.05001),
+                           (1, 0.417879),
+                           (2, 0.967044),
+                           (3, 1.042528),
+                           (4, 1.049351),
+                           (5, 1.049944),
+                           (6, 1.049995),
+                           (7, 1.05),
+                           (8, 1.05),
+                           (9, 1.05),
+                           (10, 1.05)):
             tc1.add_timepoint(impt.TimePoint(trial_identifier=ti1, time=time, data=data))
         tc1.pd_series = pd.Series([timePoint.data for timePoint in tc1.time_points],index=[timePoint.time for timePoint in\
                                                                                          tc1.time_points])
@@ -42,16 +54,19 @@ class TestExperiment(unittest.TestCase):
         for component in components:
             LIMS.add_component(component)
 
-        ti2 = impt.TimeCourseIdentifier(strain=impt.Strain(name='DH10B WT'))
+        ti2 = impt.TimeCourseIdentifier(strain=impt.Strain(name='blank'))
         ti2.media = LIMS
         ti2.analyte_type = 'biomass'
         ti2.analyte_name = 'OD600'
-        strain2 = impt.Strain(name='test strain2')
+        strain2 = impt.Strain(name='blank')
         ti2.strain = strain2
 
-        tc2 = impt.TimeCourse()
+        tc2 = impt.Biomass()
         tc2.trial_identifier = ti2
-        for time, data in ((0, 1), (1, 2), (2, 3)):
+        for time, data in ((0, 0.05), (1, 0.05), (2, 0.05),
+                           (3, 0.05), (4, 0.05), (5, 0.05),
+                           (6, 0.05), (7, 0.05), (8, 0.05),
+                           (9, 0.05), (10, 0.05)):
             tc2.add_timepoint(impt.TimePoint(trial_identifier=ti2, time=time, data=data))
         tc2.pd_series = pd.Series([timePoint.data for timePoint in tc2.time_points],
                                  index=[timePoint.time for timePoint in \
@@ -71,18 +86,23 @@ class TestExperiment(unittest.TestCase):
         expt1.set_stages([(0,2)])
         expt2.set_stages([(0,2)])
 
-        self.assertCountEqual(expt.strains,['test strain1','test strain2'])
+        expt1.calculate()
+        expt2.calculate()
+
+        self.assertCountEqual(expt.strains,['test strain1', 'blank'])
         self.assertCountEqual(expt.analyte_names,['OD600'])
         stage_tc1 = expt1.stages['0-2'].replicate_trials[0].single_trials[0].analyte_dict['OD600']
-        self.assertCountEqual(stage_tc1.data_vector,[0,5])
-        self.assertCountEqual(stage_tc1.time_vector,[0,1])
+        self.assertEqual(len(stage_tc1.data_vector),2)
+        self.assertEqual(len(stage_tc1.time_vector),2)
         stage_tc2 = expt2.stages['0-2'].replicate_trials[0].single_trials[0].analyte_dict['OD600']
-        self.assertCountEqual(stage_tc2.data_vector,[1,2])
-        self.assertCountEqual(stage_tc2.time_vector,[0,1])
+        self.assertEqual(len(stage_tc2.data_vector),2)
+        self.assertEqual(len(stage_tc2.time_vector), 2)
         print("Printing test expt.....")
         print(expt)
-        expt1.calculate()
         self.assertEqual(len(expt1.data()), 6)
 
+
+
+        expt.calculate()
 
         pass
