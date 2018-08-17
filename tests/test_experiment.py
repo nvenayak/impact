@@ -79,7 +79,10 @@ class TestExperiment(unittest.TestCase):
         stage_tc2 = expt2.stages['0-2'].replicate_trials[0].single_trials[0].analyte_dict['OD600']
         self.assertCountEqual(stage_tc2.data_vector,[1,2])
         self.assertCountEqual(stage_tc2.time_vector,[0,1])
-
+        print("Printing test expt.....")
+        print(expt)
+        expt1.calculate()
+        self.assertEqual(len(expt1.data()), 6)
 
 
         pass
