@@ -237,20 +237,26 @@ def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
             time = (time / 3600)
             for j, data_row_index in enumerate(range(data_start_index, data_start_index + plate_dict[plate_type] \
                     ['num_of_wells'])):
-                if identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
-                        [int(j % plate_dict[plate_type]['num_of_columns'])] is not None and raw_data[data_row_index] \
-                        [data_column_index] not in [None, '']:
-                    temp_trial_identifier = copy.deepcopy(identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
-                                                              [int(j % plate_dict[plate_type]['num_of_columns'])])
-                    temp_trial_identifier.analyte_type = analyte_dict[analyte_num + 1]['analyte_type']
-                    temp_trial_identifier.analyte_name = analyte_dict[analyte_num + 1]['analyte_name']
-                    try:
-                        temp_timepoint = TimePoint(temp_trial_identifier, time,
-                                                   float(raw_data[data_row_index][data_column_index]))
-                    except Exception as e:
-                        print(raw_data[data_row_index][data_column_index])
-                        raise Exception(e)
-                    timepoint_list.append(temp_timepoint)
+                try:
+                    identifier = identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
+                        [int(j % plate_dict[plate_type]['num_of_columns'])]
+                except IndexError:
+                    identifier_exists = False
+                else:
+                    identifier_exists = True
+                if identifier_exists:
+                    if identifier is not None and raw_data[data_row_index][data_column_index] not in [None, '']:
+                        temp_trial_identifier = copy.deepcopy(identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
+                                                                  [int(j % plate_dict[plate_type]['num_of_columns'])])
+                        temp_trial_identifier.analyte_type = analyte_dict[analyte_num + 1]['analyte_type']
+                        temp_trial_identifier.analyte_name = analyte_dict[analyte_num + 1]['analyte_name']
+                        try:
+                            temp_timepoint = TimePoint(temp_trial_identifier, time,
+                                                       float(raw_data[data_row_index][data_column_index]))
+                        except Exception as e:
+                            print(raw_data[data_row_index][data_column_index])
+                            raise Exception(e)
+                        timepoint_list.append(temp_timepoint)
 
     tf = sys_time.time()
     print("Extracted time point data in %0.1fs" % ((tf - t0)))
