@@ -23,17 +23,17 @@ class TestExperiment(unittest.TestCase):
         ti1.strain = strain1
         tc1 = impt.Biomass()
         tc1.trial_identifier = ti1
-        for time, data in ((0, 0.05001),
-                           (1, 0.417879),
-                           (2, 0.967044),
-                           (3, 1.042528),
-                           (4, 1.049351),
-                           (5, 1.049944),
-                           (6, 1.049995),
-                           (7, 1.05),
-                           (8, 1.05),
-                           (9, 1.05),
-                           (10, 1.05)):
+        for time, data in ((0, 0.05),
+                           (1, 0.06),
+                           (2, 0.08),
+                           (3, 0.1),
+                           (4, 0.2),
+                           (5, 0.4),
+                           (6, 0.8),
+                           (7, 1.6),
+                           (8, 1.6),
+                           (9, 1.6),
+                           (10, 1.6)):
             tc1.add_timepoint(impt.TimePoint(trial_identifier=ti1, time=time, data=data))
         tc1.pd_series = pd.Series([timePoint.data for timePoint in tc1.time_points],index=[timePoint.time for timePoint in\
                                                                                          tc1.time_points])
