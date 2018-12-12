@@ -32,8 +32,12 @@ You may also want to install the additional packages as needed, especially the p
 
 Install the package, use develop mode to ensure all the relative paths remain correct.
 
-    python setup.py develop
-    
+    python setup.py
+
+Optionally, the develop flag can be used to install the package from the current location, rather than installing in the default Python installation
+
+	python setup.py develop
+
 ### Updating
 To update to the latest version, run the following in the root folder:
     

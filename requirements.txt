@@ -6,3 +6,4 @@ lmfit==0.8.3
 openpyxl
 tabulate
 openpyxl
+pyexcel-xlsx
