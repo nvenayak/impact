@@ -753,7 +753,7 @@ def time_profile_traces(replicate_trials=None, feature=None, analyte='OD600', co
     return traces
 
 
-def plot_by_strain(expt=None, format=None):
+def plot_each_strain(expt=None, format=None):
     if expt is not None:
         strain_list = list(set([str(rep.trial_identifier.strain) for rep in expt.replicate_trials]))
         strain_list = sorted(strain_list)
@@ -781,7 +781,7 @@ def plot_by_strain(expt=None, format=None):
         print("An experiment object must be specified to plot data.")
 
 
-def plot_by_media(expt=None, format=None):
+def plot_each_media(expt=None, format=None):
     if expt is not None:
         media_list = list(set([str(rep.trial_identifier.media) for rep in expt.replicate_trials]))
         media_list = sorted(media_list)
@@ -799,6 +799,36 @@ def plot_by_media(expt=None, format=None):
                 tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
                                                        label=lambda rep: str(rep.trial_identifier.strain),
                                                        legendgroup=lambda rep: str(rep.trial_identifier.strain),
+                                                       cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
+                                                       pts_per_hour=4)
+
+                fig = go.Figure(data=tracelist)
+                fig['layout'].update(title=str(analyte + ' vs time for different strains in ' + media + ' media'))
+                plot(fig, image=format)
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+
+
+def plot_by_media_base(expt=None, format=None):
+    if expt is not None:
+        media_list = list(set([str(rep.trial_identifier.media.parent) for rep in expt.replicate_trials]))
+        media_list = sorted(media_list)
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            for media in media_list:
+                rep_list = [replicate for replicate in expt.replicate_trials if
+                            str(replicate.trial_identifier.media.parent) == media
+                            and (replicate.trial_identifier.strain.name) != 'blank']
+                rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.media))
+
+                tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
+                                                       label=lambda rep: str(rep.trial_identifier.media),
+                                                       legendgroup=lambda rep: str(rep.trial_identifier.media),
                                                        cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
                                                        pts_per_hour=4)
 
