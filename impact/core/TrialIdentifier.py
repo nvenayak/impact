@@ -160,7 +160,7 @@ class Strain(Base, TrialIdentifierMixin):
 
     @property
     def plasmid_list(self):
-        return sorted([plasmid.name for plalsmid in self.plasmids])
+        return sorted([plasmid.name for plasmid in self.plasmids])
 
 
 class MediaComponent(Base, TrialIdentifierMixin):
