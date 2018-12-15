@@ -158,6 +158,10 @@ class Strain(Base, TrialIdentifierMixin):
     def knockout_list(self):
         return sorted([knockout.gene for knockout in self.knockouts])
 
+    @property
+    def plasmid_list(self):
+        return sorted([plasmid.name for plalsmid in self.plasmids])
+
 
 class MediaComponent(Base, TrialIdentifierMixin):
     """
