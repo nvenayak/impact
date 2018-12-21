@@ -16,6 +16,6 @@ class Reporter(TimeCourse):
         verbose = settings.verbose
 
         if self.trial_identifier.analyte_type == 'reporter':
-            raise Exception('Reporter curve fitting not implemented')
+            print('Reporter curve fitting not implemented')
         else:
             raise Exception('Incorrect analyte_type')
