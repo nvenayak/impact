@@ -18,6 +18,6 @@ class Substrate(TimeCourse):
         verbose = settings.verbose
 
         if self.trial_identifier.analyte_type == 'substrate':
-            raise Exception('Substrate curve fitting not implemented')
+            print('Substrate curve fitting not implemented')
         else:
             raise Exception('Incorrect analyte_type')
