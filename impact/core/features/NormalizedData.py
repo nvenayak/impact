@@ -6,18 +6,18 @@ class ODNormalizedData(BaseAnalyteFeature):
     def __init__(self, biomass, analyte):
         self.biomass = biomass
         self.analyte = analyte
-        self.OD_Normalized_Data = None
+        self.od_normalized_data = None
 
     # This data property assures that the data is returned, or calculated as needed
     @property
     def data(self):
-        if self.OD_Normalized_Data is None:
+        if self.od_normalized_data is None:
             self.calculate()
-        return self.OD_Normalized_Data
+        return self.od_normalized_data
 
     # This is where the property is actually calculated and set
     def calculate(self):
-        self.OD_Normalized_Data = self.analyte.data_vector / self.biomass.data_vector
+        self.od_normalized_data = self.analyte.data_vector / self.biomass.data_vector
 
 
 # The feature factory watches for those analytes
