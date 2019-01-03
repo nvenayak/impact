@@ -214,6 +214,13 @@ class TimeCourse(Base):
         self.death_phase_start = len(data_vector)
         if live_calculations:   self.calculate()
 
+    @property
+    def gradient(self):
+        if self._gradient == []:
+            if self.time_vector is not None and len(self.time_vector) > 2:
+                self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
+
+        return self._gradient
 
     def generate_time_point_list(self):
         if self.time_points:
@@ -229,7 +236,6 @@ class TimeCourse(Base):
 
         if self.time_vector is not None and len(self.time_vector) > 2:
             self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
-            self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
         if self.remove_death_phase_flag:
             self.find_death_phase(self.data_vector)
 
@@ -325,8 +331,8 @@ class TimeCourse(Base):
             print(time_point.trial_identifier)
             raise Exception('Duplicate time points found, this is not supported - likely an identifier input error')
 
-        if len(self.time_points) > 2 and live_calculations:
-            self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
+        #if len(self.time_points) > 2 and live_calculations:
+        #    self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
 
     def curve_fit_data(self):
         raise Exception('This must be implemented in a child')
