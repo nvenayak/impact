@@ -229,6 +229,7 @@ class TimeCourse(Base):
 
         if self.time_vector is not None and len(self.time_vector) > 2:
             self._gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
+            self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
         if self.remove_death_phase_flag:
             self.find_death_phase(self.data_vector)
 
