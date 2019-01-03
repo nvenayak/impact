@@ -205,7 +205,7 @@ def fit_data(t, param_dict, fit_type = 'gompertz'):
         return janoschek(t, param_dict['B'].parameter_value, param_dict['growth_rate'].parameter_value,
                          param_dict['L'].parameter_value, param_dict['delta'].parameter_value)
 
-    if fit_type == 'generalized_logistic':
+    if fit_type in ['growthEquation_generalized_logistic_2','productionEquation_generalized_logistic','growthEquation_generalized_logistic']:
         return generalized_logistic(t, param_dict['A'].parameter_value, param_dict['growth_rate'].parameter_value,
                                     param_dict['C'].parameter_value, param_dict['Q'].parameter_value,
                                     param_dict['K'].parameter_value, param_dict['nu'].parameter_value)
