@@ -264,13 +264,13 @@ class ReplicateTrial(Base):
                         rep_mean = sum(single_trial_data)/len(trial_list)
 
                         #This is the variance due to individual normalized datapoints
-                        rep_var = np.var(single_trial_data,axis=0)
+                        rep_var = pd.Series(data=np.var(single_trial_data,axis=0),index=trial_list[-1].analyte_dict[analyte].time_vector)
                         # Variance on dataset due to blanks is average of individual standard deviation squared.
                         # Total variance is variance due to blanks + variance between individual normalized datapoints
                         if self.blank:
                             rep_var = sum(single_trial_var)/np.square(len(single_trial_var)) + rep_var
 
-                        setattr(self.std.analyte_dict[analyte], feature.name, np.sqrt(rep_var))
+                        setattr(self.std.analyte_dict[analyte], feature.name, np.sqrt(rep_var).values)
                         setattr(self.avg.analyte_dict[analyte], feature.name, rep_mean)
 
                 else:
@@ -290,8 +290,8 @@ class ReplicateTrial(Base):
                             left_index=True, right_index=True, how='outer')
 
                     # Calculate and set the feature statistics
-                    setattr(self.avg.analyte_dict[analyte], feature.name, pd.Series(df.mean(axis=1)))
-                    setattr(self.std.analyte_dict[analyte], feature.name, pd.Series(df.std(axis=1)))
+                    setattr(self.avg.analyte_dict[analyte], feature.name, pd.Series(df.mean(axis=1)).values)
+                    setattr(self.std.analyte_dict[analyte], feature.name, pd.Series(df.std(axis=1)).values)
 
         # Calculate fit param stats
         for analyte in unique_analytes:
