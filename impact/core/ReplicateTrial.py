@@ -260,14 +260,16 @@ class ReplicateTrial(Base):
                                     temp_var[trial.analyte_dict[analyte].pd_series == 0] = 0
                                     temp_var[trial.analyte_dict['OD600'].pd_series == 0] = 0
                                     single_trial_var.append(temp_var)
-                            else:
-                                single_trial_var.append(0)
+
                         rep_mean = sum(single_trial_data)/len(trial_list)
 
+                        #This is the variance due to individual normalized datapoints
+                        rep_var = np.var(single_trial_data)
                         # Variance on dataset due to blanks is average of individual standard deviation squared.
-                        rep_var = sum(single_trial_var)/np.square(len(single_trial_var))
                         # Total variance is variance due to blanks + variance between individual normalized datapoints
-                        rep_var = np.var(single_trial_data) + rep_var
+                        if single_trial_var:
+                            rep_var = sum(single_trial_var)/np.square(len(single_trial_var)) + rep_var
+
                         setattr(self.std.analyte_dict[analyte], feature.name, np.sqrt(rep_var))
                         setattr(self.avg.analyte_dict[analyte], feature.name, rep_mean)
 
