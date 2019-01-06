@@ -259,7 +259,7 @@ class Media(Base, TrialIdentifierMixin):
         #     self.name = self.formal_name
 
     def __str__(self):
-        return self.formal_name
+        return self.name
 
     @property
     def formal_name(self):
