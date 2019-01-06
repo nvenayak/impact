@@ -264,10 +264,10 @@ class ReplicateTrial(Base):
                         rep_mean = sum(single_trial_data)/len(trial_list)
 
                         #This is the variance due to individual normalized datapoints
-                        rep_var = np.var(single_trial_data)
+                        rep_var = np.var(single_trial_data,axis=0)
                         # Variance on dataset due to blanks is average of individual standard deviation squared.
                         # Total variance is variance due to blanks + variance between individual normalized datapoints
-                        if single_trial_var:
+                        if self.blank:
                             rep_var = sum(single_trial_var)/np.square(len(single_trial_var)) + rep_var
 
                         setattr(self.std.analyte_dict[analyte], feature.name, np.sqrt(rep_var))
