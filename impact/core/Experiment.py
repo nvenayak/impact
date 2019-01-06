@@ -16,7 +16,8 @@ from ..database import Base
 from sqlalchemy import Column, Integer, ForeignKey, Float, Date, String, event
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-
+import pandas as pd
+from .settings import settings
 
 class Experiment(Base):
     __tablename__ = 'experiment'
@@ -119,7 +120,6 @@ class Experiment(Base):
         return {str(rep.trial_identifier.unique_replicate_trial()): rep for rep in self.replicate_trials}
 
     def calculate(self):
-        from .settings import settings
         t0 = time.time()
         print('Analyzing data...', end='')
 
