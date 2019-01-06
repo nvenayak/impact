@@ -933,8 +933,6 @@ def plot_growth_curve_fit(expt=None, format=None):
         colors = cl.scales['5']['qual']['Set1'][0:2]
         rep_list = [rep for rep in expt.replicate_trials if rep.trial_identifier.strain.name not in ['blank', 'none']]
         rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain))
-        avg_list = []
-        error_list = []
         for rep in rep_list:
             st_list = [st for st in rep.single_trials]
             st_list = sorted(st_list, key=lambda st: st.trial_identifier.replicate_id)
@@ -984,26 +982,8 @@ def plot_growth_curve_fit(expt=None, format=None):
             plot(fig, image=format)
             avg_growth = rep.avg.analyte_dict['OD600'].fit_params['growth_rate'].parameter_value
             std_growth = rep.std.analyte_dict['OD600'].fit_params['growth_rate'].parameter_value
-            avg_list.append(avg_growth)
-            error_list.append(std_growth / avg_growth * 100)
             print("\u03BC\u2090\u1D65 = %3.3f \u00B1 %3.3f /h" % (avg_growth, std_growth))
-
-        max_growth_rate = max(avg_list)
-        percent_diff_max = (max_growth_rate - avg_list) / max_growth_rate * 100
-
-        growth_report = pd.DataFrame({'Strain': [str(rep.trial_identifier.strain) for rep in rep_list],
-                                      'Media' : [str(rep.trial_identifier.media) for rep in rep_list],
-                                      'Average Growth Rate': avg_list,
-                                      '% Difference from Max': percent_diff_max,
-                                      '% Error': error_list})
-        growth_report = growth_report[['Strain', 'Media', 'Average Growth Rate', '% Error', '% Difference from Max']]
-        d = dict(selector="th",
-                 props=[('text-align', 'left')])
-        expt.growth_report_html = growth_report.style.set_properties(**{'text-align': 'left'}).set_table_styles([d])
-        expt.growth_report = growth_report
     else:
-        expt.growth_report_html = 'Null'
-        expt.growth_report = 'Null'
         print("Curve fitting was not implemented for this experiment. Please check Impact settings.")
 
 
