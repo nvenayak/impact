@@ -140,7 +140,7 @@ class Experiment(Base):
                     repstage.calculate()
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
 
-        if settings.perform_curve_fit:
+        if settings.perform_curve_fit and 'OD600' in self.analyte_names:
             rep_list = [rep for rep in self.replicate_trials if
                         rep.trial_identifier.strain.name not in ['blank', 'none']]
             rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier))
