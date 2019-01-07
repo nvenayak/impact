@@ -1080,7 +1080,7 @@ def plot_feature_orderby_parentstrain(expt=None, feature=None, format=None):
                         rep_list = [replicate for replicate in expt.replicate_trials if
                                     str(replicate.trial_identifier.strain.parent) == strain and
                                     strain.lower() not in  ['none', 'blank']]
-                        rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain.parent))
+                        rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain))
                         if not rep_list:
                             continue
                         if len(rep_list[0].avg.analyte_dict[analyte].time_vector) > 1:
@@ -1357,4 +1357,30 @@ def plot_feature_orderby_mediacomponents(expt=None, feature=None, format=None):
 
     else:
         print("An experiment object must be specified to plot data.")
+
+
+def time_course_max_value_smart_plot(expt=None, format=None, feature=None):
+
+    media_list = list(set([str(rep.trial_identifier.media.parent) for rep in expt.replicate_trials]))
+    media_list = list(filter(None, media_list))
+    if len(media_list) > 1:
+        plot_feature_orderby_basemedia(expt=expt, format=format, feature=feature)
+
+    components_list = list(set([','.join(list(rep.trial_identifier.media.components.keys()))
+                                for rep in expt.replicate_trials]))
+    components_list = list(filter(None, components_list))
+    if len(components_list) > 1:
+        plot_feature_orderby_mediacomponents(expt=expt, format=format, feature=feature)
+
+    plasmid_list = list(set([','.join(rep.trial_identifier.strain.plasmid_list) for rep in expt.replicate_trials]))
+    if len(plasmid_list) > 1:
+        plot_feature_orderby_plasmids(expt=expt, format=format, feature=feature)
+
+    knockout_list = list(set([','.join(rep.trial_identifier.strain.knockout_list) for rep in expt.replicate_trials]))
+    if len(knockout_list) > 1:
+        plot_feature_orderby_knockouts(expt=expt, format=format, feature=feature)
+
+    parent_strain_list = list(set([str(rep.trial_identifier.strain.parent) for rep in expt.replicate_trials]))
+    if len(parent_strain_list) > 1:
+        plot_feature_orderby_parentstrain(expt=expt, format=format, feature=feature)
 
