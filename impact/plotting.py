@@ -6,6 +6,7 @@ from warnings import warn
 
 from .core.ReplicateTrial import ReplicateTrial
 from .core.settings import plotly_username, plotly_api_key, settings
+
 from .curve_fitting.methods import *
 import pandas as pd
 
@@ -711,6 +712,7 @@ def analyte_bar_trace(replicate_trials=None, feature=None, analyte='OD600', colo
                         legendgroup=lambda x: None,
                         showlegend=True,value_to_plot='max'):
 
+
     if colors is None:
         colors = get_colors(len(replicate_trials), colors=colors, cl_scales=cl_scales)
     x_list = []
@@ -838,6 +840,7 @@ def plot_timecourse_orderby_plasmids(expt=None, format=None, feature=None):
     if expt is not None:
         plasmid_list = list(set([','.join(rep.trial_identifier.strain.plasmid_list) for rep in expt.replicate_trials]))
         plasmid_list = sorted(plasmid_list, key=len)
+
         analyte_list = []
         for rep in expt.replicate_trials:
             analyte_list += rep.get_analytes()
@@ -1080,6 +1083,7 @@ def plot_analyte_value_orderby_parentstrain(expt=None, feature=None, format=None
                                                        + strain + ' in different media'))
                         plot(fig, image=format)
 
+
     else:
         print("An experiment object must be specified to plot data.")
 
@@ -1228,6 +1232,7 @@ def plot_analyte_value_orderby_mediacomponents(expt=None, feature=None, format=N
         components_list = list(filter(None, components_list))
         media_list = list(set([str(rep.trial_identifier.media.parent) for rep in expt.replicate_trials
                                if ','.join(list(rep.trial_identifier.media.components.keys())) in components_list]))
+
         media_list = sorted(media_list)
         analyte_list = []
         for rep in expt.replicate_trials:
@@ -1265,6 +1270,7 @@ def plot_analyte_value_orderby_mediacomponents(expt=None, feature=None, format=N
                                                        ' media'))
                         plot(fig, image=format)
 
+
     else:
         print("An experiment object must be specified to plot data.")
 
@@ -1301,6 +1307,7 @@ def plot_growth_curve_fit(expt=None, format=None):
         colors = cl.scales['5']['qual']['Set1'][0:2]
         rep_list = [rep for rep in expt.replicate_trials if rep.trial_identifier.strain.name not in ['blank', 'none']]
         rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain))
+
         for rep in rep_list:
             st_list = [st for st in rep.single_trials]
             st_list = sorted(st_list, key=lambda st: st.trial_identifier.replicate_id)

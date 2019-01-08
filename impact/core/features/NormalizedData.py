@@ -8,6 +8,7 @@ class ODNormalizedData(BaseAnalyteFeature):
         self.analyte = analyte
         self.od_normalized_data = None
 
+
     # This data property assures that the data is returned, or calculated as needed
     @property
     def data(self):
@@ -18,6 +19,7 @@ class ODNormalizedData(BaseAnalyteFeature):
     # This is where the property is actually calculated and set
     def calculate(self):
         self.od_normalized_data = self.analyte.data_vector / self.biomass.data_vector
+
 
 
 # The feature factory watches for those analytes

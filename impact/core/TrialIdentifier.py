@@ -163,6 +163,7 @@ class Strain(Base, TrialIdentifierMixin):
         return sorted([plasmid.name for plasmid in self.plasmids])
 
 
+
 class MediaComponent(Base, TrialIdentifierMixin):
     """
     Media component many-to-many relationship

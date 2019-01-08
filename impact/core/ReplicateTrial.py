@@ -240,6 +240,7 @@ class ReplicateTrial(Base):
             for feature in self.features:
 
                 if feature.name in ['od_normalized_data','specific_productivity']:
+
                     trial_list = [single_trial
                                   for single_trial in self.single_trials
                                   if analyte in single_trial.analyte_dict
@@ -255,6 +256,7 @@ class ReplicateTrial(Base):
                             if self.blank:
                                 with np.errstate(divide='ignore'):
                                     temp_var = np.square(feature_data)*(np.square(self.blank.std.analyte_dict[analyte].pd_series\
+
                                                /trial.analyte_dict[analyte].pd_series)+
                                                 np.square(self.blank.std.analyte_dict['OD600'].pd_series
                                                           /trial.analyte_dict['OD600'].pd_series))
@@ -295,6 +297,7 @@ class ReplicateTrial(Base):
                     # Calculate and set the feature statistics
                     setattr(self.avg.analyte_dict[analyte], feature.name, pd.Series(df.mean(axis=1)).values)
                     setattr(self.std.analyte_dict[analyte], feature.name, pd.Series(df.std(axis=1)).values)
+
 
         # Calculate fit param stats
         for analyte in unique_analytes:
