@@ -250,7 +250,8 @@ class ReplicateTrial(Base):
                         for trial in trial_list:
                             feature_object = getattr(trial.analyte_dict[analyte], feature.name)
                             feature_data = feature_object.data
-                            single_trial_data.append(feature_data)
+                            if feature_data:
+                                single_trial_data.append(feature_data)
                             if self.blank:
                                 with np.errstate(divide='ignore'):
                                     temp_var = np.square(feature_data)*(np.square(self.blank.std.analyte_dict[analyte].pd_series\
@@ -260,8 +261,8 @@ class ReplicateTrial(Base):
                                     temp_var[trial.analyte_dict[analyte].pd_series == 0] = 0
                                     temp_var[trial.analyte_dict['OD600'].pd_series == 0] = 0
                                     single_trial_var.append(temp_var)
-
-                        rep_mean = sum(single_trial_data)/len(trial_list)
+                        if single_trial_data:
+                            rep_mean = sum(single_trial_data)/len(trial_list)
 
                         #This is the variance due to individual normalized datapoints
                         rep_var = pd.Series(data=np.var(single_trial_data,axis=0),index=trial_list[-1].analyte_dict[analyte].time_vector)
