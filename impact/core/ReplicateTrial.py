@@ -250,7 +250,7 @@ class ReplicateTrial(Base):
                         for trial in trial_list:
                             feature_object = getattr(trial.analyte_dict[analyte], feature.name)
                             feature_data = feature_object.data
-                            if feature_data:
+                            if feature_data is not None:
                                 single_trial_data.append(feature_data)
                             if self.blank:
                                 with np.errstate(divide='ignore'):
@@ -263,6 +263,8 @@ class ReplicateTrial(Base):
                                     single_trial_var.append(temp_var)
                         if single_trial_data:
                             rep_mean = sum(single_trial_data)/len(trial_list)
+                        else:
+                            rep_mean = None
 
                         #This is the variance due to individual normalized datapoints
                         rep_var = pd.Series(data=np.var(single_trial_data,axis=0),index=trial_list[-1].analyte_dict[analyte].time_vector)
