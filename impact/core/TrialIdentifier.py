@@ -158,6 +158,11 @@ class Strain(Base, TrialIdentifierMixin):
     def knockout_list(self):
         return sorted([knockout.gene for knockout in self.knockouts])
 
+    @property
+    def plasmid_list(self):
+        return sorted([plasmid.name for plasmid in self.plasmids])
+
+
 
 class MediaComponent(Base, TrialIdentifierMixin):
     """
@@ -166,7 +171,7 @@ class MediaComponent(Base, TrialIdentifierMixin):
 
     __tablename__ = 'media_component'
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
+    name = Column(String)
 
     eq_attrs = ['name']
 
@@ -255,7 +260,7 @@ class Media(Base, TrialIdentifierMixin):
         #     self.name = self.formal_name
 
     def __str__(self):
-        return self.formal_name
+        return self.name
 
     @property
     def formal_name(self):
@@ -299,7 +304,7 @@ class Environment(Base, TrialIdentifierMixin):
     id = Column(Integer, primary_key=True)
     labware_id = Column(Integer, ForeignKey('labware.id'))
     labware = relationship('Labware')
-    shaking_speed = Column(Float)
+    shaking_speed = Column(Float, nullable=True)
     shaking_diameter = Column(Float, nullable=True)
     temperature = Column(Float)
     pH = Column(Float)
@@ -426,9 +431,9 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
         parameter_values = id.split('|')
         identifier_dict = {'strain'     : {'name': '', 'plasmid': [], 'ko': [], 'parent': ''},
                            'media'      : {'name': '', 'cc': {}, 'parent': ''},
-                           'environment': {'labware'    : Labware(), 'shaking_speed': '', 'shaking_diameter': '',
-                                           'temperature': '',
-                                           'pH'         : '', 'DO': ''}}
+                           'environment': {'labware'    : Labware(), 'shaking_speed': None, 'shaking_diameter': None,
+                                           'temperature': None,
+                                           'pH'         : None, 'DO': None}}
 
         for parameter_value in parameter_values:
             if parameter_value != '':

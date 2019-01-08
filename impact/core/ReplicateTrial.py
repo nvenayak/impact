@@ -239,7 +239,8 @@ class ReplicateTrial(Base):
 
             for feature in self.features:
 
-                if feature.name == 'od_normalized_data':
+                if feature.name in ['od_normalized_data','specific_productivity']:
+
                     trial_list = [single_trial
                                   for single_trial in self.single_trials
                                   if analyte in single_trial.analyte_dict
@@ -250,46 +251,53 @@ class ReplicateTrial(Base):
                         for trial in trial_list:
                             feature_object = getattr(trial.analyte_dict[analyte], feature.name)
                             feature_data = feature_object.data
-                            single_trial_data.append(feature_data)
+                            if feature_data is not None:
+                                single_trial_data.append(feature_data)
                             if self.blank:
                                 with np.errstate(divide='ignore'):
-                                    temp_var = feature_data*(np.square(self.blank.std.analyte_dict[analyte].pd_series\
+                                    temp_var = np.square(feature_data)*(np.square(self.blank.std.analyte_dict[analyte].pd_series\
+
                                                /trial.analyte_dict[analyte].pd_series)+
                                                 np.square(self.blank.std.analyte_dict['OD600'].pd_series
                                                           /trial.analyte_dict['OD600'].pd_series))
                                     temp_var[trial.analyte_dict[analyte].pd_series == 0] = 0
                                     temp_var[trial.analyte_dict['OD600'].pd_series == 0] = 0
                                     single_trial_var.append(temp_var)
-                            else:
-                                single_trial_var.append(0)
-                        rep_mean = sum(single_trial_data)/len(trial_list)
+                        if single_trial_data:
+                            rep_mean = sum(single_trial_data)/len(trial_list)
+                        else:
+                            rep_mean = None
 
+                        #This is the variance due to individual normalized datapoints
+                        rep_var = pd.Series(data=np.var(single_trial_data,axis=0),index=trial_list[-1].analyte_dict[analyte].time_vector)
                         # Variance on dataset due to blanks is average of individual standard deviation squared.
-                        rep_var = sum(single_trial_var)/np.square(len(single_trial_var))
                         # Total variance is variance due to blanks + variance between individual normalized datapoints
-                        rep_var = np.var(single_trial_var) + rep_var
-                        setattr(self.std.analyte_dict[analyte], feature.name, np.sqrt(rep_var))
+                        if self.blank:
+                            rep_var = sum(single_trial_var)/np.square(len(single_trial_var)) + rep_var
+
+                        setattr(self.std.analyte_dict[analyte], feature.name, np.sqrt(rep_var).values)
                         setattr(self.avg.analyte_dict[analyte], feature.name, rep_mean)
 
+                else:
+                    # Get all the analytes with the feature
+                    trial_list = [single_trial
+                                  for single_trial in self.single_trials
+                                  if analyte in single_trial.analyte_dict
+                                  and feature.name in single_trial.analyte_dict[analyte].__dict__]
 
-                # Get all the analytes with the feature
-                trial_list = [single_trial
-                              for single_trial in self.single_trials
-                              if analyte in single_trial.analyte_dict
-                              and feature.name in single_trial.analyte_dict[analyte].__dict__]
+                    # Merge them all, in case they don't share the same index (missing data)
+                    df = pd.DataFrame()
+                    for trial in trial_list:
+                        df = df.merge(pd.DataFrame({
+                            str(trial.trial_identifier.replicate_id):
+                                pd.Series(getattr(trial.analyte_dict[analyte], feature.name).data,
+                                          index=trial.analyte_dict[analyte].time_vector)}),
+                            left_index=True, right_index=True, how='outer')
 
-                # Merge them all, in case they don't share the same index (missing data)
-                df = pd.DataFrame()
-                for trial in trial_list:
-                    df = df.merge(pd.DataFrame({
-                        str(trial.trial_identifier.replicate_id):
-                            pd.Series(getattr(trial.analyte_dict[analyte], feature.name).data,
-                                      index=trial.analyte_dict[analyte].time_vector)}),
-                        left_index=True, right_index=True, how='outer')
+                    # Calculate and set the feature statistics
+                    setattr(self.avg.analyte_dict[analyte], feature.name, pd.Series(df.mean(axis=1)).values)
+                    setattr(self.std.analyte_dict[analyte], feature.name, pd.Series(df.std(axis=1)).values)
 
-                # Calculate and set the feature statistics
-                setattr(self.avg.analyte_dict[analyte], feature.name, pd.Series(df.mean(axis=1)))
-                setattr(self.std.analyte_dict[analyte], feature.name, pd.Series(df.std(axis=1)))
 
         # Calculate fit param stats
         for analyte in unique_analytes:

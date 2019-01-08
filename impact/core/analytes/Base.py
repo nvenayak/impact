@@ -331,9 +331,6 @@ class TimeCourse(Base):
             print(time_point.trial_identifier)
             raise Exception('Duplicate time points found, this is not supported - likely an identifier input error')
 
-        if len(self.time_points) > 6 and live_calculations:
-            self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
-
     def curve_fit_data(self):
         raise Exception('This must be implemented in a child')
 
