@@ -5,7 +5,10 @@ import sys
 from warnings import warn
 
 from .core.ReplicateTrial import ReplicateTrial
-from .core.settings import plotly_username, plotly_api_key
+from .core.settings import plotly_username, plotly_api_key, settings
+
+from .curve_fitting.methods import *
+import pandas as pd
 
 # If in the iPython environment, initialize notebook mode
 try:
@@ -559,59 +562,6 @@ def print_generic_timecourse_plotly(replicate_trial_list, product, colors, pts_p
     return final_plot_number
 
 
-## NEW PLOTTING
-def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600', colors=None,
-                        cl_scales=['8', 'qual', 'Set1'],
-                        label=lambda replicate: str(replicate.parent.start_date)
-                                                + ' '
-                                                + replicate.trial_identifier.strain.name
-                                                + ' '
-                                                + replicate.trial_identifier.id_1
-                                                + ' '
-                                                + replicate.trial_identifier.id_2,
-                        legendgroup=lambda x: None,
-                        showlegend=True,
-                        pts_per_hour=60
-                        ):
-    traces = []
-
-    if colors is None:
-        color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
-        # https://plot.ly/ipython-notebooks/color-scales/
-        if len(replicate_trials) > int(cl_scales[0]):
-            print(len(replicate_trials))
-            print(int(cl_scales[0]))
-            print('interpolated')
-            num_pts = len(replicate_trials)
-            colors = cl.interp(color_scale, num_pts)
-            # Index the list
-            colors = [colors[int(x)] for x in np.arange(0, num_pts, num_pts / round(len(replicate_trials)))]
-        else:
-            colors = color_scale
-
-    for index, replicate in enumerate(replicate_trials):
-        # Determine how many points should be plotted
-        required_num_pts = replicate.t[-1] * pts_per_hour
-        removePointFraction = int(len(replicate.t) / required_num_pts)
-        if removePointFraction < 1:  removePointFraction = 1
-
-        traces.append(go.Scatter(x=replicate.t[::removePointFraction],
-                                 y=replicate.avg.analyte_dict[analyte].data_vector[::removePointFraction],
-                                 error_y={
-                                     'type'   : 'data',
-                                     'array'  : replicate.std.analyte_dict[analyte].data_vector[::removePointFraction],
-                                     'visible': True,
-                                     'color'  : colors[index]},
-                                 # mode=mode,
-                                 marker={
-                                     'color': colors[index]},
-                                 line={'color': colors[index]},
-                                 showlegend=showlegend,
-                                 legendgroup=legendgroup(replicate),
-                                 name=label(replicate)))  # ,
-    return traces
-
-
 def get_colors(number_of_colors, colors=None, cl_scales=['8', 'qual', 'Set1']):
     if colors is None:
         color_scale = cl.scales[cl_scales[0]][cl_scales[1]][cl_scales[2]]
@@ -619,60 +569,20 @@ def get_colors(number_of_colors, colors=None, cl_scales=['8', 'qual', 'Set1']):
         if number_of_colors > int(cl_scales[0]):
             print('interpolated')
             # num_pts = len(replicate_trials)
-            colors = cl.interp(color_scale, number_of_colors)
+            colors = cl.interp(color_scale, 500)
+            # Index the list
             # Index the list
             colors = [colors[int(x)] for x in np.arange(0,
-                                                        number_of_colors,
-                                                        number_of_colors / round(len(number_of_colors)))]
+                                                        500,
+                                                       round( 500 / (number_of_colors)))]
         else:
             colors = color_scale
     return colors
 
 
-def time_profile_traces(replicate_trials=None, feature='titer', analyte='OD600', colors=None,
-                        cl_scales=['8', 'qual', 'Set1'],
-                        label=lambda replicate: str(replicate.parent.start_date)
-                                                + ' '
-                                                + replicate.trial_identifier.strain.name
-                                                + ' '
-                                                + replicate.trial_identifier.id_1
-                                                + ' '
-                                                + replicate.trial_identifier.id_2,
-                        legendgroup=lambda x: None,
-                        showlegend=True,
-                        pts_per_hour=60
-                        ):
-    traces = []
-
-    if colors is None:
-        colors = get_colors(len(replicate_trials), colors=colors, cl_scales=cl_scales)
-
-    for index, replicate in enumerate(replicate_trials):
-        # Determine how many points should be plotted
-        required_num_pts = replicate.t[-1] * pts_per_hour
-        removePointFraction = int(len(replicate.t) / required_num_pts)
-        if removePointFraction < 1:  removePointFraction = 1
-
-        traces.append(go.Scatter(x=replicate.t[::removePointFraction],
-                                 y=replicate.avg.analyte_dict[analyte].data_vector[::removePointFraction],
-                                 error_y={
-                                     'type'   : 'data',
-                                     'array'  : replicate.std.analyte_dict[analyte].data_vector[::removePointFraction],
-                                     'visible': True,
-                                     'color'  : colors[index]},
-                                 # mode=mode,
-                                 marker={
-                                     'color': colors[index]},
-                                 line={'color': colors[index]},
-                                 showlegend=showlegend,
-                                 legendgroup=legendgroup(replicate),
-                                 name=label(replicate)))  # ,
-    return traces
-
-
-def time_profile_traces_single_trials(replicate_trial=None, feature='titer', analyte='OD600', colors=None,
+def time_profile_traces_single_trials(replicate_trial=None, feature=None, analyte='OD600', colors=None,
                                       cl_scales=['8', 'qual', 'Set1'],
-                                      label=lambda replicate: str(replicate),
+                                      label=lambda replicate: str(replicate.trial_identifier.replicate_id),
                                       legendgroup=lambda x: None,
                                       showlegend=True,
                                       pts_per_hour=60
@@ -700,14 +610,16 @@ def time_profile_traces_single_trials(replicate_trial=None, feature='titer', ana
     traces = []
     if colors is None:
         colors = get_colors(len(replicate_trial.single_trials), colors=colors, cl_scales=cl_scales)
-
-    for index, singletrial in enumerate(replicate_trial.single_trials):
+    trial_list = [trial for trial in replicate_trial.single_trials]
+    trial_list = sorted(trial_list, key=lambda rep:str(rep.trial_identifier.replicate_id))
+    if feature is None:
+        for index, singletrial in enumerate(trial_list):
         # Determine how many points should be plotted
-        required_num_pts = singletrial.t[-1] * pts_per_hour
-        removePointFraction = int(len(singletrial.t) / required_num_pts)
-        if removePointFraction < 1:  removePointFraction = 1
+            required_num_pts = singletrial.t[-1] * pts_per_hour
+            removePointFraction = int(len(singletrial.t) / required_num_pts)
+            if removePointFraction < 1:  removePointFraction = 1
 
-        traces.append(go.Scatter(x=singletrial.t[::removePointFraction],
+            traces.append(go.Scatter(x=singletrial.t[::removePointFraction],
                                  y=singletrial.analyte_dict[analyte].data_vector[::removePointFraction],
                                  # mode=mode,
                                  marker={
@@ -716,5 +628,736 @@ def time_profile_traces_single_trials(replicate_trial=None, feature='titer', ana
                                  showlegend=showlegend,
                                  legendgroup=legendgroup(singletrial),
                                  name=label(singletrial)))  # ,
+    else:
+        for index, singletrial in enumerate(trial_list):
+            # Determine how many points should be plotted
+            required_num_pts = singletrial.t[-1] * pts_per_hour
+            removePointFraction = int(len(singletrial.t) / required_num_pts)
+            if removePointFraction < 1:  removePointFraction = 1
+            y_data = getattr(singletrial.analyte_dict[analyte], feature)
+            y_data = y_data.data
+            traces.append(go.Scatter(x=singletrial.t[::removePointFraction],
+                                     y=y_data[::removePointFraction],
+                                     # mode=mode,
+                                     marker={
+                                         'color': colors[index]},
+                                     line={'color': colors[index]},
+                                     showlegend=showlegend,
+                                     legendgroup=legendgroup(singletrial),
+                                     name=label(singletrial)))  # ,
     return traces
+
+
+def time_profile_traces(replicate_trials=None, feature=None, analyte='OD600', colors=None,
+                        cl_scales=['8', 'qual', 'Set1'],
+                        label=lambda replicate: str(replicate.trial_identifier.strain)
+                                                + ' '
+                                                + str(replicate.trial_identifier.media),
+                        legendgroup=lambda x: None,
+                        showlegend=True,
+                        pts_per_hour=60
+                        ):
+    traces = []
+
+    if colors is None:
+        colors = get_colors(len(replicate_trials), colors=colors, cl_scales=cl_scales)
+
+    for index, replicate in enumerate(replicate_trials):
+        # Determine how many points should be plotted
+        required_num_pts = replicate.t[-1] * pts_per_hour
+        removePointFraction = int(len(replicate.t) / required_num_pts)
+        if removePointFraction < 1:  removePointFraction = 1
+        if feature is None:
+            traces.append(go.Scatter(x=replicate.t[::removePointFraction],
+                                 y=replicate.avg.analyte_dict[analyte].data_vector[::removePointFraction],
+                                 error_y={
+                                     'type'   : 'data',
+                                     'array'  : replicate.std.analyte_dict[analyte].data_vector[::removePointFraction],
+                                     'visible': True,
+                                     'color'  : colors[index]},
+                                 # mode=mode,
+                                 marker={
+                                     'color': colors[index]},
+                                 line={'color': colors[index]},
+                                 showlegend=showlegend,
+                                 legendgroup=legendgroup(replicate),
+                                 name=label(replicate)))  # ,
+        elif feature in replicate.avg.analyte_dict[analyte].__dict__:
+            y_data = getattr(replicate.avg.analyte_dict[analyte], feature)
+            y_err = getattr(replicate.std.analyte_dict[analyte], feature)
+            traces.append(go.Scatter(x=replicate.t[::removePointFraction],
+                                     y=y_data[::removePointFraction],
+                                     error_y={
+                                         'type': 'data',
+                                         'array': y_err[::removePointFraction],
+                                         'visible': True,
+                                         'color': colors[index]},
+                                     # mode=mode,
+                                     marker={
+                                         'color': colors[index]},
+                                     line={'color': colors[index]},
+                                     showlegend=showlegend,
+                                     legendgroup=legendgroup(replicate),
+                                     name=label(replicate)))
+        else:
+            print("The feature " + feature + " was not available for the analyte " + analyte)
+    return traces
+
+
+def analyte_bar_trace(replicate_trials=None, feature=None, analyte='OD600', colors=None,
+                        cl_scales=['8', 'qual', 'Set1'],
+                        label=lambda replicate: str(replicate.trial_identifier.strain)
+                                                + ' '
+                                                + str(replicate.trial_identifier.media),
+                        legendgroup=lambda x: None,
+                        showlegend=True,value_to_plot='max'):
+
+
+    if colors is None:
+        colors = get_colors(len(replicate_trials), colors=colors, cl_scales=cl_scales)
+    x_list = []
+    y_list = []
+    error_list = []
+    legendgroup_list = []
+    label_list = []
+    color_list = []
+    for index, replicate in enumerate(replicate_trials):
+        if feature is None:
+            if value_to_plot =='max':
+                index_to_plot = np.argmax(replicate.avg.analyte_dict[analyte].data_vector)
+            elif value_to_plot =='end':
+                index_to_plot = -1
+            elif value_to_plot =='start':
+                index_to_plot = 0
+            else:
+                print("That is not a valid point")
+                return None
+            data_point = replicate.avg.analyte_dict[analyte].data_vector[index_to_plot]
+            error = replicate.std.analyte_dict[analyte].data_vector[index_to_plot]
+
+            x_list.append(str(replicate.trial_identifier.strain) +" in " + str(replicate.trial_identifier.media))
+            y_list.append(data_point)
+            error_list.append(error)
+
+            color_list.append(colors[index])
+            legendgroup_list.append(legendgroup(replicate))
+            label_list.append(label(replicate))
+
+        elif feature in replicate.avg.analyte_dict[analyte].__dict__:
+
+            y_data = getattr(replicate.avg.analyte_dict[analyte], feature)
+            y_err = getattr(replicate.std.analyte_dict[analyte], feature)
+
+            if value_to_plot =='max':
+                index_to_plot = np.argmax(y_data)
+            elif value_to_plot =='end':
+                index_to_plot = -1
+            elif value_to_plot =='start':
+                index_to_plot = 0
+            else:
+                print("That is not a valid point")
+                return None
+
+            data_point = y_data[index_to_plot]
+            error = y_err[index_to_plot]
+
+            x_list.append(str(replicate.trial_identifier.strain) +" in " + str(replicate.trial_identifier.media))
+            y_list.append(data_point)
+            error_list.append(error)
+
+            color_list.append(colors[index])
+            legendgroup_list.append(legendgroup(replicate))
+            label_list.append(label(replicate))
+
+        else:
+            print("The feature " + feature + " was not available for the analyte " + analyte)
+
+
+
+    traces = [go.Bar(x=[x_list[index]],
+                         y=[y_list[index]],
+                         error_y={
+                             'type': 'data',
+                             'array': [error_list[index]],
+                             'visible': True,
+                             'color': color_list[index]},
+                         # mode=mode,
+                         marker={
+                             'color': color_list[index]},
+                         showlegend=showlegend,
+                         legendgroup=legendgroup_list[index],
+                         name=label_list[index]) for index in range(len(x_list))]
+    return traces
+
+
+
+
+def plot_timecourse_orderby_parentstrain(expt=None, feature=None, format=None):
+    if expt is not None:
+        parent_strain_list = list(set([str(rep.trial_identifier.strain.parent) for rep in expt.replicate_trials]))
+        parent_strain_list = sorted(parent_strain_list)
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            if feature:
+                feature_name = feature.replace('_', ' ').title()
+            else:
+                feature_name = ''
+            for strain in parent_strain_list:
+                if strain.lower() != 'none':
+                    rep_list = [replicate for replicate in expt.replicate_trials if
+                                str(replicate.trial_identifier.strain.parent) == strain and
+                                strain.lower() != 'none']
+                    rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain.parent))
+                    if not rep_list:
+                        continue
+                    if len(rep_list[0].avg.analyte_dict[analyte].time_vector) > 1:
+                        tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
+                                                        label=lambda rep: str(rep.trial_identifier.strain) +
+                                                                          " in " + str(rep.trial_identifier.media),
+                                                        legendgroup=lambda rep: str(rep.trial_identifier.strain) +
+                                                                                str(rep.trial_identifier.media),
+                                                        cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
+                                                        pts_per_hour=4, feature=feature)
+                        if tracelist:
+                            fig = go.Figure(data=tracelist)
+                            if feature:
+                                title = str(analyte + ' ' + feature_name + ' vs time for ' + strain + ' in different media')
+                            else:
+                                title = str(analyte  + ' vs time for ' + strain + ' in different media')
+                            fig['layout'].update(title=title)
+                            plot(fig, image=format)
+
+
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+
+def plot_timecourse_orderby_plasmids(expt=None, format=None, feature=None):
+    if expt is not None:
+        plasmid_list = list(set([','.join(rep.trial_identifier.strain.plasmid_list) for rep in expt.replicate_trials]))
+        plasmid_list = sorted(plasmid_list, key=len)
+
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            if feature:
+                feature_name = feature.replace('_', ' ').title()
+            else:
+                feature_name = ''
+            for unique_plasmid in plasmid_list:
+                rep_list = [replicate for replicate in expt.replicate_trials if
+                            ','.join(replicate.trial_identifier.strain.plasmid_list) == unique_plasmid
+                            and replicate.trial_identifier.strain.name not in ['blank', 'none']]
+                rep_list = sorted(rep_list, key=lambda rep: len(str(rep.trial_identifier.strain)))
+
+                if not rep_list:
+                    continue
+                if len(rep_list[0].avg.analyte_dict[analyte].time_vector) > 1:
+
+                    tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
+                                                    label=lambda rep: str(rep.trial_identifier.strain)+
+                                                    " in " + str(rep.trial_identifier.media),
+                                                        legendgroup=lambda rep: str(rep.trial_identifier.strain)+
+                                                    str(rep.trial_identifier.media),
+                                                    cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
+                                                    pts_per_hour=4,feature=feature)
+                    if tracelist:
+                        fig = go.Figure(data=tracelist)
+
+                        title = str(analyte + ' ' + feature_name+ ' vs time for all strains with')
+
+                        if rep_list[0].trial_identifier.strain.plasmid_list:
+                            title += str(" the plasmid(s) \'"+','.join(rep_list[0].trial_identifier.strain.plasmid_list)+"\'")
+                        else:
+                            title += str(" no plasmid")
+
+                        title += " in different media"
+
+                        fig['layout'].update(title=title)
+                        plot(fig, image=format)
+
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+
+def plot_timecourse_orderby_knockouts(expt=None, format=None, feature=None):
+    if expt is not None:
+        knockout_list = list(set([','.join(rep.trial_identifier.strain.knockout_list) for rep in expt.replicate_trials]))
+        knockout_list = sorted(knockout_list,key=len)
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            if feature:
+                feature_name = feature.replace('_', ' ').title()
+            else:
+                feature_name = ''
+            for unique_knockout in knockout_list:
+                rep_list = [replicate for replicate in expt.replicate_trials if
+                            ','.join(replicate.trial_identifier.strain.knockout_list) == unique_knockout
+                            and replicate.trial_identifier.strain.name not in ['blank', 'none']]
+                rep_list = sorted(rep_list, key=lambda rep: len(str(rep.trial_identifier.strain)))
+                if not rep_list:
+                    continue
+                if len(rep_list[0].avg.analyte_dict[analyte].time_vector) > 1:
+
+                    tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
+                                                    label=lambda rep: str(rep.trial_identifier.strain) +
+                                                                      " in " + str(rep.trial_identifier.media),
+                                                    legendgroup=lambda rep: str(rep.trial_identifier.strain) +
+                                                                            str(rep.trial_identifier.media),
+                                                    cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
+                                                    pts_per_hour=4,feature=feature)
+                    if tracelist:
+                        fig = go.Figure(data=tracelist)
+
+                        title = str(analyte + ' ' + feature_name+' vs time for all strains with')
+
+                        if rep_list[0].trial_identifier.strain.knockout_list:
+                            title += str(" the knockout(s) \'"+','.join(rep_list[0].trial_identifier.strain.knockout_list)+"\'")
+                        else:
+                            title += str(" no knockout")
+
+                        title += " in different media"
+
+                        fig['layout'].update(title=title)
+                        plot(fig, image=format)
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+
+def plot_timecourse_orderby_mediacomponents(expt=None, format=None, feature=None):
+    if expt is not None:
+        components_list = list(set([','.join(list(rep.trial_identifier.media.components.keys()))
+                                    for rep in expt.replicate_trials]))
+        components_list = sorted(components_list)
+        components_list = list(filter(None, components_list))
+        media_list = list(set([str(rep.trial_identifier.media.parent) for rep in expt.replicate_trials
+                               if ','.join(list(rep.trial_identifier.media.components.keys())) in components_list]))
+        media_list = sorted(media_list)
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            if feature:
+                feature_name = feature.replace('_', ' ').title()
+            else:
+                feature_name = ''
+            for media in media_list:
+                for component in components_list:
+                    rep_list = [replicate for replicate in expt.replicate_trials if
+                                ((','.join(list(replicate.trial_identifier.media.components.keys())) == component and
+                                 str(replicate.trial_identifier.media.parent) == media) or
+                                 ','.join(list(replicate.trial_identifier.media.components.keys())) == '') and
+                                replicate.trial_identifier.strain.name != 'blank']
+                    rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier))
+                    if not rep_list:
+                        continue
+                    if len(rep_list[0].avg.analyte_dict[analyte].time_vector) > 1:
+
+                        tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
+                                                        label=lambda rep: str(rep.trial_identifier.strain) +
+                                                                          " in " + str(rep.trial_identifier.media),
+                                                        legendgroup=lambda rep: str(rep.trial_identifier.strain) +
+                                                                                str(rep.trial_identifier.media),
+                                                        cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
+                                                        pts_per_hour=4,feature=feature)
+                        if tracelist:
+                            fig = go.Figure(data=tracelist)
+                            fig['layout'].update(title=str(analyte + ' ' + feature_name+' vs time for different strains in ' + media +
+                                                           ' + ' + component + ' media'))
+                            plot(fig, image=format)
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+
+def plot_timecourse_orderby_basemedia(expt=None, format=None,feature=None):
+    if expt is not None:
+        media_list = list(set([str(rep.trial_identifier.media.parent) for rep in expt.replicate_trials]))
+        media_list = sorted(media_list)
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            if feature:
+                feature_name = feature.replace('_', ' ').title()
+            else:
+                feature_name = ''
+            for media in media_list:
+                rep_list = [replicate for replicate in expt.replicate_trials if
+                            str(replicate.trial_identifier.media.parent) == media
+                            and replicate.trial_identifier.strain.name != 'blank']
+                rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.media))
+                if not rep_list:
+                    continue
+                if len(rep_list[0].avg.analyte_dict[analyte].time_vector) > 1:
+
+                    tracelist = time_profile_traces(replicate_trials=rep_list, analyte=analyte,
+                                                    label=lambda rep: str(rep.trial_identifier.strain) +
+                                                    " in " + str(rep.trial_identifier.media),
+                                                    legendgroup=lambda rep: str(rep.trial_identifier.strain) +
+                                                                            str(rep.trial_identifier.media),
+                                                    cl_scales=['8', 'qual', 'Dark2'], showlegend=True,
+                                                    pts_per_hour=4,feature=feature)
+                    if tracelist:
+                        fig = go.Figure(data=tracelist)
+                        fig['layout'].update(title=str(analyte +' '+feature_name+ ' vs time for different strains in ' + media + ' media'))
+                        plot(fig, image=format)
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+
+def time_course_smart_plot(expt=None, format=None, feature=None):
+
+    media_list = list(set([str(rep.trial_identifier.media.parent) for rep in expt.replicate_trials]))
+    media_list = list(filter(None, media_list))
+    if len(media_list) > 1:
+        plot_timecourse_orderby_basemedia(expt=expt, format=format, feature=feature)
+
+    components_list = list(set([','.join(list(rep.trial_identifier.media.components.keys()))
+                                for rep in expt.replicate_trials]))
+    components_list = list(filter(None, components_list))
+    if len(components_list) > 1:
+        plot_timecourse_orderby_mediacomponents(expt=expt, format=format, feature=feature)
+
+    plasmid_list = list(set([','.join(rep.trial_identifier.strain.plasmid_list) for rep in expt.replicate_trials]))
+    if len(plasmid_list) > 1:
+        plot_timecourse_orderby_plasmids(expt=expt, format=format, feature=feature)
+
+    knockout_list = list(set([','.join(rep.trial_identifier.strain.knockout_list) for rep in expt.replicate_trials]))
+    if len(knockout_list) > 1:
+        plot_timecourse_orderby_knockouts(expt=expt, format=format, feature=feature)
+
+    parent_strain_list = list(set([str(rep.trial_identifier.strain.parent) for rep in expt.replicate_trials]))
+    if len(parent_strain_list) > 1:
+        plot_timecourse_orderby_parentstrain(expt=expt, format=format, feature=feature)
+
+
+
+def plot_analyte_value_orderby_parentstrain(expt=None, feature=None, format=None, value_to_plot='max'):
+
+    if expt is not None:
+        parent_strain_list = list(set([str(rep.trial_identifier.strain.parent) for rep in expt.replicate_trials]))
+        parent_strain_list = sorted(parent_strain_list)
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            if feature:
+                feature_name = feature.replace('_', ' ').title()
+            else:
+                feature_name = ''
+            for strain in parent_strain_list:
+                if strain.lower() not in ['none', 'blank']:
+                    rep_list = [replicate for replicate in expt.replicate_trials if
+                                str(replicate.trial_identifier.strain.parent) == strain and
+                                strain.lower() not in  ['none', 'blank']]
+                    rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain))
+                    if not rep_list:
+                        continue
+
+                    barlist = analyte_bar_trace(replicate_trials=rep_list, feature=feature, analyte=analyte,
+                                                    cl_scales=['8', 'qual', 'Dark2'],
+                                                    label=lambda rep: str(rep.trial_identifier.strain)
+                                                    + ' in ' + str(rep.trial_identifier.media),
+                                                    legendgroup=lambda rep: str(rep.trial_identifier.strain) +
+                                                                            str(rep.trial_identifier.media),
+                                                    showlegend=True, value_to_plot=value_to_plot)
+                    if barlist:
+                        fig = go.Figure(data=barlist)
+                        fig['layout'].update(title=str(value_to_plot.title() + ' ' + analyte + ' ' + feature_name + ' for '
+                                                       + strain + ' in different media'))
+                        plot(fig, image=format)
+
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+
+def plot_analyte_value_orderby_plasmids(expt=None, feature=None, format=None, value_to_plot='max'):
+    if expt is not None:
+
+        plasmid_list = list(set([','.join(rep.trial_identifier.strain.plasmid_list) for rep in expt.replicate_trials]))
+        plasmid_list = sorted(plasmid_list, key=len)
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            if feature:
+                feature_name = feature.replace('_', ' ').title()
+            else:
+                feature_name = ''
+            for unique_plasmid in plasmid_list:
+                rep_list = [replicate for replicate in expt.replicate_trials if
+                            ','.join(replicate.trial_identifier.strain.plasmid_list) == unique_plasmid
+                            and replicate.trial_identifier.strain.name not in ['blank', 'none']]
+                rep_list = sorted(rep_list, key=lambda rep: len(str(rep.trial_identifier.strain)))
+
+                if not rep_list:
+                    continue
+
+                barlist = analyte_bar_trace(replicate_trials=rep_list, feature=feature, analyte=analyte,
+                                                cl_scales=['8', 'qual', 'Dark2'],
+                                                label=lambda rep: str(rep.trial_identifier.strain)
+                                                + ' in ' + str(rep.trial_identifier.media),
+                                                legendgroup=lambda rep: str(rep.trial_identifier.strain) +
+                                                                       str(rep.trial_identifier.media),
+                                                showlegend=True,value_to_plot=value_to_plot)
+                if barlist:
+                    fig = go.Figure(data=barlist)
+
+                    title = str(value_to_plot.title() + ' ' + analyte + ' ' + feature_name +' for all strains with')
+                    if rep_list[0].trial_identifier.strain.plasmid_list:
+                        title += str(" the plasmid(s) \'" + ','.join(
+                            rep_list[0].trial_identifier.strain.plasmid_list) + "\'")
+                    else:
+                        title += str(" no plasmid")
+
+                    title += " in different media"
+
+                    fig['layout'].update(title=title)
+                    plot(fig, image=format)
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+
+def plot_analyte_value_orderby_knockouts(expt=None, feature=None, format=None,value_to_plot='max'):
+    if expt is not None:
+        knockout_list = list(
+            set([','.join(rep.trial_identifier.strain.knockout_list) for rep in expt.replicate_trials]))
+        knockout_list = sorted(knockout_list, key=len)
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            if feature:
+                feature_name = feature.replace('_', ' ').title()
+            else:
+                feature_name = ''
+            for unique_knockout in knockout_list:
+                rep_list = [replicate for replicate in expt.replicate_trials if
+                            ','.join(replicate.trial_identifier.strain.knockout_list) == unique_knockout
+                            and replicate.trial_identifier.strain.name not in ['blank', 'none']]
+                rep_list = sorted(rep_list, key=lambda rep: len(str(rep.trial_identifier.strain)))
+                if not rep_list:
+                    continue
+
+                barlist = analyte_bar_trace(replicate_trials=rep_list, feature=feature, analyte=analyte,
+                                                cl_scales=['8', 'qual', 'Dark2'],
+                                                label=lambda rep: str(rep.trial_identifier.strain)
+                                                + ' in ' + str(rep.trial_identifier.media),
+                                                legendgroup=lambda rep: str(rep.trial_identifier.strain) +
+                                                                        str(rep.trial_identifier.media),
+                                                showlegend=True,value_to_plot=value_to_plot)
+                if barlist:
+                    fig = go.Figure(data=barlist)
+
+                    title = str(value_to_plot.title()+' '+analyte + ' '+ feature_name+ ' for all strains with')
+
+                    if rep_list[0].trial_identifier.strain.knockout_list:
+                        title += str(" the knockout(s) \'" + ','.join(
+                            rep_list[0].trial_identifier.strain.knockout_list) + "\'")
+                    else:
+                        title += str(" no knockout")
+
+                    title += " in different media"
+
+                    fig['layout'].update(title=title)
+                    plot(fig, image=format)
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+def plot_analyte_value_orderby_basemedia(expt=None, feature=None, format=None,value_to_plot='max'):
+    if expt is not None:
+        if feature in ['specific_productivity','od_normalized_data',None]:
+            media_list = list(set([str(rep.trial_identifier.media.parent) for rep in expt.replicate_trials]))
+            media_list = sorted(media_list)
+            analyte_list = []
+            for rep in expt.replicate_trials:
+                analyte_list += rep.get_analytes()
+            analyte_list = list(set(analyte_list))
+            for analyte in analyte_list:
+                if feature:
+                    feature_name = feature.replace('_', ' ').title()
+                else:
+                    feature_name = ''
+                for media in media_list:
+                    rep_list = [replicate for replicate in expt.replicate_trials if
+                                str(replicate.trial_identifier.media.parent) == media
+                                and replicate.trial_identifier.strain.name != 'blank']
+                    rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.media))
+                    if not rep_list:
+                        continue
+
+                    barlist = analyte_bar_trace(replicate_trials=rep_list, feature=feature, analyte=analyte,
+                                                    cl_scales=['8', 'qual', 'Dark2'],
+                                                    label=lambda rep: str(rep.trial_identifier.strain)
+                                                    + ' in ' + str(rep.trial_identifier.media),
+                                                    legendgroup=lambda rep: str(rep.trial_identifier.strain) +
+                                                                            str(rep.trial_identifier.media),
+                                                    showlegend=True,value_to_plot=value_to_plot)
+                    if barlist:
+                        fig = go.Figure(data=barlist)
+                        fig['layout'].update(title=str(value_to_plot.title()+' '+ analyte + ' '+
+                                                   feature_name+' for different strains in ' + media + ' media'))
+                        plot(fig, image=format)
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+
+def plot_analyte_value_orderby_mediacomponents(expt=None, feature=None, format=None,value_to_plot='max'):
+    if expt is not None:
+        components_list = list(set([','.join(list(rep.trial_identifier.media.components.keys()))
+                                    for rep in expt.replicate_trials]))
+        components_list = sorted(components_list)
+        components_list = list(filter(None, components_list))
+        media_list = list(set([str(rep.trial_identifier.media.parent) for rep in expt.replicate_trials
+                               if ','.join(list(rep.trial_identifier.media.components.keys())) in components_list]))
+
+        media_list = sorted(media_list)
+        analyte_list = []
+        for rep in expt.replicate_trials:
+            analyte_list += rep.get_analytes()
+        analyte_list = list(set(analyte_list))
+        for analyte in analyte_list:
+            if feature:
+                feature_name = feature.replace('_', ' ').title()
+            else:
+                feature_name = ''
+            for media in media_list:
+                for component in components_list:
+                    rep_list = [replicate for replicate in expt.replicate_trials if
+                                ((','.join(
+                                    list(replicate.trial_identifier.media.components.keys())) == component and
+                                  str(replicate.trial_identifier.media.parent) == media) or
+                                 ','.join(list(replicate.trial_identifier.media.components.keys())) == '') and
+                                replicate.trial_identifier.strain.name != 'blank']
+                    rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier))
+                    if not rep_list:
+                        continue
+
+                    barlist = analyte_bar_trace(replicate_trials=rep_list, feature=feature, analyte=analyte,
+                                                    cl_scales=['8', 'qual', 'Dark2'],
+                                                    label=lambda rep: str(rep.trial_identifier.strain)
+                                                    + ' in ' + str(rep.trial_identifier.media),
+                                                    legendgroup=lambda rep: str(rep.trial_identifier.strain) +
+                                                                            str(rep.trial_identifier.media),
+                                                    showlegend=True,value_to_plot=value_to_plot)
+                    if barlist:
+                        fig = go.Figure(data=barlist)
+
+                        fig['layout'].update(title=str(value_to_plot.title() + ' ' + analyte + ' ' + feature_name
+                                                       +' '+' for different strains in ' + media +' + ' + component +
+                                                       ' media'))
+                        plot(fig, image=format)
+
+
+    else:
+        print("An experiment object must be specified to plot data.")
+
+
+def time_course_analyte_value_smart_plot(expt=None, format=None, feature=None, value_to_plot='max'):
+
+    media_list = list(set([str(rep.trial_identifier.media.parent) for rep in expt.replicate_trials]))
+    media_list = list(filter(None, media_list))
+    if len(media_list) > 1:
+        plot_analyte_value_orderby_basemedia(expt=expt, format=format, feature=feature,value_to_plot=value_to_plot)
+
+    components_list = list(set([','.join(list(rep.trial_identifier.media.components.keys()))
+                                for rep in expt.replicate_trials]))
+    components_list = list(filter(None, components_list))
+    if len(components_list) > 1:
+        plot_analyte_value_orderby_mediacomponents(expt=expt, format=format, feature=feature,value_to_plot=value_to_plot)
+
+    plasmid_list = list(set([','.join(rep.trial_identifier.strain.plasmid_list) for rep in expt.replicate_trials]))
+    if len(plasmid_list) > 1:
+        plot_analyte_value_orderby_plasmids(expt=expt, format=format, feature=feature,value_to_plot=value_to_plot)
+
+    knockout_list = list(set([','.join(rep.trial_identifier.strain.knockout_list) for rep in expt.replicate_trials]))
+    if len(knockout_list) > 1:
+        plot_analyte_value_orderby_knockouts(expt=expt, format=format, feature=feature,value_to_plot=value_to_plot)
+
+    parent_strain_list = list(set([str(rep.trial_identifier.strain.parent) for rep in expt.replicate_trials]))
+    if len(parent_strain_list) > 1:
+        plot_analyte_value_orderby_parentstrain(expt=expt, format=format, feature=feature,value_to_plot=value_to_plot)
+
+
+
+def plot_growth_curve_fit(expt=None, format=None):
+    if expt is not None and settings.perform_curve_fit:
+        colors = cl.scales['5']['qual']['Set1'][0:2]
+        rep_list = [rep for rep in expt.replicate_trials if rep.trial_identifier.strain.name not in ['blank', 'none']]
+        rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier.strain))
+
+        for rep in rep_list:
+            st_list = [st for st in rep.single_trials]
+            st_list = sorted(st_list, key=lambda st: st.trial_identifier.replicate_id)
+            num_of_reps = len(st_list)
+            fig = tools.make_subplots(rows=1, cols=num_of_reps,
+                                      subplot_titles=['Replicate ' + str(x + 1) for x in range(num_of_reps)],
+                                      print_grid=False)
+            for i, st in enumerate(st_list):
+                if 'OD600' in st.analyte_dict:
+                    biomass = st.analyte_dict['OD600']
+                    time_vector = biomass.time_vector[:biomass.death_phase_start]
+                    data_vector = biomass.data_vector[:biomass.death_phase_start]
+                    fit_curve = fit_data(time_vector, biomass.fit_params, biomass.fit_type)
+                    trace1 = (go.Scatter(x=time_vector, y=data_vector,
+                                         mode='markers', name='Actual Data', legendgroup='Actual Data',
+                                         marker={'color': colors[0]}, showlegend=False))
+                    trace2 = (go.Scatter(x=time_vector, y=fit_curve,
+                                         mode='lines', name='Curve Fit', legendgroup='Curve Fit',
+                                         marker={'color': colors[1]}, showlegend=False))
+
+                    if i == len(st_list) - 1:
+                        trace1['showlegend'] = True
+                        trace2['showlegend'] = True
+                    fig.append_trace(trace1, 1, i + 1)
+                    fig.append_trace(trace2, 1, i + 1)
+                    fig['layout']['xaxis' + str(i + 1)].update(title='Time (h)')
+                if 'OD700' in st.analyte_dict:
+                    biomass = st.analyte_dict['OD700']
+                    time_vector = biomass.time_vector[:biomass.death_phase_start]
+                    data_vector = biomass.data_vector[:biomass.death_phase_start]
+                    fit_curve = fit_data(time_vector, biomass.fit_params, biomass.fit_type)
+                    trace1 = (go.Scatter(x=time_vector, y=data_vector,
+                                         mode='markers', name='Actual Data', legendgroup='Actual Data',
+                                         marker={'color': colors[0]}, showlegend=False))
+                    trace2 = (go.Scatter(x=time_vector, y=fit_curve,
+                                         mode='lines', name='Curve Fit', legendgroup='Curve Fit',
+                                         marker={'color': colors[1]}, showlegend=False))
+
+                    if i == len(st_list) - 1:
+                        trace1['showlegend'] = True
+                        trace2['showlegend'] = True
+                    fig.append_trace(trace1, 1, i + 1)
+                    fig.append_trace(trace2, 1, i + 1)
+                    fig['layout']['xaxis' + str(i + 1)].update(title='Time (h)')
+            fig['layout'].update(title='Growth curve fit for ' + str(rep.trial_identifier))
+            fig['layout']['yaxis1'].update(title='OD600')
+            plot(fig, image=format)
+            avg_growth = rep.avg.analyte_dict['OD600'].fit_params['growth_rate'].parameter_value
+            std_growth = rep.std.analyte_dict['OD600'].fit_params['growth_rate'].parameter_value
+            print("\u03BC\u2090\u1D65 = %3.3f \u00B1 %3.3f /h" % (avg_growth, std_growth))
+    else:
+        print("Curve fitting was not implemented for this experiment. Please check Impact settings.")
 

@@ -1,7 +1,5 @@
-from ..AnalyteData import *
 
 from ..TrialIdentifier import TimeCourseIdentifier
-
 from ...curve_fitting import *
 
 import pandas as pd
@@ -121,7 +119,7 @@ class TimeCourse(Base):
         self._stage_indices = None
 
         # Declare the default curve fit
-        self.fit_type = None
+        self.fit_type = settings.fit_type
 
     def __str__(self):
         return str(self.trial_identifier.unique_analyte_data())
@@ -225,8 +223,11 @@ class TimeCourse(Base):
         return self._gradient
 
     def generate_time_point_list(self):
-        # TODO, ensure new time point aren't created and previous ones are referenced
-        self.time_points = [TimePoint(time=time, data=data)
+        if self.time_points:
+            for time_point in self.time_points:
+                time_point.data = self.pd_series[time_point.time]
+        else:
+            self.time_points = [TimePoint(time=time, data=data, trial_identifier = self.trial_identifier)
                             for time, data in zip(self.pd_series.index, self.pd_series)]
 
     def calculate(self):
@@ -254,6 +255,8 @@ class TimeCourse(Base):
         # The hyper_parameter determines the number of points
         # which need to have a negative diff to consider it death phase
 
+        from ..settings import settings
+        savgol_filter_window_size = settings.savgolFilterWindowSize
         death_phase_start = len(data_vector)
 
         # Check if there is a reasonable difference between the min and max of the curve
@@ -261,7 +264,7 @@ class TimeCourse(Base):
             if verbose: print('Growth range: ', (np.max(data_vector) - np.min(data_vector)) / np.min(data_vector))
 
             if use_filtered_data:
-                filteredData = savgol_filter(data_vector, 51, 3)
+                filteredData = savgol_filter(data_vector, savgol_filter_window_size, 3)
             else:
                 filteredData = np.array(data_vector)
             diff = np.diff(filteredData)
@@ -320,21 +323,13 @@ class TimeCourse(Base):
             # Check if ordering is broken
             if self.time_points[-1].time < self.time_points[-2].time:
                 self.time_points.sort(key=lambda timePoint: timePoint.time)
-                self.pd_series = pd.Series([timePoint.data for timePoint in self.time_points],
-                                           index=[timePoint.time for timePoint in self.time_points])
-            else:
-                # Otherwise simply append
-                self.pd_series[time_point.time] = time_point.data
-                # self.pd_series = self.pd_series.append(pd.Series([time_point.data],index=[time_point.time]))
+
 
         if sum(self.pd_series.index.duplicated()) > 0:
             print(self.pd_series)
             print(self.trial_identifier)
             print(time_point.trial_identifier)
             raise Exception('Duplicate time points found, this is not supported - likely an identifier input error')
-
-        if len(self.time_points) > 6 and live_calculations:
-            self.gradient = np.gradient(self.data_vector) / np.gradient(self.time_vector)
 
     def curve_fit_data(self):
         raise Exception('This must be implemented in a child')
@@ -367,3 +362,15 @@ class TimeCourseStage(TimeCourse):
         # print(type(parent))
 
         super().__init__(*args, **kwargs)
+
+class FitParameter(Base):
+    __tablename__ = 'fit_parameters'
+
+    id = Column(Integer, primary_key=True)
+    parent_id = Column(Integer, ForeignKey('time_course.id'))
+    parameter_name = Column(String)
+    parameter_value = Column(Float)
+
+    def __init__(self, name, value):
+        self.parameter_name = name
+        self.parameter_value = value

@@ -2,7 +2,7 @@ import copy
 import datetime
 import time
 import time as sys_time
-
+import pandas as pd
 import numpy as np
 
 from openpyxl import load_workbook
@@ -26,7 +26,7 @@ def parse_raw_identifier(raw_identifier, id_type):
     return ti
 
 
-def spectromax_OD(experiment, data, id_type='CSV'):
+def spectromax_OD(experiment, data, id_type='traverse', plate_type='96 Wells'):
     from .core.settings import settings
     live_calculations = settings.live_calculations
 
@@ -90,76 +90,8 @@ def spectromax_OD(experiment, data, id_type='CSV'):
     if live_calculations:   experiment.calculate()
 
 
-def spectromax_OD_triplicate(experiment, data, id_type='CSV'):
-    from .core.settings import settings
-    live_calculations = settings.live_calculations
 
-    identifiers = [[elem.value for elem in row] for row in data['identifiers']]
-    raw_data = [[elem.value for elem in row] for row in data['data']]
-
-    # The data starts at (3,2) and is in a 8x12 format
-    timepoint_list = []
-
-    for start_row_index in range(3, len(raw_data), 9):
-        # Parse the time point out first
-        if raw_data[start_row_index][0] != '~End':
-            if isinstance(raw_data[start_row_index][0], datetime.datetime):
-                raise Exception("Imported a datetime object, make sure to set all cells to 'TEXT' if importing"
-                                " from excel")
-            parsed_time = raw_data[start_row_index][0].split(':')
-
-            # Convert the Spectromax format to raw hours
-            if len(parsed_time) > 2:
-                time = int(parsed_time[0]) * 3600 + int(parsed_time[1]) * 60 + int(parsed_time[2])
-            else:
-                time = int(parsed_time[0]) * 60 + int(parsed_time[1])
-
-            time /= 3600  # convert to hours
-            # Define the data for each of the replicates
-            replicate_plate_data = [[row[2:14] for row in raw_data[start_row_index:start_row_index + 8]],
-                                    [row[15:27] for row in raw_data[start_row_index:start_row_index + 8]],
-                                    [row[28:40] for row in raw_data[start_row_index:start_row_index + 8]]]
-            # convert to strings to floats
-            converted_data = []
-            for plate_data in replicate_plate_data:
-                converted_data.append([[float(data) if data is not None else 0. for data in row] for row in plate_data])
-
-            # Calculate the average
-            try:
-                plate_data = np.mean(converted_data, axis=0)
-            except Exception as e:
-                print(converted_data)
-                raise Exception(e)
-
-            # Load the data point by point
-            for i, row in enumerate(plate_data):
-                for j, data in enumerate(row):
-                    # Skip wells where no identifier is listed or no data present
-                    if i < len(identifiers) and j < len(identifiers[0]) \
-                            and identifiers[i][j] not in ['', 0, '0', None] \
-                            and data not in ['', None]:
-                        temp_trial_identifier = TimeCourseIdentifier()
-
-                        if id_type == 'CSV':
-                            temp_trial_identifier.parse_trial_identifier_from_csv(identifiers[i][j])
-                        elif id_type == 'traverse':
-                            temp_trial_identifier.parse_identifier(identifiers[i][j])
-                        temp_trial_identifier.analyte_type = 'biomass'
-                        temp_trial_identifier.analyte_name = 'OD600'
-                        temp_timepoint = TimePoint(temp_trial_identifier, time, float(data))
-
-                        timepoint_list.append(temp_timepoint)
-        else:
-            break
-
-    replicate_trial_list = parse_time_point_list(timepoint_list)
-    for rep in replicate_trial_list:
-        experiment.add_replicate_trial(rep)
-
-    if live_calculations:   experiment.calculate()
-
-
-def HPLC_titer_parser(experiment, data, id_type='CSV'):
+def HPLC_titer_parser(experiment, data, id_type='CSV', plate_type='96 Wells'):
     t0 = sys_time.time()
 
     # Parameters
@@ -202,7 +134,7 @@ def HPLC_titer_parser(experiment, data, id_type='CSV'):
                     data[i][analyte_nameColumn[key]] = np.nan
                 timepoint_list.append(
                     TimePoint(trial_identifier=trial_identifier,
-                              time=trial_identifier.time,
+                              time=float(trial_identifier.time),
                               data=data[i][analyte_nameColumn[key]]))
 
         else:
@@ -215,56 +147,120 @@ def HPLC_titer_parser(experiment, data, id_type='CSV'):
         experiment.add_replicate_trial(rep)
 
 
-def tecan_OD(experiment, data, id_type='CSV'):
+def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
+
     from .core.settings import settings
     live_calculations = settings.live_calculations
 
+    # Add new plate layouts here if necessary
+    plate_dict = {'96 Wells': {'num_of_wells': 96, 'num_of_columns': 12},
+                  '48 Wells': {'num_of_wells': 48, 'num_of_columns': 8},
+                  '24 Wells': {'num_of_wells': 24, 'num_of_columns': 6}}
+
+    # Add new analytes/reporters in this dictionary
+    mode_dict = {'Absorbance': {600: {'analyte_name': 'OD600', 'analyte_type': 'biomass'},
+
+                                700: {'analyte_name': 'OD700', 'analyte_type': 'biomass'}},
+
+                 'Fluorescence Top Reading': {(488, 525): {'analyte_name': 'GFP',
+                                                           'analyte_type': 'reporter'},
+
+                                              (570, 610): {'analyte_name': 'mCherry',
+                                                           'analyte_type': 'reporter'}},
+
+                 'Fluorescence Bottom Reading': {(488, 525): {'analyte_name': 'GFP',
+                                                              'analyte_type': 'reporter'},
+
+                                                 (570, 610): {'analyte_name': 'mCherry',
+                                                              'analyte_type': 'reporter'}}}
+
+    # Initialize variables
     unparsed_identifiers = data['identifiers']
     raw_data = data['data']
+    time_row_index = []
+    analyte_dict = {}
+    num_of_analytes = 0
 
-    # The data starts at (3,2) and is in a 8x12 format
+    for i, row in enumerate(raw_data):
+        if row[0] == 'Mode':
+            mode = (next((mode for mode in reversed(row) if mode is not None)))
+            if mode == 'Absorbance':
+                num_of_analytes += 1
+                for nextrow in raw_data[i:i + 5]:
+                    if nextrow[0] in ['Wavelength', 'Measurement wavelength']:
+                        wavelength = (next((wavelength for wavelength in reversed(nextrow) if type(wavelength) == int)))
+                        break
+                if wavelength in mode_dict[mode].keys():
+                    analyte_dict[num_of_analytes] = mode_dict[mode][wavelength]
+                else:
+                    analyte_dict[num_of_analytes] = {'analyte_name': 'Reporter' + str(wavelength),
+                                                     'analyte_type': Reporter}
+            elif 'Fluorescence' in mode:
+                num_of_analytes += 1
+                for nextrow in raw_data[i:i + 7]:
+                    if nextrow[0] in ['Excitation Wavelength', 'Excitation wavelength']:
+                        ex = (next((wavelength for wavelength in reversed(nextrow) if type(wavelength) == int)))
+                    if nextrow[0] in ['Emission wavelength', 'Emission Wavelength']:
+                        em = (next((wavelength for wavelength in reversed(nextrow) if type(wavelength) == int)))
+                        break
+                if (ex, em) in mode_dict[mode].keys():
+                    analyte_dict[num_of_analytes] = mode_dict[mode][(ex, em)]
+                else:
+                    analyte_dict[num_of_analytes] = {'analyte_name': 'Reporter' + str(ex) + '/' + str(em),
+                                                     'analyte_type': Reporter}
+
+        elif 'Time [s]' in row:
+            time_row_index.append(i)
+
     timepoint_list = []
-
-    # Parse identifiers (to prevent parsing at every time point)
     identifiers = []
     for i, row in enumerate(unparsed_identifiers):
         parsed_row = []
         for j, data in enumerate(row):
             if unparsed_identifiers[i][j] not in ['', 0, '0', None]:
                 temp_trial_identifier = TimeCourseIdentifier()
-
                 if id_type == 'CSV':
                     temp_trial_identifier.parse_trial_identifier_from_csv(unparsed_identifiers[i][j])
                 elif id_type == 'traverse':
                     temp_trial_identifier.parse_identifier(unparsed_identifiers[i][j])
-
                 parsed_row.append(temp_trial_identifier)
             else:
                 parsed_row.append(None)
         identifiers.append(parsed_row)
-
-    time_row_index = None
-    for i, row in enumerate(raw_data):
-        if 'Time [s]' in row:
-            time_row_index = i
-    data_start_index = time_row_index + 2
-    number_of_timepoints = len(raw_data[time_row_index]) - 1
-    for i, data_column_index in enumerate(range(1, number_of_timepoints + 1)):
-        time = raw_data[time_row_index][data_column_index]
-        time = (time / 3600)
-        for j, data_row_index in enumerate(range(data_start_index, data_start_index + 96)):
-            if identifiers[int(j / 12)][int(j % 12)] is not None and raw_data[data_row_index][
-                data_column_index] not in [None, '']:
-                temp_trial_identifier = identifiers[int(j / 12)][int(j % 12)]
-                temp_trial_identifier.analyte_type = 'biomass'
-                temp_trial_identifier.analyte_name = 'OD600'
+    print('Extracting timepoint data...', end='')
+    t0 = sys_time.time()
+    for analyte_num in range(num_of_analytes):
+        data_start_index = time_row_index[analyte_num] + 2
+        num_of_timepoints = len(raw_data[time_row_index[analyte_num]]) - 1
+        for i, data_column_index in enumerate(range(1, num_of_timepoints + 1)):
+            time = raw_data[time_row_index[analyte_num]][data_column_index]
+            time = (time / 3600)
+            for j, data_row_index in enumerate(range(data_start_index, data_start_index + plate_dict[plate_type] \
+                    ['num_of_wells'])):
                 try:
-                    temp_timepoint = TimePoint(temp_trial_identifier, time,
-                                               float(raw_data[data_row_index][data_column_index]))
-                except Exception as e:
-                    print(raw_data[data_row_index][data_column_index])
-                    raise Exception(e)
-                timepoint_list.append(temp_timepoint)
+                    identifier = identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
+                        [int(j % plate_dict[plate_type]['num_of_columns'])]
+                except IndexError:
+                    identifier_exists = False
+                else:
+                    identifier_exists = True
+                if identifier_exists:
+                    if identifier is not None and raw_data[data_row_index][data_column_index] not in [None, '']:
+                        temp_trial_identifier = copy.deepcopy(identifiers[int(j / plate_dict[plate_type]['num_of_columns'])] \
+                                                                  [int(j % plate_dict[plate_type]['num_of_columns'])])
+                        temp_trial_identifier.analyte_type = analyte_dict[analyte_num + 1]['analyte_type']
+                        temp_trial_identifier.analyte_name = analyte_dict[analyte_num + 1]['analyte_name']
+                        try:
+                            temp_timepoint = TimePoint(temp_trial_identifier, time,
+                                                       float(raw_data[data_row_index][data_column_index]))
+                        except Exception as e:
+                            print(raw_data[data_row_index][data_column_index])
+                            raise Exception(e)
+                        timepoint_list.append(temp_timepoint)
+
+    tf = sys_time.time()
+    print("Extracted time point data in %0.1fs" % ((tf - t0)))
+
     replicate_trial_list = parse_time_point_list(timepoint_list)
     for rep in replicate_trial_list:
         experiment.add_replicate_trial(rep)
@@ -280,7 +276,7 @@ class Parser(object):
         cls.parser_case_dict[parser_name] = parser_method
 
     @classmethod
-    def parse_raw_data(cls, data_format=None, id_type='traverse', file_name=None, data=None, experiment=None):
+    def parse_raw_data(cls, data_format=None, id_type='traverse', file_name=None, data=None, experiment=None, plate_type = '96 Wells'):
         """
         Parses raw data into an experiment object
 
@@ -301,7 +297,7 @@ class Parser(object):
             experiment = Experiment()
 
         t0 = time.time()
-        if format is None:
+        if data_format is None:
             raise Exception('No format defined')
 
         if data is None:
@@ -319,7 +315,7 @@ class Parser(object):
                                   for row in xls_data[sheet.title]] for sheet in xls_data}
 
         if data_format in cls.parser_case_dict.keys():
-            cls.parser_case_dict[data_format](experiment, data=data, id_type=id_type)
+            cls.parser_case_dict[data_format](experiment, data=data, id_type=id_type, plate_type = plate_type)
         else:
             raise Exception('Parser %s not found', data_format)
 
@@ -328,9 +324,12 @@ class Parser(object):
 
 # Register known parsers
 Parser.register_parser('spectromax_OD', spectromax_OD)
-Parser.register_parser('tecan_OD', tecan_OD)
+Parser.register_parser('tecan_OD', tecan)
 Parser.register_parser('default_titers', HPLC_titer_parser)
-Parser.register_parser('spectromax_OD_triplicate', spectromax_OD_triplicate)
+#Parser.register_parser('spectromax_OD_triplicate', spectromax_OD_triplicate)
+Parser.register_parser('tecan_OD_GFP_mCherry', tecan)
+Parser.register_parser('tecan', tecan)
+
 
 
 def parse_raw_data(format=None, id_type='CSV', file_name=None, data=None, experiment=None):
@@ -375,9 +374,10 @@ def parse_raw_data(format=None, id_type='CSV', file_name=None, data=None, experi
 
     # Import parsers
     parser_case_dict = {'spectromax_OD'           : spectromax_OD,
-                        'tecan_OD'                : tecan_OD,
+                        'tecan_OD'                : tecan,
                         'default_titers'          : HPLC_titer_parser,
-                        'spectromax_OD_triplicate': spectromax_OD_triplicate
+                        'tecan'                   : tecan
+                        #'spectromax_OD_triplicate': spectromax_OD_triplicate
                         }
     if format in parser_case_dict.keys():
         parser_case_dict[format](experiment, data=data, id_type=id_type)
@@ -402,7 +402,7 @@ def parse_analyte_data(analyte_data_list):
         single_trial_list.append(single_trial)
 
     tf = time.time()
-    print("Parsed %i analytes in %0.1fms" % (len(single_trial_list), (tf - t0) * 1000))
+    print("Parsed %i single trials in %0.1fms" % (len(single_trial_list), (tf - t0) * 1000))
 
     return parse_single_trial_list(single_trial_list)
 
@@ -422,10 +422,12 @@ def parse_time_point_list(time_point_list):
             if timePoint.trial_identifier.analyte_type in case_dict.keys():
                 analyte_dict[timePoint.get_unique_timepoint_id()] = \
                     case_dict[timePoint.trial_identifier.analyte_type]()
+                analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
             else:
                 raise Exception('Unexpected analyte type %s' % timePoint.trial_identifier.analyte_type)
-
-            analyte_dict[timePoint.get_unique_timepoint_id()].add_timepoint(timePoint)
+    for analyte in analyte_dict.values():
+        analyte.pd_series = pd.Series([timePoint.data for timePoint in analyte.time_points],
+                                           index=[timePoint.time for timePoint in analyte.time_points])
 
     tf = time.time()
     print("Parsed %i time points in %0.1fs" % (len(time_point_list), (tf - t0)))

@@ -3,44 +3,53 @@ from .Base import *
 
 class ODNormalizedData(BaseAnalyteFeature):
     # The constructor should accept all required analytes as parameters
-    def __init__(self, biomass, reporter):
+    def __init__(self, biomass, analyte):
         self.biomass = biomass
-        self.reporter = reporter
-        self.normalized_data = None
+        self.analyte = analyte
+        self.od_normalized_data = None
+
 
     # This data property assures that the data is returned, or calculated as needed
     @property
     def data(self):
-        if self.normalized_data is None:
+        if self.od_normalized_data is None:
             self.calculate()
-        return self.normalized_data
+        return self.od_normalized_data
 
     # This is where the property is actually calculated and set
     def calculate(self):
-        self.normalized_data = self.reporter.data_vector / self.biomass.data_vector
+        self.od_normalized_data = self.analyte.data_vector / self.biomass.data_vector
+
 
 
 # The feature factory watches for those analytes
 class ODNormalizedDataFactory(BaseAnalyteFeatureFactory):
     # define what the feature
-    requires = ['biomass', 'reporter']
+    requires = ['biomass', 'reporter', 'product', 'substrate']
     name = 'od_normalized_data'
 
     # constructor should initialize variables until all required analytes are present,
     # this will ensure that despite the order analytes are added, feature will be calculated appropriately
     def __init__(self):
         self.biomass = None
-        self.reporter = None
+        self.pending_analytes = []
 
     # define how to handle new analytes
     def add_analyte_data(self, analyte_data):
-        if analyte_data.trial_identifier.analyte_type == 'reporter':
-            self.reporter = analyte_data
-        elif analyte_data.trial_identifier.analyte_type == 'biomass':
+        if analyte_data.trial_identifier.analyte_type == 'biomass':
             self.biomass = analyte_data
+            analyte_data.od_normalized_data = ODNormalizedData(biomass=analyte_data, analyte=analyte_data)
+            if len(self.pending_analytes) >= 1:
+                for analyte_data in self.pending_analytes:
+                    analyte_data.od_normalized_data = ODNormalizedData(biomass=self.biomass, analyte=analyte_data)
+                self.pending_analytes = []
 
-        if self.reporter is not None and self.biomass is not None:
-            setattr(analyte_data, self.name, ODNormalizedData(self.biomass, self.reporter))
+        if analyte_data.trial_identifier.analyte_type in ['product', 'substrate', 'reporter']:
+            if self.biomass:
+                analyte_data.od_normalized_data = ODNormalizedData(biomass=self.biomass, analyte=analyte_data)
+            else:
+                self.pending_analytes.append(analyte_data)
+
 
 
 class NormalizedData(BaseAnalyteFeature):

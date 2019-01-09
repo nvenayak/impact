@@ -35,7 +35,7 @@ class SingleTrial(Base):
     stages = relationship('SingleTrial', foreign_keys='SingleTrial.stage_parent_id')
 
     class_features = []
-    analyte_types = ['biomass', 'substrate', 'product']
+    analyte_types = ['biomass', 'substrate', 'product', 'reporter']
 
     @classmethod
     def register_feature(cls, feature):
@@ -70,6 +70,7 @@ class SingleTrial(Base):
                 if analyte_type in feature.requires:
                     self.analytes_to_features[analyte_type].append(self.features[-1])
 
+    #TODO, Fix this. Doesn't work. self.yields_df when yields_df doesn't exist
     def serialize(self):
         serialized_dict = {}
 
@@ -120,10 +121,12 @@ class SingleTrial(Base):
         for analyte_key in self.analyte_dict:
             self.analyte_dict[analyte_key].calculate()
 
+    #Fixed this: SingleTrial does not have an attribute named product_names
     def normalize_data(self, normalize_to):
-        for product in self.product_names:
-            self.normalized_data[product] = self.analyte_dict[product] / self.analyte_dict[normalize_to]
-
+        for analyte in self.analyte_dict:
+            self.normalized_data[analyte] = self.analyte_dict[analyte].data_vector\
+                                            / self.analyte_dict[normalize_to].data_vector
+    #TODO, Implement stages in avg/stdev too.
     def create_stage(self, stage_bounds):
         stage = SingleTrial()
         for analyte in self.analyte_dict:
@@ -131,22 +134,22 @@ class SingleTrial(Base):
         self.stages.append(stage)
         return stage
 
-    def summary(self, print=False):
+    def summary(self, printFlag=False):
         summary = dict()
 
         for analyte_type in ['substrate', 'products', 'biomass']:
             summary[analyte_type] = [str(analyte_data) for analyte_data in self.analyte_dict.values() if
                                      analyte_data.trial_identifier.analyte_type == analyte_type]
-        summary['number_of_data_points'] = len(self._t)
+        #summary['number_of_data_points'] = len(self._t)
         summary['run_identifier'] = self.trial_identifier.summary(['strain_id', 'id_1', 'id_2',
                                                                    'replicate_id'])
 
-        if print:
+        if printFlag:
             print(summary)
 
         return summary
 
-    def calculate_mass_balance(self, OD_gdw=None, calculateFBACO2=False):
+    def calculate_mass_balance(self, OD_gdw=None, initial_substrate=0, calculateFBACO2=False):
         """
         Calculate a mass balance given the supplied substrate and products
 
@@ -194,10 +197,19 @@ class SingleTrial(Base):
             OD_gdw = 0.33  # Correlation for OD to gdw for mass balance
 
         # self.substrate_consumed
-
+        # sorting analytes into OD, products, etc.
+        self.products=[]
+        for analyte in self.analyte_dict.values():
+            if analyte.type == 'biomass':
+                self.OD = analyte
+            if analyte.type == 'product':
+                self.products.append(analyte)
+            if analyte.type == 'substrate':
+                self.substrate = analyte
+        substrate_consumed = self.substrate.data_vector - initial_substrate
         if self.OD is not None:
             # Calc mass of biomass
-            biomass_gdw = self._OD.data_vector / OD_gdw
+            biomass_gdw = self.OD.data_vector / OD_gdw
         else:
             biomass_gdw = None
 
@@ -206,10 +218,12 @@ class SingleTrial(Base):
 
         # Calculate the mass balance (input-output)
         if biomass_gdw is None:   biomass_gdw = np.zeros(
-            [len(self.substrate_consumed)])  # If this isn't defined, set biomass to zero
-        massBalance = self.substrate_consumed - totalProductMass - biomass_gdw
-
-        return {'substrate_consumed': self.substrate_consumed,
+            [len(substrate_consumed)])  # If this isn't defined, set biomass to zero
+        if len(biomass_gdw) == len(totalProductMass) and len(biomass_gdw) == len(substrate_consumed):
+            massBalance = substrate_consumed - totalProductMass - biomass_gdw
+        else:
+            massBalance = substrate_consumed[-1] - totalProductMass[-1] - biomass_gdw[-1]
+        return {'substrate_consumed': substrate_consumed,
                 'totalProductMass'  : totalProductMass,
                 'biomass_gdw'       : biomass_gdw,
                 'massBalance'       : massBalance}

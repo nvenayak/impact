@@ -16,7 +16,8 @@ from ..database import Base
 from sqlalchemy import Column, Integer, ForeignKey, Float, Date, String, event
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-
+import pandas as pd
+from .settings import settings
 
 class Experiment(Base):
     __tablename__ = 'experiment'
@@ -106,7 +107,7 @@ class Experiment(Base):
 
     @property
     def strains(self):
-        return [str(replicate) for replicate in self.replicate_trials]
+        return [str(replicate.trial_identifier.strain) for replicate in self.replicate_trials]
 
     @property
     def analyte_names(self):
@@ -138,6 +139,36 @@ class Experiment(Base):
                 for repstage in self.stages.values():
                     repstage.calculate()
         print("Ran analysis in %0.1fs\n" % ((time.time() - t0)))
+
+        if settings.perform_curve_fit and 'OD600' in self.analyte_names:
+            rep_list = [rep for rep in self.replicate_trials if
+                        rep.trial_identifier.strain.name not in ['blank', 'none']]
+            rep_list = sorted(rep_list, key=lambda rep: str(rep.trial_identifier))
+            avg_list = []
+            error_list = []
+            for rep in rep_list:
+                avg_growth = rep.avg.analyte_dict['OD600'].fit_params['growth_rate'].parameter_value
+                std_growth = rep.std.analyte_dict['OD600'].fit_params['growth_rate'].parameter_value
+                avg_list.append(avg_growth)
+                error_list.append(std_growth / avg_growth * 100)
+            max_growth_rate = max(avg_list)
+            percent_diff_max = (max_growth_rate - avg_list) / max_growth_rate * 100
+
+            growth_report = pd.DataFrame({'Strain': [str(rep.trial_identifier.strain) for rep in rep_list],
+                                          'Media': [str(rep.trial_identifier.media) for rep in rep_list],
+                                          'Average Growth Rate': avg_list,
+                                          '% Difference from Max': percent_diff_max,
+                                          '% Error': error_list})
+            growth_report = growth_report[
+                ['Strain', 'Media', 'Average Growth Rate', '% Error', '% Difference from Max']]
+            d = dict(selector="th",
+                     props=[('text-align', 'left')])
+            self.growth_report_html = growth_report.style.set_properties(**{'text-align': 'left'}).set_table_styles([d])
+            self.growth_report = growth_report
+        else:
+            self.growth_report_html = 'Null'
+            self.growth_report = 'Null'
+
 
     def data(self):
         data = []
@@ -172,6 +203,8 @@ class Experiment(Base):
 
         return data
 
+
+    #TODO, Doesn't work. Implement ReplicateTrial.Summary()
     def summary(self, level=None):
         for replicate_key in self.replicate_trial_dict:
             self.replicate_trial_dict[replicate_key].summary()
@@ -238,7 +271,7 @@ class Experiment(Base):
                     for i, blankmedia in enumerate(blank_ids):
                         common_components[blankmedia] = 0
                         if blankmedia.parent:
-                            if blankmedia.parent.name == temp_media.parent.name:
+                            if blankmedia.parent == temp_media.parent:
                                 common_components[blankmedia] += 1
                         if blankmedia.components:
                             common_components[blankmedia] += len(
@@ -275,9 +308,13 @@ class Experiment(Base):
                 stage.add_replicate_trial(replicate.create_stage(stage_tuple))
             self.stages[stage.stage_id] = stage
 
+
+        # TODO, This function (calculate_stages) does not exist.
         if live_calculations:
             for replicate in self.replicate_trials:
                 replicate.calculate_stages()
+
+
 
 
 class Stage(Experiment):

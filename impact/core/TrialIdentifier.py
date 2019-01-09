@@ -98,8 +98,10 @@ class Strain(Base, TrialIdentifierMixin):
     plasmids = relationship('Plasmid')
     knockouts = relationship('Knockout')
 
-    parent = relationship('Strain', uselist=False)
-    parent_id = Column(Integer, ForeignKey('strain.id'))
+    #This will create problems with database management. IF strain parent is specified in the trial identifiers,
+    #It will cause an error since sqlalchemy will look for a strain object and instead get a string object!
+    parent = Column(String)
+    #parent_id = Column(Integer, ForeignKey('strain.id'))
 
     ALE_time = Column(String)
     id_1 = Column(String)
@@ -125,7 +127,7 @@ class Strain(Base, TrialIdentifierMixin):
         # Build formal name from parent, knockouts and plasmids
         self.formal_name = ''
         if self.parent:
-            self.formal_name += self.parent.name
+            self.formal_name += self.parent
         elif self.name:
             self.formal_name += self.name  # This is actually wrong. Proper way is to give the parent's name appropriately
         else:
@@ -151,6 +153,15 @@ class Strain(Base, TrialIdentifierMixin):
     @property
     def unique_id(self):
         return self.name
+
+    @property
+    def knockout_list(self):
+        return sorted([knockout.gene for knockout in self.knockouts])
+
+    @property
+    def plasmid_list(self):
+        return sorted([plasmid.name for plasmid in self.plasmids])
+
 
 
 class MediaComponent(Base, TrialIdentifierMixin):
@@ -223,8 +234,10 @@ class Media(Base, TrialIdentifierMixin):
                               collection_class=attribute_mapped_collection('component_name'),
                               cascade='all')
 
-    parent = relationship('Media', uselist=False)
-    parent_id = Column(Integer, ForeignKey('media.id'), nullable=True)
+    #No point in having a media object as parent for media. Also needed to do this to prevent an error related to database mgmt
+
+    parent = Column(String, nullable=True)
+    #parent_id = Column(Integer, ForeignKey('media.id'), nullable=True)
 
     # unit = Column(String)
 
@@ -247,14 +260,14 @@ class Media(Base, TrialIdentifierMixin):
         #     self.name = self.formal_name
 
     def __str__(self):
-        return self.formal_name
+        return self.name
 
     @property
     def formal_name(self):
         # Build formal name from parent, knockouts and plasmids
         formal_name = ''
         if self.parent:
-            formal_name += self.parent.name
+            formal_name += self.parent
         elif self.name != '':
             formal_name += self.name
         else:
@@ -433,7 +446,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                     key, val = parameter_value.split(':')
 
                     if len(key.split('__')) == 1:
-                        if key in ['strain', 'media']:
+                        if key in ['strain', 'media'] and val != '':
                             identifier_dict[key]['name'] = val.strip()
                         elif key == 'rep':
                             self.replicate_id = int(val)
@@ -451,13 +464,15 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                     identifier_dict[attr1][attr2] = val.strip()
                                 if attr2 in ['ko', 'knockout']:
                                     attr2 = 'ko'
-                                    kos = val.split(',')
-                                    for ko in kos:
-                                        identifier_dict[attr1][attr2].append(Knockout(gene=ko.strip()))
+                                    if val != '':
+                                        kos = val.split(',')
+                                        for ko in kos:
+                                            identifier_dict[attr1][attr2].append(Knockout(gene=ko.strip()))
                                 if attr2 == 'plasmid':
-                                    plasmids = val.split(',')
-                                    for plasmid in plasmids:
-                                        identifier_dict[attr1][attr2].append(Plasmid(name=plasmid.strip()))
+                                    if val != '':
+                                        plasmids = val.split(',')
+                                        for plasmid in plasmids:
+                                            identifier_dict[attr1][attr2].append(Plasmid(name=plasmid.strip()))
 
                         # Set component concentrations
                         elif attr1 == 'media':
@@ -465,9 +480,9 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                 compconcs = val.split(',')
                                 cclist = []
                                 for compconc in compconcs:
-                                    if (len(compconc.split(' ')) == 2):
+                                    if (len(compconc.split()) == 2):
                                         # if units are not given in the identifier
-                                        conc, comp = compconc.split(' ')
+                                        conc, comp = compconc.split()
                                         try:
                                             # Try format concentration component (0.2 glc)
                                             cclist.append(
@@ -479,11 +494,11 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                                 ComponentConcentration(component=MediaComponent(conc),
                                                                        concentration=float(comp)))
 
-                                    elif (len(val.split(' ')) == 3):
+                                    elif (len(val.split()) == 3):
                                         # if units are given in the identifier
-                                        conc, unit, comp = val.split(' ')
+                                        conc, unit, comp = val.split()
                                         try:
-                                            # Try format concentration component (0.2 glc mM)
+                                            # Try format concentration component (0.2 mM glc)
                                             cclist.append(
                                                 ComponentConcentration(component=MediaComponent(comp),
                                                                        concentration=float(conc), unit=' ' + unit))
@@ -525,18 +540,20 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
             self.strain = Strain(name=identifier_dict['strain']['name'],
                                  plasmids=identifier_dict['strain']['plasmid'],
                                  knockouts=identifier_dict['strain']['ko'],
-                                 parent=Strain(name=identifier_dict['strain']['parent']))
+                                 parent=identifier_dict['strain']['parent'])
         else:
             self.strain = Strain(name=identifier_dict['strain']['name'],
                                  plasmids=identifier_dict['strain']['plasmid'],
-                                 knockouts=identifier_dict['strain']['ko'], )
+                                 knockouts=identifier_dict['strain']['ko'],
+                                 parent=identifier_dict['strain']['name'])
 
         if identifier_dict['media']['parent']:
             self.media = Media(name=identifier_dict['media']['name'],
-                               parent=Media(name=identifier_dict['media']['parent']),
+                               parent=identifier_dict['media']['parent'],
                                components=identifier_dict['media']['cc'])
         else:
             self.media = Media(name=identifier_dict['media']['name'],
+                               parent=identifier_dict['media']['name'],
                                components=identifier_dict['media']['cc'])
 
         self.environment = Environment(labware=identifier_dict['environment']['labware'],
@@ -545,6 +562,7 @@ class ReplicateTrialIdentifier(Base, TrialIdentifierMixin):
                                        temperature=identifier_dict['environment']['temperature'],
                                        pH=identifier_dict['environment']['pH'],
                                        DO=identifier_dict['environment']['DO'])
+        self.media.name = self.media.formal_name
         try:
             self.environment.non_native_attributes = non_native_attributes['environment']
         except NameError:
