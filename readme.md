@@ -30,8 +30,7 @@ You may also want to install the additional packages as needed, especially the p
     pip install -r requirements_modeling.txt
     pip install -r requirements_docs.txt
 
-Install the package, use develop mode to ensure all the relative paths remain correct.
-
+Install the package
     python setup.py
 
 Optionally, the develop flag can be used to install the package from the current location, rather than installing in the default Python installation
