@@ -32,7 +32,7 @@ You may also want to install the additional packages as needed, especially the p
 
 Install the package
 
-    python setup.py
+    python setup.py install
 
 Optionally, developers may wish to use the develop flag to install the package from the current location, rather than installing in the default Python installation
 
