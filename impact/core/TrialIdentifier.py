@@ -335,8 +335,9 @@ class Environment(Base, TrialIdentifierMixin):
             env += 'pH: ' + str(self.pH) + ' '
         if self.DO:
             env += 'DO: ' + str(self.DO) + ' '
-        for attr, value in self.non_native_attributes.items():
-            env += attr + ': ' + value
+        if hasattr(self, 'non_native_attributes'):
+            for attr, value in self.non_native_attributes.items():
+                env += attr + ': ' + value
         return env
 
 
