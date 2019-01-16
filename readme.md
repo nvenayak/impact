@@ -51,4 +51,4 @@ Impact comes with scripts that test the proper functioning of the package. These
 The documentation is available in `docs` or a rendered version is available [here](http://impact.readthedocs.io/en/latest/)
 
 ## Starter Files
-A starter ipynb which can be opened with Jupyter notebook has been provided in the Examples_and_Helpers folders. The file comes with comments that will assist users in analyzing their data. A helper file to create trial identifiers has also been provided in the Examples_and_Helpers folder.
+A starter ipynb which can be opened with Jupyter notebook has been provided in the Examples_and_Helpers folders. The file comes with comments which will assist users in analyzing their data. A helper file to create trial identifiers has also been provided in the Examples_and_Helpers folder.
