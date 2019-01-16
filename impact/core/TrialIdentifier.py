@@ -100,7 +100,7 @@ class Strain(Base, TrialIdentifierMixin):
 
     #This will create problems with database management. IF strain parent is specified in the trial identifiers,
     #It will cause an error since sqlalchemy will look for a strain object and instead get a string object!
-    parent = Column(String)
+    parent = Column(String, nullable=True)
     #parent_id = Column(Integer, ForeignKey('strain.id'))
 
     ALE_time = Column(String)
@@ -112,6 +112,7 @@ class Strain(Base, TrialIdentifierMixin):
     def __init__(self, name='', **kwargs):
         self.id_1 = ''
         self.id_2 = ''
+        self.parent = ''
         self.name = name
         # formal name removed from list of keys because formal name is constructed using the strain's parent, knockouts
         # and plasmids. It is not an attribute on its own. Also, plasmids was made a list arguement instead of the
@@ -247,9 +248,8 @@ class Media(Base, TrialIdentifierMixin):
 
     # What is this concentration for?
     def __init__(self, concentration=None, unit='a.u.', name='', **kwargs):
-        self.parent = None
         self.name = name
-        # self.formal_name = ''
+        self.parent = ''
         for key in kwargs:
             if key in ['parent', 'name', 'components']:
                 setattr(self, key, kwargs[key])
