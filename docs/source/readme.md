@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.com/nvenayak/impact.svg?token=V3Kqb5fkhiSEid1A8oyf&branch=master)](https://travis-ci.com/nvenayak/impact)
+[![Build Status](https://travis-ci.org/nvenayak/impact.svg?branch=master)](https://travis-ci.org/nvenayak/impact)
+[![codecov](https://codecov.io/gh/nvenayak/impact/branch/master/graph/badge.svg)](https://codecov.io/gh/nvenayak/impact)
+[![Documentation Status](https://readthedocs.org/projects/impact/badge/?version=latest)](http://impact.readthedocs.io/en/latest/?badge=latest)
 
 # Impact: a framework for analyzing microbial physiology
 
@@ -28,15 +30,25 @@ You may also want to install the additional packages as needed, especially the p
     pip install -r requirements_modeling.txt
     pip install -r requirements_docs.txt
 
-Install the package, use develop mode to ensure all the relative paths remain correct.
+Install the package
 
-    python setup.py develop
-    
+    python setup.py install
+
+Optionally, developers may wish to use the develop flag to install the package from the current location, rather than installing in the default Python installation
+
+	python setup.py develop
+
 ### Updating
 To update to the latest version, run the following in the root folder:
     
     git pull
     
+### Tests
+Impact comes with scripts that test the proper functioning of the package. These are available in the tests folder. Every build of impact is tested with these scripts before deployment on github.
+
 ## Documentation
 
-The documentation is available in `docs` or a rendered version is available [here](http://nvenayak.github.io/impact/)
+The documentation is available in `docs` or a rendered version is available [here](http://impact.readthedocs.io/en/latest/)
+
+## Starter Files
+A starter ipynb which can be opened with Jupyter notebook has been provided in the Examples_and_Helpers folders. The file comes with comments which will assist users in analyzing their data. A helper file to create trial identifiers has also been provided in the Examples_and_Helpers folder.
