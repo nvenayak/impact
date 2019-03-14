@@ -199,9 +199,9 @@ def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
                 num_of_analytes += 1
                 for nextrow in raw_data[i:i + 7]:
                     if nextrow[0] in ['Excitation Wavelength', 'Excitation wavelength']:
-                        ex = (next((wavelength for wavelength in reversed(nextrow) if type(wavelength) == int)))
+                        ex = int(next((wavelength for wavelength in reversed(nextrow) if type(wavelength) in [int,float])))
                     if nextrow[0] in ['Emission wavelength', 'Emission Wavelength']:
-                        em = (next((wavelength for wavelength in reversed(nextrow) if type(wavelength) == int)))
+                        em = int(next((wavelength for wavelength in reversed(nextrow) if type(wavelength) in [int,float])))
                         break
                 if (ex, em) in mode_dict[mode].keys():
                     analyte_dict[num_of_analytes] = mode_dict[mode][(ex, em)]
