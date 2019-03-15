@@ -194,7 +194,7 @@ def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
                     analyte_dict[num_of_analytes] = mode_dict[mode][wavelength]
                 else:
                     analyte_dict[num_of_analytes] = {'analyte_name': 'Reporter' + str(wavelength),
-                                                     'analyte_type': Reporter}
+                                                     'analyte_type': 'reporter'}
             elif 'Fluorescence' in mode:
                 num_of_analytes += 1
                 for nextrow in raw_data[i:i + 7]:
@@ -207,7 +207,7 @@ def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
                     analyte_dict[num_of_analytes] = mode_dict[mode][(ex, em)]
                 else:
                     analyte_dict[num_of_analytes] = {'analyte_name': 'Reporter' + str(ex) + '/' + str(em),
-                                                     'analyte_type': Reporter}
+                                                     'analyte_type': 'reporter'}
 
         elif 'Time [s]' in row:
             time_row_index.append(i)
