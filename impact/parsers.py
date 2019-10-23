@@ -232,7 +232,7 @@ def tecan(experiment, data, id_type='traverse', plate_type='96 Wells'):
     t0 = sys_time.time()
     for analyte_num in range(num_of_analytes):
         if 'Time [s]' not in raw_data[time_row_index[analyte_num]]:  # different wells as distinct rows
-            time_row_index = [index+1 for index in time_row_index]
+            time_row_index[analyte_num] += 1
             data_start_index = time_row_index[analyte_num] + 2
             num_of_timepoints = len(raw_data[time_row_index[analyte_num]]) - 1
             for i, data_column_index in enumerate(range(1, num_of_timepoints + 1)):
