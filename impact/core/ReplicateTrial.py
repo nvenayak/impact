@@ -246,8 +246,9 @@ class ReplicateTrial(Base):
                                   if analyte in single_trial.analyte_dict
                                   and feature.name in single_trial.analyte_dict[analyte].__dict__]
                     if len(trial_list)>0:
+                        biomass_labels = ['OD600', 'OD700', 'OD660']
                         biomass_analyte = [analyte_name for analyte_name in trial_list[0].analyte_dict if
-                                           trial_list[0].analyte_dict[analyte_name].type == 'biomass'][0]
+                                           analyte_name in biomass_labels][0]
                         single_trial_var = []
                         single_trial_data = []
                         for trial in trial_list:
